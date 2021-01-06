@@ -1,6 +1,7 @@
 # Directories
 .idea/
 includes/
+cmake-build-debug/
 
 # Prerequisites
 *.d
