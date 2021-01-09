@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <typeindex>
 #include <vector>
+#include <iostream>
 
 #include "Component.h"
 
@@ -11,6 +12,7 @@ class Object
 public:
     std::vector<Component*> Components()
     {
+        // TODO: rework
         std::vector<Component*> values;
         values.reserve(components.size());
 
@@ -32,9 +34,14 @@ public:
             // TODO: Error
             return NULL;
 
-        T* newComponent = new T();
-        components[std::type_index(typeid(T))] = (Component*)newComponent;
-        return newComponent;
+        T* newComponentT = new T();
+        Component* newComponent = (Component*)newComponentT;
+        components[std::type_index(typeid(T))] = newComponent;
+        newComponent->ParentObject = this;
+
+        std::cout << "Component " << typeid(T).name() << " added" << std::endl;
+
+        return newComponentT;
     }
 
     template<class T>

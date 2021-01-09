@@ -5,8 +5,7 @@
 #include "Application.h"
 #include "Input.h"
 #include "Scene.h"
-
-#include "SpriteRenderer.h"
+#include "Log.h"
 
 bool isRunning;
 
@@ -20,22 +19,21 @@ float deltaTime = 0.0f;
 
 GLFWwindow* window;
 
+Application* Application::Instance;
 Scene scene;
-
-Application::Application()
-{
-    std::cout << "Application initialized" << std::endl;
-}
 
 void Init()
 {
+    std::cout << "Application init 1" << std::endl;
     glfwInit();
+
+    std::cout << "Application init 2" << std::endl;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Application", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     Input::Init(window);
@@ -50,17 +48,19 @@ void Init()
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    Object object;
-    auto *sr = object.AddComponent<SpriteRenderer>();
-    sr->SpriteName = "../resources/test.png";
-    scene.Objects.push_back(object);
+    std::cout << "Application initialized" << std::endl;
+}
+
+Application::Application()
+{
+    Init();
+
+    Instance = this;
 }
 
 void Application::Run()
 {
-    std::cout << "Running application" << std::endl;
-
-    Init();
+    Log::LogInfo("Running application");
 
     isRunning = true;
 
@@ -75,7 +75,7 @@ void Application::Run()
 
         for (auto &object : scene.Objects)
         {
-            for (auto &component : object.Components())
+            for (auto &component : object->Components())
             {
                 component->OnUpdate();
                 component->OnRender();
@@ -97,7 +97,7 @@ void Application::Run()
     glfwTerminate();
 }
 
-void Application::AddObjectToScene(Object object)
+Scene* Application::GetCurrentScene()
 {
-    scene.Objects.push_back(object);
+    return &scene;
 }

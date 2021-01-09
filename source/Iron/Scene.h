@@ -6,5 +6,7 @@
 class Scene
 {
 public:
-    std::vector<Object> Objects;
+    std::vector<Object*> Objects;
+
+    Object* CreateObject();
 };
