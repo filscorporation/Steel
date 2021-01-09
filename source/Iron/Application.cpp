@@ -4,16 +4,13 @@
 
 #include "Application.h"
 #include "Log.h"
+#include "Time.h"
 
 bool isRunning;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 const GLuint WIDTH = 800, HEIGHT = 600;
-
-// TODO: don't Use globals
-double lastFrameTime = 0;
-float deltaTime = 0.0f;
 
 GLFWwindow* window;
 
@@ -79,9 +76,7 @@ void Application::Run()
 
         glfwSwapBuffers(window);
 
-        double currentTime = glfwGetTime();
-        deltaTime = currentTime - lastFrameTime;
-        lastFrameTime = currentTime;
+        Time::Update();
 
         if (Input::IsKeyPressed(Escape))
             isRunning = false;

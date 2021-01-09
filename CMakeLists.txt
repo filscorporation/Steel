@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.3)
 project(Iron)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES source/Iron/Shader.h source/Iron/Shader.cpp includes/glad/src/glad.c source/Iron/Application.cpp source/Iron/Application.h source/Iron/Input.cpp source/Iron/Input.h source/Iron/KeyCodes.h source/Iron/MouseCodes.h source/Iron.h source/Iron/Object.cpp source/Iron/Object.h source/Iron/Component.cpp source/Iron/Component.h source/Iron/SpriteRenderer.cpp source/Iron/SpriteRenderer.h source/Iron/Scene.cpp source/Iron/Scene.h source/Iron/Transformation.cpp source/Iron/Transformation.h source/Iron/Log.cpp source/Iron/Log.h source/Iron/Camera.cpp source/Iron/Camera.h)
+set(SOURCE_FILES source/Iron/Shader.h source/Iron/Shader.cpp includes/glad/src/glad.c source/Iron/Application.cpp source/Iron/Application.h source/Iron/Input.cpp source/Iron/Input.h source/Iron/KeyCodes.h source/Iron/MouseCodes.h source/Iron.h source/Iron/Object.cpp source/Iron/Object.h source/Iron/Component.cpp source/Iron/Component.h source/Iron/SpriteRenderer.cpp source/Iron/SpriteRenderer.h source/Iron/Scene.cpp source/Iron/Scene.h source/Iron/Transformation.cpp source/Iron/Transformation.h source/Iron/Log.cpp source/Iron/Log.h source/Iron/Camera.cpp source/Iron/Camera.h source/Iron/Time.cpp source/Iron/Time.h)
 
 add_definitions(-DGLEW_STATIC)
 
