@@ -23,3 +23,8 @@ bool Input::IsKeyPressed(KeyCode code)
 {
     return pressedKeys[code] > 0;
 }
+
+void Input::PollEvents()
+{
+    glfwPollEvents();
+}

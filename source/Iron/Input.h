@@ -3,16 +3,19 @@
 #include <GLM/glm.hpp>
 #include "KeyCodes.h"
 #include "MouseCodes.h"
+#include "Screen.h"
 
 class GLFWwindow;
 
 class Input
 {
 public:
-    // TODO: make internal
-    static void Init(GLFWwindow* window);
-
+    static void PollEvents();
     static bool IsKeyPressed(KeyCode code);
     //static bool IsMouseButtonPressed(MouseCode button);
     //static glm::vec2 GetMousePosition();
+private:
+    static void Init(GLFWwindow* window);
+
+    friend class Screen;
 };
