@@ -1,14 +1,13 @@
 #include "SpriteRenderer.h"
 #include "Shader.h"
-#include "Input.h"
-#include "Transform.h"
+#include "Transformation.h"
 #include "Object.h"
 #include "Log.h"
+#include "Camera.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <STB/stb_image.h>
 #include <GLM/glm.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 
 // TODO: copy shaders in CMake
@@ -18,8 +17,6 @@ const GLchar* fragmentShaderPath = "../shaders/shader.frag";
 Shader* shader;
 GLuint texture;
 GLuint VBO, VAO, EBO;
-
-void MovementUpdate();
 
 SpriteRenderer::SpriteRenderer()
 {
@@ -51,7 +48,7 @@ SpriteRenderer::SpriteRenderer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Vertex positions
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)nullptr);
     glEnableVertexAttribArray(0);
     // Vertex color
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
@@ -95,19 +92,16 @@ SpriteRenderer::~SpriteRenderer()
     glDeleteBuffers(1, &EBO);
 }
 
-void SpriteRenderer::OnRender()
+void SpriteRenderer::OnRender(Camera* camera)
 {
     GLuint modelUniform = glGetUniformLocation(shader->Program, "model");
     GLuint viewUniform = glGetUniformLocation(shader->Program, "view");
     GLuint projectionUniform = glGetUniformLocation(shader->Program, "projection");
 
     // Render
-    glm::mat4 model = ParentObject->GetComponent<Transform>()->GetTransformationMatrix();
-    // TODO: move other transformations to camera
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    glm::mat4 projection;
-    projection = glm::ortho(0.0f, 4.0f, 0.0f, 3.0f, 0.1f, 10.0f );
+    glm::mat4 model = ParentObject->Transform->GetTransformationMatrix();
+    glm::mat4 view = camera->GetView();
+    glm::mat4 projection = camera->GetProjection();
     glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionUniform, 1, GL_FALSE, glm::value_ptr(projection));
@@ -115,6 +109,6 @@ void SpriteRenderer::OnRender()
     glActiveTexture(GL_TEXTURE0 + 0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }

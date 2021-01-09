@@ -3,8 +3,6 @@
 #include <GLFW/glfw3.h>
 
 #include "Application.h"
-#include "Input.h"
-#include "Scene.h"
 #include "Log.h"
 
 bool isRunning;
@@ -20,19 +18,15 @@ float deltaTime = 0.0f;
 GLFWwindow* window;
 
 Application* Application::Instance;
-Scene scene;
+Scene* scene;
 
 void Init()
 {
-    std::cout << "Application init 1" << std::endl;
     glfwInit();
-
-    std::cout << "Application init 2" << std::endl;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
     window = glfwCreateWindow(WIDTH, HEIGHT, "Application", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
@@ -48,7 +42,9 @@ void Init()
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    std::cout << "Application initialized" << std::endl;
+    scene = new Scene();
+
+    Log::LogInfo("Application initialized");
 }
 
 Application::Application()
@@ -72,13 +68,12 @@ void Application::Run()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Rendering objects in scene
-
-        for (auto &object : scene.Objects)
+        for (auto &object : scene->Objects)
         {
             for (auto &component : object->Components())
             {
                 component->OnUpdate();
-                component->OnRender();
+                component->OnRender(scene->MainCamera);
             }
         }
 
@@ -99,5 +94,5 @@ void Application::Run()
 
 Scene* Application::GetCurrentScene()
 {
-    return &scene;
+    return scene;
 }

@@ -2,12 +2,12 @@
 
 #include "Component.h"
 
-class SpriteRenderer : Component
+class SpriteRenderer : public Component
 {
 public:
     const char* SpriteName = nullptr;
 
     SpriteRenderer();
     ~SpriteRenderer();
-    void OnRender() override;
+    void OnRender(Camera* camera) override;
 };

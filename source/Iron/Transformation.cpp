@@ -1,6 +1,6 @@
-#include "Transform.h"
+#include "Transformation.h"
 
-glm::mat4 Transform::GetTransformationMatrix() const
+glm::mat4 Transformation::GetTransformationMatrix() const
 {
     glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 

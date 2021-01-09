@@ -6,10 +6,13 @@
 #include <iostream>
 
 #include "Component.h"
+#include "Transformation.h"
 
 class Object
 {
 public:
+    Transformation* Transform;
+
     std::vector<Component*> Components()
     {
         // TODO: rework
@@ -24,6 +27,8 @@ public:
         return values;
     }
 
+    Object();
+
     template<class T>
     T* AddComponent()
     {
@@ -35,7 +40,7 @@ public:
             return NULL;
 
         T* newComponentT = new T();
-        Component* newComponent = (Component*)newComponentT;
+        auto newComponent = (Component*)newComponentT;
         components[std::type_index(typeid(T))] = newComponent;
         newComponent->ParentObject = this;
 

@@ -7,6 +7,8 @@ class Scene
 {
 public:
     std::vector<Object*> Objects;
+    Camera* MainCamera;
 
+    Scene();
     Object* CreateObject();
 };

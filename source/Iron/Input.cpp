@@ -10,7 +10,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
     // TODO: held, just released
     if (action == GLFW_PRESS)
         pressedKeys[(KeyCode)key] = 1;
-    else
+    if (action == GLFW_RELEASE)
         pressedKeys[(KeyCode)key] = 0;
 }
 
