@@ -2,6 +2,7 @@
 
 #include "../Scene/Object.h"
 #include "../Scene/Scene.h"
+#include "ResourcesManager.h"
 
 struct ApplicationSettings
 {
@@ -17,6 +18,7 @@ public:
 
     Application(ApplicationSettings settings);
     void Run();
+    ResourcesManager* GetResourcesManager();
     Scene* GetCurrentScene();
 
 private:

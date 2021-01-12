@@ -1,13 +1,14 @@
 #pragma once
 
 #include "../Scene/Component.h"
+#include "../Core/ResourcesManager.h"
 
 class SpriteRenderer : public Component
 {
 public:
-    const char* SpriteName = nullptr;
+    void OnRender() override;
+    void SetImage(Image* image);
 
-    SpriteRenderer();
-    ~SpriteRenderer();
-    void OnRender(Camera* camera) override;
+private:
+    Image* _image;
 };

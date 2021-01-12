@@ -4,11 +4,20 @@
 #include "Application.h"
 #include "Log.h"
 #include "Time.h"
+#include "../Rendering/Renderer.h"
 
 bool isRunning;
 
 Application* Application::Instance;
+ResourcesManager* resources;
 Scene* scene;
+
+Application::Application(ApplicationSettings settings)
+{
+    Init(settings);
+
+    Instance = this;
+}
 
 void Application::Init(ApplicationSettings settings)
 {
@@ -16,20 +25,12 @@ void Application::Init(ApplicationSettings settings)
 
     gladLoadGL();
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
+    resources = new ResourcesManager();
     scene = new Scene();
 
+    Renderer::Init(scene->MainCamera);
+
     Log::LogInfo("Application initialized");
-}
-
-Application::Application(ApplicationSettings settings)
-{
-    Init(settings);
-
-    Instance = this;
 }
 
 void Application::Run()
@@ -42,8 +43,8 @@ void Application::Run()
     {
         Input::PollEvents();
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        Renderer::Clear(glm::vec3(0.2f, 0.3f, 0.3f));
+        Renderer::OnBeforeRender();
 
         // Rendering objects in scene
         for (auto &object : scene->Objects)
@@ -51,7 +52,7 @@ void Application::Run()
             for (auto &component : object->Components())
             {
                 component->OnUpdate();
-                component->OnRender(scene->MainCamera);
+                component->OnRender();
             }
         }
 
@@ -65,8 +66,15 @@ void Application::Run()
         if (Screen::WindowShouldClose())
             isRunning = false;
     }
+    Renderer::Terminate();
     Screen::Terminate();
 }
+
+ResourcesManager *Application::GetResourcesManager()
+{
+    return resources;
+}
+
 
 Scene* Application::GetCurrentScene()
 {

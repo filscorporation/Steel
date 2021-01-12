@@ -9,5 +9,5 @@ public:
     Object* ParentObject = nullptr;
 
     virtual void OnUpdate() { };
-    virtual void OnRender(Camera* camera) { };
+    virtual void OnRender() { };
 };
