@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Object.h"
-#include "Scene.h"
+#include "../Scene/Object.h"
+#include "../Scene/Scene.h"
 
 struct ApplicationSettings
 {

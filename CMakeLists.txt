@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 3.3)
 project(Iron)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES source/Iron/Shader.h source/Iron/Shader.cpp includes/glad/src/glad.c source/Iron/Application.cpp source/Iron/Application.h source/Iron/Input.cpp source/Iron/Input.h source/Iron/KeyCodes.h source/Iron/MouseCodes.h source/Iron.h source/Iron/Object.cpp source/Iron/Object.h source/Iron/Component.cpp source/Iron/Component.h source/Iron/SpriteRenderer.cpp source/Iron/SpriteRenderer.h source/Iron/Scene.cpp source/Iron/Scene.h source/Iron/Transformation.cpp source/Iron/Transformation.h source/Iron/Log.cpp source/Iron/Log.h source/Iron/Camera.cpp source/Iron/Camera.h source/Iron/Time.cpp source/Iron/Time.h source/Iron/Screen.cpp source/Iron/Screen.h)
+set(SOURCE_FILES source/Iron/Rendering/Shader.h source/Iron/Rendering/Shader.cpp includes/glad/src/glad.c source/Iron/Core/Application.cpp source/Iron/Core/Application.h source/Iron/Core/Input.cpp source/Iron/Core/Input.h source/Iron/Core/KeyCodes.h source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/Scene/Object.cpp source/Iron/Scene/Object.h source/Iron/Scene/Component.cpp source/Iron/Scene/Component.h source/Iron/Rendering/SpriteRenderer.cpp source/Iron/Rendering/SpriteRenderer.h source/Iron/Scene/Scene.cpp source/Iron/Scene/Scene.h source/Iron/Scene/Transformation.cpp source/Iron/Scene/Transformation.h source/Iron/Core/Log.cpp source/Iron/Core/Log.h source/Iron/Rendering/Camera.cpp source/Iron/Rendering/Camera.h source/Iron/Core/Time.cpp source/Iron/Core/Time.h source/Iron/Rendering/Screen.cpp source/Iron/Rendering/Screen.h)
 
 add_definitions(-DGLEW_STATIC)
 
-include_directories("includes/stb/include")
-include_directories("includes/glm/include")
+include_directories(includes/stb/include)
+include_directories(includes/glm/include)
 include_directories(includes/glad/include)
 include_directories(includes/glfw/include)
 

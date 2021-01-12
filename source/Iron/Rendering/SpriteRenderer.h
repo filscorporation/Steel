@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Component.h"
+#include "../Scene/Component.h"
 
 class SpriteRenderer : public Component
 {

@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iostream>
 
-#include <glad/glad.h>
+#include <GLAD/glad.h>
 
 class Shader
 {

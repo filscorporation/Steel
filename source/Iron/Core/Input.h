@@ -3,7 +3,7 @@
 #include <GLM/glm.hpp>
 #include "KeyCodes.h"
 #include "MouseCodes.h"
-#include "Screen.h"
+#include "../Rendering/Screen.h"
 
 class GLFWwindow;
 

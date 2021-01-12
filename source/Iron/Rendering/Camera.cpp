@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "Object.h"
+#include "../Scene/Object.h"
 
 glm::mat4 Camera::GetProjection()
 {

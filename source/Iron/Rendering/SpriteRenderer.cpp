@@ -1,8 +1,8 @@
 #include "SpriteRenderer.h"
 #include "Shader.h"
-#include "Transformation.h"
-#include "Object.h"
-#include "Log.h"
+#include "../Scene/Transformation.h"
+#include "../Scene/Object.h"
+#include "../Core/Log.h"
 #include "Camera.h"
 
 #define STB_IMAGE_IMPLEMENTATION

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Component.h"
+#include "../Scene/Component.h"
 #include <GLM/glm.hpp>
 
 class Camera : public Component

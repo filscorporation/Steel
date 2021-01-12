@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include "Camera.h"
+#include "../Rendering/Camera.h"
 
 Object* Scene::CreateObject()
 {
