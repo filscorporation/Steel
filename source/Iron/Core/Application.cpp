@@ -46,12 +46,25 @@ void Application::Run()
         Renderer::Clear(glm::vec3(0.2f, 0.3f, 0.3f));
         Renderer::OnBeforeRender();
 
-        // Rendering objects in scene
+        // Update and render objects in scene
         for (auto &object : scene->Objects)
         {
             for (auto &component : object->Components())
             {
                 component->OnUpdate();
+            }
+        }
+        for (auto &object : scene->Objects)
+        {
+            for (auto &component : object->Components())
+            {
+                component->OnLateUpdate();
+            }
+        }
+        for (auto &object : scene->Objects)
+        {
+            for (auto &component : object->Components())
+            {
                 component->OnRender();
             }
         }

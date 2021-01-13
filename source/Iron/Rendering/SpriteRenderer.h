@@ -6,9 +6,11 @@
 class SpriteRenderer : public Component
 {
 public:
+    int CurrentImageTileIndex = 0;
+
     void OnRender() override;
-    void SetImage(Image* image);
+    void SetImage(Sprite* image);
 
 private:
-    Image* _image;
+    Sprite* _image;
 };

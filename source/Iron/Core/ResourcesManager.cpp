@@ -5,7 +5,7 @@
 #include <STB/stb_image.h>
 #include <GLAD/glad.h>
 
-Image* ResourcesManager::LoadImage(const char *filePath)
+Sprite* ResourcesManager::LoadImage(const char *filePath)
 {
     //TODO: check if exists
     //TODO: completely rework
@@ -24,7 +24,7 @@ Image* ResourcesManager::LoadImage(const char *filePath)
     free(imageData);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    auto image = new Image();
+    auto image = new Sprite();
     image->ID = images.size();
     image->TextureID = (unsigned int)texture;
     image->Path = filePath;
@@ -33,18 +33,42 @@ Image* ResourcesManager::LoadImage(const char *filePath)
 
     images.push_back(image);
 
-    Log::LogInfo("Image loaded");
+    Log::LogInfo("Sprite loaded");
 
     return image;
 }
 
-Image *ResourcesManager::GetImage(unsigned int imageID)
+Sprite *ResourcesManager::GetImage(unsigned int imageID)
 {
     if (imageID > images.size() || images[imageID] == nullptr)
     {
-        Log::LogError("Image does not exist");
+        Log::LogError("Sprite does not exist");
         return nullptr;
     }
 
     return images[imageID];
+}
+
+void Sprite::SetAsSpriteSheet(int tileWidth, int tileHeight)
+{
+    IsSpriteSheet = true;
+    TileWidth = tileWidth;
+    TileHeight = tileHeight;
+}
+
+const float *Sprite::GetTexCoord(int tileIndex)
+{
+    float tw = float(TileWidth) / float(Width);
+    float th = float(TileHeight) / float(Height);
+    int numPerRow = Width / TileWidth;
+    float tx = (tileIndex % numPerRow) * tw;
+    float ty = (tileIndex / numPerRow) * th;
+    auto texCoords = new float[8]{
+            tx + tw, ty,
+            tx + tw, ty + th,
+            tx, ty,
+            tx, ty + th
+    };
+
+    return texCoords;
 }

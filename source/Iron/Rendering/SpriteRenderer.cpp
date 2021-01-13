@@ -7,11 +7,20 @@ void SpriteRenderer::OnRender()
     if (_image == nullptr)
         return;
 
-    Renderer::BindTexture(_image->TextureID);
-    Renderer::DrawQuad(ParentObject->Transform->GetTransformationMatrix());
+    if (_image->IsSpriteSheet)
+    {
+        Renderer::DrawQuad(
+                ParentObject->Transform->GetTransformationMatrix(),
+                _image->TextureID,
+                _image->GetTexCoord(CurrentImageTileIndex));
+    }
+    else
+    {
+        Renderer::DrawQuad(ParentObject->Transform->GetTransformationMatrix(), _image->TextureID);
+    }
 }
 
-void SpriteRenderer::SetImage(Image *image)
+void SpriteRenderer::SetImage(Sprite *image)
 {
     _image = image;
 }

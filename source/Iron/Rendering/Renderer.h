@@ -12,6 +12,6 @@ public:
 
     static void OnBeforeRender();
     static void Clear(glm::vec3 color);
-    static void BindTexture(GLuint textureID);
-    static void DrawQuad(glm::mat4 transformation);
+    static void DrawQuad(glm::mat4 transformation, GLuint textureID);
+    static void DrawQuad(glm::mat4 transformation, GLuint textureID, const float *texCoord);
 };

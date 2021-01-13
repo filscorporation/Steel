@@ -17,17 +17,11 @@ GLuint modelUniform;
 GLuint viewUniform;
 GLuint projectionUniform;
 
-void CreateQuad();
-
 void Renderer::Init(Camera* camera)
 {
     Log::LogInfo("Begin renderer init");
 
     mainCamera = camera;
-
-    CreateQuad();
-
-    Log::LogInfo("Vertices bind finished");
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -37,11 +31,13 @@ void Renderer::Init(Camera* camera)
     shader->Use();
     glUniform1i(glGetUniformLocation(shader->Program, "image"), 0);
 
-    Log::LogInfo("Get uniforms");
+    Log::LogInfo("Shader created");
 
     modelUniform = glGetUniformLocation(shader->Program, "model");
     viewUniform = glGetUniformLocation(shader->Program, "view");
     projectionUniform = glGetUniformLocation(shader->Program, "projection");
+
+    Log::LogInfo("Uniforms saved");
 
     Log::LogInfo("Renderer initialized");
 }
@@ -68,30 +64,25 @@ void Renderer::Clear(glm::vec3 color)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::BindTexture(GLuint textureID)
+void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID)
 {
-    glActiveTexture(GL_TEXTURE0 + 0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    float texCoord[] = {
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f
+    };
+    Renderer::DrawQuad(transformation, textureID, texCoord);
 }
 
-void Renderer::DrawQuad(glm::mat4 transformation)
+void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, const float *texCoord)
 {
-    // Set quad transformation
-    glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(transformation));
-
-    // Draw quad
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-    glBindVertexArray(0);
-}
-
-void CreateQuad()
-{
+    // Create quad
     GLfloat vertices[] = {
-            0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-            0.5f, -0.5f, 0.0f,  1.0f, 1.5f, 1.0f, 1.0f,  1.0f, 1.0f,
-            -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-            -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+            0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,  texCoord[0], texCoord[1],
+            0.5f, -0.5f, 0.0f,  1.0f, 1.5f, 1.0f, 1.0f,  texCoord[2], texCoord[3],
+            -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  texCoord[4], texCoord[5],
+            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  texCoord[6], texCoord[7],
     };
     GLuint indices[] = {
             0, 1, 2,
@@ -100,17 +91,11 @@ void CreateQuad()
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
-
     glBindVertexArray(VAO);
-
-    Log::LogInfo("Vertices generated");
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
     // Vertex positions
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)nullptr);
     glEnableVertexAttribArray(0);
@@ -120,8 +105,18 @@ void CreateQuad()
     // Texture
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(7 * sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
+    // Bind texture
+    glActiveTexture(GL_TEXTURE0 + 0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    // Set quad transformation
+    glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(transformation));
+
+    // Draw quad
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }

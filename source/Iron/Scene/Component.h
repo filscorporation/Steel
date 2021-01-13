@@ -9,5 +9,6 @@ public:
     Object* ParentObject = nullptr;
 
     virtual void OnUpdate() { };
+    virtual void OnLateUpdate() { };
     virtual void OnRender() { };
 };
