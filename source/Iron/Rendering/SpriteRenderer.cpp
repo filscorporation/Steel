@@ -24,3 +24,8 @@ void SpriteRenderer::SetImage(Sprite *image)
 {
     _image = image;
 }
+
+Sprite *SpriteRenderer::GetImage()
+{
+    return _image;
+}

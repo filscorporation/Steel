@@ -1,29 +1,21 @@
 #pragma once
 
 #include <vector>
-
-struct Sprite
-{
-public:
-    unsigned int ID;
-    const char* Path;
-    unsigned int TextureID;
-    int Width;
-    int Height;
-
-    bool IsSpriteSheet = false;
-    int TileWidth;
-    int TileHeight;
-    void SetAsSpriteSheet(int tileWidth, int tileHeight);
-    const float* GetTexCoord(int tileIndex);
-};
+#include "../Rendering/Sprite.h"
+#include "../Animation/Animation.h"
 
 class ResourcesManager
 {
 public:
     Sprite* LoadImage(const char* filePath);
     Sprite* GetImage(unsigned int imageID);
+    void UnloadImage(unsigned int imageID);
+
+    void AddAnimation(Animation* animation);
+    Animation* GetAnimation(unsigned int animationID);
+    void RemoveAnimation(unsigned int animationID);
 
 private:
     std::vector<Sprite*> images;
+    std::vector<Animation*> animations;
 };

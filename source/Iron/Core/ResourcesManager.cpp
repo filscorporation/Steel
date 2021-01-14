@@ -4,11 +4,18 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <STB/stb_image.h>
 #include <GLAD/glad.h>
+#include <fstream>
 
 Sprite* ResourcesManager::LoadImage(const char *filePath)
 {
-    //TODO: check if exists
     //TODO: completely rework
+
+    std::ifstream infile(filePath);
+    if (!infile.good())
+    {
+        Log::LogError("File does not exist");
+        return nullptr;
+    }
 
     int w, h, c;
     unsigned char *imageData = stbi_load(filePath, &w, &h, &c, 4);
@@ -38,7 +45,7 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
     return image;
 }
 
-Sprite *ResourcesManager::GetImage(unsigned int imageID)
+Sprite* ResourcesManager::GetImage(unsigned int imageID)
 {
     if (imageID > images.size() || images[imageID] == nullptr)
     {
@@ -49,26 +56,40 @@ Sprite *ResourcesManager::GetImage(unsigned int imageID)
     return images[imageID];
 }
 
-void Sprite::SetAsSpriteSheet(int tileWidth, int tileHeight)
+void ResourcesManager::UnloadImage(unsigned int imageID)
 {
-    IsSpriteSheet = true;
-    TileWidth = tileWidth;
-    TileHeight = tileHeight;
+    auto sprite = GetImage(imageID);
+    if (sprite == nullptr)
+        return;
+
+    glDeleteTextures(1, &sprite->TextureID);
+    images.erase(images.begin() + imageID);
+    free(sprite);
 }
 
-const float *Sprite::GetTexCoord(int tileIndex)
+void ResourcesManager::AddAnimation(Animation *animation)
 {
-    float tw = float(TileWidth) / float(Width);
-    float th = float(TileHeight) / float(Height);
-    int numPerRow = Width / TileWidth;
-    float tx = (tileIndex % numPerRow) * tw;
-    float ty = (tileIndex / numPerRow) * th;
-    auto texCoords = new float[8]{
-            tx + tw, ty,
-            tx + tw, ty + th,
-            tx, ty,
-            tx, ty + th
-    };
+    animation->ID = animations.size();
+    animations.push_back(animation);
+}
 
-    return texCoords;
+Animation *ResourcesManager::GetAnimation(unsigned int animationID)
+{
+    if (animationID > animations.size() || animations[animationID] == nullptr)
+    {
+        Log::LogError("Animation does not exist");
+        return nullptr;
+    }
+
+    return animations[animationID];
+}
+
+void ResourcesManager::RemoveAnimation(unsigned int animationID)
+{
+    auto animation = GetAnimation(animationID);
+    if (animation == nullptr)
+        return;
+
+    images.erase(images.begin() + animationID);
+    free(animation);
 }

@@ -18,9 +18,12 @@ public:
 
     Application(ApplicationSettings settings);
     void Run();
+    void Quit();
     ResourcesManager* GetResourcesManager();
     Scene* GetCurrentScene();
 
 private:
+    bool isRunning;
+
     void Init(ApplicationSettings settings);
 };

@@ -10,6 +10,7 @@ public:
 
     void OnRender() override;
     void SetImage(Sprite* image);
+    Sprite* GetImage();
 
 private:
     Sprite* _image;

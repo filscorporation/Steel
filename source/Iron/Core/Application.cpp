@@ -6,8 +6,6 @@
 #include "Time.h"
 #include "../Rendering/Renderer.h"
 
-bool isRunning;
-
 Application* Application::Instance;
 ResourcesManager* resources;
 Scene* scene;
@@ -65,6 +63,7 @@ void Application::Run()
         {
             for (auto &component : object->Components())
             {
+                // TODO: change to render calls and do depth sorting
                 component->OnRender();
             }
         }
@@ -73,15 +72,18 @@ void Application::Run()
 
         Time::Update();
 
-        if (Input::IsKeyPressed(Escape))
-            isRunning = false;
-
         if (Screen::WindowShouldClose())
             isRunning = false;
     }
     Renderer::Terminate();
     Screen::Terminate();
 }
+
+void Application::Quit()
+{
+    isRunning = false;
+}
+
 
 ResourcesManager *Application::GetResourcesManager()
 {
