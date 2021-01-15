@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "../Rendering/Camera.h"
+#include <algorithm>
 
 Object* Scene::CreateObject()
 {
@@ -7,6 +8,13 @@ Object* Scene::CreateObject()
     Objects.push_back(object);
 
     return object;
+}
+
+void Scene::DestroyObject(Object *object)
+{
+    // TODO: WIP, rework
+    Objects.erase(std::remove(Objects.begin(), Objects.end(), object), Objects.end());
+    free(object);
 }
 
 Scene::Scene()

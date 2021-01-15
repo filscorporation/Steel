@@ -19,7 +19,7 @@ Application::Application(ApplicationSettings settings)
 
 void Application::Init(ApplicationSettings settings)
 {
-    Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.Fullscreen);
+    Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen);
 
     gladLoadGL();
 
@@ -37,36 +37,64 @@ void Application::Run()
 
     isRunning = true;
 
+    float timer = 0;
+    int counter = 0;
+
     while (isRunning)
     {
         Input::PollEvents();
 
-        Renderer::Clear(glm::vec3(0.2f, 0.3f, 0.3f));
+        Renderer::Clear(Screen::Color());
         Renderer::OnBeforeRender();
 
         // Update and render objects in scene
-        for (auto &object : scene->Objects)
+        // TODO: optimize copying (its needed if objects added in updates)
+        auto objects = new std::vector<Object*>(scene->Objects);
+        for (auto &object : *objects)
         {
             for (auto &component : object->Components())
             {
-                component->OnUpdate();
+                try
+                {
+                    component->OnUpdate();
+                }
+                catch (const std::exception& ex)
+                {
+                    Log::LogError("Error in update: " + std::string(ex.what()));
+                }
             }
         }
-        for (auto &object : scene->Objects)
+        for (auto &object : *objects)
         {
             for (auto &component : object->Components())
             {
-                component->OnLateUpdate();
+                try
+                {
+                    component->OnLateUpdate();
+                }
+                catch (const std::exception& ex)
+                {
+                    Log::LogError("Error in late update: " + std::string(ex.what()));
+                }
             }
         }
-        for (auto &object : scene->Objects)
+        for (auto &object : *objects)
         {
             for (auto &component : object->Components())
             {
-                // TODO: change to render calls and do depth sorting
-                component->OnRender();
+                try
+                {
+                    // TODO: change to render calls and do depth sorting
+                    component->OnRender();
+                }
+                catch (const std::exception& ex)
+                {
+                    Log::LogError("Error in render: " + std::string(ex.what()));
+                }
             }
         }
+        //Freeing copy
+        free(objects);
 
         Screen::SwapBuffers();
 
@@ -74,6 +102,16 @@ void Application::Run()
 
         if (Screen::WindowShouldClose())
             isRunning = false;
+
+        // TODO: testing fps
+        counter ++;
+        timer += Time::DeltaTime();
+        if (timer > 1.0f)
+        {
+            Log::LogInfo(std::to_string(counter));
+            timer = 0;
+            counter = 0;
+        }
     }
     Renderer::Terminate();
     Screen::Terminate();
@@ -84,12 +122,10 @@ void Application::Quit()
     isRunning = false;
 }
 
-
 ResourcesManager *Application::GetResourcesManager()
 {
     return resources;
 }
-
 
 Scene* Application::GetCurrentScene()
 {

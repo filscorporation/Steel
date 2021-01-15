@@ -7,10 +7,14 @@
 
 #include "Component.h"
 #include "Transformation.h"
+#include "../Core/Log.h"
 
 class Object
 {
 public:
+    Object();
+    ~Object();
+
     Transformation* Transform;
 
     std::vector<Component*> Components()
@@ -27,8 +31,6 @@ public:
         return values;
     }
 
-    Object();
-
     template<class T>
     T* AddComponent()
     {
@@ -44,7 +46,7 @@ public:
         components[std::type_index(typeid(T))] = newComponent;
         newComponent->ParentObject = this;
 
-        std::cout << "Component " << typeid(T).name() << " added" << std::endl;
+        Log::LogInfo((std::string)"Component " + typeid(T).name() + " added");
 
         return newComponentT;
     }

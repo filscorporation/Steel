@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include "../Core/Log.h"
 
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
 {
@@ -14,7 +15,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
         fShaderFile.open(fragmentPath);
         if (!vShaderFile.good() || !fShaderFile.good())
         {
-            std::cout << "ERROR::SHADER::FILE_DOES_NOT_EXIST" << std::endl;
+            Log::LogInfo("Shader error: file does not exist");
         }
         else
         {
@@ -29,7 +30,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     }
     catch(std::ifstream::failure)
     {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+        Log::LogInfo("Shader error: file not successfully read");
     }
     const GLchar* vShaderCode = vertexCode.c_str();
     const GLchar* fShaderCode = fragmentCode.c_str();
@@ -45,7 +46,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     if (!success)
     {
         glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        Log::LogInfo("Shader error: vertex shader compilation failed");
     }
 
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -55,7 +56,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     if (!success)
     {
         glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        Log::LogInfo("Shader error: fragment shader compilation failed");
     }
 
     this->Program = glCreateProgram();
@@ -66,7 +67,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     if (!success)
     {
         glGetProgramInfoLog(this->Program, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        Log::LogInfo("Shader error: linking failed");
     }
 
     glDeleteShader(vertex);

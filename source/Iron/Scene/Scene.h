@@ -11,4 +11,5 @@ public:
 
     Scene();
     Object* CreateObject();
+    void DestroyObject(Object* object);
 };

@@ -1,34 +1,43 @@
 #include "Screen.h"
 #include "../Core/Input.h"
+#include "../Core/Application.h"
+#include "../Rendering/Camera.h"
 #include <GLFW/glfw3.h>
 
 GLFWwindow* window;
-int _width, _height;
-bool _fullscreen;
+int width, height;
+glm::vec3 color;
+bool fullscreen;
 
 int Screen::Width()
 {
-    return _width;
+    return width;
 }
 
 int Screen::Height()
 {
-    return _height;
+    return height;
 }
 
-void Screen::Init(int width, int height, bool fullscreen)
+glm::vec3 Screen::Color()
 {
-    _fullscreen = fullscreen;
+    return color;
+}
+
+void Screen::Init(int widthP, int heightP, glm::vec3 colorP, bool fullscreenP)
+{
+    fullscreen = fullscreenP;
+    color = colorP;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    window = glfwCreateWindow(width, height, "Application", nullptr, nullptr);
+    window = glfwCreateWindow(widthP, heightP, "Application", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
-    glfwGetFramebufferSize(window, &_width, &_height);
+    glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
     Input::Init(window);
@@ -47,4 +56,10 @@ bool Screen::WindowShouldClose()
 void Screen::Terminate()
 {
     glfwTerminate();
+}
+
+glm::vec2 Screen::ScreenToWorldPosition(glm::vec2 position)
+{
+    auto camera = Application::Instance->GetCurrentScene()->MainCamera;
+    return glm::vec2(camera->Width * (position.x / float(width) - 0.5), camera->Height * ((float(height) - position.y) / float(height) - 0.5));
 }

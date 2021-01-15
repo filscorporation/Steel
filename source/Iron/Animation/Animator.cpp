@@ -65,24 +65,6 @@ void Animator::OnUpdate()
     animationTime += Time::DeltaTime() * Speed;
     NormalizedTime = animationTime / Animations[currentAnimation]->Length();
 
-    if (NormalizedTime < 0.0f && Speed < 0 || NormalizedTime > 1.0f && Speed > 0)
-    {
-        if (Animations[currentAnimation]->Loop)
-        {
-            // TODO: make normalized time show number of cycles for loop animations
-            NormalizedTime = Speed < 0 ? NormalizedTime + 1.0f : NormalizedTime - 1.0f;
-            for (int i = 0; i < Animations[currentAnimation]->Curves.size(); ++i)
-            {
-                currentCurveFrame[i] = 0;
-            }
-        }
-        else
-        {
-            Stop();
-            return;
-        }
-    }
-
     for (int i = 0; i < currentCurveFrame.size(); ++i)
     {
         if (Speed > 0)
@@ -106,6 +88,24 @@ void Animator::OnUpdate()
                     ApplyFrame(ParentObject, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
+        }
+    }
+
+    if (NormalizedTime < 0.0f && Speed < 0 || NormalizedTime > 1.0f && Speed > 0)
+    {
+        if (Animations[currentAnimation]->Loop)
+        {
+            // TODO: make normalized time show number of cycles for loop animations
+            NormalizedTime = Speed < 0 ? NormalizedTime + 1.0f : NormalizedTime - 1.0f;
+            for (int i = 0; i < Animations[currentAnimation]->Curves.size(); ++i)
+            {
+                currentCurveFrame[i] = Speed < 0 ? Animations[currentAnimation]->Curves[i].Keyframes.size() : 0;
+                ApplyFrame(ParentObject, Animations[currentAnimation]->Curves[i].Keyframes[0]);
+            }
+        }
+        else
+        {
+            Stop();
         }
     }
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GLM/glm.hpp"
+
 class Application;
 
 class Screen
@@ -7,13 +9,15 @@ class Screen
 public:
     static int Width();
     static int Height();
+    static glm::vec3 Color();
+    static glm::vec2 ScreenToWorldPosition(glm::vec2 position);
 
     static void SwapBuffers();
     static bool WindowShouldClose();
     static void Terminate();
 
 private:
-    static void Init(int width, int height, bool fullscreen);
+    static void Init(int width, int height, glm::vec3 color, bool fullscreen);
 
     friend class Application;
 };
