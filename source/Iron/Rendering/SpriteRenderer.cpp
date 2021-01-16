@@ -4,6 +4,9 @@
 
 void SpriteRenderer::OnRender()
 {
+    if (ParentObject->IsDestroyed())
+        return;
+
     if (_image == nullptr)
         return;
 

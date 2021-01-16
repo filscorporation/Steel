@@ -12,6 +12,7 @@ Scene* scene;
 
 Application::Application(ApplicationSettings settings)
 {
+    state = ApplicationStates::Initializing;
     Init(settings);
 
     Instance = this;
@@ -48,9 +49,9 @@ void Application::Run()
         Renderer::OnBeforeRender();
 
         // Update and render objects in scene
-        // TODO: optimize copying (its needed if objects added in updates)
-        auto objects = new std::vector<Object*>(scene->Objects);
-        for (auto &object : *objects)
+        state = ApplicationStates::OnUpdate;
+        auto objects = std::vector<Object*>(scene->Objects);
+        for (auto &object : objects)
         {
             for (auto &component : object->Components())
             {
@@ -63,8 +64,10 @@ void Application::Run()
                     Log::LogError("Error in update: " + std::string(ex.what()));
                 }
             }
+            object->OnUpdate();
         }
-        for (auto &object : *objects)
+        state = ApplicationStates::OnLateUpdate;
+        for (auto &object : objects)
         {
             for (auto &component : object->Components())
             {
@@ -77,8 +80,11 @@ void Application::Run()
                     Log::LogError("Error in late update: " + std::string(ex.what()));
                 }
             }
+            object->OnLateUpdate();
         }
-        for (auto &object : *objects)
+
+        state = ApplicationStates::OnRender;
+        for (auto &object : objects)
         {
             for (auto &component : object->Components())
             {
@@ -93,8 +99,11 @@ void Application::Run()
                 }
             }
         }
-        //Freeing copy
-        free(objects);
+        objects.clear();
+
+        //Update scene
+        state = ApplicationStates::CleaningDestroyedObjects;
+        scene->CleanDestroyedObjects();
 
         Screen::SwapBuffers();
 
@@ -108,11 +117,15 @@ void Application::Run()
         timer += Time::DeltaTime();
         if (timer > 1.0f)
         {
-            Log::LogInfo(std::to_string(counter));
+            Log::LogInfo("FPS " + std::to_string(counter));
+            Log::LogInfo("Objects in scene " + std::to_string(scene->Objects.size()));
             timer = 0;
             counter = 0;
         }
     }
+    scene->CleanAllObjects();
+    delete(scene);
+    scene = nullptr;
     Renderer::Terminate();
     Screen::Terminate();
 }
@@ -120,6 +133,11 @@ void Application::Run()
 void Application::Quit()
 {
     isRunning = false;
+}
+
+ApplicationStates::ApplicationState Application::State()
+{
+    return state;
 }
 
 ResourcesManager *Application::GetResourcesManager()

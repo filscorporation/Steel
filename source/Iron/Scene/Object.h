@@ -15,6 +15,13 @@ public:
     Object();
     ~Object();
 
+    void Destroy();
+    void Destroy(float time);
+    bool IsDestroyed();
+
+    void OnUpdate();
+    void OnLateUpdate();
+
     Transformation* Transform;
 
     std::vector<Component*> Components()
@@ -45,8 +52,6 @@ public:
         auto newComponent = (Component*)newComponentT;
         components[std::type_index(typeid(T))] = newComponent;
         newComponent->ParentObject = this;
-
-        Log::LogInfo((std::string)"Component " + typeid(T).name() + " added");
 
         return newComponentT;
     }
@@ -79,4 +84,7 @@ public:
     }
 private:
     std::unordered_map<std::type_index, Component*> components;
+    bool isDestroyed = false;
+    bool destroyDelayed = false;
+    float destroyTimer;
 };

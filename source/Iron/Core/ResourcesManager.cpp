@@ -64,7 +64,7 @@ void ResourcesManager::UnloadImage(unsigned int imageID)
 
     glDeleteTextures(1, &sprite->TextureID);
     images.erase(images.begin() + imageID);
-    free(sprite);
+    delete(sprite);
 }
 
 void ResourcesManager::AddAnimation(Animation *animation)
@@ -91,5 +91,5 @@ void ResourcesManager::RemoveAnimation(unsigned int animationID)
         return;
 
     images.erase(images.begin() + animationID);
-    free(animation);
+    delete(animation);
 }

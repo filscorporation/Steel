@@ -52,7 +52,13 @@ void ApplyFrame(Object* object, Keyframe keyframe)
     // TODO: cache component
     auto sr = object->GetComponent<SpriteRenderer>();
     if (sr->GetImage()->ID != keyframe.SpriteID)
-        sr->SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
+    {
+        if (keyframe.SpriteID == -1)
+            sr->SetImage(nullptr);
+        else
+            sr->SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
+    }
+
     sr->CurrentImageTileIndex = keyframe.TileIndex;
 }
 

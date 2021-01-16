@@ -3,26 +3,26 @@
 #include "Input.h"
 
 // 0 - not pressed, 1 - just pressed, 2 - is held, 3 - just released
-static std::map<KeyCode, int> pressedKeys;
-static std::map<MouseCode, int> pressedMouse;
+static std::map<KeyCodes::KeyCode, int> pressedKeys;
+static std::map<MouseCodes::MouseCode, int> pressedMouse;
 glm::vec2 mousePosition;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     // TODO: held, just released
     if (action == GLFW_PRESS)
-        pressedKeys[(KeyCode)key] = 1;
+        pressedKeys[(KeyCodes::KeyCode)key] = 1;
     if (action == GLFW_RELEASE)
-        pressedKeys[(KeyCode)key] = 0;
+        pressedKeys[(KeyCodes::KeyCode)key] = 0;
 }
 
 void mouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
     // TODO: held, just released
     if (action == GLFW_PRESS)
-        pressedMouse[(MouseCode)button] = 1;
+        pressedMouse[(MouseCodes::MouseCode)button] = 1;
     if (action == GLFW_RELEASE)
-        pressedMouse[(MouseCode)button] = 0;
+        pressedMouse[(MouseCodes::MouseCode)button] = 0;
 }
 
 void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
@@ -38,12 +38,12 @@ void Input::Init(GLFWwindow* window)
     glfwSetCursorPosCallback(window, cursorPositionCallback);
 }
 
-bool Input::IsKeyPressed(KeyCode code)
+bool Input::IsKeyPressed(KeyCodes::KeyCode code)
 {
     return pressedKeys[code] > 0;
 }
 
-bool Input::IsMouseButtonPressed(MouseCode button)
+bool Input::IsMouseButtonPressed(MouseCodes::MouseCode button)
 {
     return pressedMouse[button] > 0;
 }

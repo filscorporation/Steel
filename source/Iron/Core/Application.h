@@ -5,6 +5,17 @@
 #include "ResourcesManager.h"
 #include "../Rendering/Screen.h"
 
+namespace ApplicationStates
+{
+    enum ApplicationState
+    {
+        Initializing,
+        OnUpdate,
+        OnLateUpdate,
+        OnRender,
+        CleaningDestroyedObjects,
+    };
+}
 
 struct ApplicationSettings
 {
@@ -22,11 +33,13 @@ public:
     Application(ApplicationSettings settings);
     void Run();
     void Quit();
+    ApplicationStates::ApplicationState State();
     ResourcesManager* GetResourcesManager();
     Scene* GetCurrentScene();
 
 private:
     bool isRunning;
+    ApplicationStates::ApplicationState state;
 
     void Init(ApplicationSettings settings);
 };
