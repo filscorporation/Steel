@@ -6,6 +6,22 @@
 #include <GLAD/glad.h>
 #include <fstream>
 
+ResourcesManager::~ResourcesManager()
+{
+    for (auto image : images)
+    {
+        glDeleteTextures(1, &image->TextureID);
+        delete image;
+    }
+    images.clear();
+
+    for (auto animation : animations)
+    {
+        delete animation;
+    }
+    animations.clear();
+}
+
 Sprite* ResourcesManager::LoadImage(const char *filePath)
 {
     //TODO: completely rework
@@ -64,7 +80,7 @@ void ResourcesManager::UnloadImage(unsigned int imageID)
 
     glDeleteTextures(1, &sprite->TextureID);
     images.erase(images.begin() + imageID);
-    delete(sprite);
+    delete sprite;
 }
 
 void ResourcesManager::AddAnimation(Animation *animation)
@@ -91,5 +107,5 @@ void ResourcesManager::RemoveAnimation(unsigned int animationID)
         return;
 
     images.erase(images.begin() + animationID);
-    delete(animation);
+    delete animation;
 }

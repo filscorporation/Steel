@@ -74,9 +74,11 @@ public:
     template<class T>
     bool RemoveComponent()
     {
-        if (HasComponent<T>())
+        auto component = GetComponent<T>();
+        if (component != nullptr)
         {
             components.erase(std::type_index(typeid(T)));
+            delete component;
             return true;
         }
 

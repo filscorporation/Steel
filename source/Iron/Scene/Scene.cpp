@@ -27,7 +27,7 @@ void Scene::DestroyObjectInner(Object *object)
 {
     // TODO: WIP, rework
     Objects.erase(std::remove(Objects.begin(), Objects.end(), object), Objects.end());
-    delete(object);
+    delete object;
 }
 
 void Scene::CleanDestroyedObjects()

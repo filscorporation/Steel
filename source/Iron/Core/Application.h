@@ -42,4 +42,5 @@ private:
     ApplicationStates::ApplicationState state;
 
     void Init(ApplicationSettings settings);
+    void Terminate();
 };

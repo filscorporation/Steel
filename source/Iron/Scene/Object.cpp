@@ -11,7 +11,7 @@ Object::~Object()
 {
     for (auto component : Components())
     {
-        delete(component);
+        delete component;
     }
     components.clear();
 }

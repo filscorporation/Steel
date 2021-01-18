@@ -7,21 +7,19 @@ void Sprite::SetAsSpriteSheet(int tileWidth, int tileHeight)
     TileHeight = tileHeight;
 }
 
-const float* Sprite::GetTexCoord(int tileIndex)
+std::array<float, 8> Sprite::GetTexCoord(int tileIndex)
 {
     float tw = float(TileWidth) / float(Width);
     float th = float(TileHeight) / float(Height);
     int numPerRow = Width / TileWidth;
     float tx = (tileIndex % numPerRow) * tw;
     float ty = (tileIndex / numPerRow) * th;
-    auto texCoords = new float[8]{
+    return {
             tx + tw, ty,
             tx + tw, ty + th,
             tx, ty,
             tx, ty + th
     };
-
-    return texCoords;
 }
 
 int Sprite::TilesCount()

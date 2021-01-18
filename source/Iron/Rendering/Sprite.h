@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 struct Sprite
 {
 public:
@@ -14,6 +16,6 @@ public:
     int TileHeight;
 
     void SetAsSpriteSheet(int tileWidth, int tileHeight);
-    const float* GetTexCoord(int tileIndex);
+    std::array<float, 8> GetTexCoord(int tileIndex);
     int TilesCount();
 };

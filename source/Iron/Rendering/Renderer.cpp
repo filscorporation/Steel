@@ -44,9 +44,7 @@ void Renderer::Init(Camera* camera)
 
 void Renderer::Terminate()
 {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    delete shader;
 }
 
 void Renderer::OnBeforeRender()
@@ -66,7 +64,7 @@ void Renderer::Clear(glm::vec3 color)
 
 void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID)
 {
-    float texCoord[] = {
+    std::array<float, 8> texCoord = {
             1.0f, 0.0f,
             1.0f, 1.0f,
             0.0f, 0.0f,
@@ -75,7 +73,7 @@ void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID)
     Renderer::DrawQuad(transformation, textureID, texCoord);
 }
 
-void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, const float *texCoord)
+void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, std::array<float, 8> texCoord)
 {
     // Create quad
     GLfloat vertices[] = {
@@ -119,4 +117,9 @@ void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, const float 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
+
+    // Clean
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 }

@@ -123,9 +123,17 @@ void Application::Run()
             counter = 0;
         }
     }
+
+    Terminate();
+}
+
+void Application::Terminate()
+{
     scene->CleanAllObjects();
-    delete(scene);
-    scene = nullptr;
+    delete scene;
+
+    delete resources;
+
     Renderer::Terminate();
     Screen::Terminate();
 }

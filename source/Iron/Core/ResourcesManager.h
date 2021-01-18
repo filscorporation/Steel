@@ -7,6 +7,8 @@
 class ResourcesManager
 {
 public:
+    ~ResourcesManager();
+
     Sprite* LoadImage(const char* filePath);
     Sprite* GetImage(unsigned int imageID);
     void UnloadImage(unsigned int imageID);
