@@ -1,10 +1,10 @@
 #pragma once
 
-#include <GLM/vec3.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
+#include <glm/vec3.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include <GLM/gtx/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "Component.h"
 #include "../Core/Input.h"

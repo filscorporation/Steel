@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLM/glm.hpp>
+#include <glm/glm.hpp>
 #include "KeyCodes.h"
 #include "MouseCodes.h"
 #include "../Rendering/Screen.h"

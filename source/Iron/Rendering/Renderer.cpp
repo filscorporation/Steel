@@ -4,7 +4,7 @@
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 
-#include <GLM/gtc/type_ptr.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // TODO: copy shaders in CMake
 const GLchar* vertexShaderPath = "../shaders/shader.vs";

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GLAD/glad.h>
-#include <GLM/glm.hpp>
+#include <glm/glm.hpp>
 #include <array>
 #include "Camera.h"
 
