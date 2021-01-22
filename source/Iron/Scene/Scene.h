@@ -17,5 +17,6 @@ public:
 
 private:
     std::vector<Object*> objectsToDelete;
-    void DestroyObjectInner(Object* object);
+    void DestroyAndRemoveObject(Object* object);
+    static void DestroyObjectInner(Object* object);
 };

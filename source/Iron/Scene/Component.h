@@ -6,6 +6,8 @@ class Camera;
 class Component
 {
 public:
+    virtual ~Component() { };
+
     Object* ParentObject = nullptr;
 
     virtual void OnUpdate() { };

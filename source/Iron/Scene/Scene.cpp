@@ -23,10 +23,15 @@ Scene::Scene()
     cameraObject->Transform->Position = glm::vec3(0.0f, 0.0f, 3.0f);
 }
 
+void Scene::DestroyAndRemoveObject(Object *object)
+{
+    // TODO: WIP, rework (removing is very slow, up to 35% of CPU on many objects tests)
+    Objects.erase(std::remove(Objects.begin(), Objects.end(), object), Objects.end());
+    DestroyObjectInner(object);
+}
+
 void Scene::DestroyObjectInner(Object *object)
 {
-    // TODO: WIP, rework
-    Objects.erase(std::remove(Objects.begin(), Objects.end(), object), Objects.end());
     delete object;
 }
 
@@ -35,7 +40,7 @@ void Scene::CleanDestroyedObjects()
     for (auto object : objectsToDelete)
     {
         if (object != nullptr)
-            DestroyObjectInner(object);
+            DestroyAndRemoveObject(object);
     }
     objectsToDelete.clear();
 }
@@ -46,5 +51,4 @@ void Scene::CleanAllObjects()
     {
         DestroyObjectInner(object);
     }
-    Objects.clear();
 }

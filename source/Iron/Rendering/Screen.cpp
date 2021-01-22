@@ -55,6 +55,7 @@ bool Screen::WindowShouldClose()
 
 void Screen::Terminate()
 {
+    glfwDestroyWindow(window);
     glfwTerminate();
 }
 

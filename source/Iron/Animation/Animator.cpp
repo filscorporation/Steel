@@ -4,11 +4,8 @@
 
 void Animator::Init()
 {
-    currentCurveFrame.clear();
-    for (int i = 0; i < Animations[currentAnimation]->Curves.size(); ++i)
-    {
-        currentCurveFrame.push_back(0);
-    }
+    currentCurveFrame.resize(Animations[currentAnimation]->Curves.size());
+    fill(currentCurveFrame.begin(), currentCurveFrame.end(), 0);
     initialized = true;
 }
 

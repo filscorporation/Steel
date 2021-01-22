@@ -13,13 +13,11 @@ ResourcesManager::~ResourcesManager()
         glDeleteTextures(1, &image->TextureID);
         delete image;
     }
-    images.clear();
 
     for (auto animation : animations)
     {
         delete animation;
     }
-    animations.clear();
 }
 
 Sprite* ResourcesManager::LoadImage(const char *filePath)

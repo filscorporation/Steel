@@ -9,11 +9,10 @@ Object::Object()
 
 Object::~Object()
 {
-    for (auto component : Components())
+    for (auto component : components)
     {
-        delete component;
+        delete component.second;
     }
-    components.clear();
 }
 
 void Object::Destroy()
