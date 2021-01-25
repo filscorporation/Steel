@@ -5,7 +5,7 @@
 #include "MouseCodes.h"
 #include "../Rendering/Screen.h"
 
-class GLFWwindow;
+struct GLFWwindow;
 
 class Input
 {

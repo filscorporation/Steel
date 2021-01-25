@@ -7,7 +7,6 @@
 
 #include "Component.h"
 #include "Transformation.h"
-#include "../Core/Log.h"
 
 class Object
 {

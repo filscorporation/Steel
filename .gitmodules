@@ -7,3 +7,6 @@
 [submodule "includes/glfw"]
 	path = includes/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "includes/openal-soft"]
+	path = includes/openal-soft
+	url = https://github.com/kcat/openal-soft.git

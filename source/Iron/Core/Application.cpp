@@ -5,6 +5,7 @@
 #include "Log.h"
 #include "Time.h"
 #include "../Rendering/Renderer.h"
+#include "../Audio/AudioSystem.h"
 
 Application* Application::Instance;
 ResourcesManager* resources;
@@ -28,6 +29,7 @@ void Application::Init(ApplicationSettings settings)
     scene = new Scene();
 
     Renderer::Init(scene->MainCamera);
+    AudioSystem::Init(scene->MainCamera->ParentObject);
 
     Log::LogInfo("Application initialized");
 }
@@ -134,6 +136,7 @@ void Application::Terminate()
 
     delete resources;
 
+    AudioSystem::Terminate();
     Renderer::Terminate();
     Screen::Terminate();
 }

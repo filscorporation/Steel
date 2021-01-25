@@ -1,10 +1,14 @@
 #include "ResourcesManager.h"
 #include "../Core/Log.h"
+#include "../Audio/AudioSystem.h"
+#include "../Audio/WavLoader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #include <GLAD/glad.h>
 #include <fstream>
+// TODO: remove al dependency into AudioSystem
+#include <AL/al.h>
 
 ResourcesManager::~ResourcesManager()
 {
@@ -12,6 +16,12 @@ ResourcesManager::~ResourcesManager()
     {
         glDeleteTextures(1, &image->TextureID);
         delete image;
+    }
+
+    for (auto audioTrack : audioTracks)
+    {
+        alDeleteBuffers(1, &audioTrack->BufferID);
+        delete audioTrack;
     }
 
     for (auto animation : animations)
@@ -35,7 +45,7 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
     unsigned char *imageData = stbi_load(filePath, &w, &h, &c, 4);
     GLuint texture;
 
-    glGenTextures(2, &texture);
+    glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     GLint filtering = GL_NEAREST;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
@@ -77,8 +87,94 @@ void ResourcesManager::UnloadImage(unsigned int imageID)
         return;
 
     glDeleteTextures(1, &sprite->TextureID);
-    images.erase(images.begin() + imageID);
+    //images.erase(images.begin() + imageID);
+    images[imageID] = nullptr;
     delete sprite;
+}
+
+static inline ALenum ToALFormat(int channels, int samples)
+{
+    bool stereo = (channels > 1);
+
+    switch (samples) {
+        case 16:
+            if (stereo)
+                return AL_FORMAT_STEREO16;
+            else
+                return AL_FORMAT_MONO16;
+        case 8:
+            if (stereo)
+                return AL_FORMAT_STEREO8;
+            else
+                return AL_FORMAT_MONO8;
+        default:
+            return -1;
+    }
+}
+
+AudioTrack* ResourcesManager::LoadAudioTrack(const char *filePath)
+{
+    std::ifstream infile(filePath);
+    if (!infile.good())
+    {
+        Log::LogError("File does not exist");
+        return nullptr;
+    }
+
+    ALuint audioBuffer;
+    char* data;
+    auto audioTrack = WavLoader::LoadWav(filePath, &data);
+    if (audioTrack == nullptr)
+        return nullptr;
+
+    audioTrack->ID = audioTracks.size();
+
+    alGenBuffers((ALuint)1, &audioBuffer);
+    if (AudioSystem::CheckForErrors())
+    {
+        Log::LogError("Error generating audio buffer");
+        return nullptr;
+    }
+    alBufferData(audioBuffer, ToALFormat(audioTrack->NumberOfChannels, audioTrack->BitsPerSample),
+                 data, (ALsizei)audioTrack->NumberOfSamples, audioTrack->SampleRate);
+    delete data;
+    if (AudioSystem::CheckForErrors())
+    {
+        Log::LogError("Error loading audio data to buffer");
+        delete audioTrack;
+        return nullptr;
+    }
+
+    audioTrack->BufferID = audioBuffer;
+    audioTracks.push_back(audioTrack);
+
+    Log::LogInfo("Audio track loaded");
+
+    return audioTrack;
+}
+
+AudioTrack *ResourcesManager::GetAudioTrack(unsigned int audioID)
+{
+    if (audioID > images.size() || images[audioID] == nullptr)
+    {
+        Log::LogError("Audio track does not exist");
+        return nullptr;
+    }
+
+    return audioTracks[audioID];
+}
+
+void ResourcesManager::UnloadAudioTrack(unsigned int audioID)
+{
+    auto audioTrack = GetAudioTrack(audioID);
+    if (audioTrack == nullptr)
+        return;
+
+    alDeleteBuffers(1, &audioTrack->BufferID);
+    //audioTracks.erase(audioTracks.begin() + audioID);
+    audioTracks[audioID] = nullptr;
+    delete audioTrack;
+
 }
 
 void ResourcesManager::AddAnimation(Animation *animation)
@@ -104,6 +200,7 @@ void ResourcesManager::RemoveAnimation(unsigned int animationID)
     if (animation == nullptr)
         return;
 
-    images.erase(images.begin() + animationID);
+    //animations.erase(animations.begin() + animationID);
+    animations[animationID] = nullptr;
     delete animation;
 }

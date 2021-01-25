@@ -1,5 +1,8 @@
 #include "Iron/Animation/Animation.h"
 #include "Iron/Animation/Animator.h"
+#include "Iron/Audio/AudioListener.h"
+#include "Iron/Audio/AudioSource.h"
+#include "Iron/Audio/AudioTrack.h"
 #include "Iron/Core/Application.h"
 #include "Iron/Core/Log.h"
 #include "Iron/Core/Time.h"
