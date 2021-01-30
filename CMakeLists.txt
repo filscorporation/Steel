@@ -5,7 +5,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 set(GLAD_FILES includes/glad/src/glad.c)
+set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
         ${GLAD_FILES}
         source/Iron/Rendering/Shader.h source/Iron/Rendering/Shader.cpp source/Iron/Core/Application.cpp
@@ -24,11 +29,31 @@ set(SOURCE_FILES
         source/Iron/Audio/AudioListener.h source/Iron/Audio/AudioSystem.cpp source/Iron/Audio/AudioSystem.h
         source/Iron/Audio/WavLoader.cpp source/Iron/Audio/WavLoader.h)
 
+if(MSVC_VERSION GREATER_EQUAL "1700")
+    add_compile_options("/MP")
+endif()
+
 cmake_policy(SET CMP0072 NEW)
+
+# openal
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    find_package(ALSA REQUIRED)
+endif()
+add_subdirectory(includes/openal-soft)
+set_property(TARGET alrecord PROPERTY FOLDER ${INCLUDE_FOLDER})
+set_property(TARGET altonegen PROPERTY FOLDER ${INCLUDE_FOLDER})
+set_property(TARGET build_version PROPERTY FOLDER ${INCLUDE_FOLDER})
+set_property(TARGET common PROPERTY FOLDER ${INCLUDE_FOLDER})
+set_property(TARGET ex-common PROPERTY FOLDER ${INCLUDE_FOLDER})
+set_property(TARGET OpenAL PROPERTY FOLDER ${INCLUDE_FOLDER})
+set_property(TARGET openal-info PROPERTY FOLDER ${INCLUDE_FOLDER})
 
 # project target
 add_library(Iron ${SOURCE_FILES})
-#add_executable(Iron ${SOURCE_FILES})
+set_target_properties(Iron PROPERTIES COMPILE_DEFINITIONS BUILDER_STATIC_DEFINE)
+
+add_custom_command(TARGET Iron COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/includes/dll ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 # opengl
 find_package(OpenGL REQUIRED)
@@ -49,5 +74,7 @@ add_subdirectory(includes/glm EXCLUDE_FROM_ALL)
 target_link_libraries(Iron PRIVATE glm)
 
 # openal
-add_subdirectory(includes/openal-soft EXCLUDE_FROM_ALL)
+target_include_directories(Iron PRIVATE ${ALSOFT_HEADERS_DIR})
 target_link_libraries(Iron PRIVATE OpenAL)
+
+target_compile_definitions(Iron PRIVATE)

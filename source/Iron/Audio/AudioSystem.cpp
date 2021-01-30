@@ -13,21 +13,19 @@ ALCcontext *context;
 
 void AudioSystem::Init(Object* listenerObject)
 {
-    // TODO: clean if error
-
     device = alcOpenDevice(nullptr);
-    if (CheckForErrors())
-    {
-        Log::LogError("Error initializing audio system");
-        return;
-    }
-    if (!device)
+    if (device == nullptr)
     {
         Log::LogError("Error initializing audio system: no device found");
         return;
     }
 
     context = alcCreateContext(device, nullptr);
+    if (context == nullptr)
+    {
+        Log::LogError("Error initializing audio system: can't create context");
+        return;
+    }
     if (!alcMakeContextCurrent(context))
     {
         Log::LogError("Error initializing audio system: can't make context current");
