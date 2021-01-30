@@ -1,5 +1,6 @@
 #include "AudioSource.h"
 #include "AudioSystem.h"
+#include "../Core/Log.h"
 
 AudioSource::AudioSource()
 {
@@ -14,11 +15,17 @@ AudioSource::~AudioSource()
 void AudioSource::OnUpdate()
 {
     // TODO: check if changed
-    AudioSystem::SetSourcePosition(sourceID, ParentObject->Transform->Position);
+    AudioSystem::SetSourcePosition(sourceID, ParentObject->Transform->GetPosition());
 }
 
 void AudioSource::Play(AudioTrack *audioTrack)
 {
+    if (audioTrack == nullptr)
+    {
+        Log::LogError("Audio track is null");
+        return;
+    }
+
     AudioSystem::SetSourceBuffer(sourceID, audioTrack->BufferID);
     AudioSystem::PlaySource(sourceID);
 }

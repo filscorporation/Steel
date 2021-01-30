@@ -5,6 +5,7 @@
 class AudioSystem
 {
 public:
+    static bool Initialized();
     static void Init(Object* listenerObject);
     static void Terminate();
     static bool CheckForErrors();
@@ -19,4 +20,7 @@ public:
     static void SetSourceVolume(unsigned int sourceID, float volume);
     static void SetSourceBuffer(unsigned int sourceID, unsigned int bufferID);
     static void PlaySource(unsigned int sourceID);
+
+private:
+    static bool AssertInitialized();
 };

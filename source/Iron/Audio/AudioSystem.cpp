@@ -8,11 +8,33 @@
 // TODO: fixes openal low default volume
 const float VOLUME_MULTIPLIER = 32.0f;
 
-ALCdevice *device;
-ALCcontext *context;
+ALCdevice* device = nullptr;
+ALCcontext* context = nullptr;
+
+bool AudioSystem::Initialized()
+{
+    return context != nullptr;
+}
+
+bool AudioSystem::AssertInitialized()
+{
+    if (!Initialized())
+    {
+        Log::LogError("Audio system is not initialized");
+        return true;
+    }
+
+    return false;
+}
 
 void AudioSystem::Init(Object* listenerObject)
 {
+    if (Initialized())
+    {
+        Log::LogError("Error initializing audio system: already initialized");
+        return;
+    }
+
     device = alcOpenDevice(nullptr);
     if (device == nullptr)
     {
@@ -24,6 +46,7 @@ void AudioSystem::Init(Object* listenerObject)
     if (context == nullptr)
     {
         Log::LogError("Error initializing audio system: can't create context");
+        alcCloseDevice(device);
         return;
     }
     if (!alcMakeContextCurrent(context))
@@ -34,13 +57,13 @@ void AudioSystem::Init(Object* listenerObject)
     }
     if (CheckForErrors())
     {
-        Log::LogError("Error initializing audio system");
+        Log::LogError("Error initializing audio system: inner error");
         alcCloseDevice(device);
         return;
     }
 
     listenerObject->AddComponent<AudioListener>();
-    SetListenerPosition(listenerObject->Transform->Position);
+    SetListenerPosition(listenerObject->Transform->GetPosition());
     SetListenerOrientation(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
     SetListenerVolume(1.0f);
 
@@ -49,6 +72,9 @@ void AudioSystem::Init(Object* listenerObject)
 
 void AudioSystem::Terminate()
 {
+    if (AssertInitialized())
+        return;
+
     alcMakeContextCurrent(nullptr);
     alcDestroyContext(context);
     alcCloseDevice(device);
@@ -86,6 +112,9 @@ bool AudioSystem::CheckForErrors()
 
 void AudioSystem::SetListenerPosition(glm::vec3 position)
 {
+    if (AssertInitialized())
+        return;
+
     alListener3f(AL_POSITION, (ALfloat)position.x, (ALfloat)position.y, (ALfloat)position.z);
     if (CheckForErrors())
     {
@@ -95,6 +124,9 @@ void AudioSystem::SetListenerPosition(glm::vec3 position)
 
 void AudioSystem::SetListenerOrientation(glm::vec3 at, glm::vec3 up)
 {
+    if (AssertInitialized())
+        return;
+
     float value[6] = { at.x, at.y, at.z, up.x, up.y, up.z };
     alListenerfv(AL_ORIENTATION, (ALfloat*)value);
     if (CheckForErrors())
@@ -105,6 +137,9 @@ void AudioSystem::SetListenerOrientation(glm::vec3 at, glm::vec3 up)
 
 void AudioSystem::SetListenerVolume(float volume)
 {
+    if (AssertInitialized())
+        return;
+
     alListenerf(AL_GAIN, (ALfloat)volume * VOLUME_MULTIPLIER);
     if (CheckForErrors())
     {
@@ -114,6 +149,9 @@ void AudioSystem::SetListenerVolume(float volume)
 
 unsigned int AudioSystem::CreateSource()
 {
+    if (AssertInitialized())
+        return -1;
+
     ALuint source;
 
     alGenSources((ALuint)1, &source);
@@ -128,6 +166,9 @@ unsigned int AudioSystem::CreateSource()
 
 void AudioSystem::DeleteSource(unsigned int sourceID)
 {
+    if (AssertInitialized())
+        return;
+
     alDeleteSources(1, (ALuint*)&sourceID);
     if (CheckForErrors())
     {
@@ -137,6 +178,9 @@ void AudioSystem::DeleteSource(unsigned int sourceID)
 
 void AudioSystem::SetSourcePosition(unsigned int sourceID, glm::vec3 position)
 {
+    if (AssertInitialized())
+        return;
+
     alSource3f(sourceID, AL_POSITION, (ALfloat)position.x, (ALfloat)position.y, (ALfloat)position.z);
     if (CheckForErrors())
     {
@@ -146,6 +190,9 @@ void AudioSystem::SetSourcePosition(unsigned int sourceID, glm::vec3 position)
 
 void AudioSystem::SetSourceIsLoop(unsigned int sourceID, bool isLoop)
 {
+    if (AssertInitialized())
+        return;
+
     alSourcei(sourceID, AL_LOOPING, isLoop ? AL_TRUE : AL_FALSE);
     if (CheckForErrors())
     {
@@ -155,6 +202,9 @@ void AudioSystem::SetSourceIsLoop(unsigned int sourceID, bool isLoop)
 
 void AudioSystem::SetSourceVolume(unsigned int sourceID, float volume)
 {
+    if (AssertInitialized())
+        return;
+
     alSourcef(sourceID, AL_GAIN, (ALfloat)volume);
     if (CheckForErrors())
     {
@@ -164,6 +214,9 @@ void AudioSystem::SetSourceVolume(unsigned int sourceID, float volume)
 
 void AudioSystem::SetSourceBuffer(unsigned int sourceID, unsigned int bufferID)
 {
+    if (AssertInitialized())
+        return;
+
     alSourcei(sourceID, AL_BUFFER, (ALuint)bufferID);
     if (CheckForErrors())
     {
@@ -173,6 +226,9 @@ void AudioSystem::SetSourceBuffer(unsigned int sourceID, unsigned int bufferID)
 
 void AudioSystem::PlaySource(unsigned int sourceID)
 {
+    if (AssertInitialized())
+        return;
+
     alSourcePlay((ALuint)sourceID);
     if (CheckForErrors())
     {

@@ -121,6 +121,12 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char *filePath)
         return nullptr;
     }
 
+    if (!AudioSystem::Initialized())
+    {
+        Log::LogError("Can't load audio: audio system is not initialized");
+        return nullptr;
+    }
+
     ALuint audioBuffer;
     char* data;
     auto audioTrack = WavLoader::LoadWav(filePath, &data);

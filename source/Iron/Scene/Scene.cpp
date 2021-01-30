@@ -20,7 +20,7 @@ Scene::Scene()
 {
     auto cameraObject = CreateObject();
     MainCamera = cameraObject->AddComponent<Camera>();
-    cameraObject->Transform->Position = glm::vec3(0.0f, 0.0f, 3.0f);
+    cameraObject->Transform->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 }
 
 void Scene::DestroyAndRemoveObject(Object *object)

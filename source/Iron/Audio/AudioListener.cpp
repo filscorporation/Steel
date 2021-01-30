@@ -7,8 +7,8 @@ void AudioListener::OnUpdate()
     if (ParentObject->IsDestroyed())
         return;
 
-    // TODO: check if changed
-    AudioSystem::SetListenerPosition(ParentObject->Transform->Position);
+    if (ParentObject->Transform->IsTransformationDirty())
+        AudioSystem::SetListenerPosition(ParentObject->Transform->GetPosition());
 }
 
 void AudioListener::SetVolume(float volume)
