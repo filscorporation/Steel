@@ -62,5 +62,9 @@ void Screen::Terminate()
 glm::vec2 Screen::ScreenToWorldPosition(glm::vec2 position)
 {
     auto camera = Application::Instance->GetCurrentScene()->MainCamera;
-    return glm::vec2(camera->Width * (position.x / float(width) - 0.5), camera->Height * ((float(height) - position.y) / float(height) - 0.5));
+    return glm::vec2(
+            camera->Width * (position.x / float(width) - 0.5)
+            + camera->ParentObject->Transform->GetPosition().x,
+            camera->Height * ((float(height) - position.y) / float(height) - 0.5)
+            + camera->ParentObject->Transform->GetPosition().y);
 }

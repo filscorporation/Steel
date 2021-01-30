@@ -40,6 +40,8 @@ public:
 private:
     bool isRunning;
     ApplicationStates::ApplicationState state;
+    ResourcesManager* resources;
+    Scene* scene;
 
     void Init(ApplicationSettings settings);
     void Terminate();

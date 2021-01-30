@@ -5,7 +5,7 @@
 // 0 - not pressed, 1 - just pressed, 2 - is held, 3 - just released
 static std::map<KeyCodes::KeyCode, int> pressedKeys;
 static std::map<MouseCodes::MouseCode, int> pressedMouse;
-glm::vec2 mousePosition;
+static glm::vec2 mousePosition;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {

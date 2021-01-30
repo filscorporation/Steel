@@ -8,8 +8,6 @@
 #include "../Audio/AudioSystem.h"
 
 Application* Application::Instance;
-ResourcesManager* resources;
-Scene* scene;
 
 Application::Application(ApplicationSettings settings)
 {
