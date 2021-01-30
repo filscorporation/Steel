@@ -9,8 +9,8 @@ public:
 private:
     static void Update();
 
-    static double lastFrameTime = 0;
-    static float deltaTime = 0.0f;
+    static double lastFrameTime;
+    static float deltaTime;
 
     friend Application;
 };

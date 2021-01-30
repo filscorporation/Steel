@@ -1,6 +1,5 @@
 #include "Scene.h"
 #include "../Rendering/Camera.h"
-#include "../Core/Application.h"
 #include <algorithm>
 
 Object* Scene::CreateObject()
@@ -21,6 +20,7 @@ Scene::Scene()
     auto cameraObject = CreateObject();
     MainCamera = cameraObject->AddComponent<Camera>();
     cameraObject->Transform->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+    MainCamera->SetHeight(3.0f);
 }
 
 void Scene::DestroyAndRemoveObject(Object *object)

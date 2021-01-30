@@ -7,8 +7,8 @@ class Application;
 class Screen
 {
 public:
-    static int Width();
-    static int Height();
+    static int GetWidth();
+    static int GetHeight();
     static glm::vec3 Color();
     static glm::vec2 ScreenToWorldPosition(glm::vec2 position);
 

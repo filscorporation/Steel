@@ -5,24 +5,29 @@ void Transformation::SetPosition(const glm::vec3& position)
     SetTransformationDirty(true);
     _position = position;
 }
+
 void Transformation::SetRotation(const glm::vec3& rotation)
 {
     SetTransformationDirty(true);
     _rotation = rotation;
 }
+
 void Transformation::SetScale(const glm::vec3& scale)
 {
     SetTransformationDirty(true);
     _scale = scale;
 }
+
 glm::vec3 Transformation::GetPosition() const
 {
     return _position;
 }
+
 glm::vec3 Transformation::GetRotation() const
 {
     return _rotation;
 }
+
 glm::vec3 Transformation::GetScale() const
 {
     return _scale;

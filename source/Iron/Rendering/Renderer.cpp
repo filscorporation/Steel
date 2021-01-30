@@ -14,8 +14,7 @@ Camera* mainCamera;
 Shader* shader;
 GLuint VBO, VAO, EBO;
 GLuint modelUniform;
-GLuint viewUniform;
-GLuint projectionUniform;
+GLuint viewProjectionUniform;
 
 void Renderer::Init(Camera* camera)
 {
@@ -34,8 +33,7 @@ void Renderer::Init(Camera* camera)
     Log::LogInfo("Shader created");
 
     modelUniform = glGetUniformLocation(shader->Program, "model");
-    viewUniform = glGetUniformLocation(shader->Program, "view");
-    projectionUniform = glGetUniformLocation(shader->Program, "projection");
+    viewProjectionUniform = glGetUniformLocation(shader->Program, "view_projection");
 
     Log::LogInfo("Uniforms saved");
 
@@ -49,11 +47,9 @@ void Renderer::Terminate()
 
 void Renderer::OnBeforeRender()
 {
-    // Set camera transformations
-    glm::mat4 view = mainCamera->GetView();
-    glm::mat4 projection = mainCamera->GetProjection();
-    glUniformMatrix4fv(viewUniform, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projectionUniform, 1, GL_FALSE, glm::value_ptr(projection));
+    // Set camera transformation
+    glm::mat4 viewProjection = mainCamera->GetViewProjection();
+    glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(viewProjection));
 }
 
 void Renderer::Clear(glm::vec3 color)

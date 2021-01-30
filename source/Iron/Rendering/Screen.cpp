@@ -2,43 +2,55 @@
 #include "../Core/Input.h"
 #include "../Core/Application.h"
 #include "../Rendering/Camera.h"
+#include "../Core/Log.h"
 #include <GLFW/glfw3.h>
 
 GLFWwindow* window;
-int width, height;
-glm::vec3 color;
-bool fullscreen;
+int _width, _height;
+glm::vec3 _color;
+bool _fullscreen;
 
-int Screen::Width()
+int Screen::GetWidth()
 {
-    return width;
+    return _width;
 }
 
-int Screen::Height()
+int Screen::GetHeight()
 {
-    return height;
+    return _height;
 }
 
 glm::vec3 Screen::Color()
 {
-    return color;
+    return _color;
 }
 
-void Screen::Init(int widthP, int heightP, glm::vec3 colorP, bool fullscreenP)
+void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen)
 {
-    fullscreen = fullscreenP;
-    color = colorP;
+    _fullscreen = fullscreen;
+    _color = color;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    window = glfwCreateWindow(widthP, heightP, "Application", nullptr, nullptr);
+    if (_fullscreen)
+    {
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        window = glfwCreateWindow(mode->width, mode->height, "Application", monitor, nullptr);
+    }
+    else
+    {
+        window = glfwCreateWindow(width, height, "Application", nullptr, nullptr);
+    }
     glfwMakeContextCurrent(window);
 
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
+    glfwGetFramebufferSize(window, &_width, &_height);
+    glViewport(0, 0, _width, _height);
+
+    Log::LogInfo("Initialized screen with size " + std::to_string(_width) + ":" + std::to_string(_height));
 
     Input::Init(window);
 }
@@ -63,8 +75,8 @@ glm::vec2 Screen::ScreenToWorldPosition(glm::vec2 position)
 {
     auto camera = Application::Instance->GetCurrentScene()->MainCamera;
     return glm::vec2(
-            camera->Width * (position.x / float(width) - 0.5)
+            camera->GetWidth() * (position.x / float(_width) - 0.5)
             + camera->ParentObject->Transform->GetPosition().x,
-            camera->Height * ((float(height) - position.y) / float(height) - 0.5)
+            camera->GetHeight() * ((float(_height) - position.y) / float(_height) - 0.5)
             + camera->ParentObject->Transform->GetPosition().y);
 }
