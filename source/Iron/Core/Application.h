@@ -4,6 +4,8 @@
 #include "../Scene/Scene.h"
 #include "ResourcesManager.h"
 #include "../Rendering/Screen.h"
+#include "../Physics/RigidBody.h"
+
 
 namespace ApplicationStates
 {
@@ -11,6 +13,7 @@ namespace ApplicationStates
     {
         Initializing,
         OnUpdate,
+        OnPhysicsUpdate,
         OnLateUpdate,
         OnRender,
         CleaningDestroyedObjects,

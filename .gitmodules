@@ -10,3 +10,6 @@
 [submodule "includes/openal-soft"]
 	path = includes/openal-soft
 	url = https://github.com/kcat/openal-soft.git
+[submodule "includes/box2d"]
+	path = includes/box2d
+	url = https://github.com/erincatto/box2d.git

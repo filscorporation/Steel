@@ -32,3 +32,12 @@ Sprite *SpriteRenderer::GetImage()
 {
     return _image;
 }
+
+glm::vec2 SpriteRenderer::GetWorldSize()
+{
+    if (_image == nullptr)
+        return glm::vec2(0, 0);
+
+    // TODO: use sprite size
+    return ParentObject->Transform->GetScale();
+}

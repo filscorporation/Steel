@@ -7,6 +7,8 @@
 #include "Iron/Core/Log.h"
 #include "Iron/Core/Time.h"
 #include "Iron/Core/Input.h"
+#include "Iron/Physics/BoxCollider.h"
+#include "Iron/Physics/RigidBody.h"
 #include "Iron/Rendering/Screen.h"
 #include "Iron/Rendering/Camera.h"
 #include "Iron/Rendering/SpriteRenderer.h"

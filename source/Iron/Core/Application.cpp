@@ -6,6 +6,8 @@
 #include "Time.h"
 #include "../Rendering/Renderer.h"
 #include "../Audio/AudioSystem.h"
+#include "../Physics/PhysicsCore.h"
+#include "../Physics/RigidBody.h"
 
 Application* Application::Instance;
 
@@ -28,6 +30,7 @@ void Application::Init(ApplicationSettings settings)
 
     Renderer::Init(scene->MainCamera);
     AudioSystem::Init(scene->MainCamera->ParentObject);
+    PhysicsCore::Init();
 
     Log::LogInfo("Application initialized");
 }
@@ -66,6 +69,27 @@ void Application::Run()
             }
             object->OnUpdate();
         }
+        state = ApplicationStates::OnPhysicsUpdate;
+        // TODO: wrong delta time; physics should run on different thread with fixed delta time
+        PhysicsCore::Step(Time::DeltaTime());
+        // TODO: change to physics double sided list of rigid bodies
+        for (auto &object : objects)
+        {
+            auto rb = object->GetComponent<RigidBody>();
+            if (rb != nullptr)
+            {
+                try
+                {
+                    rb->GetPhysicsTransformation();
+                }
+                catch (const std::exception& ex)
+                {
+                    Log::LogError("Error in physics update: " + std::string(ex.what()));
+                }
+            }
+            object->OnLateUpdate();
+        }
+
         state = ApplicationStates::OnLateUpdate;
         for (auto &object : objects)
         {
@@ -134,6 +158,7 @@ void Application::Terminate()
 
     delete resources;
 
+    PhysicsCore::Terminate();
     AudioSystem::Terminate();
     Renderer::Terminate();
     Screen::Terminate();

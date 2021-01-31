@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(Iron)
+project(Iron VERSION 0.0.1)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -12,7 +12,7 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(GLAD_FILES includes/glad/src/glad.c)
 set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
-        ${GLAD_FILES}
+        ${GLAD_FILES} ${BOX2D_SOURCE_FILES} ${BOX2D_HEADER_FILES}
         source/Iron/Rendering/Shader.h source/Iron/Rendering/Shader.cpp source/Iron/Core/Application.cpp
         source/Iron/Core/Application.h source/Iron/Core/Input.cpp source/Iron/Core/Input.h source/Iron/Core/KeyCodes.h
         source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/Scene/Object.cpp source/Iron/Scene/Object.h
@@ -27,7 +27,10 @@ set(SOURCE_FILES
         source/Iron/Rendering/Sprite.h source/Iron/Audio/AudioTrack.cpp source/Iron/Audio/AudioTrack.h
         source/Iron/Audio/AudioSource.cpp source/Iron/Audio/AudioSource.h source/Iron/Audio/AudioListener.cpp
         source/Iron/Audio/AudioListener.h source/Iron/Audio/AudioSystem.cpp source/Iron/Audio/AudioSystem.h
-        source/Iron/Audio/WavLoader.cpp source/Iron/Audio/WavLoader.h)
+        source/Iron/Audio/WavLoader.cpp source/Iron/Audio/WavLoader.h source/Iron/Physics/PhysicsCore.cpp
+        source/Iron/Physics/PhysicsCore.h source/Iron/Physics/Collider.cpp source/Iron/Physics/Collider.h
+        source/Iron/Physics/BoxCollider.cpp source/Iron/Physics/BoxCollider.h source/Iron/Physics/RigidBody.cpp
+        source/Iron/Physics/RigidBody.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -76,5 +79,9 @@ target_link_libraries(Iron PRIVATE glm)
 # openal
 target_include_directories(Iron PRIVATE ${ALSOFT_HEADERS_DIR})
 target_link_libraries(Iron PRIVATE OpenAL)
+
+# box2d
+include_directories(includes/box2d/include)
+target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-debug/bin/box2d.lib)
 
 target_compile_definitions(Iron PRIVATE)
