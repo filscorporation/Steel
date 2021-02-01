@@ -74,7 +74,7 @@ void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, std::array<f
     // Create quad
     GLfloat vertices[] = {
             0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,  texCoord[0], texCoord[1],
-            0.5f, -0.5f, 0.0f,  1.0f, 1.5f, 1.0f, 1.0f,  texCoord[2], texCoord[3],
+            0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,  texCoord[2], texCoord[3],
             -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  texCoord[4], texCoord[5],
             -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  texCoord[6], texCoord[7],
     };

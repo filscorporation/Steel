@@ -51,7 +51,7 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
     glGenerateMipmap(GL_TEXTURE_2D);
-    free(imageData);
+    stbi_image_free(imageData);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     auto image = new Sprite();
