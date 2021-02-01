@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include "Collider.h"
 
 class BoxCollider : public Collider
@@ -12,6 +13,11 @@ public:
     BoxCollider();
     ~BoxCollider() override;
 
+    void SetSizeAutomatically();
+    glm::vec2 GetSize();
+    void SetSize(glm::vec2 size);
+
 private:
     BoxColliderInfo* info;
+    glm::vec2 _size;
 };

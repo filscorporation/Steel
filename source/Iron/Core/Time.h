@@ -6,6 +6,8 @@ class Time
 {
 public:
     static float DeltaTime();
+    // TODO: apply to sound
+    static float TimeScale;
 private:
     static void Update();
 

@@ -3,11 +3,7 @@
 #include "RigidBody.h"
 #include "../Scene/Object.h"
 #include "BoxCollider.h"
-
-struct RigidBody::RigidBodyInfo
-{
-    b2Body* Body;
-};
+#include "PhysicsInfo.h"
 
 RigidBody::RigidBody()
 {
@@ -54,8 +50,7 @@ void RigidBody::SetAutoFixture()
     if (bc != nullptr)
     {
         b2FixtureDef fixtureDef;
-        // TODO: fix
-        //fixtureDef.shape = bc->info->GroundBox;
+        fixtureDef.shape = bc->info->GroundBox;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.3f;
         info->Body->CreateFixture(&fixtureDef);

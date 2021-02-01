@@ -12,7 +12,7 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(GLAD_FILES includes/glad/src/glad.c)
 set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
-        ${GLAD_FILES} ${BOX2D_SOURCE_FILES} ${BOX2D_HEADER_FILES}
+        ${GLAD_FILES}
         source/Iron/Rendering/Shader.h source/Iron/Rendering/Shader.cpp source/Iron/Core/Application.cpp
         source/Iron/Core/Application.h source/Iron/Core/Input.cpp source/Iron/Core/Input.h source/Iron/Core/KeyCodes.h
         source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/Scene/Object.cpp source/Iron/Scene/Object.h
@@ -30,7 +30,7 @@ set(SOURCE_FILES
         source/Iron/Audio/WavLoader.cpp source/Iron/Audio/WavLoader.h source/Iron/Physics/PhysicsCore.cpp
         source/Iron/Physics/PhysicsCore.h source/Iron/Physics/Collider.cpp source/Iron/Physics/Collider.h
         source/Iron/Physics/BoxCollider.cpp source/Iron/Physics/BoxCollider.h source/Iron/Physics/RigidBody.cpp
-        source/Iron/Physics/RigidBody.h)
+        source/Iron/Physics/RigidBody.h source/Iron/Physics/PhysicsInfo.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
