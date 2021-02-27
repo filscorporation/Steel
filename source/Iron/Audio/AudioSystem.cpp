@@ -27,7 +27,7 @@ bool AudioSystem::AssertInitialized()
     return false;
 }
 
-void AudioSystem::Init(Object* listenerObject)
+void AudioSystem::Init(Entity* listenerEntity)
 {
     if (Initialized())
     {
@@ -62,8 +62,8 @@ void AudioSystem::Init(Object* listenerObject)
         return;
     }
 
-    listenerObject->AddComponent<AudioListener>();
-    SetListenerPosition(listenerObject->Transform->GetPosition());
+    listenerEntity->AddComponent<AudioListener>();
+    SetListenerPosition(listenerEntity->Transform->GetPosition());
     SetListenerOrientation(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
     SetListenerVolume(1.0f);
 

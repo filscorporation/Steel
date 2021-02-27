@@ -15,7 +15,7 @@ AudioSource::~AudioSource()
 void AudioSource::OnUpdate()
 {
     // TODO: check if changed
-    AudioSystem::SetSourcePosition(sourceID, ParentObject->Transform->GetPosition());
+    AudioSystem::SetSourcePosition(sourceID, ParentEntity->Transform->GetPosition());
 }
 
 void AudioSource::Play(AudioTrack *audioTrack)

@@ -2,53 +2,60 @@
 #include "../Rendering/Camera.h"
 #include <algorithm>
 
-Object* Scene::CreateObject()
+Entity* Scene::CreateEntity()
 {
-    auto object = new Object();
-    Objects.push_back(object);
+    auto entity = new Entity();
+    Entities.push_back(entity);
+    entitiesByIDMap[entity->ID] = entity;
 
-    return object;
+    return entity;
 }
 
-void Scene::DestroyObject(Object *object)
+void Scene::DestroyEntity(Entity *entity)
 {
-    objectsToDelete.push_back(object);
+    entitiesToDelete.push_back(entity);
 }
 
 Scene::Scene()
 {
-    auto cameraObject = CreateObject();
-    MainCamera = cameraObject->AddComponent<Camera>();
-    cameraObject->Transform->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+    auto cameraEntity = CreateEntity();
+    MainCamera = cameraEntity->AddComponent<Camera>();
+    cameraEntity->Transform->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     MainCamera->SetHeight(3.0f);
 }
 
-void Scene::DestroyAndRemoveObject(Object *object)
+void Scene::DestroyAndRemoveEntity(Entity *entity)
 {
     // TODO: WIP, rework (removing is very slow, up to 35% of CPU on many objects tests)
-    Objects.erase(std::remove(Objects.begin(), Objects.end(), object), Objects.end());
-    DestroyObjectInner(object);
+    Entities.erase(std::remove(Entities.begin(), Entities.end(), entity), Entities.end());
+    entitiesByIDMap[entity->ID] = nullptr;
+    DestroyEntityInner(entity);
 }
 
-void Scene::DestroyObjectInner(Object *object)
+void Scene::DestroyEntityInner(Entity *entity)
 {
-    delete object;
+    delete entity;
 }
 
-void Scene::CleanDestroyedObjects()
+void Scene::CleanDestroyedEntities()
 {
-    for (auto object : objectsToDelete)
+    for (auto entity : entitiesToDelete)
     {
-        if (object != nullptr)
-            DestroyAndRemoveObject(object);
+        if (entity != nullptr)
+            DestroyAndRemoveEntity(entity);
     }
-    objectsToDelete.clear();
+    entitiesToDelete.clear();
 }
 
-void Scene::CleanAllObjects()
+void Scene::CleanAllEntities()
 {
-    for (auto object : Objects)
+    for (auto entity : Entities)
     {
-        DestroyObjectInner(object);
+        DestroyEntityInner(entity);
     }
+}
+
+Entity *Scene::GetEntity(uint64_t entityID)
+{
+    return entitiesByIDMap[entityID];
 }

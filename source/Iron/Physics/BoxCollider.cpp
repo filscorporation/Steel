@@ -1,6 +1,6 @@
 #include <box2d/box2d.h>
 #include "BoxCollider.h"
-#include "../Scene/Object.h"
+#include "../Scene/Entity.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "PhysicsInfo.h"
 
@@ -17,13 +17,13 @@ BoxCollider::~BoxCollider()
 
 void BoxCollider::SetSizeAutomatically()
 {
-    auto sr = ParentObject->GetComponent<SpriteRenderer>();
+    auto sr = ParentEntity->GetComponent<SpriteRenderer>();
     if (sr != nullptr)
     {
         _size = sr->GetWorldSize();
     }
     else
-        _size = ParentObject->Transform->GetScale();
+        _size = ParentEntity->Transform->GetScale();
     info->GroundBox->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
 }
 

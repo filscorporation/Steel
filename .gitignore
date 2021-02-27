@@ -20,6 +20,7 @@ cmake-build-debug/
 *.dylib
 *.dll
 !includes/dll/*.dll
+!includes/mono/bin/*.dll
 
 # Fortran module files
 *.mod
@@ -30,6 +31,7 @@ cmake-build-debug/
 *.la
 *.a
 *.lib
+!includes/mono/lib/*.lib
 
 # Executables
 *.exe

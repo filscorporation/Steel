@@ -13,7 +13,7 @@
 #include "Iron/Rendering/Camera.h"
 #include "Iron/Rendering/SpriteRenderer.h"
 #include "Iron/Scene/Component.h"
-#include "Iron/Scene/Object.h"
+#include "Iron/Scene/Entity.h"
 #include "Iron/Scene/Transformation.h"
 
 // TODO: allow to include it independently

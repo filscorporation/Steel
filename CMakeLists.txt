@@ -15,7 +15,7 @@ set(SOURCE_FILES
         ${GLAD_FILES}
         source/Iron/Rendering/Shader.h source/Iron/Rendering/Shader.cpp source/Iron/Core/Application.cpp
         source/Iron/Core/Application.h source/Iron/Core/Input.cpp source/Iron/Core/Input.h source/Iron/Core/KeyCodes.h
-        source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/Scene/Object.cpp source/Iron/Scene/Object.h
+        source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/Scene/Entity.cpp source/Iron/Scene/Entity.h
         source/Iron/Scene/Component.cpp source/Iron/Scene/Component.h source/Iron/Rendering/SpriteRenderer.cpp
         source/Iron/Rendering/SpriteRenderer.h source/Iron/Scene/Scene.cpp source/Iron/Scene/Scene.h
         source/Iron/Scene/Transformation.cpp source/Iron/Scene/Transformation.h source/Iron/Core/Log.cpp
@@ -30,7 +30,11 @@ set(SOURCE_FILES
         source/Iron/Audio/WavLoader.cpp source/Iron/Audio/WavLoader.h source/Iron/Physics/PhysicsCore.cpp
         source/Iron/Physics/PhysicsCore.h source/Iron/Physics/Collider.cpp source/Iron/Physics/Collider.h
         source/Iron/Physics/BoxCollider.cpp source/Iron/Physics/BoxCollider.h source/Iron/Physics/RigidBody.cpp
-        source/Iron/Physics/RigidBody.h source/Iron/Physics/PhysicsInfo.h)
+        source/Iron/Physics/RigidBody.h source/Iron/Physics/PhysicsInfo.h source/Iron/Scripting/ScriptingSystem.cpp
+        source/Iron/Scripting/ScriptingSystem.h source/Iron/Scripting/InternalCalls.h
+        source/Iron/Scripting/InternalCalls.cpp source/Iron/Math/Random.cpp source/Iron/Math/Random.h
+        source/Iron/Scripting/ScriptComponent.cpp source/Iron/Scripting/ScriptComponent.h
+        source/Iron/Scripting/ScriptingCore.cpp source/Iron/Scripting/ScriptingCore.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -83,5 +87,9 @@ target_link_libraries(Iron PRIVATE OpenAL)
 # box2d
 include_directories(includes/box2d/include)
 target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-debug/bin/box2d.lib)
+
+#mono
+include_directories(includes/mono/include)
+target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib)
 
 target_compile_definitions(Iron PRIVATE)

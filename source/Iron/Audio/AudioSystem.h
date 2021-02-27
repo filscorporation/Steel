@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../Scene/Object.h"
+#include "../Scene/Entity.h"
 
 class AudioSystem
 {
 public:
     static bool Initialized();
-    static void Init(Object* listenerObject);
+    static void Init(Entity* listenerEntity);
     static void Terminate();
     static bool CheckForErrors();
 

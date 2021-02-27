@@ -4,7 +4,7 @@
 
 void SpriteRenderer::OnRender()
 {
-    if (ParentObject->IsDestroyed())
+    if (ParentEntity->IsDestroyed())
         return;
 
     if (_image == nullptr)
@@ -13,13 +13,13 @@ void SpriteRenderer::OnRender()
     if (_image->IsSpriteSheet)
     {
         Renderer::DrawQuad(
-                ParentObject->Transform->GetTransformationMatrix(),
+                ParentEntity->Transform->GetTransformationMatrix(),
                 _image->TextureID,
                 _image->GetTexCoord(CurrentImageTileIndex));
     }
     else
     {
-        Renderer::DrawQuad(ParentObject->Transform->GetTransformationMatrix(), _image->TextureID);
+        Renderer::DrawQuad(ParentEntity->Transform->GetTransformationMatrix(), _image->TextureID);
     }
 }
 
@@ -39,5 +39,5 @@ glm::vec2 SpriteRenderer::GetWorldSize()
         return glm::vec2(0, 0);
 
     // TODO: use sprite size
-    return ParentObject->Transform->GetScale();
+    return ParentEntity->Transform->GetScale();
 }

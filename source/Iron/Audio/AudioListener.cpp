@@ -1,14 +1,14 @@
 #include "AudioListener.h"
-#include "../Scene/Object.h"
+#include "../Scene/Entity.h"
 #include "AudioSystem.h"
 
 void AudioListener::OnUpdate()
 {
-    if (ParentObject->IsDestroyed())
+    if (ParentEntity->IsDestroyed())
         return;
 
-    if (ParentObject->Transform->IsTransformationDirty())
-        AudioSystem::SetListenerPosition(ParentObject->Transform->GetPosition());
+    if (ParentEntity->Transform->IsTransformationDirty())
+        AudioSystem::SetListenerPosition(ParentEntity->Transform->GetPosition());
 }
 
 void AudioListener::SetVolume(float volume)

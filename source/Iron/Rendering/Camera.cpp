@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "../Scene/Object.h"
+#include "../Scene/Entity.h"
 
 void Camera::SetWidth(float width)
 {
@@ -49,7 +49,7 @@ glm::mat4 Camera::GetViewProjection()
     {
         SetCameraDirty(false);
         glm::mat4 projection = glm::ortho(-_width / 2, _width / 2, -_height / 2, _height / 2, 0.1f, _depth);
-        glm::mat4 view = this->ParentObject->Transform->GetTransformationMatrix();
+        glm::mat4 view = this->ParentEntity->Transform->GetTransformationMatrix();
         view = glm::inverse(view);
 
         viewProjection = projection * view;

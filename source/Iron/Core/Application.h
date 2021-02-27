@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Scene/Object.h"
+#include "../Scene/Entity.h"
 #include "../Scene/Scene.h"
 #include "ResourcesManager.h"
 #include "../Rendering/Screen.h"
@@ -16,7 +16,7 @@ namespace ApplicationStates
         OnPhysicsUpdate,
         OnLateUpdate,
         OnRender,
-        CleaningDestroyedObjects,
+        CleaningDestroyedEntities,
     };
 }
 

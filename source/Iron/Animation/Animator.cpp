@@ -44,10 +44,10 @@ void Animator::Restart()
     Play();
 }
 
-void ApplyFrame(Object* object, Keyframe keyframe)
+void ApplyFrame(Entity* entity, Keyframe keyframe)
 {
     // TODO: cache component
-    auto sr = object->GetComponent<SpriteRenderer>();
+    auto sr = entity->GetComponent<SpriteRenderer>();
     if (sr->GetImage()->ID != keyframe.SpriteID)
     {
         if (keyframe.SpriteID == -1)
@@ -77,7 +77,7 @@ void Animator::OnUpdate()
                 if (animationTime >= Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i] + 1].Time)
                 {
                     currentCurveFrame[i]++;
-                    ApplyFrame(ParentObject, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
+                    ApplyFrame(ParentEntity, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
         }
@@ -88,7 +88,7 @@ void Animator::OnUpdate()
                 if (animationTime <= Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i] - 1].Time)
                 {
                     currentCurveFrame[i]--;
-                    ApplyFrame(ParentObject, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
+                    ApplyFrame(ParentEntity, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
         }
@@ -103,7 +103,7 @@ void Animator::OnUpdate()
             for (int i = 0; i < Animations[currentAnimation]->Curves.size(); ++i)
             {
                 currentCurveFrame[i] = Speed < 0 ? Animations[currentAnimation]->Curves[i].Keyframes.size() : 0;
-                ApplyFrame(ParentObject, Animations[currentAnimation]->Curves[i].Keyframes[0]);
+                ApplyFrame(ParentEntity, Animations[currentAnimation]->Curves[i].Keyframes[0]);
             }
         }
         else

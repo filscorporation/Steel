@@ -1,7 +1,7 @@
 #include <box2d/box2d.h>
 #include "PhysicsCore.h"
 #include "RigidBody.h"
-#include "../Scene/Object.h"
+#include "../Scene/Entity.h"
 #include "BoxCollider.h"
 #include "PhysicsInfo.h"
 
@@ -18,7 +18,7 @@ RigidBody::~RigidBody()
 void RigidBody::SetDynamic()
 {
     b2BodyDef groundBodyDef;
-    glm::vec3 position = ParentObject->Transform->GetPosition();
+    glm::vec3 position = ParentEntity->Transform->GetPosition();
     groundBodyDef.type = b2_dynamicBody;
     groundBodyDef.position.Set(position.x, position.y);
 
@@ -30,7 +30,7 @@ void RigidBody::SetDynamic()
 void RigidBody::SetStatic()
 {
     b2BodyDef groundBodyDef;
-    glm::vec3 position = ParentObject->Transform->GetPosition();
+    glm::vec3 position = ParentEntity->Transform->GetPosition();
     groundBodyDef.type = b2_staticBody;
     groundBodyDef.position.Set(position.x, position.y);
 
@@ -46,7 +46,7 @@ void RigidBody::SetKinematic()
 
 void RigidBody::SetAutoFixture()
 {
-    auto bc = ParentObject->GetComponent<BoxCollider>();
+    auto bc = ParentEntity->GetComponent<BoxCollider>();
     if (bc != nullptr)
     {
         b2FixtureDef fixtureDef;
@@ -65,9 +65,9 @@ void RigidBody::SetPhysicsTransformation()
 void RigidBody::GetPhysicsTransformation()
 {
     // TODO: chick body type
-    float z = ParentObject->Transform->GetPosition().z;
+    float z = ParentEntity->Transform->GetPosition().z;
     auto position = info->Body->GetPosition();
     float rotation = info->Body->GetAngle();
-    ParentObject->Transform->SetPosition(glm::vec3(position.x, position.y, z));
-    ParentObject->Transform->SetRotation(glm::vec3(0, 0, rotation));
+    ParentEntity->Transform->SetPosition(glm::vec3(position.x, position.y, z));
+    ParentEntity->Transform->SetRotation(glm::vec3(0, 0, rotation));
 }

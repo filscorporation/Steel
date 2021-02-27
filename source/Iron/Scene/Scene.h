@@ -1,22 +1,24 @@
 #pragma once
 
 #include <vector>
-#include "Object.h"
+#include "Entity.h"
 
 class Scene
 {
 public:
-    std::vector<Object*> Objects;
+    std::vector<Entity*> Entities; // TODO: private
     Camera* MainCamera;
 
     Scene();
-    Object* CreateObject();
-    void DestroyObject(Object* object);
-    void CleanDestroyedObjects();
-    void CleanAllObjects();
+    Entity* CreateEntity();
+    Entity* GetEntity(uint64_t entityID);
+    void DestroyEntity(Entity* entity);
+    void CleanDestroyedEntities();
+    void CleanAllEntities();
 
 private:
-    std::vector<Object*> objectsToDelete;
-    void DestroyAndRemoveObject(Object* object);
-    static void DestroyObjectInner(Object* object);
+    std::unordered_map<uint64_t, Entity*> entitiesByIDMap;
+    std::vector<Entity*> entitiesToDelete;
+    void DestroyAndRemoveEntity(Entity* entity);
+    static void DestroyEntityInner(Entity* entity);
 };
