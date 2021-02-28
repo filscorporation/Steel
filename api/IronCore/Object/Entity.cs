@@ -8,12 +8,20 @@ namespace Iron
     public class Entity
     {
         public ulong ID { get; private set; }
-        private Dictionary<ulong, ScriptComponent> unmanagedComponentsCache = new Dictionary<ulong, ScriptComponent>();
+        private readonly Dictionary<ulong, ScriptComponent> unmanagedComponentsCache = new Dictionary<ulong, ScriptComponent>();
+
+        public string Name
+        {
+            get => GetName_Internal(ID);
+            set => SetName_Internal(ID, value);
+        }
         
         public Entity()
         {
             ID = CreateNewEntity_Internal();
         }
+
+        public Transformation Transformation => GetComponent<Transformation>();
         
         public T AddComponent<T>() where T : Component, new()
         {
@@ -38,7 +46,10 @@ namespace Iron
             }
             
             component.Entity = this;
-            
+
+            // TODO: maybe it should be done from engine, but then it is important so take calls ordering in consideration
+            component.OnCreate();
+
             return component;
         }
 
@@ -108,5 +119,11 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ulong RemoveScriptComponent_Internal(ulong entityID, Type type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetName_Internal(ulong entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetName_Internal(ulong entityID, string name);
     }
 }

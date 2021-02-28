@@ -11,6 +11,16 @@ void Log::LogInfo(const std::string& message)
     std::cout << message << std::endl;
 }
 
+void Log::LogWarning(const char* message)
+{
+    std::cout << "WARNING: " << message << std::endl;
+}
+
+void Log::LogWarning(const std::string& message)
+{
+    std::cout << "WARNING: " << message << std::endl;
+}
+
 void Log::LogError(const char* message)
 {
     std::cout << "ERROR: " << message << std::endl;
@@ -18,5 +28,5 @@ void Log::LogError(const char* message)
 
 void Log::LogError(const std::string& message)
 {
-    std::cout << message << std::endl;
+    std::cout << "ERROR: " << message << std::endl;
 }

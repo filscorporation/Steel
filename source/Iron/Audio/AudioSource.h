@@ -3,7 +3,7 @@
 #include "../Scene/Component.h"
 #include "AudioTrack.h"
 
-class AudioSource : Component
+class AudioSource : public Component
 {
 public:
     AudioSource();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "ScriptingCore.h"
 
 namespace InternalCalls
 {
@@ -8,12 +9,22 @@ namespace InternalCalls
     void Application_Quit();
     bool Input_IsKeyPressed(int code);
 
-    //Object
-    uint64_t Entity_CreateNewEntity();
-    uint64_t Entity_AddComponent(uint64_t id, void* type);
-    uint64_t Entity_AddScriptComponent(uint64_t id, void* type, int64_t scriptPointer);
-    uint64_t Entity_GetComponent(uint64_t id, void* type);
-    uint64_t Entity_GetScriptComponent(uint64_t id, void* type);
-    uint64_t Entity_RemoveComponent(uint64_t id, void* type);
-    uint64_t Entity_RemoveScriptComponent(uint64_t id, void* type);
+    // Resources Manager
+    uint64_t ResourcesManager_LoadImage(MonoString* path);
+    void Sprite_SetAsSpriteSheet(uint64_t spriteID, int tileWidth, int tileHeight);
+    int Sprite_GetWidth(uint64_t spriteID);
+    int Sprite_GetHeight(uint64_t spriteID);
+    uint64_t Animation_FromSpriteSheet(uint64_t spriteID, float length);
+    bool Animation_GetLoop(uint64_t animationID);
+    void Animation_SetLoop(uint64_t animationID, bool loop);
+
+    // Time
+    float Time_GetDeltaTime();
+    float Time_GetTimeScale();
+    void Time_SetTimeScale(float timeScale);
+
+    // Log
+    void Log_LogInfo(MonoString* message);
+    void Log_LogWarning(MonoString* message);
+    void Log_LogError(MonoString* message);
 }

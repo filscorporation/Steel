@@ -46,6 +46,11 @@ void Entity::OnUpdate()
 
 }
 
+void Entity::OnFixedUpdate()
+{
+
+}
+
 void Entity::OnLateUpdate()
 {
     if (destroyDelayed)

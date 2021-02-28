@@ -34,7 +34,7 @@ set(SOURCE_FILES
         source/Iron/Scripting/ScriptingSystem.h source/Iron/Scripting/InternalCalls.h
         source/Iron/Scripting/InternalCalls.cpp source/Iron/Math/Random.cpp source/Iron/Math/Random.h
         source/Iron/Scripting/ScriptComponent.cpp source/Iron/Scripting/ScriptComponent.h
-        source/Iron/Scripting/ScriptingCore.cpp source/Iron/Scripting/ScriptingCore.h)
+        source/Iron/Scripting/ScriptingCore.cpp source/Iron/Scripting/ScriptingCore.h source/Iron/Scripting/EntityInternalCalls.cpp source/Iron/Scripting/EntityInternalCalls.h source/Iron/Scripting/ComponentsInternalCalls.cpp source/Iron/Scripting/ComponentsInternalCalls.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

@@ -4,6 +4,9 @@
 
 void Animator::Init()
 {
+    if (Animations.empty())
+        return;
+
     currentCurveFrame.resize(Animations[currentAnimation]->Curves.size());
     fill(currentCurveFrame.begin(), currentCurveFrame.end(), 0);
     initialized = true;
@@ -48,7 +51,7 @@ void ApplyFrame(Entity* entity, Keyframe keyframe)
 {
     // TODO: cache component
     auto sr = entity->GetComponent<SpriteRenderer>();
-    if (sr->GetImage()->ID != keyframe.SpriteID)
+    if (sr->GetImage() == nullptr && keyframe.SpriteID != -1 || sr->GetImage()->ID != keyframe.SpriteID)
     {
         if (keyframe.SpriteID == -1)
             sr->SetImage(nullptr);
@@ -62,6 +65,9 @@ void ApplyFrame(Entity* entity, Keyframe keyframe)
 void Animator::OnUpdate()
 {
     if (!IsPlaying)
+        return;
+
+    if (Animations.empty() || Animations[currentAnimation] == nullptr)
         return;
 
     float animationTime = NormalizedTime * Animations[currentAnimation]->Length();

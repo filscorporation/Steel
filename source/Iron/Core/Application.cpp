@@ -91,7 +91,19 @@ void Application::Run()
                     Log::LogError("Error in physics update: " + std::string(ex.what()));
                 }
             }
-            entity->OnLateUpdate();
+
+            for (auto &component : entity->Components())
+            {
+                try
+                {
+                    component->OnFixedUpdate();
+                }
+                catch (const std::exception& ex)
+                {
+                    Log::LogError("Error in physics update: " + std::string(ex.what()));
+                }
+            }
+            entity->OnFixedUpdate();
         }
 
         state = ApplicationStates::OnLateUpdate;

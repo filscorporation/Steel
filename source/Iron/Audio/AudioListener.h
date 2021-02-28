@@ -2,7 +2,7 @@
 
 #include "../Scene/Component.h"
 
-class AudioListener : Component
+class AudioListener : public Component
 {
 public:
     void OnUpdate() override;

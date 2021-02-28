@@ -12,6 +12,12 @@ void ScriptComponent::Init(const char* fullName, int64_t scriptPointer)
     _scriptPointer = scriptPointer;
 }
 
+void ScriptComponent::OnCreate()
+{
+    // Called from scripting api
+    //ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCallsMethods.callOnCreate);
+}
+
 void ScriptComponent::OnUpdate()
 {
     ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCallsMethods.callOnUpdate);
@@ -22,4 +28,7 @@ void ScriptComponent::OnLateUpdate()
     ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCallsMethods.callOnLateUpdate);
 }
 
-// TODO: other event methods
+void ScriptComponent::OnFixedUpdate()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCallsMethods.callOnFixedUpdate);
+}

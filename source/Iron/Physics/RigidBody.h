@@ -2,7 +2,7 @@
 
 #include "../Scene/Component.h"
 
-class RigidBody : Component
+class RigidBody : public Component
 {
     // TODO: change to physics core
     friend class Application;

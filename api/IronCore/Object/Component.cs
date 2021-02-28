@@ -4,6 +4,8 @@
     {
         public ulong ID { get; set; }
         public Entity Entity { get; set; }
+        
+        public Transformation Transformation => GetComponent<Transformation>();
 
         public bool HasComponent<T>() where T : Component, new()
         {

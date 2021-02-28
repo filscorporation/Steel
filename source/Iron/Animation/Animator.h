@@ -4,7 +4,7 @@
 #include "Animation.h"
 #include "../Scene/Component.h"
 
-class Animator : Component
+class Animator : public Component
 {
 public:
     void Play();

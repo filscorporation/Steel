@@ -9,8 +9,10 @@ class ScriptComponent : public Component
 public:
     void Init(const char* fullName, int64_t scriptPointer);
 
+    void OnCreate() override;
     void OnUpdate() override;
     void OnLateUpdate() override;
+    void OnFixedUpdate() override;
 
 private:
     ScriptMethods* methods;

@@ -11,16 +11,16 @@ public:
     ~ResourcesManager();
 
     Sprite* LoadImage(const char* filePath);
-    Sprite* GetImage(unsigned int imageID);
-    void UnloadImage(unsigned int imageID);
+    Sprite* GetImage(uint64_t imageID);
+    void UnloadImage(uint64_t imageID);
 
     AudioTrack* LoadAudioTrack(const char* filePath);
-    AudioTrack* GetAudioTrack(unsigned int audioID);
-    void UnloadAudioTrack(unsigned int audioID);
+    AudioTrack* GetAudioTrack(uint64_t audioID);
+    void UnloadAudioTrack(uint64_t audioID);
 
     void AddAnimation(Animation* animation);
-    Animation* GetAnimation(unsigned int animationID);
-    void RemoveAnimation(unsigned int animationID);
+    Animation* GetAnimation(uint64_t animationID);
+    void RemoveAnimation(uint64_t animationID);
 
 private:
     std::vector<Sprite*> images;

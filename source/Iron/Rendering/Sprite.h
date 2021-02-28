@@ -1,11 +1,12 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 
 struct Sprite
 {
 public:
-    unsigned int ID;
+    uint64_t ID;
     const char* Path;
     unsigned int TextureID;
     int Width;

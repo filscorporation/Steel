@@ -1,9 +1,7 @@
 #include "InternalCalls.h"
 #include "../Core/Application.h"
-#include "ScriptComponent.h"
 #include "../Core/Log.h"
-
-#include <mono/jit/jit.h>
+#include "../Core/Time.h"
 
 void InternalCalls::Application_Quit()
 {
@@ -15,107 +13,96 @@ bool InternalCalls::Input_IsKeyPressed(int code)
     return Input::IsKeyPressed((KeyCodes::KeyCode)code);
 }
 
-uint64_t InternalCalls::Entity_CreateNewEntity()
+uint64_t InternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {
-    return Application::Instance->GetCurrentScene()->CreateEntity()->ID;
+    auto image = Application::Instance->GetResourcesManager()->LoadImage(mono_string_to_utf8(path));
+    return image == nullptr ? 0 : image->ID;
 }
 
-uint64_t InternalCalls::Entity_AddComponent(uint64_t id, void* type)
+void InternalCalls::Sprite_SetAsSpriteSheet(uint64_t spriteID, int tileWidth, int tileHeight)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    if (image != nullptr)
+        image->SetAsSpriteSheet(tileWidth, tileHeight);
+}
+
+int InternalCalls::Sprite_GetWidth(uint64_t spriteID)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    return image == nullptr ? 0 : image->Width;
+}
+
+int InternalCalls::Sprite_GetHeight(uint64_t spriteID)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    return image == nullptr ? 0 : image->Height;
+}
+
+uint64_t InternalCalls::Animation_FromSpriteSheet(uint64_t spriteID, float length)
+{
+    auto sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    if (sprite == nullptr)
     {
-        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        Log::LogError("Sprite does not exist");
         return 0;
     }
 
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
+    auto animation = new Animation(sprite, length);
+    Application::Instance->GetResourcesManager()->AddAnimation(animation);
+
+    return animation->ID;
+}
+
+bool InternalCalls::Animation_GetLoop(uint64_t animationID)
+{
+    auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
+    if (animation == nullptr)
     {
-        Log::LogError("Error getting mono type for entity ID " + std::to_string(id));
-        return 0;
+        Log::LogError("Animation does not exist");
+        return false;
     }
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
-    if (monoClass == nullptr)
+
+    return animation->Loop;
+}
+
+void InternalCalls::Animation_SetLoop(uint64_t animationID, bool loop)
+{
+    auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
+    if (animation == nullptr)
     {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return 0;
+        Log::LogError("Animation does not exist");
+        return;
     }
 
-    // TODO
-    return 0;
+    animation->Loop = loop;
 }
 
-uint64_t InternalCalls::Entity_AddScriptComponent(uint64_t id, void* type, int64_t scriptPointer)
+float InternalCalls::Time_GetDeltaTime()
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
-
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    auto scriptComponent = entity->AddComponent<ScriptComponent>();
-
-    if (scriptComponent == nullptr)
-        return 0;
-
-    scriptComponent->Init(mono_type_get_name(monoType), scriptPointer);
-
-    return scriptComponent->ID;
+    return Time::DeltaTime();
 }
 
-uint64_t InternalCalls::Entity_GetComponent(uint64_t id, void* type)
+float InternalCalls::Time_GetTimeScale()
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
-
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    // TODO
-    return 0;
+    return Time::TimeScale;
 }
 
-uint64_t InternalCalls::Entity_GetScriptComponent(uint64_t id, void* type)
+void InternalCalls::Time_SetTimeScale(float timeScale)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
-
-    //MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    // TODO: won't work for multiple scripts; create map
-
-    auto scriptComponent = entity->GetComponent<ScriptComponent>();
-    if (scriptComponent == nullptr)
-        return 0;
-
-    return scriptComponent->ID;
+    Time::TimeScale = timeScale;
 }
 
-uint64_t InternalCalls::Entity_RemoveComponent(uint64_t id, void* type)
+void InternalCalls::Log_LogInfo(MonoString* message)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
-
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    // TODO
-    return 0;
+    Log::LogInfo(mono_string_to_utf8(message));
 }
 
-uint64_t InternalCalls::Entity_RemoveScriptComponent(uint64_t id, void* type)
+void InternalCalls::Log_LogWarning(MonoString* message)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
+    Log::LogWarning(mono_string_to_utf8(message));
+}
 
-    //MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    // TODO: won't work for multiple scripts; create map
-
-    auto scriptComponent = entity->GetComponent<ScriptComponent>();
-    if (scriptComponent == nullptr)
-        return 0;
-
-    uint64_t componentID = scriptComponent->ID;
-    entity->RemoveComponent<ScriptComponent>();
-
-    return componentID;
+void InternalCalls::Log_LogError(MonoString* message)
+{
+    Log::LogError(mono_string_to_utf8(message));
 }

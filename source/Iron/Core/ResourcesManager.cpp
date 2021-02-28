@@ -55,8 +55,8 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
     glBindTexture(GL_TEXTURE_2D, 0);
 
     auto image = new Sprite();
-    image->ID = images.size();
-    image->TextureID = (unsigned int)texture;
+    image->ID = images.size() + 1;
+    image->TextureID = (uint64_t)texture;
     image->Path = filePath;
     image->Width = w;
     image->Height = h;
@@ -68,18 +68,18 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
     return image;
 }
 
-Sprite* ResourcesManager::GetImage(unsigned int imageID)
+Sprite* ResourcesManager::GetImage(uint64_t imageID)
 {
-    if (imageID > images.size() || images[imageID] == nullptr)
+    if (imageID - 1 > images.size() || images[imageID - 1] == nullptr)
     {
         Log::LogError("Sprite does not exist");
         return nullptr;
     }
 
-    return images[imageID];
+    return images[imageID - 1];
 }
 
-void ResourcesManager::UnloadImage(unsigned int imageID)
+void ResourcesManager::UnloadImage(uint64_t imageID)
 {
     auto sprite = GetImage(imageID);
     if (sprite == nullptr)
@@ -87,7 +87,7 @@ void ResourcesManager::UnloadImage(unsigned int imageID)
 
     glDeleteTextures(1, &sprite->TextureID);
     //images.erase(images.begin() + imageID);
-    images[imageID] = nullptr;
+    images[imageID - 1] = nullptr;
     delete sprite;
 }
 
@@ -132,7 +132,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char *filePath)
     if (audioTrack == nullptr)
         return nullptr;
 
-    audioTrack->ID = audioTracks.size();
+    audioTrack->ID = audioTracks.size() + 1;
 
     alGenBuffers((ALuint)1, &audioBuffer);
     if (AudioSystem::CheckForErrors())
@@ -158,18 +158,18 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char *filePath)
     return audioTrack;
 }
 
-AudioTrack *ResourcesManager::GetAudioTrack(unsigned int audioID)
+AudioTrack *ResourcesManager::GetAudioTrack(uint64_t audioID)
 {
-    if (audioID > images.size() || images[audioID] == nullptr)
+    if (audioID - 1 > images.size() || images[audioID - 1] == nullptr)
     {
         Log::LogError("Audio track does not exist");
         return nullptr;
     }
 
-    return audioTracks[audioID];
+    return audioTracks[audioID - 1];
 }
 
-void ResourcesManager::UnloadAudioTrack(unsigned int audioID)
+void ResourcesManager::UnloadAudioTrack(uint64_t audioID)
 {
     auto audioTrack = GetAudioTrack(audioID);
     if (audioTrack == nullptr)
@@ -177,35 +177,35 @@ void ResourcesManager::UnloadAudioTrack(unsigned int audioID)
 
     alDeleteBuffers(1, &audioTrack->BufferID);
     //audioTracks.erase(audioTracks.begin() + audioID);
-    audioTracks[audioID] = nullptr;
+    audioTracks[audioID - 1] = nullptr;
     delete audioTrack;
 
 }
 
 void ResourcesManager::AddAnimation(Animation *animation)
 {
-    animation->ID = animations.size();
+    animation->ID = animations.size() + 1;
     animations.push_back(animation);
 }
 
-Animation *ResourcesManager::GetAnimation(unsigned int animationID)
+Animation *ResourcesManager::GetAnimation(uint64_t animationID)
 {
-    if (animationID > animations.size() || animations[animationID] == nullptr)
+    if (animationID - 1 > animations.size() || animations[animationID - 1] == nullptr)
     {
         Log::LogError("Animation does not exist");
         return nullptr;
     }
 
-    return animations[animationID];
+    return animations[animationID - 1];
 }
 
-void ResourcesManager::RemoveAnimation(unsigned int animationID)
+void ResourcesManager::RemoveAnimation(uint64_t animationID)
 {
     auto animation = GetAnimation(animationID);
     if (animation == nullptr)
         return;
 
     //animations.erase(animations.begin() + animationID);
-    animations[animationID] = nullptr;
+    animations[animationID - 1] = nullptr;
     delete animation;
 }

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Iron
 {
-    public static class EngineCalls
+    public static class ComponentEngineCalls
     {
         private static void ComponentOnCreate(IntPtr componentPtr)
         {
