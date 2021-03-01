@@ -1,4 +1,4 @@
-﻿namespace Iron.Math
+﻿namespace Iron
 {
     public struct Vector3
     {
@@ -54,6 +54,11 @@
                 return Math.Approximately(X, vec.X) && Math.Approximately(Y, vec.Y) && Math.Approximately(Z, vec.Z);
             
             return base.Equals(obj);
+        }
+        
+        public static implicit operator Vector3(Vector2 vector2)
+        {
+            return new Vector3(vector2.X, vector2.Y);
         }
 
         public override int GetHashCode()

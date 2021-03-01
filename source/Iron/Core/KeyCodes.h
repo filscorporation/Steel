@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAX_KEY_CODE 348
+
 namespace KeyCodes
 {
     //From glfw

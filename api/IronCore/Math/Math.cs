@@ -1,4 +1,4 @@
-﻿namespace Iron.Math
+﻿namespace Iron
 {
     public static class Math
     {

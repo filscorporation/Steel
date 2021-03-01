@@ -10,7 +10,16 @@ namespace InternalCalls
     int Application_GetState();
     MonoString* Application_RuntimePath();
     MonoString* Application_DataPath();
+
+    // Input
     bool Input_IsKeyPressed(int code);
+    glm::vec2 Input_GetMousePosition();
+    glm::vec2 Input_GetMouseScrollDelta();
+    bool Input_IsKeyJustPressed(int code);
+    bool Input_IsKeyJustReleased(int code);
+    bool Input_IsMousePressed(int code);
+    bool Input_IsMouseJustPressed(int code);
+    bool Input_IsMouseJustReleased(int code);
 
     // Resources Manager
     uint64_t ResourcesManager_LoadImage(MonoString* path);

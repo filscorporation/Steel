@@ -9,13 +9,21 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Application::GetState_Internal", (void*)InternalCalls::Application_GetState);
     mono_add_internal_call("Iron.Application::GetRuntimePath_Internal", (void*)InternalCalls::Application_RuntimePath);
     mono_add_internal_call("Iron.Application::GetDataPath_Internal", (void*)InternalCalls::Application_DataPath);
-    mono_add_internal_call("Iron.Input::IsKeyPressed_Internal", (void*)InternalCalls::Input_IsKeyPressed);
     mono_add_internal_call("Iron.Log::LogInfo_Internal", (void*)InternalCalls::Log_LogInfo);
     mono_add_internal_call("Iron.Log::LogWarning_Internal", (void*)InternalCalls::Log_LogWarning);
     mono_add_internal_call("Iron.Log::LogError_Internal", (void*)InternalCalls::Log_LogError);
     mono_add_internal_call("Iron.Time::GetDeltaTime_Internal", (void*)InternalCalls::Time_GetDeltaTime);
     mono_add_internal_call("Iron.Time::GetTimeScale_Internal", (void*)InternalCalls::Time_GetTimeScale);
     mono_add_internal_call("Iron.Time::SetTimeScale_Internal", (void*)InternalCalls::Time_SetTimeScale);
+
+    mono_add_internal_call("Iron.Input::GetMousePosition_Internal", (void*)InternalCalls::Input_GetMousePosition);
+    mono_add_internal_call("Iron.Input::GetMouseScrollDelta_Internal", (void*)InternalCalls::Input_GetMouseScrollDelta);
+    mono_add_internal_call("Iron.Input::IsKeyPressed_Internal", (void*)InternalCalls::Input_IsKeyPressed);
+    mono_add_internal_call("Iron.Input::IsKeyJustPressed_Internal", (void*)InternalCalls::Input_IsKeyJustPressed);
+    mono_add_internal_call("Iron.Input::IsKeyJustReleased_Internal", (void*)InternalCalls::Input_IsKeyJustReleased);
+    mono_add_internal_call("Iron.Input::IsMousePressed_Internal", (void*)InternalCalls::Input_IsMousePressed);
+    mono_add_internal_call("Iron.Input::IsMouseJustPressed_Internal", (void*)InternalCalls::Input_IsMouseJustPressed);
+    mono_add_internal_call("Iron.Input::IsMouseJustReleased_Internal", (void*)InternalCalls::Input_IsMouseJustReleased);
 
     mono_add_internal_call("Iron.Screen::GetWidth_Internal", (void*)InternalCalls::Screen_GetWidth);
     mono_add_internal_call("Iron.Screen::SetWidth_Internal", (void*)InternalCalls::Screen_SetWidth);

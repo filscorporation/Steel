@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Iron.Math;
 
 namespace Iron
 {

@@ -23,10 +23,46 @@ MonoString* InternalCalls::Application_DataPath()
     return mono_string_new(mono_domain_get(), Application::Instance->GetDataPath().c_str());
 }
 
+glm::vec2 InternalCalls::Input_GetMousePosition()
+{
+    return Input::GetMousePosition();
+}
+
+glm::vec2 InternalCalls::Input_GetMouseScrollDelta()
+{
+    return Input::GetMouseScrollDelta();
+}
+
 bool InternalCalls::Input_IsKeyPressed(int code)
 {
     return Input::IsKeyPressed((KeyCodes::KeyCode)code);
 }
+
+bool InternalCalls::Input_IsKeyJustPressed(int code)
+{
+    return Input::IsKeyJustPressed((KeyCodes::KeyCode)code);
+}
+
+bool InternalCalls::Input_IsKeyJustReleased(int code)
+{
+    return Input::IsKeyJustReleased((KeyCodes::KeyCode)code);
+}
+
+bool InternalCalls::Input_IsMousePressed(int code)
+{
+    return Input::IsMouseButtonPressed((MouseCodes::MouseCode)code);
+}
+
+bool InternalCalls::Input_IsMouseJustPressed(int code)
+{
+    return Input::IsMouseButtonJustPressed((MouseCodes::MouseCode)code);
+}
+
+bool InternalCalls::Input_IsMouseJustReleased(int code)
+{
+    return Input::IsMouseButtonJustReleased((MouseCodes::MouseCode)code);
+}
+
 
 uint64_t InternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {

@@ -1,10 +1,6 @@
-#pragma once
-
-#define MAX_MOUSE_CODE 7
-
-namespace MouseCodes
+﻿namespace Iron
 {
-    enum MouseCode
+    public enum MouseCodes
     {
         Button1 = 0,
         Button2 = 1,
@@ -17,5 +13,5 @@ namespace MouseCodes
         ButtonLeft = Button1,
         ButtonRight = Button2,
         ButtonMiddle = Button3,
-    };
+    }
 }
