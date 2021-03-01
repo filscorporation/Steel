@@ -8,6 +8,21 @@ void InternalCalls::Application_Quit()
     Application::Instance->Quit();
 }
 
+int InternalCalls::Application_GetState()
+{
+    return Application::Instance->State();
+}
+
+MonoString* InternalCalls::Application_RuntimePath()
+{
+    return mono_string_new(mono_domain_get(), Application::Instance->GetRuntimePath().c_str());
+}
+
+MonoString* InternalCalls::Application_DataPath()
+{
+    return mono_string_new(mono_domain_get(), Application::Instance->GetDataPath().c_str());
+}
+
 bool InternalCalls::Input_IsKeyPressed(int code)
 {
     return Input::IsKeyPressed((KeyCodes::KeyCode)code);
@@ -90,6 +105,46 @@ float InternalCalls::Time_GetTimeScale()
 void InternalCalls::Time_SetTimeScale(float timeScale)
 {
     Time::TimeScale = timeScale;
+}
+
+int InternalCalls::Screen_GetWidth()
+{
+    return Screen::GetWidth();
+}
+
+void InternalCalls::Screen_SetWidth(int width)
+{
+    Screen::SetWidth(width);
+}
+
+int InternalCalls::Screen_GetHeight()
+{
+    return Screen::GetHeight();
+}
+
+void InternalCalls::Screen_SetHeight(int height)
+{
+    Screen::SetHeight(height);
+}
+
+bool InternalCalls::Screen_GetFullscreen()
+{
+    return Screen::GetFullscreen();
+}
+
+void InternalCalls::Screen_SetFullscreen(bool fullscreen)
+{
+    Screen::SetFullscreen(fullscreen);
+}
+
+glm::vec4 InternalCalls::Screen_GetColor()
+{
+    return glm::vec4(Screen::GetColor(), 1.0f);
+}
+
+void InternalCalls::Screen_SetColor(glm::vec4 color)
+{
+    Screen::SetColor(color);
 }
 
 void InternalCalls::Log_LogInfo(MonoString* message)

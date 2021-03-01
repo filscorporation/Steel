@@ -7,6 +7,9 @@ namespace InternalCalls
 {
     // Core
     void Application_Quit();
+    int Application_GetState();
+    MonoString* Application_RuntimePath();
+    MonoString* Application_DataPath();
     bool Input_IsKeyPressed(int code);
 
     // Resources Manager
@@ -22,6 +25,16 @@ namespace InternalCalls
     float Time_GetDeltaTime();
     float Time_GetTimeScale();
     void Time_SetTimeScale(float timeScale);
+
+    // Screen
+    int Screen_GetWidth();
+    void Screen_SetWidth(int width);
+    int Screen_GetHeight();
+    void Screen_SetHeight(int height);
+    bool Screen_GetFullscreen();
+    void Screen_SetFullscreen(bool fullscreen);
+    glm::vec4 Screen_GetColor();
+    void Screen_SetColor(glm::vec4 color);
 
     // Log
     void Log_LogInfo(MonoString* message);

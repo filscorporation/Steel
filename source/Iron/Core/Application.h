@@ -12,6 +12,8 @@ namespace ApplicationStates
     enum ApplicationState
     {
         Initializing,
+        EntryPoint,
+        PollEvents,
         OnUpdate,
         OnPhysicsUpdate,
         OnLateUpdate,
@@ -35,16 +37,22 @@ public:
 
     Application(ApplicationSettings settings);
     void Run();
+    void RunUpdate();
     void Quit();
     ApplicationStates::ApplicationState State();
     ResourcesManager* GetResourcesManager();
     Scene* GetCurrentScene();
+    std::string GetRuntimePath();
+    std::string GetDataPath();
 
 private:
     bool isRunning;
     ApplicationStates::ApplicationState state;
     ResourcesManager* resources;
     Scene* scene;
+
+    float fpsTimer = 0;
+    int fpsCounter = 0;
 
     void Init(ApplicationSettings settings);
     void Terminate();

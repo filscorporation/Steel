@@ -41,6 +41,7 @@
         <Compile Include="Animation\Animation.cs" />
         <Compile Include="Animation\Animator.cs" />
         <Compile Include="Core\Application.cs" />
+        <Compile Include="Core\ApplicationState.cs" />
         <Compile Include="Core\Input.cs" />
         <Compile Include="Core\KeyCodes.cs" />
         <Compile Include="Core\Log.cs" />
@@ -55,6 +56,8 @@
         <Compile Include="Object\ComponentEngineCalls.cs" />
         <Compile Include="Object\Entity.cs" />
         <Compile Include="Object\ScriptComponent.cs" />
+        <Compile Include="Rendering\Color.cs" />
+        <Compile Include="Rendering\Screen.cs" />
         <Compile Include="Rendering\Sprite.cs" />
         <Compile Include="Rendering\SpriteRenderer.cs" />
     </ItemGroup>

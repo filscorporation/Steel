@@ -1,6 +1,5 @@
 #include "EntityInternalCalls.h"
 #include "ScriptComponent.h"
-#include "ScriptingCore.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 
@@ -149,7 +148,7 @@ MonoString* EntityInternalCalls::Entity_GetName(uint64_t id)
     if (entity == nullptr)
         return nullptr;
 
-    return mono_string_new_wrapper(entity->Name);
+    return mono_string_new(mono_domain_get(), entity->Name);
 }
 
 void EntityInternalCalls::Entity_SetName(uint64_t id, MonoString* name)
