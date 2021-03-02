@@ -13,8 +13,8 @@ namespace InternalCalls
 
     // Input
     bool Input_IsKeyPressed(int code);
-    glm::vec2 Input_GetMousePosition();
-    glm::vec2 Input_GetMouseScrollDelta();
+    void Input_GetMousePosition(glm::vec2* position);
+    void Input_GetMouseScrollDelta(glm::vec2* delta);
     bool Input_IsKeyJustPressed(int code);
     bool Input_IsKeyJustReleased(int code);
     bool Input_IsMousePressed(int code);

@@ -4,8 +4,22 @@ namespace Iron
 {
     public class Input
     {
-        public static Vector2 MousePosition => GetMousePosition_Internal();
-        public static Vector2 MouseScrollDelta => GetMouseScrollDelta_Internal();
+        public static Vector2 MousePosition
+        {
+            get
+            {
+                GetMousePosition_Internal(out Vector2 position);
+                return position;
+            }
+        }
+        public static Vector2 MouseScrollDelta
+        {
+            get
+            {
+                GetMouseScrollDelta_Internal(out Vector2 delta);
+                return delta;
+            }
+        }
         
         public static bool IsKeyPressed(KeyCode code)
         {
@@ -38,10 +52,10 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 GetMousePosition_Internal();
+        private static extern void GetMousePosition_Internal(out Vector2 position);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 GetMouseScrollDelta_Internal();
+        private static extern void GetMouseScrollDelta_Internal(out Vector2 delta);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool IsKeyPressed_Internal(int code);

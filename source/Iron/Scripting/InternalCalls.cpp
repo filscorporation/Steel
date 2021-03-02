@@ -23,14 +23,18 @@ MonoString* InternalCalls::Application_DataPath()
     return mono_string_new(mono_domain_get(), Application::Instance->GetDataPath().c_str());
 }
 
-glm::vec2 InternalCalls::Input_GetMousePosition()
+void InternalCalls::Input_GetMousePosition(glm::vec2* position)
 {
-    return Input::GetMousePosition();
+    auto temp = Input::GetMousePosition();
+    position->x = temp.x;
+    position->y = temp.y;
 }
 
-glm::vec2 InternalCalls::Input_GetMouseScrollDelta()
+void InternalCalls::Input_GetMouseScrollDelta(glm::vec2* delta)
 {
-    return Input::GetMouseScrollDelta();
+    auto temp = Input::GetMouseScrollDelta();
+    delta->x = temp.x;
+    delta->y = temp.y;
 }
 
 bool InternalCalls::Input_IsKeyPressed(int code)
