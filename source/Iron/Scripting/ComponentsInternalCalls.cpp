@@ -37,7 +37,7 @@ glm::vec3 ComponentsInternalCalls::Transformation_GetRotation(int64_t entityID)
         return glm::vec3();
     }
 
-    return entity->Transform->GetPosition();
+    return entity->Transform->GetRotation();
 }
 
 void ComponentsInternalCalls::Transformation_SetRotation(int64_t entityID, glm::vec3 rotation)
@@ -61,7 +61,7 @@ glm::vec3 ComponentsInternalCalls::Transformation_GetScale(int64_t entityID)
         return glm::vec3();
     }
 
-    return entity->Transform->GetPosition();
+    return entity->Transform->GetScale();
 }
 
 void ComponentsInternalCalls::Transformation_SetScale(int64_t entityID, glm::vec3 scale)
