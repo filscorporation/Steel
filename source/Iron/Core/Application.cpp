@@ -1,8 +1,12 @@
 #include <iostream>
 #include <GLAD/glad.h>
-// For windows path
-// TODO: make if for linux #include <limits.h> #include <unistd.h>
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
+#endif
+#ifdef __unix__
+#include <climits>
+#include <unistd.h>
+#endif
 
 #include "Application.h"
 #include "Log.h"
@@ -28,7 +32,10 @@ void Application::Init(ApplicationSettings settings)
 
     Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen);
 
-    gladLoadGL();
+    if(!gladLoadGL())
+    {
+        Log::LogError("Error loading OpenGL");
+    }
 
     resources = new ResourcesManager();
     scene = new Scene();
@@ -216,16 +223,19 @@ Scene* Application::GetCurrentScene()
 
 std::string Application::GetRuntimePath()
 {
-    // Linux
-    //int bytes = MIN(readlink("/proc/self/exe", pBuf, len), len - 1);
-    //if(bytes >= 0)
-    //    pBuf[bytes] = '\0';
-    //return bytes;
+#ifdef __unix__
+    char arg1[20];
+    char result[PATH_MAX + 1] = {0};
 
-    // Windows
+    sprintf(arg1, "/proc/%d/exe", getpid());
+    readlink(arg1, result, 1024);
+    return std::string(result);
+#endif
+#if defined(_WIN32) || defined(_WIN64)
     char result[MAX_PATH];
     GetModuleFileName(nullptr, result, MAX_PATH);
     return std::string(result);
+#endif
 }
 
 std::string Application::GetDataPath()

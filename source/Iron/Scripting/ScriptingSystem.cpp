@@ -3,11 +3,16 @@
 #include "../Core/Log.h"
 
 // TODO: temp solution for development, later should link to Iron bins folder
-#define DEBUG_API_DLL_PATH "..\\..\\includes\\Iron\\api\\IronCustom\\bin\\Debug\\IronCore.dll"
-#define DEBUG_SCRIPTS_DLL_PATH "..\\..\\includes\\Iron\\api\\IronCustom\\bin\\Debug\\IronCustom.dll"
-
+#if defined(_WIN32) || defined(_WIN64)
 #define DEBUG_MONO_LIB_PATH "C:\\Program Files (x86)\\Mono\\lib"
 #define DEBUG_MONO_ETC_PATH "C:\\Program Files (x86)\\Mono\\etc"
+#endif
+#ifdef __unix__
+#define DEBUG_MONO_LIB_PATH "/usr\\lib"
+#define DEBUG_MONO_ETC_PATH "/usr\\lib\\mono"
+#endif
+#define DEBUG_API_DLL_PATH "..\\..\\includes\\Iron\\api\\IronCustom\\bin\\Debug\\IronCore.dll"
+#define DEBUG_SCRIPTS_DLL_PATH "..\\..\\includes\\Iron\\api\\IronCustom\\bin\\Debug\\IronCustom.dll"
 
 MonoDomain* domain;
 MonoImage* coreAssemblyImage;
@@ -38,7 +43,7 @@ void ScriptingSystem::Init()
     Log::LogInfo("Begin scripting system init");
 
     mono_config_parse(nullptr);
-    mono_set_dirs(DEBUG_MONO_LIB_PATH,DEBUG_MONO_ETC_PATH);
+    mono_set_dirs(DEBUG_MONO_LIB_PATH, DEBUG_MONO_ETC_PATH);
     domain = mono_jit_init("IronDomain");
 
     coreAssemblyImage = LoadAssembly(DEBUG_API_DLL_PATH);

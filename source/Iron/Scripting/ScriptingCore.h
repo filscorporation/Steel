@@ -42,7 +42,7 @@ public:
     static void CallMethod(int64_t scriptID, MonoMethod* method);
     static void FindAndCallEntryPoint(MonoImage* image);
 
-    static EngineCallsMethods EngineCallsMethods;
+    static EngineCallsMethods EngineCalls;
 
 private:
 

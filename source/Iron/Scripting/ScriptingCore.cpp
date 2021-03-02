@@ -11,7 +11,7 @@
 
 #include <mono/metadata/debug-helpers.h>
 
-EngineCallsMethods ScriptingCore::EngineCallsMethods;
+EngineCallsMethods ScriptingCore::EngineCalls;
 CachedData* ScriptingCore::cachedData;
 
 void ScriptingCore::Init(MonoImage* image)
@@ -30,10 +30,10 @@ void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
 {
     MonoClass* klass = mono_class_from_name(image, "Iron", "ComponentEngineCalls");
 
-    EngineCallsMethods.callOnCreate = mono_class_get_method_from_name(klass, "ComponentOnCreate", 1);
-    EngineCallsMethods.callOnUpdate = mono_class_get_method_from_name(klass, "ComponentOnUpdate", 1);
-    EngineCallsMethods.callOnLateUpdate = mono_class_get_method_from_name(klass, "ComponentOnLateUpdate", 1);
-    EngineCallsMethods.callOnFixedUpdate = mono_class_get_method_from_name(klass, "ComponentOnFixedUpdate", 1);
+    EngineCalls.callOnCreate = mono_class_get_method_from_name(klass, "ComponentOnCreate", 1);
+    EngineCalls.callOnUpdate = mono_class_get_method_from_name(klass, "ComponentOnUpdate", 1);
+    EngineCalls.callOnLateUpdate = mono_class_get_method_from_name(klass, "ComponentOnLateUpdate", 1);
+    EngineCalls.callOnFixedUpdate = mono_class_get_method_from_name(klass, "ComponentOnFixedUpdate", 1);
 }
 
 void ScriptingCore::RegisterInternalCalls()

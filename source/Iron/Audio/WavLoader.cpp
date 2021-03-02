@@ -2,6 +2,7 @@
 
 #include "../Core/Log.h"
 #include <fstream>
+#include <cstring>
 
 std::int32_t ConvertToInt(char* buffer, std::size_t len)
 {

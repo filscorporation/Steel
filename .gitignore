@@ -21,6 +21,7 @@ cmake-build-debug/
 *.dll
 !includes/dll/*.dll
 !includes/mono/bin/*.dll
+!includes/mono/lib/*.so
 
 # Fortran module files
 *.mod

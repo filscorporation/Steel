@@ -5,9 +5,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(GLAD_FILES includes/glad/src/glad.c)
 set(INCLUDE_FOLDER "includes")
@@ -87,12 +87,21 @@ target_link_libraries(Iron PRIVATE glm)
 target_include_directories(Iron PRIVATE ${ALSOFT_HEADERS_DIR})
 target_link_libraries(Iron PRIVATE OpenAL)
 
+if (UNIX AND NOT APPLE)
+    set(BOX2D_NAME "libbox2d.a")
+    set(MONO_NAME "libmonosgen-2.0.so")
+endif ()
+if (WIN32)
+    set(BOX2D_NAME "box2d.lib")
+    set(MONO_NAME "mono-2.0-sgen.lib")
+endif ()
+
 # box2d
 include_directories(includes/box2d/include)
-target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-debug/bin/box2d.lib)
+target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-debug/bin/${BOX2D_NAME})
 
 #mono
 include_directories(includes/mono/include)
-target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib)
+target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/mono/lib/${MONO_NAME})
 
 target_compile_definitions(Iron PRIVATE)
