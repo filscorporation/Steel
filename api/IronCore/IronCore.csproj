@@ -58,6 +58,8 @@
         <Compile Include="Object\ComponentEngineCalls.cs" />
         <Compile Include="Object\Entity.cs" />
         <Compile Include="Object\ScriptComponent.cs" />
+        <Compile Include="Rendering\Camera.cs" />
+        <Compile Include="Rendering\CameraResizingMode.cs" />
         <Compile Include="Rendering\Color.cs" />
         <Compile Include="Rendering\Screen.cs" />
         <Compile Include="Rendering\Sprite.cs" />

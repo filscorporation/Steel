@@ -1,11 +1,21 @@
 #include "Camera.h"
 #include "../Scene/Entity.h"
 
+float Camera::GetWidth() const
+{
+    return _width;
+}
+
 void Camera::SetWidth(float width)
 {
     SetCameraDirty(true);
     _width = width;
     _height = _width * (float)Screen::GetHeight() / (float)Screen::GetWidth();
+}
+
+float Camera::GetHeight() const
+{
+    return _height;
 }
 
 void Camera::SetHeight(float height)
@@ -15,32 +25,58 @@ void Camera::SetHeight(float height)
     _width = _height * (float)Screen::GetWidth() / (float)Screen::GetHeight();
 }
 
-void Camera::SetSize(float width, float height)
+float Camera::GetNearClippingPlane() const
 {
+    return _nearClippingPlane;
+}
+
+void Camera::SetNearClippingPlane(float distance)
+{
+    _nearClippingPlane = distance;
     SetCameraDirty(true);
-    _width = width;
-    _height = height;
 }
 
-void Camera::SetDepth(float depth)
+float Camera::GetFarClippingPlane() const
 {
+    return _farClippingPlane;
+}
+
+void Camera::SetFarClippingPlane(float distance)
+{
+    _farClippingPlane = distance;
     SetCameraDirty(true);
-    _depth = depth;
 }
 
-float Camera::GetWidth() const
+CameraResizeModes::CameraResizeMode Camera::GetResizeMode()
 {
-    return _width;
+    return _resizeMode;
 }
 
-float Camera::GetHeight() const
+void Camera::SetResizeMode(CameraResizeModes::CameraResizeMode resizeMode)
 {
-    return _height;
+    if (_resizeMode == resizeMode)
+        return;
+
+    _resizeMode = resizeMode;
+    UpdateSize();
 }
 
-float Camera::GetDepth() const
+void Camera::UpdateSize()
 {
-    return _depth;
+    switch (_resizeMode)
+    {
+        case CameraResizeModes::KeepHeight:
+            _width = _height * (float)Screen::GetWidth() / (float)Screen::GetHeight();
+            break;
+        case CameraResizeModes::KeepWidth:
+            _height = _width * (float)Screen::GetHeight() / (float)Screen::GetWidth();
+            break;
+        case CameraResizeModes::Stretch:
+            // Do nothing
+            return;
+    }
+
+    SetCameraDirty(true);
 }
 
 glm::mat4 Camera::GetViewProjection()
@@ -48,7 +84,11 @@ glm::mat4 Camera::GetViewProjection()
     if (IsCameraDirty())
     {
         SetCameraDirty(false);
-        glm::mat4 projection = glm::ortho(-_width / 2, _width / 2, -_height / 2, _height / 2, 0.1f, _depth);
+        glm::mat4 projection = glm::ortho(
+                -_width / 2, _width / 2,
+                -_height / 2, _height / 2,
+                _nearClippingPlane, _farClippingPlane
+        );
         glm::mat4 view = this->ParentEntity->Transform->GetTransformationMatrix();
         view = glm::inverse(view);
 
@@ -66,4 +106,23 @@ void Camera::SetCameraDirty(bool dirty)
 bool Camera::IsCameraDirty() const
 {
     return dirtyCamera;
+}
+
+glm::vec2 Camera::ScreenToWorldPoint(glm::vec2 screenPoint)
+{
+    return glm::vec2(
+            _width * (screenPoint.x / float(Screen::GetWidth()) - 0.5)
+            + ParentEntity->Transform->GetPosition().x,
+            _height * ((float(Screen::GetHeight()) - screenPoint.y) / float(Screen::GetHeight()) - 0.5)
+            + ParentEntity->Transform->GetPosition().y
+            );
+}
+
+glm::vec2 Camera::WorldToScreenPoint(glm::vec2 worldPoint)
+{
+    // TODO: need test
+    return glm::vec2(
+            (worldPoint.x - ParentEntity->Transform->GetPosition().x) / _width * float(Screen::GetWidth()),
+            (worldPoint.y - ParentEntity->Transform->GetPosition().y) / _height * float(Screen::GetHeight())
+            );
 }

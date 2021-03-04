@@ -42,8 +42,8 @@ void Application::Init(ApplicationSettings settings)
     resources = new ResourcesManager();
     scene = new Scene();
 
-    Renderer::Init(scene->MainCamera);
-    AudioSystem::Init(scene->MainCamera->ParentEntity);
+    Renderer::Init(scene->GetMainCamera());
+    AudioSystem::Init(scene->GetMainCamera()->ParentEntity);
     PhysicsCore::Init();
 
     Log::LogInfo("Application initialized");

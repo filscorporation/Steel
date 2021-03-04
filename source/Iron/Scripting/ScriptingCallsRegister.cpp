@@ -67,4 +67,18 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Animator::Pause_Internal", (void*)ComponentsInternalCalls::Animator_Pause);
     mono_add_internal_call("Iron.Animator::Stop_Internal", (void*)ComponentsInternalCalls::Animator_Stop);
     mono_add_internal_call("Iron.Animator::Restart_Internal", (void*)ComponentsInternalCalls::Animator_Restart);
+
+    mono_add_internal_call("Iron.Camera::GetMainEntityWithMainCamera_Internal", (void*)ComponentsInternalCalls::Camera_GetMainEntityWithMainCamera);
+    mono_add_internal_call("Iron.Camera::GetWidth_Internal", (void*)ComponentsInternalCalls::Camera_GetWidth);
+    mono_add_internal_call("Iron.Camera::SetWidth_Internal", (void*)ComponentsInternalCalls::Camera_SetWidth);
+    mono_add_internal_call("Iron.Camera::GetHeight_Internal", (void*)ComponentsInternalCalls::Camera_GetHeight);
+    mono_add_internal_call("Iron.Camera::SetHeight_Internal", (void*)ComponentsInternalCalls::Camera_SetHeight);
+    mono_add_internal_call("Iron.Camera::GetNearClippingPlane_Internal", (void*)ComponentsInternalCalls::Camera_GetNearClippingPlane);
+    mono_add_internal_call("Iron.Camera::SetNearClippingPlane_Internal", (void*)ComponentsInternalCalls::Camera_SetNearClippingPlane);
+    mono_add_internal_call("Iron.Camera::GetFarClippingPlane_Internal", (void*)ComponentsInternalCalls::Camera_GetFarClippingPlane);
+    mono_add_internal_call("Iron.Camera::SetFarClippingPlane_Internal", (void*)ComponentsInternalCalls::Camera_SetFarClippingPlane);
+    mono_add_internal_call("Iron.Camera::GetResizingMode_Internal", (void*)ComponentsInternalCalls::Camera_GetResizingMode);
+    mono_add_internal_call("Iron.Camera::SetResizingMode_Internal", (void*)ComponentsInternalCalls::Camera_SetResizingMode);
+    mono_add_internal_call("Iron.Camera::WorldToScreenPoint_Internal", (void*)ComponentsInternalCalls::Camera_WorldToScreenPoint);
+    mono_add_internal_call("Iron.Camera::ScreenToWorldPoint_Internal", (void*)ComponentsInternalCalls::Camera_ScreenToWorldPoint);
 }

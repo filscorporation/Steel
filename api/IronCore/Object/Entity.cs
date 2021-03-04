@@ -99,6 +99,21 @@ namespace Iron
             return componentID != 0;
         }
 
+        internal static T GetComponentByEntityID<T>(ulong entityID) where T : Component, new()
+        {
+            ulong componentID = GetComponent_Internal(entityID, typeof(T));
+            
+            if (componentID == 0)
+                return null;
+            
+            T component = new T();
+            component.ID = componentID;
+            component.Entity = new Entity();
+            component.Entity.ID = entityID;
+
+            return component;
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ulong CreateNewEntity_Internal();
 

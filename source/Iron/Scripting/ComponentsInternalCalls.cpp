@@ -1,8 +1,9 @@
 #include "ComponentsInternalCalls.h"
-#include "../Core/Application.h"
-#include "../Rendering/SpriteRenderer.h"
-#include "../Core/Log.h"
 #include "../Animation/Animator.h"
+#include "../Core/Application.h"
+#include "../Core/Log.h"
+#include "../Rendering/SpriteRenderer.h"
+#include "../Rendering/Camera.h"
 
 glm::vec3 ComponentsInternalCalls::Transformation_GetPosition(int64_t entityID)
 {
@@ -219,4 +220,241 @@ void ComponentsInternalCalls::Animator_Restart(int64_t entityID)
     }
 
     animator->Restart();
+}
+
+int64_t ComponentsInternalCalls::Camera_GetMainEntityWithMainCamera()
+{
+    return Application::Instance->GetCurrentScene()->GetMainCamera()->ParentEntity->ID;
+}
+
+float ComponentsInternalCalls::Camera_GetWidth(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return 0;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return 0;
+    }
+
+    return camera->GetWidth();
+}
+
+void ComponentsInternalCalls::Camera_SetWidth(int64_t entityID, float width)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    camera->SetWidth(width);
+}
+
+float ComponentsInternalCalls::Camera_GetHeight(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return 0;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return 0;
+    }
+
+    return camera->GetHeight();
+}
+
+void ComponentsInternalCalls::Camera_SetHeight(int64_t entityID, float height)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    camera->SetHeight(height);
+}
+
+float ComponentsInternalCalls::Camera_GetNearClippingPlane(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return 0;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return 0;
+    }
+
+    return camera->GetNearClippingPlane();
+}
+
+void ComponentsInternalCalls::Camera_SetNearClippingPlane(int64_t entityID, float distance)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    return camera->SetNearClippingPlane(distance);
+}
+
+float ComponentsInternalCalls::Camera_GetFarClippingPlane(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return 0;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return 0;
+    }
+
+    return camera->GetFarClippingPlane();
+}
+
+void ComponentsInternalCalls::Camera_SetFarClippingPlane(int64_t entityID, float distance)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    camera->SetFarClippingPlane(distance);
+}
+
+int ComponentsInternalCalls::Camera_GetResizingMode(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return 0;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return 0;
+    }
+
+    return camera->GetResizeMode();
+}
+
+void ComponentsInternalCalls::Camera_SetResizingMode(int64_t entityID, int mode)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    camera->SetResizeMode((CameraResizeModes::CameraResizeMode)mode);
+}
+
+void ComponentsInternalCalls::Camera_WorldToScreenPoint(int64_t entityID, glm::vec2* worldPoint, glm::vec2* screenPoint)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    glm::vec2 result = camera->WorldToScreenPoint(*worldPoint);
+    screenPoint->x = result.x;
+    screenPoint->y = result.y;
+}
+
+void ComponentsInternalCalls::Camera_ScreenToWorldPoint(int64_t entityID, glm::vec2* screenPoint, glm::vec2* worldPoint)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto camera = entity->GetComponent<Camera>();
+    if (camera == nullptr)
+    {
+        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    glm::vec2 result = camera->ScreenToWorldPoint(*screenPoint);
+    worldPoint->x = result.x;
+    worldPoint->y = result.y;
 }

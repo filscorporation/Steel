@@ -23,10 +23,10 @@ void Scene::DestroyEntity(Entity *entity)
 Scene::Scene()
 {
     auto cameraEntity = CreateEntity();
-    MainCamera = cameraEntity->AddComponent<Camera>();
+    _mainCamera = cameraEntity->AddComponent<Camera>();
     cameraEntity->Transform->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     // TODO: get params
-    MainCamera->SetHeight(3.0f);
+    GetMainCamera()->SetHeight(3.0f);
 }
 
 void Scene::DestroyAndRemoveEntity(Entity *entity)
@@ -63,4 +63,9 @@ void Scene::CleanAllEntities()
 Entity *Scene::GetEntity(uint64_t entityID)
 {
     return entitiesByIDMap[entityID];
+}
+
+Camera *Scene::GetMainCamera()
+{
+    return _mainCamera;
 }

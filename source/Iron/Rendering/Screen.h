@@ -15,7 +15,6 @@ public:
     static void SetFullscreen(bool fullscreen);
     static glm::vec3 GetColor();
     static void SetColor(glm::vec3 color);
-    static glm::vec2 ScreenToWorldPosition(glm::vec2 position);
 
     static void UpdateSize();
     static void SwapBuffers();

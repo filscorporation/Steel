@@ -190,6 +190,8 @@ void Screen::UpdateSize()
             _yPosition = tempY;
         }
         glViewport(0, 0, tempWidth, tempHeight);
+
+        Application::Instance->GetCurrentScene()->GetMainCamera()->UpdateSize();
     }
 }
 
@@ -222,14 +224,4 @@ void Screen::EnterCallback()
 void Screen::ExitCallback()
 {
     isInResizeCallback = false;
-}
-
-glm::vec2 Screen::ScreenToWorldPosition(glm::vec2 position)
-{
-    auto camera = Application::Instance->GetCurrentScene()->MainCamera;
-    return glm::vec2(
-            camera->GetWidth() * (position.x / float(_width) - 0.5)
-            + camera->ParentEntity->Transform->GetPosition().x,
-            camera->GetHeight() * ((float(_height) - position.y) / float(_height) - 0.5)
-            + camera->ParentEntity->Transform->GetPosition().y);
 }

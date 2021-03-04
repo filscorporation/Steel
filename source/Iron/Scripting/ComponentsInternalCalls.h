@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
 namespace ComponentsInternalCalls
 {
@@ -22,4 +23,19 @@ namespace ComponentsInternalCalls
     void Animator_Pause(int64_t entityID);
     void Animator_Stop(int64_t entityID);
     void Animator_Restart(int64_t entityID);
+
+    // Camera
+    int64_t Camera_GetMainEntityWithMainCamera();
+    float Camera_GetWidth(int64_t entityID);
+    void Camera_SetWidth(int64_t entityID, float width);
+    float Camera_GetHeight(int64_t entityID);
+    void Camera_SetHeight(int64_t entityID, float height);
+    float Camera_GetNearClippingPlane(int64_t entityID);
+    void Camera_SetNearClippingPlane(int64_t entityID, float distance);
+    float Camera_GetFarClippingPlane(int64_t entityID);
+    void Camera_SetFarClippingPlane(int64_t entityID, float distance);
+    int Camera_GetResizingMode(int64_t entityID);
+    void Camera_SetResizingMode(int64_t entityID, int mode);
+    void Camera_WorldToScreenPoint(int64_t entityID, glm::vec2* worldPoint, glm::vec2* screenPoint);
+    void Camera_ScreenToWorldPoint(int64_t entityID, glm::vec2* screenPoint, glm::vec2* worldPoint);
 }
