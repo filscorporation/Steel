@@ -40,7 +40,7 @@ MonoImage* LoadAssembly(const char* fileName)
 
 void ScriptingSystem::Init()
 {
-    Log::LogInfo("Begin scripting system init");
+    Log::LogInfo("Scripting system init");
 
     mono_config_parse(nullptr);
     mono_set_dirs(DEBUG_MONO_LIB_PATH, DEBUG_MONO_ETC_PATH);
@@ -66,6 +66,9 @@ void ScriptingSystem::Init()
 
 void ScriptingSystem::Terminate()
 {
+    if (!isInitialized)
+        return;
+
     ScriptingCore::Terminate();
     mono_jit_cleanup(domain);
 }

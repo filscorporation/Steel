@@ -63,7 +63,7 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
 
     images.push_back(image);
 
-    Log::LogInfo("Sprite loaded");
+    Log::LogInfo("Sprite loaded: " + std::string(filePath) + ", " + std::to_string(image->ID));
 
     return image;
 }

@@ -41,7 +41,8 @@ set(SOURCE_FILES
         source/Iron/Scripting/ScriptingCore.cpp source/Iron/Scripting/ScriptingCore.h
         source/Iron/Scripting/EntityInternalCalls.cpp source/Iron/Scripting/EntityInternalCalls.h
         source/Iron/Scripting/ComponentsInternalCalls.cpp source/Iron/Scripting/ComponentsInternalCalls.h
-        source/Iron/Scripting/ScriptingCallsRegister.cpp source/Iron/Scripting/ScriptingCallsRegister.h)
+        source/Iron/Scripting/ScriptingCallsRegister.cpp source/Iron/Scripting/ScriptingCallsRegister.h
+        source/Iron/Rendering/BuiltInShaders.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

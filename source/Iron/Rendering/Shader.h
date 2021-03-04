@@ -11,6 +11,7 @@ class Shader
 {
 public:
     GLuint Program;
-    Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+    Shader(const GLchar* vertexCode, const GLchar* fragmentCode);
+    static Shader* FromFilePaths(const char* vertexPath, const char* fragmentPath);
     void Use();
 };

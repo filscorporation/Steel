@@ -1,24 +1,20 @@
+#include "BuiltInShaders.h"
 #include "Renderer.h"
 #include "SpriteRenderer.h"
-#include "Shader.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
-// TODO: copy shaders in CMake
-const GLchar* vertexShaderPath = "../shaders/shader.vs";
-const GLchar* fragmentShaderPath = "../shaders/shader.frag";
-
-const uint RENDER_CALL_DATA_SIZE = 10;
-const uint MAX_RENDER_CALLS = 10000;
-const uint MAX_TEXTURE_SLOTS = 32;
+const int RENDER_CALL_DATA_SIZE = 10;
+const int MAX_RENDER_CALLS = 10000;
+const int MAX_TEXTURE_SLOTS = 32;
 
 Camera* mainCamera;
 Shader* shader;
 
-uint renderCallsCount;
-uint texturesCount;
+int renderCallsCount;
+int texturesCount;
 glm::vec4 defaultVertexPositions[4];
 glm::vec2 defaultTextureCoords[4];
 GLfloat* vertexBufferData;
@@ -36,9 +32,13 @@ void Renderer::Init(Camera* camera)
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    shader = new Shader(vertexShaderPath, fragmentShaderPath);
+    // Create shader and initialize it's texture slots variable
+    shader = new Shader(BuiltInShaders::VertexShader, BuiltInShaders::FragmentShader);
     shader->Use();
-    glUniform1i(glGetUniformLocation(shader->Program, "image"), 0);
+    GLint textureSlots[MAX_TEXTURE_SLOTS];
+    for (GLint i = 0; i < MAX_TEXTURE_SLOTS; i++)
+        textureSlots[i] = i;
+    glUniform1iv(glGetUniformLocation(shader->Program, "images"), MAX_TEXTURE_SLOTS, textureSlots);
 
     Log::LogInfo("Shader created");
 
@@ -157,7 +157,7 @@ void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, glm::vec2 te
     }
 
     glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    uint offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
+    int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
     for (int i = 0; i < 4; ++i)
     {
         glm::vec4 transformed = transformation * defaultVertexPositions[i];
