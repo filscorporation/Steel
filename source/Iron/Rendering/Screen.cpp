@@ -118,7 +118,11 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen)
     _fullscreen = fullscreen;
     _color = color;
 
-    glfwInit();
+    if (!glfwInit())
+    {
+        Log::LogError("Error initializing GLFW");
+    }
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

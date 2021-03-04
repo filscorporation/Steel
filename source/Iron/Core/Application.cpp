@@ -28,6 +28,8 @@ Application::Application(ApplicationSettings settings)
 
 void Application::Init(ApplicationSettings settings)
 {
+    Log::LogInfo("Running in " + GetRuntimePath());
+
     ScriptingSystem::Init();
 
     Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen);
@@ -75,11 +77,10 @@ void Application::RunUpdate()
     Screen::UpdateSize();
 
     Renderer::Clear(Screen::GetColor());
-    Renderer::OnBeforeRender();
 
     // Update and render objects in scene
     state = ApplicationStates::OnUpdate;
-    auto entities = std::vector<Entity*>(scene->Entities);
+    auto entities = std::list<Entity*>(scene->Entities);
     for (auto &entity : entities)
     {
         for (auto &component : entity->Components())
@@ -145,6 +146,9 @@ void Application::RunUpdate()
         entity->OnLateUpdate();
     }
 
+    Time::Update();
+    Renderer::OnBeforeRender();
+
     state = ApplicationStates::OnRender;
     for (auto &entity : entities)
     {
@@ -161,6 +165,9 @@ void Application::RunUpdate()
             }
         }
     }
+
+    Renderer::OnAfterRender();
+
     entities.clear();
 
     //Update scene
@@ -168,8 +175,6 @@ void Application::RunUpdate()
     scene->CleanDestroyedEntities();
 
     Screen::SwapBuffers();
-
-    Time::Update();
 
     if (Screen::WindowShouldClose())
         isRunning = false;
@@ -189,6 +194,8 @@ void Application::RunUpdate()
 
 void Application::Terminate()
 {
+    Log::LogInfo("Entities was created " + std::to_string(Scene::EntitiesWasCreated));
+
     scene->CleanAllEntities();
     delete scene;
 

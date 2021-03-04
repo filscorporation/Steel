@@ -2,8 +2,12 @@
 #include "../Rendering/Camera.h"
 #include <algorithm>
 
+int Scene::EntitiesWasCreated = 0;
+
 Entity* Scene::CreateEntity()
 {
+    EntitiesWasCreated++;
+
     auto entity = new Entity();
     Entities.push_back(entity);
     entitiesByIDMap[entity->ID] = entity;
@@ -28,8 +32,8 @@ Scene::Scene()
 void Scene::DestroyAndRemoveEntity(Entity *entity)
 {
     // TODO: WIP, rework (removing is very slow, up to 35% of CPU on many objects tests)
-    Entities.erase(std::remove(Entities.begin(), Entities.end(), entity), Entities.end());
-    entitiesByIDMap[entity->ID] = nullptr;
+    Entities.remove(entity);
+    entitiesByIDMap.erase(entity->ID);
     DestroyEntityInner(entity);
 }
 

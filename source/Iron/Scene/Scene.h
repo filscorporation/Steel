@@ -1,12 +1,12 @@
 #pragma once
 
-#include <vector>
+#include <list>
 #include "Entity.h"
 
 class Scene
 {
 public:
-    std::vector<Entity*> Entities; // TODO: private
+    std::list<Entity*> Entities; // TODO: private
     Camera* MainCamera;
 
     Scene();
@@ -16,9 +16,11 @@ public:
     void CleanDestroyedEntities();
     void CleanAllEntities();
 
+    static int EntitiesWasCreated;
+
 private:
     std::unordered_map<uint64_t, Entity*> entitiesByIDMap;
-    std::vector<Entity*> entitiesToDelete;
+    std::list<Entity*> entitiesToDelete;
     void DestroyAndRemoveEntity(Entity* entity);
     static void DestroyEntityInner(Entity* entity);
 };

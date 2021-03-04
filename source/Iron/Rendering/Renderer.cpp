@@ -10,10 +10,20 @@
 const GLchar* vertexShaderPath = "../shaders/shader.vs";
 const GLchar* fragmentShaderPath = "../shaders/shader.frag";
 
+const uint RENDER_CALL_DATA_SIZE = 10;
+const uint MAX_RENDER_CALLS = 10000;
+const uint MAX_TEXTURE_SLOTS = 32;
+
 Camera* mainCamera;
 Shader* shader;
-GLuint VBO, VAO, EBO;
-GLuint modelUniform;
+
+uint renderCallsCount;
+uint texturesCount;
+glm::vec4 defaultVertexPositions[4];
+glm::vec2 defaultTextureCoords[4];
+GLfloat* vertexBufferData;
+GLuint textureIDs[MAX_TEXTURE_SLOTS];
+GLuint indexBufferID, vertexDataBufferID;
 GLuint viewProjectionUniform;
 
 void Renderer::Init(Camera* camera)
@@ -32,16 +42,62 @@ void Renderer::Init(Camera* camera)
 
     Log::LogInfo("Shader created");
 
-    modelUniform = glGetUniformLocation(shader->Program, "model");
+    // Camera transformation uniform
     viewProjectionUniform = glGetUniformLocation(shader->Program, "view_projection");
 
     Log::LogInfo("Uniforms saved");
+
+    // Generate default vertex positions
+    defaultVertexPositions[0] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
+    defaultVertexPositions[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
+    defaultVertexPositions[2] = glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
+    defaultVertexPositions[3] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
+
+    // Generate default texture coords
+    defaultTextureCoords[0] = glm::vec2(1.0f, 0.0f);
+    defaultTextureCoords[1] = glm::vec2(1.0f, 1.0f);
+    defaultTextureCoords[2] = glm::vec2(0.0f, 0.0f);
+    defaultTextureCoords[3] = glm::vec2(0.0f, 1.0f);
+
+    // Reserve space for all vertex data
+    vertexBufferData = new GLfloat[MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4];
+    glGenBuffers(1, &vertexDataBufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferID);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4, nullptr, GL_DYNAMIC_DRAW);
+
+    Log::LogInfo("Vertices data generated");
+
+    // Generate all vertex indices
+    auto indexes = new GLuint[MAX_RENDER_CALLS * 6];
+    int indexOffset = 0;
+    for (int i = 0; i < MAX_RENDER_CALLS * 6; i += 6)
+    {
+        indexes[i + 0] = indexOffset + 0;
+        indexes[i + 1] = indexOffset + 1;
+        indexes[i + 2] = indexOffset + 2;
+
+        indexes[i + 3] = indexOffset + 1;
+        indexes[i + 4] = indexOffset + 2;
+        indexes[i + 5] = indexOffset + 3;
+
+        indexOffset += 4;
+    }
+    glGenBuffers(1, &indexBufferID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * MAX_RENDER_CALLS * 6, indexes, GL_STATIC_DRAW);
+    delete[] indexes;
+
+    Log::LogInfo("Indexes generated");
 
     Log::LogInfo("Renderer initialized");
 }
 
 void Renderer::Terminate()
 {
+    glDeleteBuffers(1, &indexBufferID);
+    glDeleteBuffers(1, &vertexDataBufferID);
+
+    delete[] vertexBufferData;
     delete shader;
 }
 
@@ -50,6 +106,12 @@ void Renderer::OnBeforeRender()
     // Set camera transformation
     glm::mat4 viewProjection = mainCamera->GetViewProjection();
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(viewProjection));
+    StartBatch();
+}
+
+void Renderer::OnAfterRender()
+{
+    EndBatch();
 }
 
 void Renderer::Clear(glm::vec3 color)
@@ -60,62 +122,116 @@ void Renderer::Clear(glm::vec3 color)
 
 void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID)
 {
-    std::array<float, 8> texCoord = {
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 0.0f,
-            0.0f, 1.0f
-    };
-    Renderer::DrawQuad(transformation, textureID, texCoord);
+    Renderer::DrawQuad(transformation, textureID, defaultTextureCoords);
 }
 
-void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, std::array<float, 8> texCoord)
+void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, glm::vec2 textureCoords[4])
 {
-    // Create quad
-    GLfloat vertices[] = {
-            0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,  texCoord[0], texCoord[1],
-            0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,  texCoord[2], texCoord[3],
-            -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  texCoord[4], texCoord[5],
-            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  texCoord[6], texCoord[7],
-    };
-    GLuint indices[] = {
-            0, 1, 2,
-            1, 2, 3
-    };
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    if (renderCallsCount >= MAX_RENDER_CALLS)
+    {
+        EndBatch();
+        StartBatch();
+    }
+
+    int textureIDIndex = -1;
+    for (int i = 0; i < texturesCount; ++i)
+    {
+        if (textureIDs[i] == textureID)
+        {
+            textureIDIndex = i;
+            break;
+        }
+    }
+
+    if (textureIDIndex == -1)
+    {
+        if (texturesCount >= MAX_TEXTURE_SLOTS)
+        {
+            EndBatch();
+            StartBatch();
+        }
+
+        textureIDIndex = texturesCount;
+        textureIDs[textureIDIndex] = textureID;
+        texturesCount++;
+    }
+
+    glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    uint offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
+    for (int i = 0; i < 4; ++i)
+    {
+        glm::vec4 transformed = transformation * defaultVertexPositions[i];
+
+        vertexBufferData[offset++] = transformed[0];
+        vertexBufferData[offset++] = transformed[1];
+        vertexBufferData[offset++] = transformed[2];
+        vertexBufferData[offset++] = color[0];
+        vertexBufferData[offset++] = color[1];
+        vertexBufferData[offset++] = color[2];
+        vertexBufferData[offset++] = color[3];
+        vertexBufferData[offset++] = textureCoords[i][0];
+        vertexBufferData[offset++] = textureCoords[i][1];
+        vertexBufferData[offset++] = (GLfloat)textureIDIndex;
+    }
+
+    renderCallsCount++;
+}
+
+void Renderer::StartBatch()
+{
+    renderCallsCount = 0;
+    texturesCount = 0;
+}
+
+void Renderer::EndBatch()
+{
+    if (renderCallsCount == 0)
+        return;
+
+    DrawBatchedData();
+}
+
+void Renderer::DrawBatchedData()
+{
+    // Generate vertex array
+    GLuint vertexArrayID;
+    glGenVertexArrays(1, &vertexArrayID);
+    glBindVertexArray(vertexArrayID);
+
+    // Set vertices data
+    glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferID);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * renderCallsCount * RENDER_CALL_DATA_SIZE * 4, vertexBufferData);
+
+    // Bind indexes buffer and define attributes
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+
     // Vertex positions
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * RENDER_CALL_DATA_SIZE, (GLvoid*)nullptr);
     glEnableVertexAttribArray(0);
     // Vertex color
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * RENDER_CALL_DATA_SIZE, (GLvoid*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
-    // Texture
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(7 * sizeof(GLfloat)));
+    // Texture coords
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * RENDER_CALL_DATA_SIZE, (GLvoid*)(7 * sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
+    // Texture ID
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * RENDER_CALL_DATA_SIZE, (GLvoid*)(9 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(3);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Bind textures
+    for (int i = 0; i < texturesCount; ++i)
+    {
+        GLenum activeTexture = GL_TEXTURE0 + i;
+        glActiveTexture(activeTexture);
+        glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
+    }
+
+    // Draw
+    glDrawElements(GL_TRIANGLES, renderCallsCount * 6, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 
-    // Bind texture
-    glActiveTexture(GL_TEXTURE0 + 0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    // Set quad transformation
-    glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(transformation));
-
-    // Draw quad
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-    glBindVertexArray(0);
-
-    // Clean
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDeleteVertexArrays(1, &vertexArrayID);
 }

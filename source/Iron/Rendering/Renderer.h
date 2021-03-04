@@ -12,7 +12,13 @@ public:
     static void Terminate();
 
     static void OnBeforeRender();
+    static void OnAfterRender();
     static void Clear(glm::vec3 color);
     static void DrawQuad(glm::mat4 transformation, GLuint textureID);
-    static void DrawQuad(glm::mat4 transformation, GLuint textureID, std::array<float, 8> texCoord);
+    static void DrawQuad(glm::mat4 transformation, GLuint textureID, glm::vec2 textureCoords[4]);
+
+private:
+    static void StartBatch();
+    static void EndBatch();
+    static void DrawBatchedData();
 };

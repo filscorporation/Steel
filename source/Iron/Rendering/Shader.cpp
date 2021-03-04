@@ -15,7 +15,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
         fShaderFile.open(fragmentPath);
         if (!vShaderFile.good() || !fShaderFile.good())
         {
-            Log::LogInfo("Shader error: file does not exist");
+            Log::LogError("Shader error: file does not exist");
         }
         else
         {
@@ -30,7 +30,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     }
     catch(std::ifstream::failure)
     {
-        Log::LogInfo("Shader error: file not successfully read");
+        Log::LogError("Shader error: file not successfully read");
     }
     const GLchar* vShaderCode = vertexCode.c_str();
     const GLchar* fShaderCode = fragmentCode.c_str();
@@ -46,7 +46,8 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     if (!success)
     {
         glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-        Log::LogInfo("Shader error: vertex shader compilation failed");
+        Log::LogError("Shader error: vertex shader compilation failed");
+        Log::LogError(infoLog);
     }
 
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -56,7 +57,8 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     if (!success)
     {
         glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-        Log::LogInfo("Shader error: fragment shader compilation failed");
+        Log::LogError("Shader error: fragment shader compilation failed");
+        Log::LogError(infoLog);
     }
 
     this->Program = glCreateProgram();
@@ -67,7 +69,8 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     if (!success)
     {
         glGetProgramInfoLog(this->Program, 512, NULL, infoLog);
-        Log::LogInfo("Shader error: linking failed");
+        Log::LogError("Shader error: linking failed");
+        Log::LogError(infoLog);
     }
 
     glDeleteShader(vertex);

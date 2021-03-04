@@ -12,10 +12,12 @@ void SpriteRenderer::OnRender()
 
     if (_image->IsSpriteSheet)
     {
+        glm::vec2 texCoords[4];
+        _image->GetTexCoord(CurrentImageTileIndex, texCoords);
         Renderer::DrawQuad(
                 ParentEntity->Transform->GetTransformationMatrix(),
                 _image->TextureID,
-                _image->GetTexCoord(CurrentImageTileIndex));
+                texCoords);
     }
     else
     {
