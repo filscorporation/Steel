@@ -55,7 +55,7 @@ void MouseCallback(GLFWwindow* window, int button, int action, int mods)
 void CursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 {
     mousePosition.x = xPos;
-    mousePosition.y = yPos;
+    mousePosition.y = Screen::GetHeight() - yPos;
 }
 
 void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
