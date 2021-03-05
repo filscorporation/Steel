@@ -94,11 +94,10 @@ void Application::RunUpdate()
                 Log::LogError("Error in update: " + std::string(ex.what()));
             }
         }
-        entity->OnUpdate();
     }
     state = ApplicationStates::OnPhysicsUpdate;
     // TODO: wrong delta time; physics should run on different thread with fixed delta time
-    PhysicsCore::Step(Time::DeltaTime());
+    PhysicsCore::Simulate(Time::DeltaTime());
     // TODO: change to physics double sided list of rigid bodies
     for (auto &entity : entities)
     {
@@ -115,18 +114,18 @@ void Application::RunUpdate()
             }
         }
 
-        for (auto &component : entity->Components())
+        auto sc = entity->GetComponent<ScriptComponent>();
+        if (sc != nullptr)
         {
             try
             {
-                component->OnFixedUpdate();
+                sc->OnFixedUpdate();
             }
             catch (const std::exception& ex)
             {
-                Log::LogError("Error in physics update: " + std::string(ex.what()));
+                Log::LogError("Error in fixed update: " + std::string(ex.what()));
             }
         }
-        entity->OnFixedUpdate();
     }
 
     state = ApplicationStates::OnLateUpdate;
@@ -182,11 +181,10 @@ void Application::RunUpdate()
     // TODO: testing fps (will be moved to debug UI)
     fpsCounter ++;
     fpsTimer += Time::DeltaTime();
-    if (fpsTimer > 1.0f)
+    if (fpsTimer > 2.0f)
     {
-        Log::LogInfo("FPS " + std::to_string(fpsCounter));
+        Log::LogInfo("FPS " + std::to_string(fpsCounter / 2));
         Log::LogInfo("Entities in scene " + std::to_string(scene->Entities.size()));
-        Log::LogInfo("Screen size " + std::to_string(Screen::GetWidth()) + " " + std::to_string(Screen::GetHeight()));
         fpsTimer = 0;
         fpsCounter = 0;
     }

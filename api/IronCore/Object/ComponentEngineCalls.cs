@@ -24,5 +24,23 @@ namespace Iron
         {
             ((Component)GCHandle.FromIntPtr(componentPtr).Target).OnFixedUpdate();
         }
+        
+        private static void ComponentOnCollisionEnter(IntPtr componentPtr, ulong otherEntityID)
+        {
+            Collision collision = new Collision(new Entity(otherEntityID));
+            ((Component)GCHandle.FromIntPtr(componentPtr).Target).OnCollisionEnter(collision);
+        }
+        
+        private static void ComponentOnCollisionStay(IntPtr componentPtr, ulong otherEntityID)
+        {
+            Collision collision = new Collision(new Entity(otherEntityID));
+            ((Component)GCHandle.FromIntPtr(componentPtr).Target).OnCollisionStay(collision);
+        }
+        
+        private static void ComponentOnCollisionExit(IntPtr componentPtr, ulong otherEntityID)
+        {
+            Collision collision = new Collision(new Entity(otherEntityID));
+            ((Component)GCHandle.FromIntPtr(componentPtr).Target).OnCollisionExit(collision);
+        }
     }
 }

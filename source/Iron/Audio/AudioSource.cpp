@@ -2,7 +2,7 @@
 #include "AudioSystem.h"
 #include "../Core/Log.h"
 
-AudioSource::AudioSource()
+AudioSource::AudioSource(Entity* parentEntity) : Component(parentEntity)
 {
     sourceID = AudioSystem::CreateSource();
 }

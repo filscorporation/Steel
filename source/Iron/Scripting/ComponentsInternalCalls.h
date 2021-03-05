@@ -2,6 +2,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+#include "../Physics/RigidBody.h"
 
 namespace ComponentsInternalCalls
 {
@@ -38,4 +39,12 @@ namespace ComponentsInternalCalls
     void Camera_SetResizingMode(int64_t entityID, int mode);
     void Camera_WorldToScreenPoint(int64_t entityID, glm::vec2* worldPoint, glm::vec2* screenPoint);
     void Camera_ScreenToWorldPoint(int64_t entityID, glm::vec2* screenPoint, glm::vec2* worldPoint);
+
+    // Physics
+    float RigidBody_GetMass(int64_t entityID);
+    void RigidBody_SetMass(int64_t entityID, float mass);
+    RigidBodyTypes::RigidBodyType RigidBody_GetRigidBodyType(int64_t entityID);
+    void RigidBody_SetRigidBodyType(int64_t entityID, RigidBodyTypes::RigidBodyType type);
+    void BoxCollider_GetSize(int64_t entityID, glm::vec2* size);
+    void BoxCollider_SetSize(int64_t entityID, glm::vec2* size);
 }

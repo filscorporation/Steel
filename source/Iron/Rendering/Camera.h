@@ -16,6 +16,8 @@ namespace CameraResizeModes
 class Camera : public Component
 {
 public:
+    explicit Camera(Entity* parentEntity) : Component(parentEntity) { }
+
     float GetWidth() const;
     void SetWidth(float width);
     float GetHeight() const;

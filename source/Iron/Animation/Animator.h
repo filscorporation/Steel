@@ -7,6 +7,8 @@
 class Animator : public Component
 {
 public:
+    explicit Animator(Entity* parentEntity) : Component(parentEntity) { }
+
     void Play();
     void Play(int animation);
     void Pause();

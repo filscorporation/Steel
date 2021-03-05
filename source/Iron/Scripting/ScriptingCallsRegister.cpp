@@ -81,4 +81,11 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Camera::SetResizingMode_Internal", (void*)ComponentsInternalCalls::Camera_SetResizingMode);
     mono_add_internal_call("Iron.Camera::WorldToScreenPoint_Internal", (void*)ComponentsInternalCalls::Camera_WorldToScreenPoint);
     mono_add_internal_call("Iron.Camera::ScreenToWorldPoint_Internal", (void*)ComponentsInternalCalls::Camera_ScreenToWorldPoint);
+
+    mono_add_internal_call("Iron.RigidBody::GetMass_Internal", (void*)ComponentsInternalCalls::RigidBody_GetMass);
+    mono_add_internal_call("Iron.RigidBody::SetMass_Internal", (void*)ComponentsInternalCalls::RigidBody_SetMass);
+    mono_add_internal_call("Iron.RigidBody::GetRigidBodyType_Internal", (void*)ComponentsInternalCalls::RigidBody_GetRigidBodyType);
+    mono_add_internal_call("Iron.RigidBody::SetRigidBodyType_Internal", (void*)ComponentsInternalCalls::RigidBody_SetRigidBodyType);
+    mono_add_internal_call("Iron.BoxCollider::GetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_GetSize);
+    mono_add_internal_call("Iron.BoxCollider::SetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_SetSize);
 }

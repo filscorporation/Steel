@@ -4,6 +4,7 @@
 #include "../Core/Log.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Rendering/Camera.h"
+#include "../Physics/BoxCollider.h"
 
 glm::vec3 ComponentsInternalCalls::Transformation_GetPosition(int64_t entityID)
 {
@@ -458,3 +459,120 @@ void ComponentsInternalCalls::Camera_ScreenToWorldPoint(int64_t entityID, glm::v
     worldPoint->x = result.x;
     worldPoint->y = result.y;
 }
+
+float ComponentsInternalCalls::RigidBody_GetMass(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return 0;
+    }
+
+    auto rb = entity->GetComponent<RigidBody>();
+    if (rb == nullptr)
+    {
+        Log::LogError("No rigid body component attached to entity " + std::to_string(entityID));
+        return 0;
+    }
+
+    return rb->GetMass();
+}
+
+void ComponentsInternalCalls::RigidBody_SetMass(int64_t entityID, float mass)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto rb = entity->GetComponent<RigidBody>();
+    if (rb == nullptr)
+    {
+        Log::LogError("No rigid body component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    rb->SetMass(mass);
+}
+
+RigidBodyTypes::RigidBodyType ComponentsInternalCalls::RigidBody_GetRigidBodyType(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return RigidBodyTypes::None;
+    }
+
+    auto rb = entity->GetComponent<RigidBody>();
+    if (rb == nullptr)
+    {
+        Log::LogError("No rigid body component attached to entity " + std::to_string(entityID));
+        return RigidBodyTypes::None;
+    }
+
+    rb->GetType();
+}
+
+void ComponentsInternalCalls::RigidBody_SetRigidBodyType(int64_t entityID, RigidBodyTypes::RigidBodyType type)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto rb = entity->GetComponent<RigidBody>();
+    if (rb == nullptr)
+    {
+        Log::LogError("No rigid body component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    rb->SetType(type);
+}
+
+void ComponentsInternalCalls::BoxCollider_GetSize(int64_t entityID, glm::vec2* size)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto bc = entity->GetComponent<BoxCollider>();
+    if (bc == nullptr)
+    {
+        Log::LogError("No box collider component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    auto s = bc->GetSize();
+    size->x = s.x;
+    size->y = s.y;
+}
+
+void ComponentsInternalCalls::BoxCollider_SetSize(int64_t entityID, glm::vec2* size)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto bc = entity->GetComponent<BoxCollider>();
+    if (bc == nullptr)
+    {
+        Log::LogError("No box collider component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    bc->SetSize(*size);
+}
+

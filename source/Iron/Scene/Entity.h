@@ -22,8 +22,6 @@ public:
     void Destroy(float time);
     bool IsDestroyed();
 
-    void OnUpdate();
-    void OnFixedUpdate();
     void OnLateUpdate();
 
     Transformation* Transform;
@@ -52,12 +50,9 @@ public:
             // TODO: Error
             return NULL;
 
-        T* newComponentT = new T();
+        T* newComponentT = new T(this);
         auto newComponent = (Component*)newComponentT;
         components[std::type_index(typeid(T))] = newComponent;
-        newComponent->ParentEntity = this;
-
-        newComponent->OnCreate();
 
         return newComponentT;
     }

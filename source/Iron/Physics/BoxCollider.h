@@ -10,7 +10,7 @@ class BoxCollider : public Collider
     struct BoxColliderInfo;
 
 public:
-    BoxCollider();
+    explicit BoxCollider(Entity* parentEntity);
     ~BoxCollider() override;
 
     void SetSizeAutomatically();

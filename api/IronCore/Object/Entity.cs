@@ -15,6 +15,11 @@ namespace Iron
             get => GetName_Internal(ID);
             set => SetName_Internal(ID, value);
         }
+
+        internal Entity(ulong id)
+        {
+            ID = id;
+        }
         
         public Entity()
         {
@@ -108,8 +113,7 @@ namespace Iron
             
             T component = new T();
             component.ID = componentID;
-            component.Entity = new Entity();
-            component.Entity.ID = entityID;
+            component.Entity = new Entity(entityID);
 
             return component;
         }

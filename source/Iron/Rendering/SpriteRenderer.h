@@ -7,6 +7,8 @@
 class SpriteRenderer : public Component
 {
 public:
+    explicit SpriteRenderer(Entity* parentEntity) : Component(parentEntity) { }
+
     int CurrentImageTileIndex = 0;
 
     void OnRender() override;

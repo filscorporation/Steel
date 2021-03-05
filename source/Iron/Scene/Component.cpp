@@ -1,7 +1,8 @@
 #include "Component.h"
 #include "../Math/Random.h"
 
-Component::Component()
+Component::Component(Entity* parentEntity)
 {
+    ParentEntity = parentEntity;
     ID = Random::NextUint();
 }

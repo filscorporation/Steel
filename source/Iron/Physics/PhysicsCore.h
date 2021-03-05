@@ -2,6 +2,8 @@
 
 #include <box2d/box2d.h>
 
+#include "PhysicsContactListener.h"
+
 class PhysicsCore
 {
 public:
@@ -10,5 +12,5 @@ public:
 
     static b2World* GetWorld();
 
-    static void Step(float deltaTime);
+    static void Simulate(float deltaTime);
 };

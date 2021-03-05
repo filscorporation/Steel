@@ -5,6 +5,8 @@
 class AudioListener : public Component
 {
 public:
+    explicit AudioListener(Entity* parentEntity) : Component(parentEntity) { }
+
     void OnUpdate() override;
 
     void SetVolume(float volume);

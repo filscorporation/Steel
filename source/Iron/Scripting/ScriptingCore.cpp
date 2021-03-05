@@ -34,6 +34,10 @@ void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
     EngineCalls.callOnUpdate = mono_class_get_method_from_name(klass, "ComponentOnUpdate", 1);
     EngineCalls.callOnLateUpdate = mono_class_get_method_from_name(klass, "ComponentOnLateUpdate", 1);
     EngineCalls.callOnFixedUpdate = mono_class_get_method_from_name(klass, "ComponentOnFixedUpdate", 1);
+
+    EngineCalls.callOnCollisionEnter = mono_class_get_method_from_name(klass, "ComponentOnCollisionEnter", 2);
+    EngineCalls.callOnCollisionStay = mono_class_get_method_from_name(klass, "ComponentOnCollisionStay", 2);
+    EngineCalls.callOnCollisionExit = mono_class_get_method_from_name(klass, "ComponentOnCollisionExit", 2);
 }
 
 void ScriptingCore::RegisterInternalCalls()
@@ -200,6 +204,21 @@ void ScriptingCore::CallMethod(int64_t scriptID, MonoMethod* method)
     MonoObject* exception = nullptr;
     void* params[1];
     params[0] = &scriptID;
+    mono_runtime_invoke(method, nullptr, params, &exception);
+
+    if (exception != nullptr)
+    {
+        Log::LogError("Error calling method " + std::string(mono_method_full_name(method, true)));
+        mono_print_unhandled_exception(exception);
+    }
+}
+
+void ScriptingCore::CallMethod(int64_t scriptID, MonoMethod *method, int64_t param)
+{
+    MonoObject* exception = nullptr;
+    void* params[2];
+    params[0] = &scriptID;
+    params[1] = &param;
     mono_runtime_invoke(method, nullptr, params, &exception);
 
     if (exception != nullptr)

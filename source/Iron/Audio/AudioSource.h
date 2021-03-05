@@ -6,7 +6,7 @@
 class AudioSource : public Component
 {
 public:
-    AudioSource();
+    explicit AudioSource(Entity* parentEntity);
     ~AudioSource() override;
 
     void OnUpdate() override;

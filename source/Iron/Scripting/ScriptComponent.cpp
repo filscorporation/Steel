@@ -30,5 +30,24 @@ void ScriptComponent::OnLateUpdate()
 
 void ScriptComponent::OnFixedUpdate()
 {
+    // TODO: solve situations when collision exit will not be called (rigid body destroyed)
+    if (hasCollision)
+        ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionStay, collisionStay.otherEntity->ID);
+
     ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnFixedUpdate);
+}
+
+void ScriptComponent::OnCollisionEnter(Collision collision)
+{
+    hasCollision = true;
+    collisionStay = collision;
+
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionEnter, collision.otherEntity->ID);
+}
+
+void ScriptComponent::OnCollisionExit(Collision collision)
+{
+    hasCollision = false;
+
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionExit, collision.otherEntity->ID);
 }

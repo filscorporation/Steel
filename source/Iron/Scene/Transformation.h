@@ -12,6 +12,8 @@
 class Transformation : public Component
 {
 public:
+    explicit Transformation(Entity* parentEntity) : Component(parentEntity) { }
+
     void SetPosition(const glm::vec3& position);
     void SetRotation(const glm::vec3& rotation);
     void SetScale(const glm::vec3& scale);
@@ -31,4 +33,6 @@ private:
     glm::mat4 _transformationMatrix;
 
     bool dirtyTransformation = true;
+
+    void UpdatePhysicsTransformation();
 };

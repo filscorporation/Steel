@@ -24,6 +24,10 @@ struct EngineCallsMethods
     MonoMethod* callOnUpdate;
     MonoMethod* callOnLateUpdate;
     MonoMethod* callOnFixedUpdate;
+
+    MonoMethod* callOnCollisionEnter;
+    MonoMethod* callOnCollisionStay;
+    MonoMethod* callOnCollisionExit;
 };
 
 class ScriptingCore
@@ -40,6 +44,7 @@ public:
     static int64_t RemoveComponentFromMonoClass(Entity *entity, MonoClass *monoClass);
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);
     static void CallMethod(int64_t scriptID, MonoMethod* method);
+    static void CallMethod(int64_t scriptID, MonoMethod* method, int64_t param);
     static void FindAndCallEntryPoint(MonoImage* image);
 
     static EngineCallsMethods EngineCalls;

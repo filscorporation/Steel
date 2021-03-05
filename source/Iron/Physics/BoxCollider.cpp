@@ -4,10 +4,11 @@
 #include "../Rendering/SpriteRenderer.h"
 #include "PhysicsInfo.h"
 
-BoxCollider::BoxCollider()
+BoxCollider::BoxCollider(Entity* parentEntity) : Collider(parentEntity)
 {
     info = new BoxColliderInfo();
     info->GroundBox = new b2PolygonShape();
+    SetSizeAutomatically();
 }
 
 BoxCollider::~BoxCollider()
