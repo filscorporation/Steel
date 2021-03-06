@@ -15,6 +15,8 @@
 #include "../Physics/Physics.h"
 #include "../Rendering/Renderer.h"
 #include "../Scripting/ScriptingSystem.h"
+#include "../Rendering/SpriteRenderer.h"
+#include "../UI/UIRenderer.h"
 
 Application* Application::Instance;
 
@@ -130,17 +132,19 @@ void Application::RunUpdate()
     state = ApplicationStates::OnLateUpdate;
     for (auto &entity : entities)
     {
-        for (auto &component : entity->Components())
+        auto sc = entity->GetComponent<ScriptComponent>();
+        if (sc != nullptr)
         {
             try
             {
-                component->OnLateUpdate();
+                sc->OnLateUpdate();
             }
             catch (const std::exception& ex)
             {
                 Log::LogError("Error in late update: " + std::string(ex.what()));
             }
         }
+        // TODO: this is here just for deferred destruction, rework
         entity->OnLateUpdate();
     }
 
@@ -148,18 +152,37 @@ void Application::RunUpdate()
     Renderer::OnBeforeRender();
 
     state = ApplicationStates::OnRender;
+    // Draw sprites
     for (auto &entity : entities)
     {
-        for (auto &component : entity->Components())
+        auto sr = entity->GetComponent<SpriteRenderer>();
+        if (sr != nullptr)
         {
             try
             {
-                // TODO: change to render calls and do depth sorting
-                component->OnRender();
+                sr->OnRender();
             }
             catch (const std::exception& ex)
             {
                 Log::LogError("Error in render: " + std::string(ex.what()));
+            }
+        }
+    }
+    // Clear depth buffer before rendering UI
+    Renderer::PrepareUIRender();
+    // Draw UI on top
+    for (auto &entity : entities)
+    {
+        auto uir = entity->GetComponent<UIRenderer>();
+        if (uir != nullptr)
+        {
+            try
+            {
+                uir->OnRender();
+            }
+            catch (const std::exception& ex)
+            {
+                Log::LogError("Error in UI render: " + std::string(ex.what()));
             }
         }
     }

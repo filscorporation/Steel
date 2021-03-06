@@ -16,6 +16,9 @@ struct CachedData
     MonoClass* classAudioListener;
     MonoClass* classAudioSource;
     MonoClass* classAnimator;
+    MonoClass* classRectTransformation;
+    MonoClass* classUIRenderer;
+    MonoClass* classUIImage;
 };
 
 struct EngineCallsMethods

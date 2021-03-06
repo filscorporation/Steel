@@ -14,6 +14,7 @@ public:
     static void OnBeforeRender();
     static void OnAfterRender();
     static void Clear(glm::vec3 color);
+    static void PrepareUIRender();
     static void DrawQuad(glm::mat4 transformation, GLuint textureID);
     static void DrawQuad(glm::mat4 transformation, GLuint textureID, glm::vec2 textureCoords[4]);
 

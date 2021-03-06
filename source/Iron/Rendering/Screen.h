@@ -15,6 +15,7 @@ public:
     static void SetFullscreen(bool fullscreen);
     static glm::vec3 GetColor();
     static void SetColor(glm::vec3 color);
+    static glm::mat4 GetUIViewProjection();
 
     static void UpdateSize();
     static void SwapBuffers();
@@ -29,11 +30,14 @@ private:
     static void Init(int width, int height, glm::vec3 color, bool fullscreen);
     static void Apply();
 
+    static void UpdateUIViewProjection();
+
     static int _width, _height;
     static int _xPosition, _yPosition;
     static glm::vec3 _color;
     static bool _fullscreen;
     static bool isInResizeCallback;
+    static glm::mat4 _viewProjection;
 
     friend class Application;
 };

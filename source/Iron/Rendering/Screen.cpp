@@ -5,12 +5,16 @@
 #include "../Core/Log.h"
 #include <GLFW/glfw3.h>
 
+#define UI_MIN_DISTANCE -0.01f
+#define UI_MAX_DISTANCE 100.0f
+
 GLFWwindow* _window;
 bool needToUpdateViewport = false;
 
 int Screen::_width, Screen::_height;
 int Screen::_xPosition, Screen::_yPosition;
 glm::vec3 Screen::_color;
+glm::mat4 Screen::_viewProjection = glm::mat4(1.0f);
 bool Screen::_fullscreen;
 bool Screen::isInResizeCallback = false;
 
@@ -113,6 +117,24 @@ void Screen::SetColor(glm::vec3 color)
     _color = color;
 }
 
+glm::mat4 Screen::GetUIViewProjection()
+{
+    // TODO: maybe it should be in some UICamera component
+
+    return _viewProjection;
+}
+
+void Screen::UpdateUIViewProjection()
+{
+    glm::mat4 projection = glm::ortho(
+            0.0f, (float)_width,
+            0.0f, (float)_height,
+            UI_MIN_DISTANCE, UI_MAX_DISTANCE
+    );
+
+    _viewProjection = projection;
+}
+
 void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen)
 {
     _fullscreen = fullscreen;
@@ -145,6 +167,8 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen)
 
     glfwSetWindowSizeCallback(_window, ResizeCallback);
     glfwSetWindowPosCallback(_window, PositionCallback);
+
+    UpdateUIViewProjection();
 
     Log::LogInfo("Initialized screen with size " + std::to_string(_width) + ":" + std::to_string(_height));
 
@@ -191,6 +215,7 @@ void Screen::UpdateSize()
         }
         glViewport(0, 0, tempWidth, tempHeight);
 
+        UpdateUIViewProjection();
         Application::Instance->GetCurrentScene()->GetMainCamera()->UpdateSize();
     }
 }

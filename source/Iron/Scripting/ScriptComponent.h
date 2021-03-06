@@ -14,10 +14,10 @@ public:
     void Init(const char* fullName, int64_t scriptPointer);
 
     void OnUpdate() override;
-    void OnLateUpdate() override;
 
     void OnCreate();
     void OnFixedUpdate();
+    void OnLateUpdate();
 
     void OnCollisionEnter(Collision collision);
     void OnCollisionExit(Collision collision);

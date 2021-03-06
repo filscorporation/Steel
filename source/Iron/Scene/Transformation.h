@@ -23,15 +23,17 @@ public:
     void SetTransformationDirty(bool dirty);
     bool IsTransformationDirty() const;
 
-    glm::mat4 GetTransformationMatrix();
+    virtual glm::mat4 GetTransformationMatrix();
 
-private:
+protected:
     glm::vec3 _position = { 0.0f, 0.0f, 0.0f };
     glm::vec3 _rotation = { 0.0f, 0.0f, 0.0f };
     glm::vec3 _scale = { 1.0f, 1.0f, 1.0f };
-    glm::mat4 _transformationMatrix;
 
     bool dirtyTransformation = true;
 
     void UpdatePhysicsTransformation();
+
+private:
+    glm::mat4 _transformationMatrix;
 };

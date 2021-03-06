@@ -11,7 +11,7 @@ public:
 
     int CurrentImageTileIndex = 0;
 
-    void OnRender() override;
+    void OnRender();
     void SetImage(Sprite* image);
     Sprite* GetImage();
     glm::vec2 GetWorldSize();

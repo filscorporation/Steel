@@ -1,7 +1,8 @@
 #include "ScriptingCallsRegister.h"
-#include "InternalCalls.h"
-#include "EntityInternalCalls.h"
 #include "ComponentsInternalCalls.h"
+#include "EntityInternalCalls.h"
+#include "InternalCalls.h"
+#include "UIInternalCalls.h"
 
 void ScriptingCallsRegister::RegisterInternalCalls()
 {
@@ -100,4 +101,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.RigidBody::SetRigidBodyType_Internal", (void*)ComponentsInternalCalls::RigidBody_SetRigidBodyType);
     mono_add_internal_call("Iron.BoxCollider::GetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_GetSize);
     mono_add_internal_call("Iron.BoxCollider::SetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_SetSize);
+
+    mono_add_internal_call("Iron.UIImage::GetSprite_Internal", (void*)UIInternalCalls::UIImage_GetSprite);
+    mono_add_internal_call("Iron.UIImage::SetSprite_Internal", (void*)UIInternalCalls::UIImage_SetSprite);
 }

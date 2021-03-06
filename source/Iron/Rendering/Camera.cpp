@@ -114,9 +114,9 @@ glm::vec2 Camera::ScreenToWorldPoint(glm::vec2 screenPoint)
     return glm::vec2(
             _width * (screenPoint.x / float(Screen::GetWidth()) - 0.5)
             + ParentEntity->Transform->GetPosition().x,
-            _height * ((float(Screen::GetHeight()) - screenPoint.y) / float(Screen::GetHeight()) - 0.5)
+            _height * (screenPoint.y / float(Screen::GetHeight()) - 0.5)
             + ParentEntity->Transform->GetPosition().y
-            );
+    );
 }
 
 glm::vec2 Camera::WorldToScreenPoint(glm::vec2 worldPoint)

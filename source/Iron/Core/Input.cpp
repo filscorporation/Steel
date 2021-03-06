@@ -61,7 +61,8 @@ void MouseCallback(GLFWwindow* window, int button, int action, int mods)
 void CursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 {
     mousePosition.x = xPos;
-    mousePosition.y = yPos;
+    // GLFW coordinate system is upside down by Y-axis
+    mousePosition.y = Screen::GetHeight() - yPos;
 }
 
 void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)

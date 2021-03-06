@@ -73,6 +73,9 @@
         <Compile Include="Rendering\Screen.cs" />
         <Compile Include="Rendering\Sprite.cs" />
         <Compile Include="Rendering\SpriteRenderer.cs" />
+        <Compile Include="UI\RectTransformation.cs" />
+        <Compile Include="UI\UIComponent.cs" />
+        <Compile Include="UI\UIImage.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

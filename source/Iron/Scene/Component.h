@@ -16,6 +16,4 @@ public:
     Entity* ParentEntity = nullptr;
 
     virtual void OnUpdate() { };
-    virtual void OnLateUpdate() { };
-    virtual void OnRender() { };
 };

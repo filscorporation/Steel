@@ -1,4 +1,5 @@
 #include "ScriptingCore.h"
+#include "ScriptingCallsRegister.h"
 #include "../Animation/Animator.h"
 #include "../Audio/AudioListener.h"
 #include "../Audio/AudioSource.h"
@@ -7,7 +8,9 @@
 #include "../Physics/RigidBody.h"
 #include "../Rendering/Camera.h"
 #include "../Rendering/SpriteRenderer.h"
-#include "ScriptingCallsRegister.h"
+#include "../UI/RectTransformation.h"
+#include "../UI/UIRenderer.h"
+#include "../UI/UIImage.h"
 
 #include <mono/metadata/debug-helpers.h>
 
@@ -64,6 +67,9 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(AudioListener, API_CLASS(AudioListener))
     CACHE_CLASS(AudioSource, API_CLASS(AudioSource))
     CACHE_CLASS(Animator, API_CLASS(Animator))
+    CACHE_CLASS(RectTransformation, API_CLASS(RectTransformation))
+    CACHE_CLASS(UIRenderer, API_CLASS(UIRenderer))
+    CACHE_CLASS(UIImage, API_CLASS(UIImage))
 }
 
 Component* ScriptingCore::AddComponentFromMonoClass(Entity* entity, MonoClass* monoClass)
@@ -84,6 +90,12 @@ Component* ScriptingCore::AddComponentFromMonoClass(Entity* entity, MonoClass* m
         return entity->AddComponent<AudioSource>();
     if (monoClass == CACHED_CLASS(Animator))
         return entity->AddComponent<Animator>();
+    if (monoClass == CACHED_CLASS(RectTransformation))
+        return entity->AddComponent<RectTransformation>();
+    if (monoClass == CACHED_CLASS(UIRenderer))
+        return entity->AddComponent<UIRenderer>();
+    if (monoClass == CACHED_CLASS(UIImage))
+        return entity->AddComponent<UIImage>();
 
     Log::LogError("Could not find cached class");
 
@@ -108,6 +120,12 @@ Component *ScriptingCore::GetComponentFromMonoClass(Entity *entity, MonoClass *m
         return entity->GetComponent<AudioSource>();
     if (monoClass == CACHED_CLASS(Animator))
         return entity->GetComponent<Animator>();
+    if (monoClass == CACHED_CLASS(RectTransformation))
+        return entity->GetComponent<RectTransformation>();
+    if (monoClass == CACHED_CLASS(UIRenderer))
+        return entity->GetComponent<UIRenderer>();
+    if (monoClass == CACHED_CLASS(UIImage))
+        return entity->GetComponent<UIImage>();
 
     Log::LogError("Could not find cached class");
 
@@ -116,6 +134,7 @@ Component *ScriptingCore::GetComponentFromMonoClass(Entity *entity, MonoClass *m
 
 int64_t ScriptingCore::RemoveComponentFromMonoClass(Entity *entity, MonoClass *monoClass)
 {
+    // TODO: replace with macros
     Component* component;
     if (monoClass == CACHED_CLASS(Transformation))
     {
@@ -179,6 +198,30 @@ int64_t ScriptingCore::RemoveComponentFromMonoClass(Entity *entity, MonoClass *m
         if (component == nullptr)
             return 0;
         entity->RemoveComponent<Animator>();
+        return component->ID;
+    }
+    if (monoClass == CACHED_CLASS(RectTransformation))
+    {
+        component = entity->GetComponent<RectTransformation>();
+        if (component == nullptr)
+            return 0;
+        entity->RemoveComponent<RectTransformation>();
+        return component->ID;
+    }
+    if (monoClass == CACHED_CLASS(UIRenderer))
+    {
+        component = entity->GetComponent<UIRenderer>();
+        if (component == nullptr)
+            return 0;
+        entity->RemoveComponent<UIRenderer>();
+        return component->ID;
+    }
+    if (monoClass == CACHED_CLASS(UIImage))
+    {
+        component = entity->GetComponent<UIImage>();
+        if (component == nullptr)
+            return 0;
+        entity->RemoveComponent<UIImage>();
         return component->ID;
     }
 

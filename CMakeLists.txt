@@ -44,7 +44,10 @@ set(SOURCE_FILES
         source/Iron/Scripting/ScriptingCallsRegister.cpp source/Iron/Scripting/ScriptingCallsRegister.h
         source/Iron/Rendering/BuiltInShaders.h source/Iron/Physics/Physics.cpp source/Iron/Physics/Physics.h
         source/Iron/Physics/PhysicsContactListener.cpp source/Iron/Physics/PhysicsContactListener.h
-        source/Iron/Physics/Collision.h)
+        source/Iron/Physics/Collision.h source/Iron/UI/RectTransformation.cpp source/Iron/UI/RectTransformation.h
+        source/Iron/UI/UIComponent.cpp source/Iron/UI/UIComponent.h source/Iron/UI/UIRenderer.cpp
+        source/Iron/UI/UIRenderer.h source/Iron/UI/UIImage.cpp source/Iron/UI/UIImage.h
+        source/Iron/Scripting/UIInternalCalls.cpp source/Iron/Scripting/UIInternalCalls.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

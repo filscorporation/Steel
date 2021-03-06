@@ -112,6 +112,7 @@ void Renderer::OnBeforeRender()
     // Set camera transformation
     glm::mat4 viewProjection = mainCamera->GetViewProjection();
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(viewProjection));
+
     StartBatch();
 }
 
@@ -124,6 +125,16 @@ void Renderer::Clear(glm::vec3 color)
 {
     glClearColor(color.r, color.g, color.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::PrepareUIRender()
+{
+    EndBatch();
+    StartBatch();
+
+    glm::mat4 uiViewProjection = Screen::GetUIViewProjection();
+    glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(uiViewProjection));
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID)
