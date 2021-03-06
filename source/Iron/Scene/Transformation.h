@@ -7,7 +7,6 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "Component.h"
-#include "../Core/Input.h"
 
 class Transformation : public Component
 {

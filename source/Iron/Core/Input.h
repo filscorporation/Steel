@@ -4,6 +4,7 @@
 #include "KeyCodes.h"
 #include "MouseCodes.h"
 #include "../Rendering/Screen.h"
+#include "../Scene/Entity.h"
 
 struct GLFWwindow;
 
@@ -20,9 +21,16 @@ public:
     static glm::vec2 GetMouseScrollDelta();
 
     static void PollEvents();
+    static void SendMouseCallbacks();
 
 private:
     static void Init(GLFWwindow* window);
+
+    static bool IsAnyMouseButtonPressed();
+    static bool IsAnyMouseButtonJustPressed();
+    static bool IsAnyMouseButtonJustReleased();
+
+    static Entity* lastMouseOverCollider;
 
     friend class Screen;
 };

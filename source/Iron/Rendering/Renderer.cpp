@@ -28,6 +28,12 @@ void Renderer::Init(Camera* camera)
 
     mainCamera = camera;
 
+    if(!gladLoadGL())
+    {
+        Log::LogError("Error loading OpenGL");
+        return;
+    }
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

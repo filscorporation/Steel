@@ -6,8 +6,6 @@
 
 void ScriptComponent::Init(const char* fullName, int64_t scriptPointer)
 {
-    Log::LogInfo("Initializing script " + std::string(fullName));
-
     _fullName = fullName;
     _scriptPointer = scriptPointer;
 }
@@ -50,4 +48,34 @@ void ScriptComponent::OnCollisionExit(Collision collision)
     hasCollision = false;
 
     ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionExit, collision.otherEntity->ID);
+}
+
+void ScriptComponent::OnMouseOver()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnMouseOver);
+}
+
+void ScriptComponent::OnMouseEnter()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnMouseEnter);
+}
+
+void ScriptComponent::OnMouseExit()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnMouseExit);
+}
+
+void ScriptComponent::OnMousePressed()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnMousePressed);
+}
+
+void ScriptComponent::OnMouseJustPressed()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnMouseJustPressed);
+}
+
+void ScriptComponent::OnMouseJustReleased()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnMouseJustReleased);
 }

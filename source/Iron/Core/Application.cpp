@@ -1,5 +1,4 @@
 #include <iostream>
-#include <GLAD/glad.h>
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #endif
@@ -9,11 +8,12 @@
 #endif
 
 #include "Application.h"
+#include "Input.h"
 #include "Log.h"
 #include "Time.h"
-#include "../Rendering/Renderer.h"
 #include "../Audio/AudioSystem.h"
-#include "../Physics/PhysicsCore.h"
+#include "../Physics/Physics.h"
+#include "../Rendering/Renderer.h"
 #include "../Scripting/ScriptingSystem.h"
 
 Application* Application::Instance;
@@ -34,17 +34,12 @@ void Application::Init(ApplicationSettings settings)
 
     Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen);
 
-    if(!gladLoadGL())
-    {
-        Log::LogError("Error loading OpenGL");
-    }
-
     resources = new ResourcesManager();
     scene = new Scene();
 
     Renderer::Init(scene->GetMainCamera());
     AudioSystem::Init(scene->GetMainCamera()->ParentEntity);
-    PhysicsCore::Init();
+    Physics::Init();
 
     Log::LogInfo("Application initialized");
 }
@@ -78,6 +73,9 @@ void Application::RunUpdate()
 
     Renderer::Clear(Screen::GetColor());
 
+    // Send callbacks for mouse events to affected entities
+    Input::SendMouseCallbacks();
+
     // Update and render objects in scene
     state = ApplicationStates::OnUpdate;
     auto entities = std::list<Entity*>(scene->Entities);
@@ -95,9 +93,10 @@ void Application::RunUpdate()
             }
         }
     }
+
     state = ApplicationStates::OnPhysicsUpdate;
     // TODO: wrong delta time; physics should run on different thread with fixed delta time
-    PhysicsCore::Simulate(Time::DeltaTime());
+    Physics::Simulate(Time::DeltaTime());
     // TODO: change to physics double sided list of rigid bodies
     for (auto &entity : entities)
     {
@@ -199,7 +198,7 @@ void Application::Terminate()
 
     delete resources;
 
-    PhysicsCore::Terminate();
+    Physics::Terminate();
     AudioSystem::Terminate();
     Renderer::Terminate();
     Screen::Terminate();

@@ -28,6 +28,13 @@ struct EngineCallsMethods
     MonoMethod* callOnCollisionEnter;
     MonoMethod* callOnCollisionStay;
     MonoMethod* callOnCollisionExit;
+
+    MonoMethod* callOnMouseOver;
+    MonoMethod* callOnMouseEnter;
+    MonoMethod* callOnMouseExit;
+    MonoMethod* callOnMousePressed;
+    MonoMethod* callOnMouseJustPressed;
+    MonoMethod* callOnMouseJustReleased;
 };
 
 class ScriptingCore

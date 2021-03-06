@@ -1,5 +1,6 @@
 #include "InternalCalls.h"
 #include "../Core/Application.h"
+#include "../Core/Input.h"
 #include "../Core/Log.h"
 #include "../Core/Time.h"
 
@@ -66,7 +67,6 @@ bool InternalCalls::Input_IsMouseJustReleased(int code)
 {
     return Input::IsMouseButtonJustReleased((MouseCodes::MouseCode)code);
 }
-
 
 uint64_t InternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {

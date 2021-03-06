@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Screen.h"
 #include "../Scene/Entity.h"
 
 float Camera::GetWidth() const
@@ -81,7 +82,7 @@ void Camera::UpdateSize()
 
 glm::mat4 Camera::GetViewProjection()
 {
-    if (IsCameraDirty())
+    if (IsCameraDirty() || ParentEntity->Transform->IsTransformationDirty())
     {
         SetCameraDirty(false);
         glm::mat4 projection = glm::ortho(

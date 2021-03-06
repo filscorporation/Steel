@@ -22,6 +22,13 @@ public:
     void OnCollisionEnter(Collision collision);
     void OnCollisionExit(Collision collision);
 
+    void OnMouseOver();
+    void OnMouseEnter();
+    void OnMouseExit();
+    void OnMousePressed();
+    void OnMouseJustPressed();
+    void OnMouseJustReleased();
+
 private:
     ScriptMethods* methods;
     const char* _fullName;

@@ -7,7 +7,7 @@ namespace Iron
         public Sprite Sprite
         {
             get => new Sprite(GetSprite_Internal(Entity.ID));
-            set => SetSprite_Internal(Entity.ID, value.ID);
+            set => SetSprite_Internal(Entity.ID, value?.ID ?? 0);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

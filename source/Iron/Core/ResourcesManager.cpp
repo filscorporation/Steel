@@ -70,6 +70,9 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
 
 Sprite* ResourcesManager::GetImage(uint64_t imageID)
 {
+    if (imageID == 0)
+        return nullptr;
+
     if (imageID - 1 > images.size() || images[imageID - 1] == nullptr)
     {
         Log::LogError("Sprite does not exist");
@@ -86,7 +89,7 @@ void ResourcesManager::UnloadImage(uint64_t imageID)
         return;
 
     glDeleteTextures(1, &sprite->TextureID);
-    //images.erase(images.begin() + imageID);
+    //images.erase(images.begin() + imageID); // TODO: remove
     images[imageID - 1] = nullptr;
     delete sprite;
 }
@@ -160,6 +163,9 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char *filePath)
 
 AudioTrack *ResourcesManager::GetAudioTrack(uint64_t audioID)
 {
+    if (audioID == 0)
+        return nullptr;
+
     if (audioID - 1 > images.size() || images[audioID - 1] == nullptr)
     {
         Log::LogError("Audio track does not exist");
@@ -176,7 +182,7 @@ void ResourcesManager::UnloadAudioTrack(uint64_t audioID)
         return;
 
     alDeleteBuffers(1, &audioTrack->BufferID);
-    //audioTracks.erase(audioTracks.begin() + audioID);
+    //audioTracks.erase(audioTracks.begin() + audioID); // TODO: remove
     audioTracks[audioID - 1] = nullptr;
     delete audioTrack;
 
@@ -190,6 +196,9 @@ void ResourcesManager::AddAnimation(Animation *animation)
 
 Animation *ResourcesManager::GetAnimation(uint64_t animationID)
 {
+    if (animationID == 0)
+        return nullptr;
+
     if (animationID - 1 > animations.size() || animations[animationID - 1] == nullptr)
     {
         Log::LogError("Animation does not exist");
@@ -205,7 +214,7 @@ void ResourcesManager::RemoveAnimation(uint64_t animationID)
     if (animation == nullptr)
         return;
 
-    //animations.erase(animations.begin() + animationID);
+    //animations.erase(animations.begin() + animationID); // TODO: remove
     animations[animationID - 1] = nullptr;
     delete animation;
 }
