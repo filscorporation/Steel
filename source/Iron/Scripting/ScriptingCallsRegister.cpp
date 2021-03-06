@@ -35,11 +35,14 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Screen::SetColor_Internal", (void*)InternalCalls::Screen_SetColor);
 
     mono_add_internal_call("Iron.ResourcesManager::LoadImage_Internal", (void*)InternalCalls::ResourcesManager_LoadImage);
+    mono_add_internal_call("Iron.ResourcesManager::LoadAudioTrack_Internal", (void*)InternalCalls::ResourcesManager_LoadAudioTrack);
+    mono_add_internal_call("Iron.AudioTrack::GetLength_Internal", (void*)InternalCalls::AudioTrack_GetLength);
     mono_add_internal_call("Iron.Sprite::SetAsSpriteSheet_Internal", (void*)InternalCalls::Sprite_SetAsSpriteSheet);
     mono_add_internal_call("Iron.Sprite::GetWidth_Internal", (void*)InternalCalls::Sprite_GetWidth);
     mono_add_internal_call("Iron.Sprite::GetHeight_Internal", (void*)InternalCalls::Sprite_GetHeight);
     mono_add_internal_call("Iron.Animation::FromSpriteSheet_Internal", (void*)InternalCalls::Animation_FromSpriteSheet);
     mono_add_internal_call("Iron.Animation::GetLoop_Internal", (void*)InternalCalls::Animation_GetLoop);
+    mono_add_internal_call("Iron.Animation::GetLength_Internal", (void*)InternalCalls::Animation_GetLength);
     mono_add_internal_call("Iron.Animation::SetLoop_Internal", (void*)InternalCalls::Animation_SetLoop);
 
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal", (void*)EntityInternalCalls::Entity_CreateNewEntity);
@@ -58,6 +61,15 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Transformation::SetRotation_Internal", (void*)ComponentsInternalCalls::Transformation_SetRotation);
     mono_add_internal_call("Iron.Transformation::GetScale_Internal", (void*)ComponentsInternalCalls::Transformation_GetScale);
     mono_add_internal_call("Iron.Transformation::SetScale_Internal", (void*)ComponentsInternalCalls::Transformation_SetScale);
+
+    mono_add_internal_call("Iron.AudioListener::GetVolume_Internal", (void*)ComponentsInternalCalls::AudioListener_GetVolume);
+    mono_add_internal_call("Iron.AudioListener::SetVolume_Internal", (void*)ComponentsInternalCalls::AudioListener_SetVolume);
+    mono_add_internal_call("Iron.AudioSource::GetVolume_Internal", (void*)ComponentsInternalCalls::AudioSource_GetVolume);
+    mono_add_internal_call("Iron.AudioSource::SetVolume_Internal", (void*)ComponentsInternalCalls::AudioSource_SetVolume);
+    mono_add_internal_call("Iron.AudioSource::GetLoop_Internal", (void*)ComponentsInternalCalls::AudioSource_GetLoop);
+    mono_add_internal_call("Iron.AudioSource::SetLoop_Internal", (void*)ComponentsInternalCalls::AudioSource_SetLoop);
+    mono_add_internal_call("Iron.AudioSource::Play_Internal", (void*)ComponentsInternalCalls::AudioSource_Play);
+    mono_add_internal_call("Iron.AudioSource::Stop_Internal", (void*)ComponentsInternalCalls::AudioSource_Stop);
 
     mono_add_internal_call("Iron.SpriteRenderer::GetSprite_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_GetSprite);
     mono_add_internal_call("Iron.SpriteRenderer::SetSprite_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_SetSprite);

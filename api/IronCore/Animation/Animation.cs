@@ -19,6 +19,8 @@ namespace Iron
             set => SetLoop_Internal(ID, value);
         }
 
+        public float Length => GetLength_Internal(ID);
+
         public static Animation FromSpriteSheet(Sprite sprite, float length)
         {
             ulong animationID = FromSpriteSheet_Internal(sprite.ID, length);
@@ -40,5 +42,8 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetLoop_Internal(ulong animationID, bool loop);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float GetLength_Internal(ulong animationID);
     }
 }

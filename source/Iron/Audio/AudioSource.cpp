@@ -30,6 +30,16 @@ void AudioSource::Play(AudioTrack *audioTrack)
     AudioSystem::PlaySource(sourceID);
 }
 
+void AudioSource::Stop()
+{
+    AudioSystem::StopSource(sourceID);
+}
+
+bool AudioSource::GetIsLoop()
+{
+    return sourceIsLoop;
+}
+
 void AudioSource::SetIsLoop(bool isLoop)
 {
     if (sourceIsLoop != isLoop)
@@ -37,6 +47,11 @@ void AudioSource::SetIsLoop(bool isLoop)
         sourceIsLoop = isLoop;
         AudioSystem::SetSourceIsLoop(sourceID, isLoop);
     }
+}
+
+float AudioSource::GetVolume()
+{
+    return sourceVolume;
 }
 
 void AudioSource::SetVolume(float volume)

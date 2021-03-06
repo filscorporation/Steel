@@ -12,7 +12,10 @@ public:
     void OnUpdate() override;
 
     void Play(AudioTrack* audioTrack);
+    void Stop();
+    bool GetIsLoop();
     void SetIsLoop(bool isLoop);
+    float GetVolume();
     void SetVolume(float volume);
 
 private:

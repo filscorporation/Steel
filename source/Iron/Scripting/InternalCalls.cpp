@@ -74,6 +74,20 @@ uint64_t InternalCalls::ResourcesManager_LoadImage(MonoString* path)
     return image == nullptr ? 0 : image->ID;
 }
 
+uint64_t InternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
+{
+    auto track = Application::Instance->GetResourcesManager()->LoadAudioTrack(mono_string_to_utf8(path));
+    return track == nullptr ? 0 : track->ID;
+}
+
+float InternalCalls::AudioTrack_GetLength(uint64_t audioTrackID)
+{
+    auto track = Application::Instance->GetResourcesManager()->GetAudioTrack(audioTrackID);
+    if (track != nullptr)
+        return track->LengthInSeconds;
+    return 0;
+}
+
 void InternalCalls::Sprite_SetAsSpriteSheet(uint64_t spriteID, int tileWidth, int tileHeight)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
@@ -106,6 +120,18 @@ uint64_t InternalCalls::Animation_FromSpriteSheet(uint64_t spriteID, float lengt
     Application::Instance->GetResourcesManager()->AddAnimation(animation);
 
     return animation->ID;
+}
+
+float InternalCalls::Animation_GetLength(uint64_t animationID)
+{
+    auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
+    if (animation == nullptr)
+    {
+        Log::LogError("Animation does not exist");
+        return false;
+    }
+
+    return animation->Length();
 }
 
 bool InternalCalls::Animation_GetLoop(uint64_t animationID)

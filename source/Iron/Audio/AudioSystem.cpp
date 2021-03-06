@@ -235,3 +235,15 @@ void AudioSystem::PlaySource(unsigned int sourceID)
         Log::LogError("Error playing from source");
     }
 }
+
+void AudioSystem::StopSource(unsigned int sourceID)
+{
+    if (AssertInitialized())
+        return;
+
+    alSourceStop((ALuint)sourceID);
+    if (CheckForErrors())
+    {
+        Log::LogError("Error stopping source");
+    }
+}

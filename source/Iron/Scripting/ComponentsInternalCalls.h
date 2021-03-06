@@ -14,6 +14,16 @@ namespace ComponentsInternalCalls
     glm::vec3 Transformation_GetScale(int64_t entityID);
     void Transformation_SetScale(int64_t entityID, glm::vec3 scale);
 
+    // Audio
+    float AudioListener_GetVolume(int64_t entityID);
+    void AudioListener_SetVolume(int64_t entityID, float volume);
+    float AudioSource_GetVolume(int64_t entityID);
+    void AudioSource_SetVolume(int64_t entityID, float volume);
+    bool AudioSource_GetLoop(int64_t entityID);
+    void AudioSource_SetLoop(int64_t entityID, bool loop);
+    void AudioSource_Play(int64_t entityID, int64_t audioTrackID);
+    void AudioSource_Stop(int64_t entityID);
+
     // Sprite Renderer
     uint64_t SpriteRenderer_GetSprite(int64_t entityID);
     void SpriteRenderer_SetSprite(int64_t entityID, int64_t spriteID);

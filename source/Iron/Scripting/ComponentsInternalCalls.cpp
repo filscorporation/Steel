@@ -1,5 +1,7 @@
 #include "ComponentsInternalCalls.h"
 #include "../Animation/Animator.h"
+#include "../Audio/AudioSource.h"
+#include "../Audio/AudioListener.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 #include "../Rendering/SpriteRenderer.h"
@@ -76,6 +78,158 @@ void ComponentsInternalCalls::Transformation_SetScale(int64_t entityID, glm::vec
     }
 
     entity->Transform->SetScale(scale);
+}
+
+float ComponentsInternalCalls::AudioListener_GetVolume(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return 0;
+    }
+
+    auto al = entity->GetComponent<AudioListener>();
+    if (al == nullptr)
+    {
+        Log::LogError("No audio listener component attached to entity " + std::to_string(entityID));
+        return 0;
+    }
+
+    return al->GetVolume();
+}
+
+void ComponentsInternalCalls::AudioListener_SetVolume(int64_t entityID, float volume)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto al = entity->GetComponent<AudioListener>();
+    if (al == nullptr)
+    {
+        Log::LogError("No audio listener component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    al->SetVolume(volume);
+}
+
+float ComponentsInternalCalls::AudioSource_GetVolume(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return 0;
+    }
+
+    auto as = entity->GetComponent<AudioSource>();
+    if (as == nullptr)
+    {
+        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
+        return 0;
+    }
+
+    return as->GetVolume();
+}
+
+void ComponentsInternalCalls::AudioSource_SetVolume(int64_t entityID, float volume)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto as = entity->GetComponent<AudioSource>();
+    if (as == nullptr)
+    {
+        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    as->SetVolume(volume);
+}
+
+bool ComponentsInternalCalls::AudioSource_GetLoop(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return false;
+    }
+
+    auto as = entity->GetComponent<AudioSource>();
+    if (as == nullptr)
+    {
+        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
+        return false;
+    }
+
+    return as->GetIsLoop();
+}
+
+void ComponentsInternalCalls::AudioSource_SetLoop(int64_t entityID, bool loop)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto as = entity->GetComponent<AudioSource>();
+    if (as == nullptr)
+    {
+        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    as->SetIsLoop(loop);
+}
+
+void ComponentsInternalCalls::AudioSource_Play(int64_t entityID, int64_t audioTrackID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto as = entity->GetComponent<AudioSource>();
+    if (as == nullptr)
+    {
+        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    as->Play(Application::Instance->GetResourcesManager()->GetAudioTrack(audioTrackID));
+}
+
+void ComponentsInternalCalls::AudioSource_Stop(int64_t entityID)
+{
+    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
+    if (entity == nullptr)
+    {
+        Log::LogError("Entity does not exist: " + std::to_string(entityID));
+        return;
+    }
+
+    auto as = entity->GetComponent<AudioSource>();
+    if (as == nullptr)
+    {
+        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
+        return;
+    }
+
+    as->Stop();
 }
 
 uint64_t ComponentsInternalCalls::SpriteRenderer_GetSprite(int64_t entityID)

@@ -156,7 +156,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char *filePath)
     audioTrack->BufferID = audioBuffer;
     audioTracks.push_back(audioTrack);
 
-    Log::LogInfo("Audio track loaded");
+    Log::LogInfo("Audio track loaded: " + std::string(filePath) + ", " + std::to_string(audioTrack->ID));
 
     return audioTrack;
 }
