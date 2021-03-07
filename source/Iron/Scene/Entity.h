@@ -24,7 +24,7 @@ public:
 
     void OnLateUpdate();
 
-    Transformation* Transform;
+    Transformation* Transform; // TODO: private
 
     std::vector<Component*> Components()
     {

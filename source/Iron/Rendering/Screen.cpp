@@ -10,6 +10,7 @@
 
 GLFWwindow* _window;
 bool needToUpdateViewport = false;
+bool screenSizeDirty = false;
 
 int Screen::_width, Screen::_height;
 int Screen::_xPosition, Screen::_yPosition;
@@ -124,6 +125,11 @@ glm::mat4 Screen::GetUIViewProjection()
     return _viewProjection;
 }
 
+bool Screen::IsScreenSizeDirty()
+{
+    return screenSizeDirty;
+}
+
 void Screen::UpdateUIViewProjection()
 {
     glm::mat4 projection = glm::ortho(
@@ -180,6 +186,7 @@ void ResizeCallback(GLFWwindow* window, int cx, int cy)
     if (!Screen::IsInCallback())
     {
         needToUpdateViewport = true;
+        screenSizeDirty = true;
         Screen::EnterCallback();
         Application::Instance->RunUpdate();
         Screen::ExitCallback();
@@ -223,6 +230,8 @@ void Screen::UpdateSize()
 void Screen::SwapBuffers()
 {
     glfwSwapBuffers(_window);
+
+    screenSizeDirty = false;
 }
 
 bool Screen::WindowShouldClose()

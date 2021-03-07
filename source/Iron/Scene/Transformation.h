@@ -13,12 +13,12 @@ class Transformation : public Component
 public:
     explicit Transformation(Entity* parentEntity) : Component(parentEntity) { }
 
-    void SetPosition(const glm::vec3& position);
-    void SetRotation(const glm::vec3& rotation);
-    void SetScale(const glm::vec3& scale);
-    glm::vec3 GetPosition() const;
+    virtual glm::vec3 GetPosition() const;
+    virtual void SetPosition(const glm::vec3& position);
     glm::vec3 GetRotation() const;
+    void SetRotation(const glm::vec3& rotation);
     glm::vec3 GetScale() const;
+    void SetScale(const glm::vec3& scale);
 
     void SetTransformationDirty(bool dirty);
     bool IsTransformationDirty() const;
@@ -32,7 +32,7 @@ protected:
 
     bool dirtyTransformation = true;
 
-    void UpdatePhysicsTransformation();
+    virtual void UpdatePhysicsTransformation();
 
 private:
     glm::mat4 _transformationMatrix;

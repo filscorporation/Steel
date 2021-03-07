@@ -35,8 +35,8 @@ set(SOURCE_FILES
         source/Iron/Physics/PhysicsCore.h source/Iron/Physics/Collider.cpp source/Iron/Physics/Collider.h
         source/Iron/Physics/BoxCollider.cpp source/Iron/Physics/BoxCollider.h source/Iron/Physics/RigidBody.cpp
         source/Iron/Physics/RigidBody.h source/Iron/Physics/PhysicsInfo.h source/Iron/Scripting/ScriptingSystem.cpp
-        source/Iron/Scripting/ScriptingSystem.h source/Iron/Scripting/InternalCalls.h
-        source/Iron/Scripting/InternalCalls.cpp source/Iron/Math/Random.cpp source/Iron/Math/Random.h
+        source/Iron/Scripting/ScriptingSystem.h source/Iron/Scripting/CoreInternalCalls.h
+        source/Iron/Scripting/CoreInternalCalls.cpp source/Iron/Math/Random.cpp source/Iron/Math/Random.h
         source/Iron/Scripting/ScriptComponent.cpp source/Iron/Scripting/ScriptComponent.h
         source/Iron/Scripting/ScriptingCore.cpp source/Iron/Scripting/ScriptingCore.h
         source/Iron/Scripting/EntityInternalCalls.cpp source/Iron/Scripting/EntityInternalCalls.h

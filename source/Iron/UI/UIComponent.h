@@ -6,7 +6,7 @@
 class UIComponent : public Component
 {
 public:
-    explicit UIComponent(Entity* parentEntity) : Component(parentEntity) { }
+    explicit UIComponent(Entity* parentEntity);
 
     RectTransformation* GetRectTransform();
 };

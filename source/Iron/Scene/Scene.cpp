@@ -9,6 +9,7 @@ Entity* Scene::CreateEntity()
     EntitiesWasCreated++;
 
     auto entity = new Entity();
+    entity->Transform = entity->AddComponent<Transformation>();
     Entities.push_back(entity);
     entitiesByIDMap[entity->ID] = entity;
 

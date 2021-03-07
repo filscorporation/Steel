@@ -6,7 +6,6 @@
 Entity::Entity()
 {
     this->ID = Random::NextUint();
-    this->Transform = AddComponent<Transformation>();
 }
 
 Entity::~Entity()

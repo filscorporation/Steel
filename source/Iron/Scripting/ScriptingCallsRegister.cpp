@@ -1,50 +1,50 @@
 #include "ScriptingCallsRegister.h"
 #include "ComponentsInternalCalls.h"
 #include "EntityInternalCalls.h"
-#include "InternalCalls.h"
+#include "CoreInternalCalls.h"
 #include "UIInternalCalls.h"
 
 void ScriptingCallsRegister::RegisterInternalCalls()
 {
-    mono_add_internal_call("Iron.Application::Quit_Internal", (void*)InternalCalls::Application_Quit);
-    mono_add_internal_call("Iron.Application::GetState_Internal", (void*)InternalCalls::Application_GetState);
-    mono_add_internal_call("Iron.Application::GetRuntimePath_Internal", (void*)InternalCalls::Application_RuntimePath);
-    mono_add_internal_call("Iron.Application::GetDataPath_Internal", (void*)InternalCalls::Application_DataPath);
-    mono_add_internal_call("Iron.Log::LogInfo_Internal", (void*)InternalCalls::Log_LogInfo);
-    mono_add_internal_call("Iron.Log::LogWarning_Internal", (void*)InternalCalls::Log_LogWarning);
-    mono_add_internal_call("Iron.Log::LogError_Internal", (void*)InternalCalls::Log_LogError);
-    mono_add_internal_call("Iron.Time::GetDeltaTime_Internal", (void*)InternalCalls::Time_GetDeltaTime);
-    mono_add_internal_call("Iron.Time::GetTimeScale_Internal", (void*)InternalCalls::Time_GetTimeScale);
-    mono_add_internal_call("Iron.Time::SetTimeScale_Internal", (void*)InternalCalls::Time_SetTimeScale);
+    mono_add_internal_call("Iron.Application::Quit_Internal", (void*)CoreInternalCalls::Application_Quit);
+    mono_add_internal_call("Iron.Application::GetState_Internal", (void*)CoreInternalCalls::Application_GetState);
+    mono_add_internal_call("Iron.Application::GetRuntimePath_Internal", (void*)CoreInternalCalls::Application_RuntimePath);
+    mono_add_internal_call("Iron.Application::GetDataPath_Internal", (void*)CoreInternalCalls::Application_DataPath);
+    mono_add_internal_call("Iron.Log::LogInfo_Internal", (void*)CoreInternalCalls::Log_LogInfo);
+    mono_add_internal_call("Iron.Log::LogWarning_Internal", (void*)CoreInternalCalls::Log_LogWarning);
+    mono_add_internal_call("Iron.Log::LogError_Internal", (void*)CoreInternalCalls::Log_LogError);
+    mono_add_internal_call("Iron.Time::GetDeltaTime_Internal", (void*)CoreInternalCalls::Time_GetDeltaTime);
+    mono_add_internal_call("Iron.Time::GetTimeScale_Internal", (void*)CoreInternalCalls::Time_GetTimeScale);
+    mono_add_internal_call("Iron.Time::SetTimeScale_Internal", (void*)CoreInternalCalls::Time_SetTimeScale);
 
-    mono_add_internal_call("Iron.Input::GetMousePosition_Internal", (void*)InternalCalls::Input_GetMousePosition);
-    mono_add_internal_call("Iron.Input::GetMouseScrollDelta_Internal", (void*)InternalCalls::Input_GetMouseScrollDelta);
-    mono_add_internal_call("Iron.Input::IsKeyPressed_Internal", (void*)InternalCalls::Input_IsKeyPressed);
-    mono_add_internal_call("Iron.Input::IsKeyJustPressed_Internal", (void*)InternalCalls::Input_IsKeyJustPressed);
-    mono_add_internal_call("Iron.Input::IsKeyJustReleased_Internal", (void*)InternalCalls::Input_IsKeyJustReleased);
-    mono_add_internal_call("Iron.Input::IsMousePressed_Internal", (void*)InternalCalls::Input_IsMousePressed);
-    mono_add_internal_call("Iron.Input::IsMouseJustPressed_Internal", (void*)InternalCalls::Input_IsMouseJustPressed);
-    mono_add_internal_call("Iron.Input::IsMouseJustReleased_Internal", (void*)InternalCalls::Input_IsMouseJustReleased);
+    mono_add_internal_call("Iron.Input::GetMousePosition_Internal", (void*)CoreInternalCalls::Input_GetMousePosition);
+    mono_add_internal_call("Iron.Input::GetMouseScrollDelta_Internal", (void*)CoreInternalCalls::Input_GetMouseScrollDelta);
+    mono_add_internal_call("Iron.Input::IsKeyPressed_Internal", (void*)CoreInternalCalls::Input_IsKeyPressed);
+    mono_add_internal_call("Iron.Input::IsKeyJustPressed_Internal", (void*)CoreInternalCalls::Input_IsKeyJustPressed);
+    mono_add_internal_call("Iron.Input::IsKeyJustReleased_Internal", (void*)CoreInternalCalls::Input_IsKeyJustReleased);
+    mono_add_internal_call("Iron.Input::IsMousePressed_Internal", (void*)CoreInternalCalls::Input_IsMousePressed);
+    mono_add_internal_call("Iron.Input::IsMouseJustPressed_Internal", (void*)CoreInternalCalls::Input_IsMouseJustPressed);
+    mono_add_internal_call("Iron.Input::IsMouseJustReleased_Internal", (void*)CoreInternalCalls::Input_IsMouseJustReleased);
 
-    mono_add_internal_call("Iron.Screen::GetWidth_Internal", (void*)InternalCalls::Screen_GetWidth);
-    mono_add_internal_call("Iron.Screen::SetWidth_Internal", (void*)InternalCalls::Screen_SetWidth);
-    mono_add_internal_call("Iron.Screen::GetHeight_Internal", (void*)InternalCalls::Screen_GetHeight);
-    mono_add_internal_call("Iron.Screen::SetHeight_Internal", (void*)InternalCalls::Screen_SetHeight);
-    mono_add_internal_call("Iron.Screen::GetFullscreen_Internal", (void*)InternalCalls::Screen_GetFullscreen);
-    mono_add_internal_call("Iron.Screen::SetFullscreen_Internal", (void*)InternalCalls::Screen_SetFullscreen);
-    mono_add_internal_call("Iron.Screen::GetColor_Internal", (void*)InternalCalls::Screen_GetColor);
-    mono_add_internal_call("Iron.Screen::SetColor_Internal", (void*)InternalCalls::Screen_SetColor);
+    mono_add_internal_call("Iron.Screen::GetWidth_Internal", (void*)CoreInternalCalls::Screen_GetWidth);
+    mono_add_internal_call("Iron.Screen::SetWidth_Internal", (void*)CoreInternalCalls::Screen_SetWidth);
+    mono_add_internal_call("Iron.Screen::GetHeight_Internal", (void*)CoreInternalCalls::Screen_GetHeight);
+    mono_add_internal_call("Iron.Screen::SetHeight_Internal", (void*)CoreInternalCalls::Screen_SetHeight);
+    mono_add_internal_call("Iron.Screen::GetFullscreen_Internal", (void*)CoreInternalCalls::Screen_GetFullscreen);
+    mono_add_internal_call("Iron.Screen::SetFullscreen_Internal", (void*)CoreInternalCalls::Screen_SetFullscreen);
+    mono_add_internal_call("Iron.Screen::GetColor_Internal", (void*)CoreInternalCalls::Screen_GetColor);
+    mono_add_internal_call("Iron.Screen::SetColor_Internal", (void*)CoreInternalCalls::Screen_SetColor);
 
-    mono_add_internal_call("Iron.ResourcesManager::LoadImage_Internal", (void*)InternalCalls::ResourcesManager_LoadImage);
-    mono_add_internal_call("Iron.ResourcesManager::LoadAudioTrack_Internal", (void*)InternalCalls::ResourcesManager_LoadAudioTrack);
-    mono_add_internal_call("Iron.AudioTrack::GetLength_Internal", (void*)InternalCalls::AudioTrack_GetLength);
-    mono_add_internal_call("Iron.Sprite::SetAsSpriteSheet_Internal", (void*)InternalCalls::Sprite_SetAsSpriteSheet);
-    mono_add_internal_call("Iron.Sprite::GetWidth_Internal", (void*)InternalCalls::Sprite_GetWidth);
-    mono_add_internal_call("Iron.Sprite::GetHeight_Internal", (void*)InternalCalls::Sprite_GetHeight);
-    mono_add_internal_call("Iron.Animation::FromSpriteSheet_Internal", (void*)InternalCalls::Animation_FromSpriteSheet);
-    mono_add_internal_call("Iron.Animation::GetLoop_Internal", (void*)InternalCalls::Animation_GetLoop);
-    mono_add_internal_call("Iron.Animation::GetLength_Internal", (void*)InternalCalls::Animation_GetLength);
-    mono_add_internal_call("Iron.Animation::SetLoop_Internal", (void*)InternalCalls::Animation_SetLoop);
+    mono_add_internal_call("Iron.ResourcesManager::LoadImage_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadImage);
+    mono_add_internal_call("Iron.ResourcesManager::LoadAudioTrack_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAudioTrack);
+    mono_add_internal_call("Iron.AudioTrack::GetLength_Internal", (void*)CoreInternalCalls::AudioTrack_GetLength);
+    mono_add_internal_call("Iron.Sprite::SetAsSpriteSheet_Internal", (void*)CoreInternalCalls::Sprite_SetAsSpriteSheet);
+    mono_add_internal_call("Iron.Sprite::GetWidth_Internal", (void*)CoreInternalCalls::Sprite_GetWidth);
+    mono_add_internal_call("Iron.Sprite::GetHeight_Internal", (void*)CoreInternalCalls::Sprite_GetHeight);
+    mono_add_internal_call("Iron.Animation::FromSpriteSheet_Internal", (void*)CoreInternalCalls::Animation_FromSpriteSheet);
+    mono_add_internal_call("Iron.Animation::GetLoop_Internal", (void*)CoreInternalCalls::Animation_GetLoop);
+    mono_add_internal_call("Iron.Animation::GetLength_Internal", (void*)CoreInternalCalls::Animation_GetLength);
+    mono_add_internal_call("Iron.Animation::SetLoop_Internal", (void*)CoreInternalCalls::Animation_SetLoop);
 
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal", (void*)EntityInternalCalls::Entity_CreateNewEntity);
     mono_add_internal_call("Iron.Entity::AddComponent_Internal", (void*)EntityInternalCalls::Entity_AddComponent);
@@ -101,6 +101,21 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.RigidBody::SetRigidBodyType_Internal", (void*)ComponentsInternalCalls::RigidBody_SetRigidBodyType);
     mono_add_internal_call("Iron.BoxCollider::GetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_GetSize);
     mono_add_internal_call("Iron.BoxCollider::SetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_SetSize);
+
+    mono_add_internal_call("Iron.RectTransformation::GetAnchorMin_Internal", (void*)UIInternalCalls::RectTransformation_GetAnchorMin);
+    mono_add_internal_call("Iron.RectTransformation::SetAnchorMin_Internal", (void*)UIInternalCalls::RectTransformation_SetAnchorMin);
+    mono_add_internal_call("Iron.RectTransformation::GetAnchorMax_Internal", (void*)UIInternalCalls::RectTransformation_GetAnchorMax);
+    mono_add_internal_call("Iron.RectTransformation::SetAnchorMax_Internal", (void*)UIInternalCalls::RectTransformation_SetAnchorMax);
+    mono_add_internal_call("Iron.RectTransformation::GetAnchoredPosition_Internal", (void*)UIInternalCalls::RectTransformation_GetAnchoredPosition);
+    mono_add_internal_call("Iron.RectTransformation::SetAnchoredPosition_Internal", (void*)UIInternalCalls::RectTransformation_SetAnchoredPosition);
+    mono_add_internal_call("Iron.RectTransformation::GetOffsetMin_Internal", (void*)UIInternalCalls::RectTransformation_GetOffsetMin);
+    mono_add_internal_call("Iron.RectTransformation::SetOffsetMin_Internal", (void*)UIInternalCalls::RectTransformation_SetOffsetMin);
+    mono_add_internal_call("Iron.RectTransformation::GetOffsetMax_Internal", (void*)UIInternalCalls::RectTransformation_GetOffsetMax);
+    mono_add_internal_call("Iron.RectTransformation::SetOffsetMax_Internal", (void*)UIInternalCalls::RectTransformation_SetOffsetMax);
+    mono_add_internal_call("Iron.RectTransformation::GetPivot_Internal", (void*)UIInternalCalls::RectTransformation_GetPivot);
+    mono_add_internal_call("Iron.RectTransformation::SetPivot_Internal", (void*)UIInternalCalls::RectTransformation_SetPivot);
+    mono_add_internal_call("Iron.RectTransformation::GetSize_Internal", (void*)UIInternalCalls::RectTransformation_GetSize);
+    mono_add_internal_call("Iron.RectTransformation::SetSize_Internal", (void*)UIInternalCalls::RectTransformation_SetSize);
 
     mono_add_internal_call("Iron.UIImage::GetSprite_Internal", (void*)UIInternalCalls::UIImage_GetSprite);
     mono_add_internal_call("Iron.UIImage::SetSprite_Internal", (void*)UIInternalCalls::UIImage_SetSprite);

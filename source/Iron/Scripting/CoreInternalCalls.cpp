@@ -1,86 +1,86 @@
-#include "InternalCalls.h"
+#include "CoreInternalCalls.h"
 #include "../Core/Application.h"
 #include "../Core/Input.h"
 #include "../Core/Log.h"
 #include "../Core/Time.h"
 
-void InternalCalls::Application_Quit()
+void CoreInternalCalls::Application_Quit()
 {
     Application::Instance->Quit();
 }
 
-int InternalCalls::Application_GetState()
+int CoreInternalCalls::Application_GetState()
 {
     return Application::Instance->State();
 }
 
-MonoString* InternalCalls::Application_RuntimePath()
+MonoString* CoreInternalCalls::Application_RuntimePath()
 {
     return mono_string_new(mono_domain_get(), Application::Instance->GetRuntimePath().c_str());
 }
 
-MonoString* InternalCalls::Application_DataPath()
+MonoString* CoreInternalCalls::Application_DataPath()
 {
     return mono_string_new(mono_domain_get(), Application::Instance->GetDataPath().c_str());
 }
 
-void InternalCalls::Input_GetMousePosition(glm::vec2* position)
+void CoreInternalCalls::Input_GetMousePosition(glm::vec2* position)
 {
     auto temp = Input::GetMousePosition();
     position->x = temp.x;
     position->y = temp.y;
 }
 
-void InternalCalls::Input_GetMouseScrollDelta(glm::vec2* delta)
+void CoreInternalCalls::Input_GetMouseScrollDelta(glm::vec2* delta)
 {
     auto temp = Input::GetMouseScrollDelta();
     delta->x = temp.x;
     delta->y = temp.y;
 }
 
-bool InternalCalls::Input_IsKeyPressed(int code)
+bool CoreInternalCalls::Input_IsKeyPressed(int code)
 {
     return Input::IsKeyPressed((KeyCodes::KeyCode)code);
 }
 
-bool InternalCalls::Input_IsKeyJustPressed(int code)
+bool CoreInternalCalls::Input_IsKeyJustPressed(int code)
 {
     return Input::IsKeyJustPressed((KeyCodes::KeyCode)code);
 }
 
-bool InternalCalls::Input_IsKeyJustReleased(int code)
+bool CoreInternalCalls::Input_IsKeyJustReleased(int code)
 {
     return Input::IsKeyJustReleased((KeyCodes::KeyCode)code);
 }
 
-bool InternalCalls::Input_IsMousePressed(int code)
+bool CoreInternalCalls::Input_IsMousePressed(int code)
 {
     return Input::IsMouseButtonPressed((MouseCodes::MouseCode)code);
 }
 
-bool InternalCalls::Input_IsMouseJustPressed(int code)
+bool CoreInternalCalls::Input_IsMouseJustPressed(int code)
 {
     return Input::IsMouseButtonJustPressed((MouseCodes::MouseCode)code);
 }
 
-bool InternalCalls::Input_IsMouseJustReleased(int code)
+bool CoreInternalCalls::Input_IsMouseJustReleased(int code)
 {
     return Input::IsMouseButtonJustReleased((MouseCodes::MouseCode)code);
 }
 
-uint64_t InternalCalls::ResourcesManager_LoadImage(MonoString* path)
+uint64_t CoreInternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {
     auto image = Application::Instance->GetResourcesManager()->LoadImage(mono_string_to_utf8(path));
     return image == nullptr ? 0 : image->ID;
 }
 
-uint64_t InternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
+uint64_t CoreInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
 {
     auto track = Application::Instance->GetResourcesManager()->LoadAudioTrack(mono_string_to_utf8(path));
     return track == nullptr ? 0 : track->ID;
 }
 
-float InternalCalls::AudioTrack_GetLength(uint64_t audioTrackID)
+float CoreInternalCalls::AudioTrack_GetLength(uint64_t audioTrackID)
 {
     auto track = Application::Instance->GetResourcesManager()->GetAudioTrack(audioTrackID);
     if (track != nullptr)
@@ -88,26 +88,26 @@ float InternalCalls::AudioTrack_GetLength(uint64_t audioTrackID)
     return 0;
 }
 
-void InternalCalls::Sprite_SetAsSpriteSheet(uint64_t spriteID, int tileWidth, int tileHeight)
+void CoreInternalCalls::Sprite_SetAsSpriteSheet(uint64_t spriteID, int tileWidth, int tileHeight)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     if (image != nullptr)
         image->SetAsSpriteSheet(tileWidth, tileHeight);
 }
 
-int InternalCalls::Sprite_GetWidth(uint64_t spriteID)
+int CoreInternalCalls::Sprite_GetWidth(uint64_t spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     return image == nullptr ? 0 : image->Width;
 }
 
-int InternalCalls::Sprite_GetHeight(uint64_t spriteID)
+int CoreInternalCalls::Sprite_GetHeight(uint64_t spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     return image == nullptr ? 0 : image->Height;
 }
 
-uint64_t InternalCalls::Animation_FromSpriteSheet(uint64_t spriteID, float length)
+uint64_t CoreInternalCalls::Animation_FromSpriteSheet(uint64_t spriteID, float length)
 {
     auto sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     if (sprite == nullptr)
@@ -122,7 +122,7 @@ uint64_t InternalCalls::Animation_FromSpriteSheet(uint64_t spriteID, float lengt
     return animation->ID;
 }
 
-float InternalCalls::Animation_GetLength(uint64_t animationID)
+float CoreInternalCalls::Animation_GetLength(uint64_t animationID)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
@@ -134,7 +134,7 @@ float InternalCalls::Animation_GetLength(uint64_t animationID)
     return animation->Length();
 }
 
-bool InternalCalls::Animation_GetLoop(uint64_t animationID)
+bool CoreInternalCalls::Animation_GetLoop(uint64_t animationID)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
@@ -146,7 +146,7 @@ bool InternalCalls::Animation_GetLoop(uint64_t animationID)
     return animation->Loop;
 }
 
-void InternalCalls::Animation_SetLoop(uint64_t animationID, bool loop)
+void CoreInternalCalls::Animation_SetLoop(uint64_t animationID, bool loop)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
@@ -158,72 +158,72 @@ void InternalCalls::Animation_SetLoop(uint64_t animationID, bool loop)
     animation->Loop = loop;
 }
 
-float InternalCalls::Time_GetDeltaTime()
+float CoreInternalCalls::Time_GetDeltaTime()
 {
     return Time::DeltaTime();
 }
 
-float InternalCalls::Time_GetTimeScale()
+float CoreInternalCalls::Time_GetTimeScale()
 {
     return Time::TimeScale;
 }
 
-void InternalCalls::Time_SetTimeScale(float timeScale)
+void CoreInternalCalls::Time_SetTimeScale(float timeScale)
 {
     Time::TimeScale = timeScale;
 }
 
-int InternalCalls::Screen_GetWidth()
+int CoreInternalCalls::Screen_GetWidth()
 {
     return Screen::GetWidth();
 }
 
-void InternalCalls::Screen_SetWidth(int width)
+void CoreInternalCalls::Screen_SetWidth(int width)
 {
     Screen::SetWidth(width);
 }
 
-int InternalCalls::Screen_GetHeight()
+int CoreInternalCalls::Screen_GetHeight()
 {
     return Screen::GetHeight();
 }
 
-void InternalCalls::Screen_SetHeight(int height)
+void CoreInternalCalls::Screen_SetHeight(int height)
 {
     Screen::SetHeight(height);
 }
 
-bool InternalCalls::Screen_GetFullscreen()
+bool CoreInternalCalls::Screen_GetFullscreen()
 {
     return Screen::GetFullscreen();
 }
 
-void InternalCalls::Screen_SetFullscreen(bool fullscreen)
+void CoreInternalCalls::Screen_SetFullscreen(bool fullscreen)
 {
     Screen::SetFullscreen(fullscreen);
 }
 
-glm::vec4 InternalCalls::Screen_GetColor()
+glm::vec4 CoreInternalCalls::Screen_GetColor()
 {
     return glm::vec4(Screen::GetColor(), 1.0f);
 }
 
-void InternalCalls::Screen_SetColor(glm::vec4 color)
+void CoreInternalCalls::Screen_SetColor(glm::vec4 color)
 {
     Screen::SetColor(color);
 }
 
-void InternalCalls::Log_LogInfo(MonoString* message)
+void CoreInternalCalls::Log_LogInfo(MonoString* message)
 {
     Log::LogInfo(mono_string_to_utf8(message));
 }
 
-void InternalCalls::Log_LogWarning(MonoString* message)
+void CoreInternalCalls::Log_LogWarning(MonoString* message)
 {
     Log::LogWarning(mono_string_to_utf8(message));
 }
 
-void InternalCalls::Log_LogError(MonoString* message)
+void CoreInternalCalls::Log_LogError(MonoString* message)
 {
     Log::LogError(mono_string_to_utf8(message));
 }

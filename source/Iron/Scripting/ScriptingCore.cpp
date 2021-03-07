@@ -105,7 +105,7 @@ Component* ScriptingCore::AddComponentFromMonoClass(Entity* entity, MonoClass* m
 Component *ScriptingCore::GetComponentFromMonoClass(Entity *entity, MonoClass *monoClass)
 {
     if (monoClass == CACHED_CLASS(Transformation))
-        return entity->GetComponent<Transformation>();
+        return entity->Transform; // TODO: for UI, rework
     if (monoClass == CACHED_CLASS(BoxCollider))
         return entity->GetComponent<BoxCollider>();
     if (monoClass == CACHED_CLASS(RigidBody))

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include "ScriptingCore.h"
 
-namespace InternalCalls
+namespace CoreInternalCalls
 {
     // Core
     void Application_Quit();
