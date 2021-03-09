@@ -1,161 +1,133 @@
 #include "EntityInternalCalls.h"
-#include "ScriptComponent.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
+#include "../Scene/SceneHelper.h"
+#include "../Scene/NameComponent.h"
 
-uint64_t EntityInternalCalls::Entity_CreateNewEntity()
+EntityID EntityInternalCalls::Entity_CreateNewEntity()
 {
-    return Application::Instance->GetCurrentScene()->CreateEntity()->ID;
+    return Application::Instance->GetCurrentScene()->CreateEntity();
 }
 
-uint64_t EntityInternalCalls::Entity_AddComponent(uint64_t id, void* type)
+bool EntityInternalCalls::Entity_AddComponent(EntityID id, void* type)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
+    if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
         Log::LogError("Error getting entity by ID " + std::to_string(id));
-        return 0;
+        return false;
     }
 
     MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
     if (monoType == nullptr)
     {
         Log::LogError("Error getting mono type for entity ID " + std::to_string(id));
-        return 0;
+        return false;
     }
+
     MonoClass* monoClass = mono_class_from_mono_type(monoType);
     if (monoClass == nullptr)
     {
         Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return 0;
+        return false;
     }
 
-    auto component = ScriptingCore::AddComponentFromMonoClass(entity, monoClass);
-    if (component == nullptr)
+    bool success = false;
+    auto& component = ScriptingCore::AddComponentFromMonoClass(id, monoClass, success);
+    if (!success)
     {
         Log::LogError("Error adding component " + std::string(mono_type_get_name(monoType)));
-        return 0;
+        return false;
     }
 
-    return component->ID;
+    return true;
 }
 
-uint64_t EntityInternalCalls::Entity_AddScriptComponent(uint64_t id, void* type, int64_t scriptPointer)
+bool EntityInternalCalls::Entity_AddScriptComponent(EntityID id, void* type, ScriptPointer scriptPointer)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
+    if (HasComponentS<ScriptComponent>(id))
+        return false;
 
     MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    auto scriptComponent = entity->AddComponent<ScriptComponent>();
+    auto& scriptComponent = AddComponentS<ScriptComponent>(id);
+    scriptComponent.Init(mono_type_get_name(monoType), scriptPointer);
 
-    if (scriptComponent == nullptr)
-        return 0;
-
-    scriptComponent->Init(mono_type_get_name(monoType), scriptPointer);
-
-    return scriptComponent->ID;
+    return true;
 }
 
-uint64_t EntityInternalCalls::Entity_GetComponent(uint64_t id, void* type)
+bool EntityInternalCalls::Entity_HasComponent(EntityID id, void* type)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
-
     MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
     if (monoType == nullptr)
     {
         Log::LogError("Error getting mono type for entity ID " + std::to_string(id));
-        return 0;
+        return false;
     }
+
     MonoClass* monoClass = mono_class_from_mono_type(monoType);
     if (monoClass == nullptr)
     {
         Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return 0;
+        return false;
     }
 
-    auto component = ScriptingCore::GetComponentFromMonoClass(entity, monoClass);
-    if (component == nullptr)
-    {
-        return 0;
-    }
-
-    return component->ID;
+    return ScriptingCore::HasComponentFromMonoClass(id, monoClass);
 }
 
-uint64_t EntityInternalCalls::Entity_GetScriptComponent(uint64_t id, void* type)
+ScriptPointer EntityInternalCalls::Entity_GetScriptComponent(EntityID id, void* type)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
+    if (!HasComponentS<ScriptComponent>(id))
+        return NULL;
 
     //MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    // TODO: won't work for multiple scripts; create map
+    // TODO: won't work for multiple scripts
 
-    auto scriptComponent = entity->GetComponent<ScriptComponent>();
-    if (scriptComponent == nullptr)
-        return 0;
+    auto& scriptComponent = GetComponentS<ScriptComponent>(id);
 
-    return scriptComponent->ID;
+    return scriptComponent.GetScriptPointer();
 }
 
-uint64_t EntityInternalCalls::Entity_RemoveComponent(uint64_t id, void* type)
+bool EntityInternalCalls::Entity_RemoveComponent(EntityID id, void* type)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
-
     MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
     if (monoType == nullptr)
     {
         Log::LogError("Error getting mono type for entity ID " + std::to_string(id));
-        return 0;
+        return false;
     }
+
     MonoClass* monoClass = mono_class_from_mono_type(monoType);
     if (monoClass == nullptr)
     {
         Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return 0;
+        return false;
     }
 
-    return ScriptingCore::RemoveComponentFromMonoClass(entity, monoClass);
+    return ScriptingCore::RemoveComponentFromMonoClass(id, monoClass);
 }
 
-uint64_t EntityInternalCalls::Entity_RemoveScriptComponent(uint64_t id, void* type)
+ScriptPointer EntityInternalCalls::Entity_RemoveScriptComponent(EntityID id, void* type)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return 0;
+    if (!HasComponentS<ScriptComponent>(id))
+        return NULL;
 
     //MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    // TODO: won't work for multiple scripts; create map
+    // TODO: won't work for multiple scripts
 
-    auto scriptComponent = entity->GetComponent<ScriptComponent>();
-    if (scriptComponent == nullptr)
-        return 0;
+    ScriptPointer scriptPointer = GetComponentS<ScriptComponent>(id).GetScriptPointer();
+    RemoveComponentS<ScriptComponent>(id);
 
-    uint64_t componentID = scriptComponent->ID;
-    entity->RemoveComponent<ScriptComponent>();
-
-    return componentID;
+    return scriptPointer;
 }
 
-MonoString* EntityInternalCalls::Entity_GetName(uint64_t id)
+MonoString* EntityInternalCalls::Entity_GetName(EntityID id)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
+    if (!HasComponentS<NameComponent>(id))
         return nullptr;
 
-    return mono_string_new(mono_domain_get(), entity->Name);
+    return mono_string_new(mono_domain_get(), GetComponentS<NameComponent>(id).Name);
 }
 
-void EntityInternalCalls::Entity_SetName(uint64_t id, MonoString* name)
+void EntityInternalCalls::Entity_SetName(EntityID id, MonoString* name)
 {
-    Entity* entity = Application::Instance->GetCurrentScene()->GetEntity(id);
-    if (entity == nullptr)
-        return;
-
-    entity->Name = mono_string_to_utf8(name);
+    AddComponentS<NameComponent>(id).Name = mono_string_to_utf8(name);
 }

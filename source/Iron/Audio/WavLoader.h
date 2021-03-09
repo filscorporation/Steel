@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core/ResourcesManager.h"
+#include "AudioTrack.h"
 
 class WavLoader
 {

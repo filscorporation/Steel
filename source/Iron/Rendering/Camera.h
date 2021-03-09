@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Scene/Component.h"
+#include "../EntityComponentSystem/Component.h"
 #include <glm/glm.hpp>
 
 namespace CameraResizeModes
@@ -16,7 +16,7 @@ namespace CameraResizeModes
 class Camera : public Component
 {
 public:
-    explicit Camera(Entity* parentEntity) : Component(parentEntity) { }
+    explicit Camera(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
     float GetWidth() const;
     void SetWidth(float width);

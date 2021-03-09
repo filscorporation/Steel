@@ -7,54 +7,54 @@
 namespace ComponentsInternalCalls
 {
     // Transformation
-    glm::vec3 Transformation_GetPosition(int64_t entityID);
-    void Transformation_SetPosition(int64_t entityID, glm::vec3 position);
-    glm::vec3 Transformation_GetRotation(int64_t entityID);
-    void Transformation_SetRotation(int64_t entityID, glm::vec3 rotation);
-    glm::vec3 Transformation_GetScale(int64_t entityID);
-    void Transformation_SetScale(int64_t entityID, glm::vec3 scale);
+    glm::vec3 Transformation_GetPosition(EntityID entityID);
+    void Transformation_SetPosition(EntityID entityID, glm::vec3 position);
+    glm::vec3 Transformation_GetRotation(EntityID entityID);
+    void Transformation_SetRotation(EntityID entityID, glm::vec3 rotation);
+    glm::vec3 Transformation_GetScale(EntityID entityID);
+    void Transformation_SetScale(EntityID entityID, glm::vec3 scale);
 
     // Audio
-    float AudioListener_GetVolume(int64_t entityID);
-    void AudioListener_SetVolume(int64_t entityID, float volume);
-    float AudioSource_GetVolume(int64_t entityID);
-    void AudioSource_SetVolume(int64_t entityID, float volume);
-    bool AudioSource_GetLoop(int64_t entityID);
-    void AudioSource_SetLoop(int64_t entityID, bool loop);
-    void AudioSource_Play(int64_t entityID, int64_t audioTrackID);
-    void AudioSource_Stop(int64_t entityID);
+    float AudioListener_GetVolume(EntityID entityID);
+    void AudioListener_SetVolume(EntityID entityID, float volume);
+    float AudioSource_GetVolume(EntityID entityID);
+    void AudioSource_SetVolume(EntityID entityID, float volume);
+    bool AudioSource_GetLoop(EntityID entityID);
+    void AudioSource_SetLoop(EntityID entityID, bool loop);
+    void AudioSource_Play(EntityID entityID, ResourceID audioTrackID);
+    void AudioSource_Stop(EntityID entityID);
 
     // Sprite Renderer
-    uint64_t SpriteRenderer_GetSprite(int64_t entityID);
-    void SpriteRenderer_SetSprite(int64_t entityID, int64_t spriteID);
+    ResourceID SpriteRenderer_GetSprite(EntityID entityID);
+    void SpriteRenderer_SetSprite(EntityID entityID, ResourceID spriteID);
 
     // Animator
-    void Animator_PlayAnimation(int64_t entityID, int64_t animationID);
-    void Animator_Play(int64_t entityID);
-    void Animator_Pause(int64_t entityID);
-    void Animator_Stop(int64_t entityID);
-    void Animator_Restart(int64_t entityID);
+    void Animator_PlayAnimation(EntityID entityID, ResourceID animationID);
+    void Animator_Play(EntityID entityID);
+    void Animator_Pause(EntityID entityID);
+    void Animator_Stop(EntityID entityID);
+    void Animator_Restart(EntityID entityID);
 
     // Camera
-    int64_t Camera_GetMainEntityWithMainCamera();
-    float Camera_GetWidth(int64_t entityID);
-    void Camera_SetWidth(int64_t entityID, float width);
-    float Camera_GetHeight(int64_t entityID);
-    void Camera_SetHeight(int64_t entityID, float height);
-    float Camera_GetNearClippingPlane(int64_t entityID);
-    void Camera_SetNearClippingPlane(int64_t entityID, float distance);
-    float Camera_GetFarClippingPlane(int64_t entityID);
-    void Camera_SetFarClippingPlane(int64_t entityID, float distance);
-    int Camera_GetResizingMode(int64_t entityID);
-    void Camera_SetResizingMode(int64_t entityID, int mode);
-    void Camera_WorldToScreenPoint(int64_t entityID, glm::vec2* worldPoint, glm::vec2* screenPoint);
-    void Camera_ScreenToWorldPoint(int64_t entityID, glm::vec2* screenPoint, glm::vec2* worldPoint);
+    EntityID Camera_GetEntityWithMainCamera();
+    float Camera_GetWidth(EntityID entityID);
+    void Camera_SetWidth(EntityID entityID, float width);
+    float Camera_GetHeight(EntityID entityID);
+    void Camera_SetHeight(EntityID entityID, float height);
+    float Camera_GetNearClippingPlane(EntityID entityID);
+    void Camera_SetNearClippingPlane(EntityID entityID, float distance);
+    float Camera_GetFarClippingPlane(EntityID entityID);
+    void Camera_SetFarClippingPlane(EntityID entityID, float distance);
+    CameraResizeModes::CameraResizeMode Camera_GetResizingMode(EntityID entityID);
+    void Camera_SetResizingMode(EntityID entityID, CameraResizeModes::CameraResizeMode mode);
+    void Camera_WorldToScreenPoint(EntityID entityID, glm::vec2* worldPoint, glm::vec2* screenPoint);
+    void Camera_ScreenToWorldPoint(EntityID entityID, glm::vec2* screenPoint, glm::vec2* worldPoint);
 
     // Physics
-    float RigidBody_GetMass(int64_t entityID);
-    void RigidBody_SetMass(int64_t entityID, float mass);
-    RigidBodyTypes::RigidBodyType RigidBody_GetRigidBodyType(int64_t entityID);
-    void RigidBody_SetRigidBodyType(int64_t entityID, RigidBodyTypes::RigidBodyType type);
-    void BoxCollider_GetSize(int64_t entityID, glm::vec2* size);
-    void BoxCollider_SetSize(int64_t entityID, glm::vec2* size);
+    float RigidBody_GetMass(EntityID entityID);
+    void RigidBody_SetMass(EntityID entityID, float mass);
+    RigidBodyTypes::RigidBodyType RigidBody_GetRigidBodyType(EntityID entityID);
+    void RigidBody_SetRigidBodyType(EntityID entityID, RigidBodyTypes::RigidBodyType type);
+    void BoxCollider_GetSize(EntityID entityID, glm::vec2* size);
+    void BoxCollider_SetSize(EntityID entityID, glm::vec2* size);
 }

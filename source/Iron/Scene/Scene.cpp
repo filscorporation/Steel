@@ -1,53 +1,75 @@
-#include "Scene.h"
-#include "../Rendering/Camera.h"
 #include <algorithm>
+
+#include "Scene.h"
+#include "Transformation.h"
+#include "NameComponent.h"
 
 int Scene::EntitiesWasCreated = 0;
 
-Entity* Scene::CreateEntity()
+Scene::Scene()
+{
+    entitiesRegistry = new EntitiesRegistry();
+}
+
+Scene::~Scene()
+{
+    delete entitiesRegistry;
+}
+
+void Scene::CreateMainCamera()
+{
+    _mainCameraEntity = CreateEntity();
+    auto& mainCamera = entitiesRegistry->AddComponent<Camera>(_mainCameraEntity);
+    entitiesRegistry->GetComponent<Transformation>(_mainCameraEntity).SetPosition(glm::vec3(0.0f, 0.0f, 3.0f)); // TODO: check
+    mainCamera.SetHeight(3.0f); // TODO: check
+}
+
+EntitiesRegistry* Scene::GetEntitiesRegistry()
+{
+    return entitiesRegistry;
+}
+
+EntityID Scene::CreateEntity()
 {
     EntitiesWasCreated++;
 
-    auto entity = new Entity();
-    entity->Transform = entity->AddComponent<Transformation>();
-    Entities.push_back(entity);
-    entitiesByIDMap[entity->ID] = entity;
+    auto entity = entitiesRegistry->CreateNewEntity();
+    auto& name = entitiesRegistry->AddComponent<NameComponent>(entity);
+    name.Name = "New entity";
+    entitiesRegistry->AddComponent<Transformation>(entity);
 
     return entity;
 }
 
-void Scene::DestroyEntity(Entity *entity)
+void Scene::DestroyEntity(EntityID entity)
 {
     entitiesToDelete.push_back(entity);
 }
 
-Scene::Scene()
+bool Scene::IsEntityDestroyed(EntityID entity)
 {
-    auto cameraEntity = CreateEntity();
-    _mainCamera = cameraEntity->AddComponent<Camera>();
-    cameraEntity->Transform->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-    // TODO: get params
-    GetMainCamera()->SetHeight(3.0f);
+    // TODO: too slow
+    if(std::find(entitiesToDelete.begin(), entitiesToDelete.end(), entity) != entitiesToDelete.end())
+        return true;
+    else
+        return false;
 }
 
-void Scene::DestroyAndRemoveEntity(Entity *entity)
+void Scene::DestroyAndRemoveEntity(EntityID entity)
 {
-    // TODO: WIP, rework (removing is very slow, up to 35% of CPU on many objects tests)
-    Entities.remove(entity);
-    entitiesByIDMap.erase(entity->ID);
     DestroyEntityInner(entity);
 }
 
-void Scene::DestroyEntityInner(Entity *entity)
+void Scene::DestroyEntityInner(EntityID entity)
 {
-    delete entity;
+    entitiesRegistry->DeleteEntity(entity);
 }
 
 void Scene::CleanDestroyedEntities()
 {
     for (auto entity : entitiesToDelete)
     {
-        if (entity != nullptr)
+        if (entity != NULL_ENTITY)
             DestroyAndRemoveEntity(entity);
     }
     entitiesToDelete.clear();
@@ -55,18 +77,10 @@ void Scene::CleanDestroyedEntities()
 
 void Scene::CleanAllEntities()
 {
-    for (auto entity : Entities)
-    {
-        DestroyEntityInner(entity);
-    }
+    entitiesRegistry->CleanAllEntities();
 }
 
-Entity *Scene::GetEntity(uint64_t entityID)
+Camera& Scene::GetMainCamera()
 {
-    return entitiesByIDMap[entityID];
-}
-
-Camera *Scene::GetMainCamera()
-{
-    return _mainCamera;
+    return entitiesRegistry->GetComponent<Camera>(_mainCameraEntity);
 }

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../Scene/Component.h"
+#include "../EntityComponentSystem/Component.h"
 
 class AudioListener : public Component
 {
 public:
-    explicit AudioListener(Entity* parentEntity) : Component(parentEntity) { }
+    explicit AudioListener(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    void OnUpdate() override;
+    void OnUpdate();
 
     void SetVolume(float volume);
     float GetVolume() const;

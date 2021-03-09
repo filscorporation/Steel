@@ -1,20 +1,21 @@
 #pragma once
 
-#include "../Scene/Component.h"
+#include "../EntityComponentSystem/Component.h"
 #include "../Physics/Collision.h"
 
-struct ScriptMethods;
 struct Collision;
+
+using ScriptPointer = intptr_t;
 
 class ScriptComponent : public Component
 {
 public:
-    explicit ScriptComponent(Entity* parentEntity) : Component(parentEntity) { }
+    explicit ScriptComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    void Init(const char* fullName, int64_t scriptPointer);
+    void Init(const char* fullName, ScriptPointer scriptPointer);
+    ScriptPointer GetScriptPointer() const;
 
-    void OnUpdate() override;
-
+    void OnUpdate();
     void OnCreate();
     void OnFixedUpdate();
     void OnLateUpdate();
@@ -30,9 +31,8 @@ public:
     void OnMouseJustReleased();
 
 private:
-    ScriptMethods* methods;
+    ScriptPointer _scriptPointer;
     const char* _fullName;
-    int64_t _scriptPointer;
 
     bool hasCollision = false;
     Collision collisionStay;

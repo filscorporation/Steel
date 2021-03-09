@@ -2,5 +2,5 @@
 
 struct Collision
 {
-    Entity* otherEntity;
+    EntityID OtherEntity;
 };

@@ -4,10 +4,12 @@
 #include <cstdint>
 #include <glm/vec2.hpp>
 
+#include "../Core/ResourceID.h"
+
 struct Sprite
 {
 public:
-    uint64_t ID;
+    ResourceID ID;
     const char* Path;
     unsigned int TextureID;
     int Width;

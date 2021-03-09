@@ -1,6 +1,8 @@
 #pragma once
 
 #include <box2d/box2d.h>
+#include <glm/vec2.hpp>
+#include <vector>
 
 #include "PhysicsContactListener.h"
 
@@ -11,8 +13,8 @@ public:
     static b2World* GetWorld();
     static void DeleteWorld();
 
-    static std::vector<Entity*> PointCast(glm::vec2 center);
-    static std::vector<Entity*> AABBCast(glm::vec2 center, glm::vec2 size);
+    static std::vector<EntityID> PointCast(glm::vec2 center);
+    static std::vector<EntityID> AABBCast(glm::vec2 center, glm::vec2 size);
 
     static void Simulate(float deltaTime);
 };

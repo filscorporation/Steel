@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Screen.h"
-#include "../Scene/Entity.h"
+#include "../Scene/Transformation.h"
+#include "../Scene/SceneHelper.h"
 
 float Camera::GetWidth() const
 {
@@ -82,7 +83,7 @@ void Camera::UpdateSize()
 
 glm::mat4 Camera::GetViewProjection()
 {
-    if (IsCameraDirty() || ParentEntity->Transform->IsTransformationDirty())
+    if (IsCameraDirty() || GetComponentS<Transformation>(Owner).IsTransformationDirty())
     {
         SetCameraDirty(false);
         glm::mat4 projection = glm::ortho(
@@ -90,7 +91,7 @@ glm::mat4 Camera::GetViewProjection()
                 -_height / 2, _height / 2,
                 _nearClippingPlane, _farClippingPlane
         );
-        glm::mat4 view = this->ParentEntity->Transform->GetTransformationMatrix();
+        glm::mat4 view = GetComponentS<Transformation>(Owner).GetTransformationMatrix();
         view = glm::inverse(view);
 
         viewProjection = projection * view;
@@ -111,18 +112,18 @@ bool Camera::IsCameraDirty() const
 
 glm::vec2 Camera::ScreenToWorldPoint(glm::vec2 screenPoint)
 {
+    auto position = GetComponentS<Transformation>(Owner).GetPosition();
     return glm::vec2(
-            _width * (screenPoint.x / float(Screen::GetWidth()) - 0.5)
-            + ParentEntity->Transform->GetPosition().x,
-            _height * (screenPoint.y / float(Screen::GetHeight()) - 0.5)
-            + ParentEntity->Transform->GetPosition().y
+            _width * (screenPoint.x / float(Screen::GetWidth()) - 0.5) + position.x,
+            _height * (screenPoint.y / float(Screen::GetHeight()) - 0.5) + position.y
     );
 }
 
 glm::vec2 Camera::WorldToScreenPoint(glm::vec2 worldPoint)
 {
+    auto position = GetComponentS<Transformation>(Owner).GetPosition();
     return glm::vec2(
-            ((worldPoint.x - ParentEntity->Transform->GetPosition().x) / _width + 0.5f) * float(Screen::GetWidth()),
-            ((worldPoint.y - ParentEntity->Transform->GetPosition().y) / _height + 0.5f) * float(Screen::GetHeight())
+            ((worldPoint.x - position.x) / _width + 0.5f) * float(Screen::GetWidth()),
+            ((worldPoint.y - position.y) / _height + 0.5f) * float(Screen::GetHeight())
     );
 }

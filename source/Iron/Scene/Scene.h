@@ -1,28 +1,33 @@
 #pragma once
 
 #include <list>
-#include "Entity.h"
+
+#include "../EntityComponentSystem/EntitiesRegistry.h"
+#include "../Rendering/Camera.h"
+#include "../Core/Application.h"
 
 class Scene
 {
 public:
-    std::list<Entity*> Entities; // TODO: private
+    EntitiesRegistry* GetEntitiesRegistry();
 
     Scene();
-    Entity* CreateEntity();
-    Entity* GetEntity(uint64_t entityID);
-    void DestroyEntity(Entity* entity);
+    ~Scene();
+    void CreateMainCamera();
+    EntityID CreateEntity();
+    void DestroyEntity(EntityID entity);
+    bool IsEntityDestroyed(EntityID entity);
     void CleanDestroyedEntities();
     void CleanAllEntities();
 
-    Camera* GetMainCamera();
+    Camera& GetMainCamera();
 
     static int EntitiesWasCreated;
 
 private:
-    std::unordered_map<uint64_t, Entity*> entitiesByIDMap;
-    std::list<Entity*> entitiesToDelete;
-    Camera* _mainCamera;
-    void DestroyAndRemoveEntity(Entity* entity);
-    static void DestroyEntityInner(Entity* entity);
+    EntitiesRegistry* entitiesRegistry;
+    std::list<EntityID> entitiesToDelete;
+    EntityID _mainCameraEntity;
+    void DestroyAndRemoveEntity(EntityID entity);
+    void DestroyEntityInner(EntityID entity);
 };

@@ -1,6 +1,7 @@
 #include "Animator.h"
 #include "../Core/Time.h"
 #include "../Rendering/SpriteRenderer.h"
+#include "../Scene/SceneHelper.h"
 
 void Animator::Init()
 {
@@ -47,19 +48,19 @@ void Animator::Restart()
     Play();
 }
 
-void ApplyFrame(Entity* entity, Keyframe keyframe)
+void ApplyFrame(EntityID entity, Keyframe keyframe)
 {
     // TODO: cache component
-    auto sr = entity->GetComponent<SpriteRenderer>();
-    if (sr->GetImage() == nullptr && keyframe.SpriteID != -1 || sr->GetImage()->ID != keyframe.SpriteID)
+    auto& sr = GetComponentS<SpriteRenderer>(entity);
+    if (sr.GetImage() == nullptr && keyframe.SpriteID != -1 || sr.GetImage()->ID != keyframe.SpriteID)
     {
         if (keyframe.SpriteID == -1)
-            sr->SetImage(nullptr);
+            sr.SetImage(nullptr);
         else
-            sr->SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
+            sr.SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
     }
 
-    sr->CurrentImageTileIndex = keyframe.TileIndex;
+    sr.CurrentImageTileIndex = keyframe.TileIndex;
 }
 
 void Animator::OnUpdate()
@@ -83,7 +84,7 @@ void Animator::OnUpdate()
                 if (animationTime >= Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i] + 1].Time)
                 {
                     currentCurveFrame[i]++;
-                    ApplyFrame(ParentEntity, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
+                    ApplyFrame(Owner, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
         }
@@ -94,7 +95,7 @@ void Animator::OnUpdate()
                 if (animationTime <= Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i] - 1].Time)
                 {
                     currentCurveFrame[i]--;
-                    ApplyFrame(ParentEntity, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
+                    ApplyFrame(Owner, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
         }
@@ -109,7 +110,7 @@ void Animator::OnUpdate()
             for (int i = 0; i < Animations[currentAnimation]->Curves.size(); ++i)
             {
                 currentCurveFrame[i] = Speed < 0 ? Animations[currentAnimation]->Curves[i].Keyframes.size() : 0;
-                ApplyFrame(ParentEntity, Animations[currentAnimation]->Curves[i].Keyframes[0]);
+                ApplyFrame(Owner, Animations[currentAnimation]->Curves[i].Keyframes[0]);
             }
         }
         else

@@ -11,6 +11,8 @@
 #include "../UI/RectTransformation.h"
 #include "../UI/UIRenderer.h"
 #include "../UI/UIImage.h"
+#include "../Scene/SceneHelper.h"
+#include "../Scene/NameComponent.h"
 
 #include <mono/metadata/debug-helpers.h>
 
@@ -60,6 +62,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     cachedData = new CachedData();
 
     CACHE_CLASS(Transformation, API_CLASS(Transformation))
+    CACHE_CLASS(NameComponent, API_CLASS(NameComponent))
     CACHE_CLASS(BoxCollider, API_CLASS(BoxCollider))
     CACHE_CLASS(RigidBody, API_CLASS(RigidBody))
     CACHE_CLASS(SpriteRenderer, API_CLASS(SpriteRenderer))
@@ -72,162 +75,103 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(UIImage, API_CLASS(UIImage))
 }
 
-Component* ScriptingCore::AddComponentFromMonoClass(Entity* entity, MonoClass* monoClass)
+Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
 {
+    success = true;
+    if (monoClass == CACHED_CLASS(NameComponent))
+        return AddComponentS<NameComponent>(entity);
     if (monoClass == CACHED_CLASS(Transformation))
-        return entity->AddComponent<Transformation>();
+        return AddComponentS<Transformation>(entity);
     if (monoClass == CACHED_CLASS(BoxCollider))
-        return entity->AddComponent<BoxCollider>();
+        return AddComponentS<BoxCollider>(entity);
     if (monoClass == CACHED_CLASS(RigidBody))
-        return entity->AddComponent<RigidBody>();
+        return AddComponentS<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))
-        return entity->AddComponent<SpriteRenderer>();
+        return AddComponentS<SpriteRenderer>(entity);
     if (monoClass == CACHED_CLASS(Camera))
-        return entity->AddComponent<Camera>();
+        return AddComponentS<Camera>(entity);
     if (monoClass == CACHED_CLASS(AudioListener))
-        return entity->AddComponent<AudioListener>();
+        return AddComponentS<AudioListener>(entity);
     if (monoClass == CACHED_CLASS(AudioSource))
-        return entity->AddComponent<AudioSource>();
+        return AddComponentS<AudioSource>(entity);
     if (monoClass == CACHED_CLASS(Animator))
-        return entity->AddComponent<Animator>();
+        return AddComponentS<Animator>(entity);
     if (monoClass == CACHED_CLASS(RectTransformation))
-        return entity->AddComponent<RectTransformation>();
+        return AddComponentS<RectTransformation>(entity);
     if (monoClass == CACHED_CLASS(UIRenderer))
-        return entity->AddComponent<UIRenderer>();
+        return AddComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
-        return entity->AddComponent<UIImage>();
+        return AddComponentS<UIImage>(entity);
 
     Log::LogError("Could not find cached class");
 
-    return nullptr;
+    success = false;
+    auto nullComponent = Component(NULL_ENTITY);
+    return nullComponent; // Warning can be ignored
 }
 
-Component *ScriptingCore::GetComponentFromMonoClass(Entity *entity, MonoClass *monoClass)
+bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass *monoClass)
 {
+    if (monoClass == CACHED_CLASS(NameComponent))
+        return HasComponentS<NameComponent>(entity);
     if (monoClass == CACHED_CLASS(Transformation))
-        return entity->Transform; // TODO: for UI, rework
+        return HasComponentS<Transformation>(entity) || HasComponentS<RectTransformation>(entity); // TODO: for UI, rework
     if (monoClass == CACHED_CLASS(BoxCollider))
-        return entity->GetComponent<BoxCollider>();
+        return HasComponentS<BoxCollider>(entity);
     if (monoClass == CACHED_CLASS(RigidBody))
-        return entity->GetComponent<RigidBody>();
+        return HasComponentS<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))
-        return entity->GetComponent<SpriteRenderer>();
+        return HasComponentS<SpriteRenderer>(entity);
     if (monoClass == CACHED_CLASS(Camera))
-        return entity->GetComponent<Camera>();
+        return HasComponentS<Camera>(entity);
     if (monoClass == CACHED_CLASS(AudioListener))
-        return entity->GetComponent<AudioListener>();
+        return HasComponentS<AudioListener>(entity);
     if (monoClass == CACHED_CLASS(AudioSource))
-        return entity->GetComponent<AudioSource>();
+        return HasComponentS<AudioSource>(entity);
     if (monoClass == CACHED_CLASS(Animator))
-        return entity->GetComponent<Animator>();
+        return HasComponentS<Animator>(entity);
     if (monoClass == CACHED_CLASS(RectTransformation))
-        return entity->GetComponent<RectTransformation>();
+        return HasComponentS<RectTransformation>(entity);
     if (monoClass == CACHED_CLASS(UIRenderer))
-        return entity->GetComponent<UIRenderer>();
+        return HasComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
-        return entity->GetComponent<UIImage>();
+        return HasComponentS<UIImage>(entity);
 
     Log::LogError("Could not find cached class");
 
-    return nullptr;
+    return false;
 }
 
-int64_t ScriptingCore::RemoveComponentFromMonoClass(Entity *entity, MonoClass *monoClass)
+bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *monoClass)
 {
-    // TODO: replace with macros
-    Component* component;
+    if (monoClass == CACHED_CLASS(NameComponent))
+        return RemoveComponentS<NameComponent>(entity);
     if (monoClass == CACHED_CLASS(Transformation))
-    {
-        component = entity->GetComponent<Transformation>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<Transformation>();
-        return component->ID;
-    }
+        return RemoveComponentS<Transformation>(entity);
     if (monoClass == CACHED_CLASS(BoxCollider))
-    {
-        component = entity->GetComponent<BoxCollider>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<BoxCollider>();
-        return component->ID;
-    }
+        return RemoveComponentS<BoxCollider>(entity);
     if (monoClass == CACHED_CLASS(RigidBody))
-    {
-        component = entity->GetComponent<RigidBody>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<RigidBody>();
-        return component->ID;
-    }
+        return RemoveComponentS<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))
-    {
-        component = entity->GetComponent<SpriteRenderer>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<SpriteRenderer>();
-        return component->ID;
-    }
+        return RemoveComponentS<SpriteRenderer>(entity);
     if (monoClass == CACHED_CLASS(Camera))
-    {
-        component = entity->GetComponent<Camera>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<Camera>();
-        return component->ID;
-    }
+        return RemoveComponentS<Camera>(entity);
     if (monoClass == CACHED_CLASS(AudioListener))
-    {
-        component = entity->GetComponent<AudioListener>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<AudioListener>();
-        return component->ID;
-    }
+        return RemoveComponentS<AudioListener>(entity);
     if (monoClass == CACHED_CLASS(AudioSource))
-    {
-        component = entity->GetComponent<AudioSource>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<AudioSource>();
-        return component->ID;
-    }
+        return RemoveComponentS<AudioSource>(entity);
     if (monoClass == CACHED_CLASS(Animator))
-    {
-        component = entity->GetComponent<Animator>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<Animator>();
-        return component->ID;
-    }
+        return RemoveComponentS<Animator>(entity);
     if (monoClass == CACHED_CLASS(RectTransformation))
-    {
-        component = entity->GetComponent<RectTransformation>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<RectTransformation>();
-        return component->ID;
-    }
+        return RemoveComponentS<RectTransformation>(entity);
     if (monoClass == CACHED_CLASS(UIRenderer))
-    {
-        component = entity->GetComponent<UIRenderer>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<UIRenderer>();
-        return component->ID;
-    }
+        return RemoveComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
-    {
-        component = entity->GetComponent<UIImage>();
-        if (component == nullptr)
-            return 0;
-        entity->RemoveComponent<UIImage>();
-        return component->ID;
-    }
+        return RemoveComponentS<UIImage>(entity);
 
     Log::LogError("Could not find cached class");
 
-    return 0;
+    return false;
 }
 
 MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
@@ -249,11 +193,11 @@ MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
     return method;
 }
 
-void ScriptingCore::CallMethod(int64_t scriptID, MonoMethod* method)
+void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod* method)
 {
     MonoObject* exception = nullptr;
     void* params[1];
-    params[0] = &scriptID;
+    params[0] = &scriptPointer;
     mono_runtime_invoke(method, nullptr, params, &exception);
 
     if (exception != nullptr)
@@ -263,11 +207,11 @@ void ScriptingCore::CallMethod(int64_t scriptID, MonoMethod* method)
     }
 }
 
-void ScriptingCore::CallMethod(int64_t scriptID, MonoMethod *method, int64_t param)
+void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod *method, EntityID param)
 {
     MonoObject* exception = nullptr;
     void* params[2];
-    params[0] = &scriptID;
+    params[0] = &scriptPointer;
     params[1] = &param;
     mono_runtime_invoke(method, nullptr, params, &exception);
 

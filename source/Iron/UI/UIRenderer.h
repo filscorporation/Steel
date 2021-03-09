@@ -6,7 +6,7 @@
 class UIRenderer : public UIComponent
 {
 public:
-    explicit UIRenderer(Entity* parentEntity) : UIComponent(parentEntity) { }
+    explicit UIRenderer(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 
     void OnRender();
 

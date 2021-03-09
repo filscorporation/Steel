@@ -49,7 +49,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal", (void*)EntityInternalCalls::Entity_CreateNewEntity);
     mono_add_internal_call("Iron.Entity::AddComponent_Internal", (void*)EntityInternalCalls::Entity_AddComponent);
     mono_add_internal_call("Iron.Entity::AddScriptComponent_Internal", (void*)EntityInternalCalls::Entity_AddScriptComponent);
-    mono_add_internal_call("Iron.Entity::GetComponent_Internal", (void*)EntityInternalCalls::Entity_GetComponent);
+    mono_add_internal_call("Iron.Entity::HasComponent_Internal", (void *) EntityInternalCalls::Entity_HasComponent);
     mono_add_internal_call("Iron.Entity::GetScriptComponent_Internal", (void*)EntityInternalCalls::Entity_GetScriptComponent);
     mono_add_internal_call("Iron.Entity::RemoveComponent_Internal", (void*)EntityInternalCalls::Entity_RemoveComponent);
     mono_add_internal_call("Iron.Entity::RemoveScriptComponent_Internal", (void*)EntityInternalCalls::Entity_RemoveScriptComponent);
@@ -81,7 +81,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Animator::Stop_Internal", (void*)ComponentsInternalCalls::Animator_Stop);
     mono_add_internal_call("Iron.Animator::Restart_Internal", (void*)ComponentsInternalCalls::Animator_Restart);
 
-    mono_add_internal_call("Iron.Camera::GetMainEntityWithMainCamera_Internal", (void*)ComponentsInternalCalls::Camera_GetMainEntityWithMainCamera);
+    mono_add_internal_call("Iron.Camera::GetEntityWithMainCamera_Internal", (void *) ComponentsInternalCalls::Camera_GetEntityWithMainCamera);
     mono_add_internal_call("Iron.Camera::GetWidth_Internal", (void*)ComponentsInternalCalls::Camera_GetWidth);
     mono_add_internal_call("Iron.Camera::SetWidth_Internal", (void*)ComponentsInternalCalls::Camera_SetWidth);
     mono_add_internal_call("Iron.Camera::GetHeight_Internal", (void*)ComponentsInternalCalls::Camera_GetHeight);

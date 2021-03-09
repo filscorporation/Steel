@@ -1,12 +1,14 @@
 #pragma once
 
-#include "../Scene/Entity.h"
+#include <glm/glm.hpp>
+
+#include "../EntityComponentSystem/Entity.h"
 
 class AudioSystem
 {
 public:
     static bool Initialized();
-    static void Init(Entity* listenerEntity);
+    static void Init(EntityID listenerEntity);
     static void Terminate();
     static bool CheckForErrors();
 

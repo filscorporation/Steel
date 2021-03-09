@@ -15,9 +15,9 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetSize_Internal(ulong entityID, out Vector2 size);
+        private static extern void GetSize_Internal(uint entityID, out Vector2 size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetSize_Internal(ulong entityID, ref Vector2 size);
+        private static extern void SetSize_Internal(uint entityID, ref Vector2 size);
     }
 }

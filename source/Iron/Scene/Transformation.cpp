@@ -1,5 +1,5 @@
 #include "Transformation.h"
-#include "Entity.h"
+#include "../Core/Application.h"
 #include "../Physics/RigidBody.h"
 
 #define TRANSFORM_EPS 0.000001f
@@ -82,9 +82,11 @@ bool Transformation::IsTransformationDirty() const
 
 void Transformation::UpdatePhysicsTransformation()
 {
-    auto rb = ParentEntity->GetComponent<RigidBody>();
-    if (rb != nullptr)
-    {
-        rb->UpdatePhysicsTransformation();
-    }
+    // TODO: move to physics logic
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (!registry->HasComponent<RigidBody>(Owner))
+        return;
+
+    auto& rb = registry->GetComponent<RigidBody>(Owner);
+    rb.UpdatePhysicsTransformation();
 }

@@ -11,9 +11,9 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetVolume_Internal(ulong entityID);
+        private static extern float GetVolume_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float SetVolume_Internal(ulong entityID, float volume);
+        private static extern float SetVolume_Internal(uint entityID, float volume);
     }
 }

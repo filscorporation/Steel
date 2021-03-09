@@ -7,12 +7,11 @@
 class UIImage : public UIComponent
 {
 public:
-    explicit UIImage(Entity* parentEntity);
+    explicit UIImage(EntityID ownerEntityID);
 
     void SetImage(Sprite* image);
     Sprite* GetImage();
 
 private:
     Sprite* _image;
-    UIRenderer* _renderer;
 };

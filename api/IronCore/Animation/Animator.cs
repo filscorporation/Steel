@@ -30,18 +30,18 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void PlayAnimation_Internal(ulong entityID, ulong animationID);
+        private static extern void PlayAnimation_Internal(uint entityID, uint animationID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Play_Internal(ulong entityID);
+        private static extern void Play_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Pause_Internal(ulong entityID);
+        private static extern void Pause_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Stop_Internal(ulong entityID);
+        private static extern void Stop_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Restart_Internal(ulong entityID);
+        private static extern void Restart_Internal(uint entityID);
     }
 }

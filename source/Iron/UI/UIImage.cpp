@@ -1,18 +1,35 @@
 #include "UIImage.h"
-#include "../Scene/Entity.h"
+#include "../Scene/SceneHelper.h"
+#include "../Core/Log.h"
 
-UIImage::UIImage(Entity *parentEntity) : UIComponent(parentEntity)
+UIImage::UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID)
 {
     // TODO: check component collisions
-    _renderer = parentEntity->AddComponent<UIRenderer>();
+    AddComponentS<UIRenderer>(ownerEntityID);
 }
 
 void UIImage::SetImage(Sprite *image)
 {
     // TODO: update data in attached UIRenderer
     _image = image;
-    _renderer->_image = _image;
-    GetRectTransform()->SetSize(glm::vec2(_image->Width, _image->Height));
+
+    if (!HasComponentS<UIRenderer>(Owner))
+    {
+        Log::LogError("UI image has no UI renderer attached");
+        return;
+    }
+    GetComponentS<UIRenderer>(Owner)._image = _image;
+
+    if (!HasComponentS<RectTransformation>(Owner))
+    {
+        Log::LogError("UI image has no RectTransformation attached");
+        return;
+    }
+
+    if (_image == nullptr)
+        GetComponentS<RectTransformation>(Owner).SetSize(glm::vec2(0.0f, 0.0f));
+    else
+        GetComponentS<RectTransformation>(Owner).SetSize(glm::vec2(_image->Width, _image->Height));
 }
 
 Sprite* UIImage::GetImage()

@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../Scene/Entity.h"
+#include <vector>
+#include <glm/vec2.hpp>
+
+#include "../EntityComponentSystem/Entity.h"
 
 class Physics
 {
@@ -9,6 +12,6 @@ public:
     static void Terminate();
     static void Simulate(float deltaTime);
 
-    static std::vector<Entity*> PointCast(glm::vec2 center);
-    static std::vector<Entity*> AABBCast(glm::vec2 center, glm::vec2 size);
+    static std::vector<EntityID> PointCast(glm::vec2 center);
+    static std::vector<EntityID> AABBCast(glm::vec2 center, glm::vec2 size);
 };

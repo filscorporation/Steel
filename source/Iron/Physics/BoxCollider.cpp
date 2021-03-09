@@ -1,10 +1,11 @@
 #include <box2d/box2d.h>
-#include "BoxCollider.h"
-#include "../Scene/Entity.h"
 #include "../Rendering/SpriteRenderer.h"
+#include "../Scene/SceneHelper.h"
+#include "BoxCollider.h"
 #include "PhysicsInfo.h"
+#include "../Scene/Transformation.h"
 
-BoxCollider::BoxCollider(Entity* parentEntity) : Collider(parentEntity)
+BoxCollider::BoxCollider(EntityID ownerEntityID) : Collider(ownerEntityID)
 {
     info = new BoxColliderInfo();
     info->GroundBox = new b2PolygonShape();
@@ -18,13 +19,13 @@ BoxCollider::~BoxCollider()
 
 void BoxCollider::SetSizeAutomatically()
 {
-    auto sr = ParentEntity->GetComponent<SpriteRenderer>();
-    if (sr != nullptr)
+    if (HasComponentS<SpriteRenderer>(Owner))
     {
-        _size = sr->GetWorldSize();
+        auto& sr = GetComponentS<SpriteRenderer>(Owner);
+        _size = sr.GetWorldSize();
     }
     else
-        _size = ParentEntity->Transform->GetScale();
+        _size = GetComponentS<Transformation>(Owner).GetScale();
     info->GroundBox->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
 }
 

@@ -30,7 +30,7 @@ ResourcesManager::~ResourcesManager()
     }
 }
 
-Sprite* ResourcesManager::LoadImage(const char *filePath)
+Sprite* ResourcesManager::LoadImage(const char* filePath)
 {
     //TODO: completely rework
 
@@ -42,7 +42,7 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
     }
 
     int w, h, c;
-    unsigned char *imageData = stbi_load(filePath, &w, &h, &c, 4);
+    unsigned char* imageData = stbi_load(filePath, &w, &h, &c, 4);
     GLuint texture;
 
     glGenTextures(1, &texture);
@@ -68,21 +68,21 @@ Sprite* ResourcesManager::LoadImage(const char *filePath)
     return image;
 }
 
-Sprite* ResourcesManager::GetImage(uint64_t imageID)
+Sprite* ResourcesManager::GetImage(ResourceID imageID)
 {
-    if (imageID == 0)
+    if (imageID == NULL_RESOURCE)
         return nullptr;
 
     if (imageID - 1 > images.size() || images[imageID - 1] == nullptr)
     {
-        Log::LogError("Sprite does not exist");
+        Log::LogError("Sprite does not exist: " + std::to_string(imageID));
         return nullptr;
     }
 
     return images[imageID - 1];
 }
 
-void ResourcesManager::UnloadImage(uint64_t imageID)
+void ResourcesManager::UnloadImage(ResourceID imageID)
 {
     auto sprite = GetImage(imageID);
     if (sprite == nullptr)
@@ -114,7 +114,7 @@ static inline ALenum ToALFormat(int channels, int samples)
     }
 }
 
-AudioTrack* ResourcesManager::LoadAudioTrack(const char *filePath)
+AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
 {
     std::ifstream infile(filePath);
     if (!infile.good())
@@ -161,9 +161,9 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char *filePath)
     return audioTrack;
 }
 
-AudioTrack *ResourcesManager::GetAudioTrack(uint64_t audioID)
+AudioTrack* ResourcesManager::GetAudioTrack(ResourceID audioID)
 {
-    if (audioID == 0)
+    if (audioID == NULL_RESOURCE)
         return nullptr;
 
     if (audioID - 1 > images.size() || images[audioID - 1] == nullptr)
@@ -175,7 +175,7 @@ AudioTrack *ResourcesManager::GetAudioTrack(uint64_t audioID)
     return audioTracks[audioID - 1];
 }
 
-void ResourcesManager::UnloadAudioTrack(uint64_t audioID)
+void ResourcesManager::UnloadAudioTrack(ResourceID audioID)
 {
     auto audioTrack = GetAudioTrack(audioID);
     if (audioTrack == nullptr)
@@ -188,15 +188,15 @@ void ResourcesManager::UnloadAudioTrack(uint64_t audioID)
 
 }
 
-void ResourcesManager::AddAnimation(Animation *animation)
+void ResourcesManager::AddAnimation(Animation* animation)
 {
     animation->ID = animations.size() + 1;
     animations.push_back(animation);
 }
 
-Animation *ResourcesManager::GetAnimation(uint64_t animationID)
+Animation* ResourcesManager::GetAnimation(ResourceID animationID)
 {
-    if (animationID == 0)
+    if (animationID == NULL_RESOURCE)
         return nullptr;
 
     if (animationID - 1 > animations.size() || animations[animationID - 1] == nullptr)
@@ -208,7 +208,7 @@ Animation *ResourcesManager::GetAnimation(uint64_t animationID)
     return animations[animationID - 1];
 }
 
-void ResourcesManager::RemoveAnimation(uint64_t animationID)
+void ResourcesManager::RemoveAnimation(ResourceID animationID)
 {
     auto animation = GetAnimation(animationID);
     if (animation == nullptr)

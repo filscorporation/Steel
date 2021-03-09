@@ -1,6 +1,6 @@
+#include "../Core/Log.h"
 #include "Physics.h"
 #include "PhysicsCore.h"
-#include "../Core/Log.h"
 
 void Physics::Init()
 {
@@ -19,12 +19,12 @@ void Physics::Simulate(float deltaTime)
     PhysicsCore::Simulate(deltaTime);
 }
 
-std::vector<Entity *> Physics::PointCast(glm::vec2 center)
+std::vector<EntityID> Physics::PointCast(glm::vec2 center)
 {
     return PhysicsCore::PointCast(center);
 }
 
-std::vector<Entity*> Physics::AABBCast(glm::vec2 center, glm::vec2 size)
+std::vector<EntityID> Physics::AABBCast(glm::vec2 center, glm::vec2 size)
 {
     return PhysicsCore::AABBCast(center, size);
 }

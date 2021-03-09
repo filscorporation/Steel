@@ -55,7 +55,7 @@
         <Compile Include="Math\Random.cs" />
         <Compile Include="Math\Vector2.cs" />
         <Compile Include="Math\Vector3.cs" />
-        <Compile Include="Object\Transformation.cs" />
+        <Compile Include="Entity\Transformation.cs" />
         <Compile Include="Physics\BoxCollider.cs" />
         <Compile Include="Physics\Collider.cs" />
         <Compile Include="Physics\Collision.cs" />
@@ -63,10 +63,10 @@
         <Compile Include="Physics\RigidBody.cs" />
         <Compile Include="Physics\RigidBodyType.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Object\Component.cs" />
-        <Compile Include="Object\ComponentEngineCalls.cs" />
-        <Compile Include="Object\Entity.cs" />
-        <Compile Include="Object\ScriptComponent.cs" />
+        <Compile Include="Entity\Component.cs" />
+        <Compile Include="Entity\ComponentEngineCalls.cs" />
+        <Compile Include="Entity\Entity.cs" />
+        <Compile Include="Entity\ScriptComponent.cs" />
         <Compile Include="Rendering\Camera.cs" />
         <Compile Include="Rendering\CameraResizingMode.cs" />
         <Compile Include="Rendering\Color.cs" />

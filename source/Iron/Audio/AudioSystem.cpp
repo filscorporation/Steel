@@ -1,9 +1,11 @@
+#include <AL/al.h>
+#include <AL/alc.h>
+
 #include "AudioSystem.h"
 #include "AudioListener.h"
 #include "../Core/Log.h"
-
-#include <AL/al.h>
-#include <AL/alc.h>
+#include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 
 // TODO: fixes openal low default volume
 const float VOLUME_MULTIPLIER = 32.0f;
@@ -27,7 +29,7 @@ bool AudioSystem::AssertInitialized()
     return false;
 }
 
-void AudioSystem::Init(Entity* listenerEntity)
+void AudioSystem::Init(EntityID listenerEntity)
 {
     if (Initialized())
     {
@@ -62,8 +64,8 @@ void AudioSystem::Init(Entity* listenerEntity)
         return;
     }
 
-    listenerEntity->AddComponent<AudioListener>();
-    SetListenerPosition(listenerEntity->Transform->GetPosition());
+    AddComponentS<AudioListener>(listenerEntity);
+    SetListenerPosition(GetComponentS<Transformation>(listenerEntity).GetPosition());
     SetListenerOrientation(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
     SetListenerVolume(1.0f);
 

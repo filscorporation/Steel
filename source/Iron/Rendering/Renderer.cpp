@@ -10,7 +10,6 @@ const int RENDER_CALL_DATA_SIZE = 10;
 const int MAX_RENDER_CALLS = 10000;
 const int MAX_TEXTURE_SLOTS = 32;
 
-Camera* mainCamera;
 Shader* shader;
 
 int renderCallsCount;
@@ -22,11 +21,9 @@ GLuint textureIDs[MAX_TEXTURE_SLOTS];
 GLuint indexBufferID, vertexDataBufferID;
 GLuint viewProjectionUniform;
 
-void Renderer::Init(Camera* camera)
+void Renderer::Init()
 {
     Log::LogInfo("Begin renderer init");
-
-    mainCamera = camera;
 
     if(!gladLoadGL())
     {
@@ -107,10 +104,10 @@ void Renderer::Terminate()
     delete shader;
 }
 
-void Renderer::OnBeforeRender()
+void Renderer::OnBeforeRender(Camera& camera)
 {
     // Set camera transformation
-    glm::mat4 viewProjection = mainCamera->GetViewProjection();
+    glm::mat4 viewProjection = camera.GetViewProjection();
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(viewProjection));
 
     StartBatch();

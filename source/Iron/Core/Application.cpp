@@ -17,15 +17,18 @@
 #include "../Scripting/ScriptingSystem.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../UI/UIRenderer.h"
+#include "../Animation/Animator.h"
+#include "../Audio/AudioSource.h"
+#include "../Audio/AudioListener.h"
 
 Application* Application::Instance;
 
 Application::Application(ApplicationSettings settings)
 {
+    Instance = this;
+
     state = ApplicationStates::Initializing;
     Init(settings);
-
-    Instance = this;
 }
 
 void Application::Init(ApplicationSettings settings)
@@ -38,9 +41,10 @@ void Application::Init(ApplicationSettings settings)
 
     resources = new ResourcesManager();
     scene = new Scene();
+    scene->CreateMainCamera();
 
-    Renderer::Init(scene->GetMainCamera());
-    AudioSystem::Init(scene->GetMainCamera()->ParentEntity);
+    Renderer::Init();
+    AudioSystem::Init(scene->GetMainCamera().Owner);
     Physics::Init();
 
     Log::LogInfo("Application initialized");
@@ -80,116 +84,63 @@ void Application::RunUpdate()
 
     // Update and render objects in scene
     state = ApplicationStates::OnUpdate;
-    auto entities = std::list<Entity*>(scene->Entities);
-    for (auto &entity : entities)
-    {
-        for (auto &component : entity->Components())
-        {
-            try
-            {
-                component->OnUpdate();
-            }
-            catch (const std::exception& ex)
-            {
-                Log::LogError("Error in update: " + std::string(ex.what()));
-            }
-        }
-    }
+
+    // Update animations, sound and scripts
+    auto animators = scene->GetEntitiesRegistry()->GetComponentIterator<Animator>();
+    for (auto& animator : animators)
+        animator.second.OnUpdate();
+
+    auto audioSources = scene->GetEntitiesRegistry()->GetComponentIterator<AudioSource>();
+    for (auto& audioSource : audioSources)
+        audioSource.second.OnUpdate();
+
+    auto audioListeners = scene->GetEntitiesRegistry()->GetComponentIterator<AudioListener>();
+    for (auto& audioListener : audioListeners)
+        audioListener.second.OnUpdate();
+
+    auto scripts = scene->GetEntitiesRegistry()->GetComponentIterator<ScriptComponent>();
+    for (auto& script : scripts)
+        script.second.OnUpdate();
 
     state = ApplicationStates::OnPhysicsUpdate;
     // TODO: wrong delta time; physics should run on different thread with fixed delta time
     Physics::Simulate(Time::DeltaTime());
     // TODO: change to physics double sided list of rigid bodies
-    for (auto &entity : entities)
-    {
-        auto rb = entity->GetComponent<RigidBody>();
-        if (rb != nullptr)
-        {
-            try
-            {
-                rb->GetPhysicsTransformation();
-            }
-            catch (const std::exception& ex)
-            {
-                Log::LogError("Error in physics update: " + std::string(ex.what()));
-            }
-        }
 
-        auto sc = entity->GetComponent<ScriptComponent>();
-        if (sc != nullptr)
-        {
-            try
-            {
-                sc->OnFixedUpdate();
-            }
-            catch (const std::exception& ex)
-            {
-                Log::LogError("Error in fixed update: " + std::string(ex.what()));
-            }
-        }
-    }
+    auto rigidBodies = scene->GetEntitiesRegistry()->GetComponentIterator<RigidBody>();
+    for (auto& rigidBody : rigidBodies)
+        rigidBody.second.GetPhysicsTransformation();
+
+    for (auto& script : scripts)
+        script.second.OnFixedUpdate();
+
+    for (auto& script : scripts)
+        script.second.OnFixedUpdate();
 
     state = ApplicationStates::OnLateUpdate;
-    for (auto &entity : entities)
-    {
-        auto sc = entity->GetComponent<ScriptComponent>();
-        if (sc != nullptr)
-        {
-            try
-            {
-                sc->OnLateUpdate();
-            }
-            catch (const std::exception& ex)
-            {
-                Log::LogError("Error in late update: " + std::string(ex.what()));
-            }
-        }
-        // TODO: this is here just for deferred destruction, rework
-        entity->OnLateUpdate();
-    }
+
+    for (auto& script : scripts)
+        script.second.OnLateUpdate();
 
     Time::Update();
-    Renderer::OnBeforeRender();
+    Renderer::OnBeforeRender(scene->GetMainCamera());
 
     state = ApplicationStates::OnRender;
     // Draw sprites
-    for (auto &entity : entities)
-    {
-        auto sr = entity->GetComponent<SpriteRenderer>();
-        if (sr != nullptr)
-        {
-            try
-            {
-                sr->OnRender();
-            }
-            catch (const std::exception& ex)
-            {
-                Log::LogError("Error in render: " + std::string(ex.what()));
-            }
-        }
-    }
+
+    auto spriteRenderers = scene->GetEntitiesRegistry()->GetComponentIterator<SpriteRenderer>();
+    for (auto& spriteRenderer : spriteRenderers)
+        spriteRenderer.second.OnRender();
+
     // Clear depth buffer before rendering UI
     Renderer::PrepareUIRender();
     // Draw UI on top
-    for (auto &entity : entities)
-    {
-        auto uir = entity->GetComponent<UIRenderer>();
-        if (uir != nullptr)
-        {
-            try
-            {
-                uir->OnRender();
-            }
-            catch (const std::exception& ex)
-            {
-                Log::LogError("Error in UI render: " + std::string(ex.what()));
-            }
-        }
-    }
+
+    auto uiRenderers = scene->GetEntitiesRegistry()->GetComponentIterator<UIRenderer>();
+    for (auto& uiRenderer : uiRenderers)
+        uiRenderer.second.OnRender();
 
     Renderer::OnAfterRender();
-
-    entities.clear();
 
     //Update scene
     state = ApplicationStates::CleaningDestroyedEntities;
@@ -206,7 +157,7 @@ void Application::RunUpdate()
     if (fpsTimer > 2.0f)
     {
         Log::LogInfo("FPS " + std::to_string(fpsCounter / 2));
-        Log::LogInfo("Entities in scene " + std::to_string(scene->Entities.size()));
+        //Log::LogInfo("Entities in scene " + std::to_string(scene->GetEntitiesRegistry().));
         fpsTimer = 0;
         fpsCounter = 0;
     }
@@ -216,7 +167,6 @@ void Application::Terminate()
 {
     Log::LogInfo("Entities was created " + std::to_string(Scene::EntitiesWasCreated));
 
-    scene->CleanAllEntities();
     delete scene;
 
     delete resources;

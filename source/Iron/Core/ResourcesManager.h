@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "ResourceID.h"
 #include "../Rendering/Sprite.h"
 #include "../Animation/Animation.h"
 #include "../Audio/AudioTrack.h"
@@ -11,16 +12,16 @@ public:
     ~ResourcesManager();
 
     Sprite* LoadImage(const char* filePath);
-    Sprite* GetImage(uint64_t imageID);
-    void UnloadImage(uint64_t imageID);
+    Sprite* GetImage(ResourceID imageID);
+    void UnloadImage(ResourceID imageID);
 
     AudioTrack* LoadAudioTrack(const char* filePath);
-    AudioTrack* GetAudioTrack(uint64_t audioID);
-    void UnloadAudioTrack(uint64_t audioID);
+    AudioTrack* GetAudioTrack(ResourceID audioID);
+    void UnloadAudioTrack(ResourceID audioID);
 
     void AddAnimation(Animation* animation);
-    Animation* GetAnimation(uint64_t animationID);
-    void RemoveAnimation(uint64_t animationID);
+    Animation* GetAnimation(ResourceID animationID);
+    void RemoveAnimation(ResourceID animationID);
 
 private:
     std::vector<Sprite*> images;

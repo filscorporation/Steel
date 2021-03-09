@@ -1,8 +1,10 @@
 #include "AudioSource.h"
 #include "AudioSystem.h"
 #include "../Core/Log.h"
+#include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 
-AudioSource::AudioSource(Entity* parentEntity) : Component(parentEntity)
+AudioSource::AudioSource(EntityID ownerEntityID) : Component(ownerEntityID)
 {
     sourceID = AudioSystem::CreateSource();
 }
@@ -15,7 +17,7 @@ AudioSource::~AudioSource()
 void AudioSource::OnUpdate()
 {
     // TODO: check if changed
-    AudioSystem::SetSourcePosition(sourceID, ParentEntity->Transform->GetPosition());
+    AudioSystem::SetSourcePosition(sourceID, GetComponentS<Transformation>(Owner).GetPosition());
 }
 
 void AudioSource::Play(AudioTrack *audioTrack)

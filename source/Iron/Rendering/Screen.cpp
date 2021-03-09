@@ -1,9 +1,11 @@
+#include <GLFW/glfw3.h>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Screen.h"
 #include "../Core/Input.h"
 #include "../Core/Application.h"
 #include "../Rendering/Camera.h"
 #include "../Core/Log.h"
-#include <GLFW/glfw3.h>
 
 #define UI_MIN_DISTANCE -0.01f
 #define UI_MAX_DISTANCE 100.0f
@@ -223,7 +225,7 @@ void Screen::UpdateSize()
         glViewport(0, 0, tempWidth, tempHeight);
 
         UpdateUIViewProjection();
-        Application::Instance->GetCurrentScene()->GetMainCamera()->UpdateSize();
+        Application::Instance->GetCurrentScene()->GetMainCamera().UpdateSize();
     }
 }
 

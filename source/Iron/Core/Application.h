@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Scene/Entity.h"
 #include "../Scene/Scene.h"
 #include "ResourcesManager.h"
 #include "../Rendering/Screen.h"
 #include "../Physics/RigidBody.h"
 
+class Scene; // TODO: remove circular dependency
 
 namespace ApplicationStates
 {

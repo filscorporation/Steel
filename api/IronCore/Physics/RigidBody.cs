@@ -17,15 +17,15 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetMass_Internal(ulong entityID);
+        private static extern float GetMass_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetMass_Internal(ulong entityID, float mass);
+        private static extern void SetMass_Internal(uint entityID, float mass);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern RigidBodyType GetRigidBodyType_Internal(ulong entityID);
+        private static extern RigidBodyType GetRigidBodyType_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetRigidBodyType_Internal(ulong entityID, RigidBodyType type);
+        private static extern void SetRigidBodyType_Internal(uint entityID, RigidBodyType type);
     }
 }

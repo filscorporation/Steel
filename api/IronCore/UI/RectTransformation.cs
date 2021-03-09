@@ -71,45 +71,45 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetAnchorMin_Internal(ulong entityID, out Vector2 anchor);
+        private static extern void GetAnchorMin_Internal(uint entityID, out Vector2 anchor);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAnchorMin_Internal(ulong entityID, ref Vector2 anchor);
+        private static extern void SetAnchorMin_Internal(uint entityID, ref Vector2 anchor);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetAnchorMax_Internal(ulong entityID, out Vector2 anchor);
+        private static extern void GetAnchorMax_Internal(uint entityID, out Vector2 anchor);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAnchorMax_Internal(ulong entityID, ref Vector2 anchor);
+        private static extern void SetAnchorMax_Internal(uint entityID, ref Vector2 anchor);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 GetAnchoredPosition_Internal(ulong entityID);
+        private static extern Vector3 GetAnchoredPosition_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAnchoredPosition_Internal(ulong entityID, Vector3 position);
+        private static extern void SetAnchoredPosition_Internal(uint entityID, Vector3 position);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetOffsetMin_Internal(ulong entityID, out Vector2 offset);
+        private static extern void GetOffsetMin_Internal(uint entityID, out Vector2 offset);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetOffsetMin_Internal(ulong entityID, ref Vector2 offset);
+        private static extern void SetOffsetMin_Internal(uint entityID, ref Vector2 offset);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetOffsetMax_Internal(ulong entityID, out Vector2 offset);
+        private static extern void GetOffsetMax_Internal(uint entityID, out Vector2 offset);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetOffsetMax_Internal(ulong entityID, ref Vector2 offset);
+        private static extern void SetOffsetMax_Internal(uint entityID, ref Vector2 offset);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetPivot_Internal(ulong entityID, out Vector2 pivot);
+        private static extern void GetPivot_Internal(uint entityID, out Vector2 pivot);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetPivot_Internal(ulong entityID, ref Vector2 pivot);
+        private static extern void SetPivot_Internal(uint entityID, ref Vector2 pivot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetSize_Internal(ulong entityID, out Vector2 size);
+        private static extern void GetSize_Internal(uint entityID, out Vector2 size);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetSize_Internal(ulong entityID, ref Vector2 size);
+        private static extern void SetSize_Internal(uint entityID, ref Vector2 size);
     }
 }

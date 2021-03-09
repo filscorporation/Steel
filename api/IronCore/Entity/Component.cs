@@ -2,7 +2,8 @@
 {
     public abstract class Component
     {
-        public ulong ID { get; internal set; }
+        internal Component() { }
+        
         public Entity Entity { get; set; }
         
         public Transformation Transformation => GetComponent<Transformation>();

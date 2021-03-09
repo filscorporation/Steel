@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Scene/Component.h"
+#include "../EntityComponentSystem/Component.h"
 
 class Collider : public Component
 {
 public:
-    explicit Collider(Entity* parentEntity) : Component(parentEntity) { }
+    explicit Collider(EntityID ownerEntityID) : Component(ownerEntityID) { }
 };

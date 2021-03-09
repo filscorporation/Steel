@@ -2,8 +2,9 @@
 #include "Input.h"
 #include "../Core/Application.h"
 #include "../Physics/Physics.h"
-#include "../Rendering/Camera.h"
 #include "../Scripting/ScriptComponent.h"
+#include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 
 namespace ButtonStates
 {
@@ -24,7 +25,7 @@ bool keyIsDirty = false;
 bool mouseIsDirty = false;
 bool scrollDeltaIsDirty = false;
 
-Entity* Input::lastMouseOverCollider = nullptr;
+EntityID Input::lastMouseOverCollider = NULL_ENTITY;
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -181,31 +182,30 @@ void Input::PollEvents()
 
 void Input::SendMouseCallbacks()
 {
-    Camera* camera = Application::Instance->GetCurrentScene()->GetMainCamera();
-    glm::vec2 worldMP = camera->ScreenToWorldPoint(GetMousePosition());
+    Camera& camera = Application::Instance->GetCurrentScene()->GetMainCamera();
+    glm::vec2 worldMP = camera.ScreenToWorldPoint(GetMousePosition());
     auto hits = Physics::PointCast(worldMP);
     if (hits.empty())
     {
         // Nothing mouse is over
-        if (lastMouseOverCollider != nullptr)
+        if (lastMouseOverCollider != NULL_ENTITY)
         {
             // We had stored last object mouse was over, send mouse exit event
-            auto sr = lastMouseOverCollider->GetComponent<ScriptComponent>();
-            if (sr != nullptr)
-                sr->OnMouseExit();
+            if (HasComponentS<ScriptComponent>(lastMouseOverCollider))
+                GetComponentS<ScriptComponent>(lastMouseOverCollider).OnMouseExit();
 
-            lastMouseOverCollider = nullptr;
+            lastMouseOverCollider = NULL_ENTITY;
         }
 
         return;
     }
 
     // Pick the nearest by z object
-    float z, maxZ = hits[0]->Transform->GetPosition().z;
+    float z, maxZ = GetComponentS<Transformation>(hits[0]).GetPosition().z;
     int closestEntityID = 0;
     for (int i = 0; i < hits.size(); i++)
     {
-        z = hits[i]->Transform->GetPosition().z;
+        z = GetComponentS<Transformation>(hits[i]).GetPosition().z;
         if (z > maxZ)
         {
             maxZ = z;
@@ -214,28 +214,25 @@ void Input::SendMouseCallbacks()
     }
 
     // Mouse is over some object
-    if (lastMouseOverCollider != nullptr)
+    if (lastMouseOverCollider != NULL_ENTITY)
     {
         // We had stored last object mouse was over
         if (lastMouseOverCollider != hits[closestEntityID])
         {
             // Last object differs from new one, send exit to last, and enter to new
-            auto sr = lastMouseOverCollider->GetComponent<ScriptComponent>();
-            if (sr != nullptr)
-                sr->OnMouseExit();
+            if (HasComponentS<ScriptComponent>(lastMouseOverCollider))
+                GetComponentS<ScriptComponent>(lastMouseOverCollider).OnMouseExit();
 
             lastMouseOverCollider = hits[closestEntityID];
 
-            sr = lastMouseOverCollider->GetComponent<ScriptComponent>();
-            if (sr != nullptr)
-                sr->OnMouseEnter();
+            if (HasComponentS<ScriptComponent>(lastMouseOverCollider))
+                GetComponentS<ScriptComponent>(lastMouseOverCollider).OnMouseEnter();
         }
         else
         {
             // We are still over the same object as last frame, send him over event
-            auto sr = lastMouseOverCollider->GetComponent<ScriptComponent>();
-            if (sr != nullptr)
-                sr->OnMouseOver();
+            if (HasComponentS<ScriptComponent>(lastMouseOverCollider))
+                GetComponentS<ScriptComponent>(lastMouseOverCollider).OnMouseOver();
         }
     }
     else
@@ -243,20 +240,20 @@ void Input::SendMouseCallbacks()
         // Nothing was stored, send enter to new one
         lastMouseOverCollider = hits[closestEntityID];
 
-        auto sr = lastMouseOverCollider->GetComponent<ScriptComponent>();
-        if (sr != nullptr)
-            sr->OnMouseEnter();
+        if (HasComponentS<ScriptComponent>(lastMouseOverCollider))
+            GetComponentS<ScriptComponent>(lastMouseOverCollider).OnMouseEnter();
     }
 
-    auto sr = lastMouseOverCollider->GetComponent<ScriptComponent>();
-    if (sr != nullptr)
+    if (HasComponentS<ScriptComponent>(lastMouseOverCollider))
     {
+        auto& sr = GetComponentS<ScriptComponent>(lastMouseOverCollider);
+
         if (IsAnyMouseButtonPressed())
-            sr->OnMousePressed();
+            sr.OnMousePressed();
         if (IsAnyMouseButtonJustPressed())
-            sr->OnMouseJustPressed();
+            sr.OnMouseJustPressed();
         if (IsAnyMouseButtonJustReleased())
-            sr->OnMouseJustReleased();
+            sr.OnMouseJustReleased();
     }
 }
 

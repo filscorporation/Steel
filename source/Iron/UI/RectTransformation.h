@@ -5,7 +5,7 @@
 class RectTransformation : public Transformation
 {
 public:
-    explicit RectTransformation(Entity* parentEntity) : Transformation(parentEntity) { }
+    explicit RectTransformation(EntityID ownerEntityID) : Transformation(ownerEntityID) { }
 
     glm::mat4 GetTransformationMatrix() override;
 

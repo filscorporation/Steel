@@ -2,7 +2,6 @@
 
 #include <box2d/box2d.h>
 
-#include "../Scene/Entity.h"
 #include "../Scripting/ScriptComponent.h"
 
 class PhysicsContactListener : public b2ContactListener

@@ -23,21 +23,21 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 GetPosition_Internal(ulong entityID);
+        private static extern Vector3 GetPosition_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetPosition_Internal(ulong entityID, Vector3 position);
+        private static extern void SetPosition_Internal(uint entityID, Vector3 position);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 GetRotation_Internal(ulong entityID);
+        private static extern Vector3 GetRotation_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetRotation_Internal(ulong entityID, Vector3 rotation);
+        private static extern void SetRotation_Internal(uint entityID, Vector3 rotation);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 GetScale_Internal(ulong entityID);
+        private static extern Vector3 GetScale_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetScale_Internal(ulong entityID, Vector3 scale);
+        private static extern void SetScale_Internal(uint entityID, Vector3 scale);
     }
 }

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../Scene/Component.h"
+#include "../EntityComponentSystem/Component.h"
 #include "RectTransformation.h"
 
 class UIComponent : public Component
 {
 public:
-    explicit UIComponent(Entity* parentEntity);
+    explicit UIComponent(EntityID ownerEntityID);
 
-    RectTransformation* GetRectTransform();
+    RectTransformation& GetRectTransform();
 };

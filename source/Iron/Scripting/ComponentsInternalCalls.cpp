@@ -1,292 +1,132 @@
 #include "ComponentsInternalCalls.h"
+#include "InternalCallsCommon.h"
 #include "../Animation/Animator.h"
 #include "../Audio/AudioSource.h"
 #include "../Audio/AudioListener.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
+#include "../Physics/BoxCollider.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Rendering/Camera.h"
-#include "../Physics/BoxCollider.h"
+#include "../Scene/Transformation.h"
+#include "../Scene/SceneHelper.h"
 
-glm::vec3 ComponentsInternalCalls::Transformation_GetPosition(int64_t entityID)
+glm::vec3 ComponentsInternalCalls::Transformation_GetPosition(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return glm::vec3();
-    }
+    GET_COMPONENT_OR_RETURN(Transformation, glm::vec3(0.0f))
 
-    return entity->Transform->GetPosition();
+    return component.GetPosition();
 }
 
-void ComponentsInternalCalls::Transformation_SetPosition(int64_t entityID, glm::vec3 position)
+void ComponentsInternalCalls::Transformation_SetPosition(EntityID entityID, glm::vec3 position)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Transformation, )
 
-    entity->Transform->SetPosition(position);
+    component.SetPosition(position);
 }
 
-glm::vec3 ComponentsInternalCalls::Transformation_GetRotation(int64_t entityID)
+glm::vec3 ComponentsInternalCalls::Transformation_GetRotation(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return glm::vec3();
-    }
+    GET_COMPONENT_OR_RETURN(Transformation, glm::vec3(0.0f))
 
-    return entity->Transform->GetRotation();
+    return component.GetRotation();
 }
 
-void ComponentsInternalCalls::Transformation_SetRotation(int64_t entityID, glm::vec3 rotation)
+void ComponentsInternalCalls::Transformation_SetRotation(EntityID entityID, glm::vec3 rotation)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Transformation, )
 
-    entity->Transform->SetRotation(rotation);
+    component.SetRotation(rotation);
 }
 
-glm::vec3 ComponentsInternalCalls::Transformation_GetScale(int64_t entityID)
+glm::vec3 ComponentsInternalCalls::Transformation_GetScale(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return glm::vec3();
-    }
+    GET_COMPONENT_OR_RETURN(Transformation, glm::vec3(0.0f))
 
-    return entity->Transform->GetScale();
+    return component.GetScale();
 }
 
-void ComponentsInternalCalls::Transformation_SetScale(int64_t entityID, glm::vec3 scale)
+void ComponentsInternalCalls::Transformation_SetScale(EntityID entityID, glm::vec3 scale)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Transformation, )
 
-    entity->Transform->SetScale(scale);
+    component.SetScale(scale);
 }
 
-float ComponentsInternalCalls::AudioListener_GetVolume(int64_t entityID)
+float ComponentsInternalCalls::AudioListener_GetVolume(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
+    GET_COMPONENT_OR_RETURN(AudioListener, 0.0f)
 
-    auto al = entity->GetComponent<AudioListener>();
-    if (al == nullptr)
-    {
-        Log::LogError("No audio listener component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    return al->GetVolume();
+    return component.GetVolume();
 }
 
-void ComponentsInternalCalls::AudioListener_SetVolume(int64_t entityID, float volume)
+void ComponentsInternalCalls::AudioListener_SetVolume(EntityID entityID, float volume)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(AudioListener, )
 
-    auto al = entity->GetComponent<AudioListener>();
-    if (al == nullptr)
-    {
-        Log::LogError("No audio listener component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    al->SetVolume(volume);
+    component.SetVolume(volume);
 }
 
-float ComponentsInternalCalls::AudioSource_GetVolume(int64_t entityID)
+float ComponentsInternalCalls::AudioSource_GetVolume(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
+    GET_COMPONENT_OR_RETURN(AudioSource, 0.0f)
 
-    auto as = entity->GetComponent<AudioSource>();
-    if (as == nullptr)
-    {
-        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    return as->GetVolume();
+    return component.GetVolume();
 }
 
-void ComponentsInternalCalls::AudioSource_SetVolume(int64_t entityID, float volume)
+void ComponentsInternalCalls::AudioSource_SetVolume(EntityID entityID, float volume)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(AudioSource, )
 
-    auto as = entity->GetComponent<AudioSource>();
-    if (as == nullptr)
-    {
-        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    as->SetVolume(volume);
+    component.SetVolume(volume);
 }
 
-bool ComponentsInternalCalls::AudioSource_GetLoop(int64_t entityID)
+bool ComponentsInternalCalls::AudioSource_GetLoop(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return false;
-    }
+    GET_COMPONENT_OR_RETURN(AudioSource, false)
 
-    auto as = entity->GetComponent<AudioSource>();
-    if (as == nullptr)
-    {
-        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
-        return false;
-    }
-
-    return as->GetIsLoop();
+    return component.GetIsLoop();
 }
 
-void ComponentsInternalCalls::AudioSource_SetLoop(int64_t entityID, bool loop)
+void ComponentsInternalCalls::AudioSource_SetLoop(EntityID entityID, bool loop)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(AudioSource, )
 
-    auto as = entity->GetComponent<AudioSource>();
-    if (as == nullptr)
-    {
-        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    as->SetIsLoop(loop);
+    component.SetIsLoop(loop);
 }
 
-void ComponentsInternalCalls::AudioSource_Play(int64_t entityID, int64_t audioTrackID)
+void ComponentsInternalCalls::AudioSource_Play(EntityID entityID, ResourceID audioTrackID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(AudioSource, )
 
-    auto as = entity->GetComponent<AudioSource>();
-    if (as == nullptr)
-    {
-        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    as->Play(Application::Instance->GetResourcesManager()->GetAudioTrack(audioTrackID));
+    component.Play(Application::Instance->GetResourcesManager()->GetAudioTrack(audioTrackID));
 }
 
-void ComponentsInternalCalls::AudioSource_Stop(int64_t entityID)
+void ComponentsInternalCalls::AudioSource_Stop(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(AudioSource, )
 
-    auto as = entity->GetComponent<AudioSource>();
-    if (as == nullptr)
-    {
-        Log::LogError("No audio source component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    as->Stop();
+    component.Stop();
 }
 
-uint64_t ComponentsInternalCalls::SpriteRenderer_GetSprite(int64_t entityID)
+ResourceID ComponentsInternalCalls::SpriteRenderer_GetSprite(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
-
-    auto sr = entity->GetComponent<SpriteRenderer>();
-    if (sr == nullptr)
-    {
-        Log::LogError("No sprite renderer component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    auto image = sr->GetImage();
+    GET_COMPONENT_OR_RETURN(SpriteRenderer, NULL_RESOURCE)
+    auto image = component.GetImage();
 
     return image == nullptr ? 0 : image->ID;
 }
 
-void ComponentsInternalCalls::SpriteRenderer_SetSprite(int64_t entityID, int64_t spriteID)
+void ComponentsInternalCalls::SpriteRenderer_SetSprite(EntityID entityID, ResourceID spriteID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(SpriteRenderer, )
 
-    auto sr = entity->GetComponent<SpriteRenderer>();
-    if (sr == nullptr)
-    {
-        Log::LogError("No sprite renderer component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    sr->SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
+    component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
 }
 
-void ComponentsInternalCalls::Animator_PlayAnimation(int64_t entityID, int64_t animationID)
+void ComponentsInternalCalls::Animator_PlayAnimation(EntityID entityID, ResourceID animationID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
-
-    auto animator = entity->GetComponent<Animator>();
-    if (animator == nullptr)
-    {
-        Log::LogError("No animator component attached to entity " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Animator, )
 
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
@@ -296,437 +136,172 @@ void ComponentsInternalCalls::Animator_PlayAnimation(int64_t entityID, int64_t a
     }
 
     // TODO: rework API
-    animator->Animations.resize(1);
-    animator->Animations[0] = animation;
-    animator->Play(0);
+    component.Animations.resize(1);
+    component.Animations[0] = animation;
+    component.Play(0);
 }
 
-void ComponentsInternalCalls::Animator_Play(int64_t entityID)
+void ComponentsInternalCalls::Animator_Play(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Animator, )
 
-    auto animator = entity->GetComponent<Animator>();
-    if (animator == nullptr)
-    {
-        Log::LogError("No animator component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    animator->Play();
+    component.Play();
 }
 
-void ComponentsInternalCalls::Animator_Pause(int64_t entityID)
+void ComponentsInternalCalls::Animator_Pause(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Animator, )
 
-    auto animator = entity->GetComponent<Animator>();
-    if (animator == nullptr)
-    {
-        Log::LogError("No animator component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    animator->Pause();
+    component.Pause();
 }
 
-void ComponentsInternalCalls::Animator_Stop(int64_t entityID)
+void ComponentsInternalCalls::Animator_Stop(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Animator, )
 
-    auto animator = entity->GetComponent<Animator>();
-    if (animator == nullptr)
-    {
-        Log::LogError("No animator component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    animator->Stop();
+    component.Stop();
 }
 
-void ComponentsInternalCalls::Animator_Restart(int64_t entityID)
+void ComponentsInternalCalls::Animator_Restart(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Animator, )
 
-    auto animator = entity->GetComponent<Animator>();
-    if (animator == nullptr)
-    {
-        Log::LogError("No animator component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    animator->Restart();
+    component.Restart();
 }
 
-int64_t ComponentsInternalCalls::Camera_GetMainEntityWithMainCamera()
+EntityID ComponentsInternalCalls::Camera_GetEntityWithMainCamera()
 {
-    return Application::Instance->GetCurrentScene()->GetMainCamera()->ParentEntity->ID;
+    return Application::Instance->GetCurrentScene()->GetMainCamera().Owner;
 }
 
-float ComponentsInternalCalls::Camera_GetWidth(int64_t entityID)
+float ComponentsInternalCalls::Camera_GetWidth(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, 0.0f)
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    return camera->GetWidth();
+    return component.GetWidth();
 }
 
-void ComponentsInternalCalls::Camera_SetWidth(int64_t entityID, float width)
+void ComponentsInternalCalls::Camera_SetWidth(EntityID entityID, float width)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, )
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    camera->SetWidth(width);
+    component.SetWidth(width);
 }
 
-float ComponentsInternalCalls::Camera_GetHeight(int64_t entityID)
+float ComponentsInternalCalls::Camera_GetHeight(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, 0.0f)
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    return camera->GetHeight();
+    return component.GetHeight();
 }
 
-void ComponentsInternalCalls::Camera_SetHeight(int64_t entityID, float height)
+void ComponentsInternalCalls::Camera_SetHeight(EntityID entityID, float height)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, )
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    camera->SetHeight(height);
+    component.SetHeight(height);
 }
 
-float ComponentsInternalCalls::Camera_GetNearClippingPlane(int64_t entityID)
+float ComponentsInternalCalls::Camera_GetNearClippingPlane(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, 0.0f)
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    return camera->GetNearClippingPlane();
+    return component.GetNearClippingPlane();
 }
 
-void ComponentsInternalCalls::Camera_SetNearClippingPlane(int64_t entityID, float distance)
+void ComponentsInternalCalls::Camera_SetNearClippingPlane(EntityID entityID, float distance)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, )
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    return camera->SetNearClippingPlane(distance);
+    component.SetNearClippingPlane(distance);
 }
 
-float ComponentsInternalCalls::Camera_GetFarClippingPlane(int64_t entityID)
+float ComponentsInternalCalls::Camera_GetFarClippingPlane(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, 0.0f)
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    return camera->GetFarClippingPlane();
+    return component.GetFarClippingPlane();
 }
 
-void ComponentsInternalCalls::Camera_SetFarClippingPlane(int64_t entityID, float distance)
+void ComponentsInternalCalls::Camera_SetFarClippingPlane(EntityID entityID, float distance)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, )
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    camera->SetFarClippingPlane(distance);
+    component.SetFarClippingPlane(distance);
 }
 
-int ComponentsInternalCalls::Camera_GetResizingMode(int64_t entityID)
+CameraResizeModes::CameraResizeMode ComponentsInternalCalls::Camera_GetResizingMode(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, (CameraResizeModes::CameraResizeMode)0)
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    return camera->GetResizeMode();
+    return component.GetResizeMode();
 }
 
-void ComponentsInternalCalls::Camera_SetResizingMode(int64_t entityID, int mode)
+void ComponentsInternalCalls::Camera_SetResizingMode(EntityID entityID, CameraResizeModes::CameraResizeMode mode)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, )
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    camera->SetResizeMode((CameraResizeModes::CameraResizeMode)mode);
+    component.SetResizeMode(mode);
 }
 
-void ComponentsInternalCalls::Camera_WorldToScreenPoint(int64_t entityID, glm::vec2* worldPoint, glm::vec2* screenPoint)
+void ComponentsInternalCalls::Camera_WorldToScreenPoint(EntityID entityID, glm::vec2* worldPoint, glm::vec2* screenPoint)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, )
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    glm::vec2 result = camera->WorldToScreenPoint(*worldPoint);
+    glm::vec2 result = component.WorldToScreenPoint(*worldPoint);
     screenPoint->x = result.x;
     screenPoint->y = result.y;
 }
 
-void ComponentsInternalCalls::Camera_ScreenToWorldPoint(int64_t entityID, glm::vec2* screenPoint, glm::vec2* worldPoint)
+void ComponentsInternalCalls::Camera_ScreenToWorldPoint(EntityID entityID, glm::vec2* screenPoint, glm::vec2* worldPoint)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(Camera, )
 
-    auto camera = entity->GetComponent<Camera>();
-    if (camera == nullptr)
-    {
-        Log::LogError("No camera component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    glm::vec2 result = camera->ScreenToWorldPoint(*screenPoint);
+    glm::vec2 result = component.ScreenToWorldPoint(*screenPoint);
     worldPoint->x = result.x;
     worldPoint->y = result.y;
 }
 
-float ComponentsInternalCalls::RigidBody_GetMass(int64_t entityID)
+float ComponentsInternalCalls::RigidBody_GetMass(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
+    GET_COMPONENT_OR_RETURN(RigidBody, 0.0f)
 
-    auto rb = entity->GetComponent<RigidBody>();
-    if (rb == nullptr)
-    {
-        Log::LogError("No rigid body component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    return rb->GetMass();
+    return component.GetMass();
 }
 
-void ComponentsInternalCalls::RigidBody_SetMass(int64_t entityID, float mass)
+void ComponentsInternalCalls::RigidBody_SetMass(EntityID entityID, float mass)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RigidBody, )
 
-    auto rb = entity->GetComponent<RigidBody>();
-    if (rb == nullptr)
-    {
-        Log::LogError("No rigid body component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rb->SetMass(mass);
+    component.SetMass(mass);
 }
 
-RigidBodyTypes::RigidBodyType ComponentsInternalCalls::RigidBody_GetRigidBodyType(int64_t entityID)
+RigidBodyTypes::RigidBodyType ComponentsInternalCalls::RigidBody_GetRigidBodyType(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return RigidBodyTypes::None;
-    }
+    GET_COMPONENT_OR_RETURN(RigidBody, (RigidBodyTypes::RigidBodyType)0)
 
-    auto rb = entity->GetComponent<RigidBody>();
-    if (rb == nullptr)
-    {
-        Log::LogError("No rigid body component attached to entity " + std::to_string(entityID));
-        return RigidBodyTypes::None;
-    }
-
-    rb->GetType();
+    return component.GetType();
 }
 
-void ComponentsInternalCalls::RigidBody_SetRigidBodyType(int64_t entityID, RigidBodyTypes::RigidBodyType type)
+void ComponentsInternalCalls::RigidBody_SetRigidBodyType(EntityID entityID, RigidBodyTypes::RigidBodyType type)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RigidBody, )
 
-    auto rb = entity->GetComponent<RigidBody>();
-    if (rb == nullptr)
-    {
-        Log::LogError("No rigid body component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rb->SetType(type);
+    component.SetType(type);
 }
 
-void ComponentsInternalCalls::BoxCollider_GetSize(int64_t entityID, glm::vec2* size)
+void ComponentsInternalCalls::BoxCollider_GetSize(EntityID entityID, glm::vec2* size)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(BoxCollider, )
 
-    auto bc = entity->GetComponent<BoxCollider>();
-    if (bc == nullptr)
-    {
-        Log::LogError("No box collider component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    auto s = bc->GetSize();
+    auto s = component.GetSize();
     size->x = s.x;
     size->y = s.y;
 }
 
-void ComponentsInternalCalls::BoxCollider_SetSize(int64_t entityID, glm::vec2* size)
+void ComponentsInternalCalls::BoxCollider_SetSize(EntityID entityID, glm::vec2* size)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(BoxCollider, )
 
-    auto bc = entity->GetComponent<BoxCollider>();
-    if (bc == nullptr)
-    {
-        Log::LogError("No box collider component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    bc->SetSize(*size);
+    component.SetSize(*size);
 }
-

@@ -6,12 +6,12 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include "Component.h"
+#include "../EntityComponentSystem/Component.h"
 
 class Transformation : public Component
 {
 public:
-    explicit Transformation(Entity* parentEntity) : Component(parentEntity) { }
+    explicit Transformation(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
     virtual glm::vec3 GetPosition() const;
     virtual void SetPosition(const glm::vec3& position);

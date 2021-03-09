@@ -50,7 +50,7 @@ b2World *PhysicsCore::GetWorld()
     return world;
 }
 
-std::vector<Entity*> PhysicsCore::PointCast(glm::vec2 center)
+std::vector<EntityID> PhysicsCore::PointCast(glm::vec2 center)
 {
     auto aabb = b2AABB();
     aabb.lowerBound.Set(center.x - POINT_AABB_SIZE * 0.5f, center.y - POINT_AABB_SIZE * 0.5f);
@@ -60,10 +60,10 @@ std::vector<Entity*> PhysicsCore::PointCast(glm::vec2 center)
     queryCallback.TestPoint = center;
     world->QueryAABB(&queryCallback, aabb);
 
-    std::vector<Entity*> result;
+    std::vector<EntityID> result;
     for (auto body : queryCallback.FoundBodies)
     {
-        result.push_back((Entity*)body->GetUserData().pointer);
+        result.push_back((EntityID)body->GetUserData().pointer);
     }
 
     queryCallback.FoundBodies.clear();
@@ -71,7 +71,7 @@ std::vector<Entity*> PhysicsCore::PointCast(glm::vec2 center)
     return result;
 }
 
-std::vector<Entity*> PhysicsCore::AABBCast(glm::vec2 center, glm::vec2 size)
+std::vector<EntityID> PhysicsCore::AABBCast(glm::vec2 center, glm::vec2 size)
 {
     // TODO: gives imprecise results
     auto aabb = b2AABB();
@@ -81,10 +81,10 @@ std::vector<Entity*> PhysicsCore::AABBCast(glm::vec2 center, glm::vec2 size)
     queryCallback.IsPoint = false;
     world->QueryAABB(&queryCallback, aabb);
 
-    std::vector<Entity*> result;
+    std::vector<EntityID> result;
     for (auto body : queryCallback.FoundBodies)
     {
-        result.push_back((Entity*)body->GetUserData().pointer);
+        result.push_back((EntityID)body->GetUserData().pointer);
     }
 
     queryCallback.FoundBodies.clear();

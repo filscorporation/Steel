@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Scene/Component.h"
+#include "../EntityComponentSystem/Component.h"
 
 namespace RigidBodyTypes
 {
@@ -22,7 +22,7 @@ class RigidBody : public Component
     struct RigidBodyInfo;
 
 public:
-    explicit RigidBody(Entity* parentEntity);
+    explicit RigidBody(EntityID ownerEntityID);
     ~RigidBody() override;
 
     void SetDynamic();

@@ -12,8 +12,8 @@ namespace Iron
 
         public bool Loop
         {
-            get => GetLoop_Internal(ID);
-            set => SetLoop_Internal(ID, value);
+            get => GetLoop_Internal(Entity.ID);
+            set => SetLoop_Internal(Entity.ID, value);
         }
 
         public void Play(AudioTrack audioTrack) => Play_Internal(Entity.ID, audioTrack?.ID ?? 0);
@@ -21,21 +21,21 @@ namespace Iron
         public void Stop() => Stop_Internal(Entity.ID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetVolume_Internal(ulong entityID);
+        private static extern float GetVolume_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float SetVolume_Internal(ulong entityID, float volume);
+        private static extern float SetVolume_Internal(uint entityID, float volume);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool GetLoop_Internal(ulong entityID);
+        private static extern bool GetLoop_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetLoop_Internal(ulong entityID, bool loop);
+        private static extern void SetLoop_Internal(uint entityID, bool loop);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Play_Internal(ulong entityID, ulong audioTrackID);
+        private static extern float Play_Internal(uint entityID, uint audioTrackID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Stop_Internal(ulong entityID);
+        private static extern float Stop_Internal(uint entityID);
     }
 }

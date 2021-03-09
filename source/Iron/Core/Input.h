@@ -1,10 +1,11 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
 #include "KeyCodes.h"
 #include "MouseCodes.h"
 #include "../Rendering/Screen.h"
-#include "../Scene/Entity.h"
+#include "../EntityComponentSystem/Entity.h"
 
 struct GLFWwindow;
 
@@ -30,7 +31,7 @@ private:
     static bool IsAnyMouseButtonJustPressed();
     static bool IsAnyMouseButtonJustReleased();
 
-    static Entity* lastMouseOverCollider;
+    static EntityID lastMouseOverCollider;
 
     friend class Screen;
 };

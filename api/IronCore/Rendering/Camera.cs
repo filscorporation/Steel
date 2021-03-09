@@ -5,7 +5,7 @@ namespace Iron
     public class Camera : Component
     {
         // TODO: not optimal
-        public static Camera Main => Entity.GetComponentByEntityID<Camera>(GetMainEntityWithMainCamera_Internal());
+        public static Camera Main => Entity.GetComponentByEntityID<Camera>(GetEntityWithMainCamera_Internal());
 
         public float Width
         {
@@ -50,42 +50,42 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern ulong GetMainEntityWithMainCamera_Internal();
+        private static extern uint GetEntityWithMainCamera_Internal();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetWidth_Internal(ulong entityID);
+        private static extern float GetWidth_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetWidth_Internal(ulong entityID, float width);
+        private static extern void SetWidth_Internal(uint entityID, float width);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetHeight_Internal(ulong entityID);
+        private static extern float GetHeight_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetHeight_Internal(ulong entityID, float height);
+        private static extern void SetHeight_Internal(uint entityID, float height);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetNearClippingPlane_Internal(ulong entityID);
+        private static extern float GetNearClippingPlane_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetNearClippingPlane_Internal(ulong entityID, float distance);
+        private static extern void SetNearClippingPlane_Internal(uint entityID, float distance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetFarClippingPlane_Internal(ulong entityID);
+        private static extern float GetFarClippingPlane_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetFarClippingPlane_Internal(ulong entityID, float distance);
+        private static extern void SetFarClippingPlane_Internal(uint entityID, float distance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern CameraResizingMode GetResizingMode_Internal(ulong entityID);
+        private static extern CameraResizingMode GetResizingMode_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetResizingMode_Internal(ulong entityID, CameraResizingMode mode);
+        private static extern void SetResizingMode_Internal(uint entityID, CameraResizingMode mode);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void WorldToScreenPoint_Internal(ulong entityID, ref Vector2 worldPoint, out Vector2 screenPoint);
+        private static extern void WorldToScreenPoint_Internal(uint entityID, ref Vector2 worldPoint, out Vector2 screenPoint);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void ScreenToWorldPoint_Internal(ulong entityID, ref Vector2 screenPoint, out Vector2 worldPoint);
+        private static extern void ScreenToWorldPoint_Internal(uint entityID, ref Vector2 screenPoint, out Vector2 worldPoint);
     }
 }

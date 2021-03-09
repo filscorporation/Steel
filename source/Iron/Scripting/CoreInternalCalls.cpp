@@ -68,19 +68,19 @@ bool CoreInternalCalls::Input_IsMouseJustReleased(int code)
     return Input::IsMouseButtonJustReleased((MouseCodes::MouseCode)code);
 }
 
-uint64_t CoreInternalCalls::ResourcesManager_LoadImage(MonoString* path)
+ResourceID CoreInternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {
     auto image = Application::Instance->GetResourcesManager()->LoadImage(mono_string_to_utf8(path));
     return image == nullptr ? 0 : image->ID;
 }
 
-uint64_t CoreInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
+ResourceID CoreInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
 {
     auto track = Application::Instance->GetResourcesManager()->LoadAudioTrack(mono_string_to_utf8(path));
     return track == nullptr ? 0 : track->ID;
 }
 
-float CoreInternalCalls::AudioTrack_GetLength(uint64_t audioTrackID)
+float CoreInternalCalls::AudioTrack_GetLength(ResourceID audioTrackID)
 {
     auto track = Application::Instance->GetResourcesManager()->GetAudioTrack(audioTrackID);
     if (track != nullptr)
@@ -88,31 +88,31 @@ float CoreInternalCalls::AudioTrack_GetLength(uint64_t audioTrackID)
     return 0;
 }
 
-void CoreInternalCalls::Sprite_SetAsSpriteSheet(uint64_t spriteID, int tileWidth, int tileHeight)
+void CoreInternalCalls::Sprite_SetAsSpriteSheet(ResourceID spriteID, int tileWidth, int tileHeight)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     if (image != nullptr)
         image->SetAsSpriteSheet(tileWidth, tileHeight);
 }
 
-int CoreInternalCalls::Sprite_GetWidth(uint64_t spriteID)
+int CoreInternalCalls::Sprite_GetWidth(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     return image == nullptr ? 0 : image->Width;
 }
 
-int CoreInternalCalls::Sprite_GetHeight(uint64_t spriteID)
+int CoreInternalCalls::Sprite_GetHeight(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     return image == nullptr ? 0 : image->Height;
 }
 
-uint64_t CoreInternalCalls::Animation_FromSpriteSheet(uint64_t spriteID, float length)
+ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, float length)
 {
     auto sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     if (sprite == nullptr)
     {
-        Log::LogError("Sprite does not exist");
+        Log::LogError("Sprite does not exist: " + std::to_string(spriteID));
         return 0;
     }
 
@@ -122,7 +122,7 @@ uint64_t CoreInternalCalls::Animation_FromSpriteSheet(uint64_t spriteID, float l
     return animation->ID;
 }
 
-float CoreInternalCalls::Animation_GetLength(uint64_t animationID)
+float CoreInternalCalls::Animation_GetLength(ResourceID animationID)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
@@ -134,7 +134,7 @@ float CoreInternalCalls::Animation_GetLength(uint64_t animationID)
     return animation->Length();
 }
 
-bool CoreInternalCalls::Animation_GetLoop(uint64_t animationID)
+bool CoreInternalCalls::Animation_GetLoop(ResourceID animationID)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
@@ -146,7 +146,7 @@ bool CoreInternalCalls::Animation_GetLoop(uint64_t animationID)
     return animation->Loop;
 }
 
-void CoreInternalCalls::Animation_SetLoop(uint64_t animationID, bool loop)
+void CoreInternalCalls::Animation_SetLoop(ResourceID animationID, bool loop)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)

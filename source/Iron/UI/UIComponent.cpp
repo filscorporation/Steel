@@ -1,14 +1,14 @@
 #include "UIComponent.h"
-#include "../Scene/Entity.h"
+#include "../Scene/SceneHelper.h"
 
-UIComponent::UIComponent(Entity *parentEntity) : Component(parentEntity)
+UIComponent::UIComponent(EntityID ownerEntityID) : Component(ownerEntityID)
 {
     // TODO: split ui and normal objects creation
-    ParentEntity->RemoveComponent<Transformation>();
-    ParentEntity->Transform = ParentEntity->AddComponent<RectTransformation>();
+    RemoveComponentS<Transformation>(Owner);
+    AddComponentS<RectTransformation>(Owner);
 }
 
-RectTransformation *UIComponent::GetRectTransform()
+RectTransformation& UIComponent::GetRectTransform()
 {
-    return (RectTransformation*)ParentEntity->Transform;
+    return GetComponentS<RectTransformation>(Owner);
 }

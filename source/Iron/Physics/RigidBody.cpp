@@ -4,10 +4,13 @@
 #include "PhysicsCore.h"
 #include "BoxCollider.h"
 #include "PhysicsInfo.h"
+#include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 
-RigidBody::RigidBody(Entity* parentEntity) : Component(parentEntity)
+RigidBody::RigidBody(EntityID ownerEntityID) : Component(ownerEntityID)
 {
     info = new RigidBodyInfo();
+    _mass = 1.0f;
 
     // TODO: set dynamic type on init
 }
@@ -20,11 +23,11 @@ RigidBody::~RigidBody()
 void RigidBody::SetDynamic()
 {
     b2BodyDef groundBodyDef;
-    glm::vec3 position = ParentEntity->Transform->GetPosition();
+    glm::vec3 position = GetComponentS<Transformation>(Owner).GetPosition();
     groundBodyDef.type = b2_dynamicBody;
     groundBodyDef.position.Set(position.x, position.y);
     groundBodyDef.userData = b2BodyUserData();
-    groundBodyDef.userData.pointer = (uintptr_t)ParentEntity;
+    groundBodyDef.userData.pointer = (uintptr_t)Owner;
 
     info->Body = PhysicsCore::GetWorld()->CreateBody(&groundBodyDef);
     _mass = info->Body->GetMass();
@@ -36,11 +39,11 @@ void RigidBody::SetDynamic()
 void RigidBody::SetStatic()
 {
     b2BodyDef groundBodyDef;
-    glm::vec3 position = ParentEntity->Transform->GetPosition();
+    glm::vec3 position = GetComponentS<Transformation>(Owner).GetPosition();
     groundBodyDef.type = b2_staticBody;
     groundBodyDef.position.Set(position.x, position.y);
     groundBodyDef.userData = b2BodyUserData();
-    groundBodyDef.userData.pointer = (uintptr_t)ParentEntity;
+    groundBodyDef.userData.pointer = (uintptr_t)Owner;
 
     info->Body = PhysicsCore::GetWorld()->CreateBody(&groundBodyDef);
     _mass = info->Body->GetMass();
@@ -97,15 +100,15 @@ void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
 
 void RigidBody::SetAutoFixture()
 {
-    auto bc = ParentEntity->GetComponent<BoxCollider>();
-    if (bc != nullptr)
-    {
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = bc->info->GroundBox;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.3f;
-        info->Body->CreateFixture(&fixtureDef);
-    }
+    if (!HasComponentS<BoxCollider>(Owner))
+        return;
+
+    auto& bc = GetComponentS<BoxCollider>(Owner);
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = bc.info->GroundBox;
+    fixtureDef.density = 1.0f;
+    fixtureDef.friction = 0.3f;
+    info->Body->CreateFixture(&fixtureDef);
 }
 
 void RigidBody::RemovePhysicsBody()
@@ -122,22 +125,22 @@ void RigidBody::UpdatePhysicsTransformation()
     if (inGetTransformation)
         return;
 
-    auto position = ParentEntity->Transform->GetPosition();
+    auto position = GetComponentS<Transformation>(Owner).GetPosition();
     b2Vec2 b2Position;
 
     b2Position.x = position.x;
     b2Position.y = position.y;
-    info->Body->SetTransform(b2Position, ParentEntity->Transform->GetRotation().z);
+    info->Body->SetTransform(b2Position, GetComponentS<Transformation>(Owner).GetRotation().z);
 }
 
 void RigidBody::GetPhysicsTransformation()
 {
     inGetTransformation = true;
     // TODO: check body type
-    float z = ParentEntity->Transform->GetPosition().z;
+    float z = GetComponentS<Transformation>(Owner).GetPosition().z;
     auto position = info->Body->GetPosition();
     float rotation = info->Body->GetAngle();
-    ParentEntity->Transform->SetPosition(glm::vec3(position.x, position.y, z));
-    ParentEntity->Transform->SetRotation(glm::vec3(0, 0, rotation));
+    GetComponentS<Transformation>(Owner).SetPosition(glm::vec3(position.x, position.y, z));
+    GetComponentS<Transformation>(Owner).SetRotation(glm::vec3(0, 0, rotation));
     inGetTransformation = false;
 }

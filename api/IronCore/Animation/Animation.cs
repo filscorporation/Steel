@@ -6,12 +6,12 @@ namespace Iron
 {
     public class Animation
     {
-        internal Animation(ulong id)
+        internal Animation(uint id)
         {
             ID = id;
         }
         
-        public ulong ID { get; private set; }
+        public uint ID { get; private set; }
 
         public bool Loop
         {
@@ -23,7 +23,7 @@ namespace Iron
 
         public static Animation FromSpriteSheet(Sprite sprite, float length)
         {
-            ulong animationID = FromSpriteSheet_Internal(sprite.ID, length);
+            uint animationID = FromSpriteSheet_Internal(sprite.ID, length);
             
             return animationID == 0 ? null : new Animation(animationID);
         }
@@ -35,15 +35,15 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern ulong FromSpriteSheet_Internal(ulong spriteID, float length);
+        private static extern uint FromSpriteSheet_Internal(uint spriteID, float length);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool GetLoop_Internal(ulong animationID);
+        private static extern bool GetLoop_Internal(uint animationID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetLoop_Internal(ulong animationID, bool loop);
+        private static extern void SetLoop_Internal(uint animationID, bool loop);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetLength_Internal(ulong animationID);
+        private static extern float GetLength_Internal(uint animationID);
     }
 }

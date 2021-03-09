@@ -1,15 +1,15 @@
 #pragma once
 
-#include "../Scene/Component.h"
+#include "../EntityComponentSystem/Component.h"
 #include "AudioTrack.h"
 
 class AudioSource : public Component
 {
 public:
-    explicit AudioSource(Entity* parentEntity);
+    explicit AudioSource(EntityID ownerEntityID);
     ~AudioSource() override;
 
-    void OnUpdate() override;
+    void OnUpdate();
 
     void Play(AudioTrack* audioTrack);
     void Stop();

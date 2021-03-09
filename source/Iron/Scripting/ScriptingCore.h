@@ -4,11 +4,14 @@
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/assembly.h>
 #include <unordered_map>
-#include "../Scene/Entity.h"
+
+#include "../EntityComponentSystem/Component.h"
+#include "ScriptComponent.h"
 
 struct CachedData
 {
     MonoClass* classTransformation;
+    MonoClass* classNameComponent;
     MonoClass* classBoxCollider;
     MonoClass* classRigidBody;
     MonoClass* classSpriteRenderer;
@@ -49,12 +52,12 @@ public:
     static void RegisterInternalCalls();
     static void CacheAPITypes(MonoImage* image);
 
-    static Component* AddComponentFromMonoClass(Entity* entity, MonoClass* monoClass);
-    static Component* GetComponentFromMonoClass(Entity* entity, MonoClass* monoClass);
-    static int64_t RemoveComponentFromMonoClass(Entity *entity, MonoClass *monoClass);
+    static Component& AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success);
+    static bool HasComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
+    static bool RemoveComponentFromMonoClass(EntityID entity, MonoClass *monoClass);
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);
-    static void CallMethod(int64_t scriptID, MonoMethod* method);
-    static void CallMethod(int64_t scriptID, MonoMethod* method, int64_t param);
+    static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method);
+    static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method, EntityID param);
     static void FindAndCallEntryPoint(MonoImage* image);
 
     static EngineCallsMethods EngineCalls;

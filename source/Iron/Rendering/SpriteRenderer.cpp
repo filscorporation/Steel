@@ -1,10 +1,12 @@
 #include "SpriteRenderer.h"
-#include "../Core/Application.h"
 #include "Renderer.h"
+#include "../Core/Application.h"
+#include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 
 void SpriteRenderer::OnRender()
 {
-    if (ParentEntity->IsDestroyed())
+    if (Application::Instance->GetCurrentScene()->IsEntityDestroyed(Owner))
         return;
 
     if (_image == nullptr)
@@ -15,22 +17,22 @@ void SpriteRenderer::OnRender()
         glm::vec2 texCoords[4];
         _image->GetTexCoord(CurrentImageTileIndex, texCoords);
         Renderer::DrawQuad(
-                ParentEntity->Transform->GetTransformationMatrix(),
+                GetComponentS<Transformation>(Owner).GetTransformationMatrix(),
                 _image->TextureID,
                 texCoords);
     }
     else
     {
-        Renderer::DrawQuad(ParentEntity->Transform->GetTransformationMatrix(), _image->TextureID);
+        Renderer::DrawQuad(GetComponentS<Transformation>(Owner).GetTransformationMatrix(), _image->TextureID);
     }
 }
 
-void SpriteRenderer::SetImage(Sprite *image)
+void SpriteRenderer::SetImage(Sprite* image)
 {
     _image = image;
 }
 
-Sprite *SpriteRenderer::GetImage()
+Sprite* SpriteRenderer::GetImage()
 {
     return _image;
 }
@@ -41,5 +43,5 @@ glm::vec2 SpriteRenderer::GetWorldSize()
         return glm::vec2(0, 0);
 
     // TODO: use sprite size
-    return ParentEntity->Transform->GetScale();
+    return GetComponentS<Transformation>(Owner).GetScale();
 }

@@ -11,9 +11,9 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern ulong GetSprite_Internal(ulong entityID);
+        private static extern uint GetSprite_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetSprite_Internal(ulong entityID, ulong spriteID);
+        private static extern void SetSprite_Internal(uint entityID, uint spriteID);
     }
 }

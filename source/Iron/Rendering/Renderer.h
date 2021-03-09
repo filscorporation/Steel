@@ -8,10 +8,10 @@
 class Renderer
 {
 public:
-    static void Init(Camera* camera);
+    static void Init();
     static void Terminate();
 
-    static void OnBeforeRender();
+    static void OnBeforeRender(Camera& camera);
     static void OnAfterRender();
     static void Clear(glm::vec3 color);
     static void PrepareUIRender();

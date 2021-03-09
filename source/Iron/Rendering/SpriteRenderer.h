@@ -1,13 +1,14 @@
 #pragma once
 
 #include <glm/vec2.hpp>
-#include "../Scene/Component.h"
-#include "../Core/ResourcesManager.h"
+
+#include "Sprite.h"
+#include "../EntityComponentSystem/Component.h"
 
 class SpriteRenderer : public Component
 {
 public:
-    explicit SpriteRenderer(Entity* parentEntity) : Component(parentEntity) { }
+    explicit SpriteRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
     int CurrentImageTileIndex = 0;
 

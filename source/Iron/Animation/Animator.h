@@ -2,12 +2,12 @@
 
 #include <vector>
 #include "Animation.h"
-#include "../Scene/Component.h"
+#include "../EntityComponentSystem/Component.h"
 
 class Animator : public Component
 {
 public:
-    explicit Animator(Entity* parentEntity) : Component(parentEntity) { }
+    explicit Animator(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
     void Play();
     void Play(int animation);
@@ -15,7 +15,7 @@ public:
     void Stop();
     void Restart();
 
-    void OnUpdate() override;
+    void OnUpdate();
 
     float Speed = 1.0f;
     float NormalizedTime = 0.0f;

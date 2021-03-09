@@ -1,13 +1,15 @@
-#include <string>
-
 #include "ScriptComponent.h"
 #include "ScriptingCore.h"
-#include "../Core/Log.h"
 
-void ScriptComponent::Init(const char* fullName, int64_t scriptPointer)
+void ScriptComponent::Init(const char* fullName, ScriptPointer scriptPointer)
 {
     _fullName = fullName;
     _scriptPointer = scriptPointer;
+}
+
+ScriptPointer ScriptComponent::GetScriptPointer() const
+{
+    return _scriptPointer;
 }
 
 void ScriptComponent::OnCreate()
@@ -30,7 +32,7 @@ void ScriptComponent::OnFixedUpdate()
 {
     // TODO: solve situations when collision exit will not be called (rigid body destroyed)
     if (hasCollision)
-        ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionStay, collisionStay.otherEntity->ID);
+        ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionStay, collisionStay.OtherEntity);
 
     ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnFixedUpdate);
 }
@@ -40,14 +42,14 @@ void ScriptComponent::OnCollisionEnter(Collision collision)
     hasCollision = true;
     collisionStay = collision;
 
-    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionEnter, collision.otherEntity->ID);
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionEnter, collision.OtherEntity);
 }
 
 void ScriptComponent::OnCollisionExit(Collision collision)
 {
     hasCollision = false;
 
-    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionExit, collision.otherEntity->ID);
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionExit, collision.OtherEntity);
 }
 
 void ScriptComponent::OnMouseOver()

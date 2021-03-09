@@ -1,316 +1,125 @@
 #include "UIInternalCalls.h"
+#include "InternalCallsCommon.h"
 #include "../UI/UIImage.h"
 #include "../Core/Log.h"
 #include "../Core/Application.h"
+#include "../Scene/SceneHelper.h"
 
-void UIInternalCalls::RectTransformation_GetAnchorMin(int64_t entityID, glm::vec2* anchor)
+void UIInternalCalls::RectTransformation_GetAnchorMin(EntityID entityID, glm::vec2* anchor)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    anchor->x = rt->GetAnchorMin().x;
-    anchor->y = rt->GetAnchorMin().y;
+    anchor->x = component.GetAnchorMin().x;
+    anchor->y = component.GetAnchorMin().y;
 }
 
-void UIInternalCalls::RectTransformation_SetAnchorMin(int64_t entityID, glm::vec2* anchor)
+void UIInternalCalls::RectTransformation_SetAnchorMin(EntityID entityID, glm::vec2* anchor)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rt->SetAnchorMin(*anchor);
+    component.SetAnchorMin(*anchor);
 }
 
-void UIInternalCalls::RectTransformation_GetAnchorMax(int64_t entityID, glm::vec2* anchor)
+void UIInternalCalls::RectTransformation_GetAnchorMax(EntityID entityID, glm::vec2* anchor)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    anchor->x = rt->GetAnchorMax().x;
-    anchor->y = rt->GetAnchorMax().y;
+    anchor->x = component.GetAnchorMax().x;
+    anchor->y = component.GetAnchorMax().y;
 }
 
-void UIInternalCalls::RectTransformation_SetAnchorMax(int64_t entityID, glm::vec2* anchor)
+void UIInternalCalls::RectTransformation_SetAnchorMax(EntityID entityID, glm::vec2* anchor)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rt->SetAnchorMax(*anchor);
+    component.SetAnchorMax(*anchor);
 }
 
-glm::vec3 UIInternalCalls::RectTransformation_GetAnchoredPosition(int64_t entityID)
+glm::vec3 UIInternalCalls::RectTransformation_GetAnchoredPosition(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return glm::vec3(0.0f);
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, glm::vec3(0.0f))
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return glm::vec3(0.0f);
-    }
-
-    return rt->GetAnchoredPosition();
+    return component.GetAnchoredPosition();
 }
 
-void UIInternalCalls::RectTransformation_SetAnchoredPosition(int64_t entityID, glm::vec3 position)
+void UIInternalCalls::RectTransformation_SetAnchoredPosition(EntityID entityID, glm::vec3 position)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rt->SetAnchoredPosition(position);
+    component.SetAnchoredPosition(position);
 }
 
-void UIInternalCalls::RectTransformation_GetOffsetMin(int64_t entityID, glm::vec2* offset)
+void UIInternalCalls::RectTransformation_GetOffsetMin(EntityID entityID, glm::vec2* offset)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    offset->x = rt->GetOffsetMin().x;
-    offset->y = rt->GetOffsetMin().y;
+    offset->x = component.GetOffsetMin().x;
+    offset->y = component.GetOffsetMin().y;
 }
 
-void UIInternalCalls::RectTransformation_SetOffsetMin(int64_t entityID, glm::vec2* offset)
+void UIInternalCalls::RectTransformation_SetOffsetMin(EntityID entityID, glm::vec2* offset)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rt->SetOffsetMin(*offset);
+    component.SetOffsetMin(*offset);
 }
 
-void UIInternalCalls::RectTransformation_GetOffsetMax(int64_t entityID, glm::vec2* offset)
+void UIInternalCalls::RectTransformation_GetOffsetMax(EntityID entityID, glm::vec2* offset)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    offset->x = rt->GetOffsetMax().x;
-    offset->y = rt->GetOffsetMax().y;
+    offset->x = component.GetOffsetMax().x;
+    offset->y = component.GetOffsetMax().y;
 }
 
-void UIInternalCalls::RectTransformation_SetOffsetMax(int64_t entityID, glm::vec2* offset)
+void UIInternalCalls::RectTransformation_SetOffsetMax(EntityID entityID, glm::vec2* offset)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rt->SetOffsetMax(*offset);
+    component.SetOffsetMax(*offset);
 }
 
-void UIInternalCalls::RectTransformation_GetPivot(int64_t entityID, glm::vec2* pivot)
+void UIInternalCalls::RectTransformation_GetPivot(EntityID entityID, glm::vec2* pivot)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    pivot->x = rt->GetPivot().x;
-    pivot->y = rt->GetPivot().y;
+    pivot->x = component.GetPivot().x;
+    pivot->y = component.GetPivot().y;
 }
 
-void UIInternalCalls::RectTransformation_SetPivot(int64_t entityID, glm::vec2* pivot)
+void UIInternalCalls::RectTransformation_SetPivot(EntityID entityID, glm::vec2* pivot)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rt->SetPivot(*pivot);
+    component.SetPivot(*pivot);
 }
 
-void UIInternalCalls::RectTransformation_GetSize(int64_t entityID, glm::vec2* size)
+void UIInternalCalls::RectTransformation_GetSize(EntityID entityID, glm::vec2* size)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    size->x = rt->GetSize().x;
-    size->y = rt->GetSize().y;
+    size->x = component.GetSize().x;
+    size->y = component.GetSize().y;
 }
 
-void UIInternalCalls::RectTransformation_SetSize(int64_t entityID, glm::vec2* size)
+void UIInternalCalls::RectTransformation_SetSize(EntityID entityID, glm::vec2* size)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    auto rt = entity->GetComponent<RectTransformation>();
-    if (rt == nullptr)
-    {
-        Log::LogError("No rect transformation component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    rt->SetSize(*size);
+    component.SetSize(*size);
 }
 
-uint64_t UIInternalCalls::UIImage_GetSprite(int64_t entityID)
+ResourceID UIInternalCalls::UIImage_GetSprite(EntityID entityID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return 0;
-    }
-
-    auto ui = entity->GetComponent<UIImage>();
-    if (ui == nullptr)
-    {
-        Log::LogError("No UI image component attached to entity " + std::to_string(entityID));
-        return 0;
-    }
-
-    auto image = ui->GetImage();
+    GET_COMPONENT_OR_RETURN(UIImage, 0)
+    auto image = component.GetImage();
 
     return image == nullptr ? 0 : image->ID;
 }
 
-void UIInternalCalls::UIImage_SetSprite(int64_t entityID, int64_t spriteID)
+void UIInternalCalls::UIImage_SetSprite(EntityID entityID, ResourceID spriteID)
 {
-    auto entity = Application::Instance->GetCurrentScene()->GetEntity(entityID);
-    if (entity == nullptr)
-    {
-        Log::LogError("Entity does not exist: " + std::to_string(entityID));
-        return;
-    }
+    GET_COMPONENT_OR_RETURN(UIImage, )
 
-    auto ui = entity->GetComponent<UIImage>();
-    if (ui == nullptr)
-    {
-        Log::LogError("No UI image component attached to entity " + std::to_string(entityID));
-        return;
-    }
-
-    ui->SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
+    component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
 }

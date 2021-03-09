@@ -1,42 +1,43 @@
 #include "PhysicsContactListener.h"
 #include "RigidBody.h"
+#include "../Scene/SceneHelper.h"
 
 void PhysicsContactListener::BeginContact(b2Contact* contact)
 {
-    auto entityA = (Entity*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
-    auto entityB = (Entity*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+    auto entityA = (EntityID)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
+    auto entityB = (EntityID)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
-    entityA->GetComponent<RigidBody>()->GetPhysicsTransformation();
-    entityB->GetComponent<RigidBody>()->GetPhysicsTransformation();
+    GetComponentS<RigidBody>(entityA).GetPhysicsTransformation();
+    GetComponentS<RigidBody>(entityB).GetPhysicsTransformation();
 
-    auto scriptA = entityA->GetComponent<ScriptComponent>();
-    if (scriptA != nullptr)
+    if (HasComponentS<ScriptComponent>(entityA))
     {
-        scriptA->OnCollisionEnter(Collision{ entityB });
+        auto& scriptA = GetComponentS<ScriptComponent>(entityA);
+        scriptA.OnCollisionEnter(Collision{ entityB });
     }
-    auto scriptB = entityB->GetComponent<ScriptComponent>();
-    if (scriptB != nullptr)
+    if (HasComponentS<ScriptComponent>(entityB))
     {
-        scriptB->OnCollisionEnter(Collision{ entityA });
+        auto& scriptB = GetComponentS<ScriptComponent>(entityB);
+        scriptB.OnCollisionEnter(Collision{ entityA });
     }
 }
 
 void PhysicsContactListener::EndContact(b2Contact* contact)
 {
-    auto entityA = (Entity*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
-    auto entityB = (Entity*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+    auto entityA = (EntityID)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
+    auto entityB = (EntityID)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
-    entityA->GetComponent<RigidBody>()->GetPhysicsTransformation();
-    entityB->GetComponent<RigidBody>()->GetPhysicsTransformation();
+    GetComponentS<RigidBody>(entityA).GetPhysicsTransformation();
+    GetComponentS<RigidBody>(entityB).GetPhysicsTransformation();
 
-    auto scriptA = entityA->GetComponent<ScriptComponent>();
-    if (scriptA != nullptr)
+    if (HasComponentS<ScriptComponent>(entityA))
     {
-        scriptA->OnCollisionExit(Collision{ entityB });
+        auto& scriptA = GetComponentS<ScriptComponent>(entityA);
+        scriptA.OnCollisionExit(Collision{ entityB });
     }
-    auto scriptB = entityB->GetComponent<ScriptComponent>();
-    if (scriptB != nullptr)
+    if (HasComponentS<ScriptComponent>(entityB))
     {
-        scriptB->OnCollisionExit(Collision{ entityA });
+        auto& scriptB = GetComponentS<ScriptComponent>(entityB);
+        scriptB.OnCollisionExit(Collision{ entityA });
     }
 }

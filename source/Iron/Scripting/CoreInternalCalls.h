@@ -1,7 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
+
 #include "ScriptingCore.h"
+#include "../Core/ResourceID.h"
 
 namespace CoreInternalCalls
 {
@@ -22,16 +26,16 @@ namespace CoreInternalCalls
     bool Input_IsMouseJustReleased(int code);
 
     // Resources Manager
-    uint64_t ResourcesManager_LoadImage(MonoString* path);
-    uint64_t ResourcesManager_LoadAudioTrack(MonoString* path);
-    float AudioTrack_GetLength(uint64_t audioTrackID);
-    void Sprite_SetAsSpriteSheet(uint64_t spriteID, int tileWidth, int tileHeight);
-    int Sprite_GetWidth(uint64_t spriteID);
-    int Sprite_GetHeight(uint64_t spriteID);
-    uint64_t Animation_FromSpriteSheet(uint64_t spriteID, float length);
-    float Animation_GetLength(uint64_t animationID);
-    bool Animation_GetLoop(uint64_t animationID);
-    void Animation_SetLoop(uint64_t animationID, bool loop);
+    ResourceID ResourcesManager_LoadImage(MonoString* path);
+    ResourceID ResourcesManager_LoadAudioTrack(MonoString* path);
+    float AudioTrack_GetLength(ResourceID audioTrackID);
+    void Sprite_SetAsSpriteSheet(ResourceID spriteID, int tileWidth, int tileHeight);
+    int Sprite_GetWidth(ResourceID spriteID);
+    int Sprite_GetHeight(ResourceID spriteID);
+    ResourceID Animation_FromSpriteSheet(ResourceID spriteID, float length);
+    float Animation_GetLength(ResourceID animationID);
+    bool Animation_GetLoop(ResourceID animationID);
+    void Animation_SetLoop(ResourceID animationID, bool loop);
 
     // Time
     float Time_GetDeltaTime();

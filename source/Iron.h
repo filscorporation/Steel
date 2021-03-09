@@ -6,14 +6,14 @@
 #include "Iron/Core/Application.h"
 #include "Iron/Core/Log.h"
 #include "Iron/Core/Time.h"
+#include "Iron/EntityComponentSystem/Entity.h"
+#include "Iron/EntityComponentSystem/Component.h"
 #include "Iron/Core/Input.h"
 #include "Iron/Physics/BoxCollider.h"
 #include "Iron/Physics/RigidBody.h"
-#include "Iron/Rendering/Screen.h"
 #include "Iron/Rendering/Camera.h"
+#include "Iron/Rendering/Screen.h"
 #include "Iron/Rendering/SpriteRenderer.h"
-#include "Iron/Scene/Component.h"
-#include "Iron/Scene/Entity.h"
 #include "Iron/Scene/Transformation.h"
 
 // TODO: allow to include it independently

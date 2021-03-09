@@ -19,8 +19,8 @@ set(SOURCE_FILES
         ${GLAD_FILES}
         source/Iron/Rendering/Shader.h source/Iron/Rendering/Shader.cpp source/Iron/Core/Application.cpp
         source/Iron/Core/Application.h source/Iron/Core/Input.cpp source/Iron/Core/Input.h source/Iron/Core/KeyCodes.h
-        source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/Scene/Entity.cpp source/Iron/Scene/Entity.h
-        source/Iron/Scene/Component.cpp source/Iron/Scene/Component.h source/Iron/Rendering/SpriteRenderer.cpp
+        source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/EntityComponentSystem/Component.cpp
+        source/Iron/EntityComponentSystem/Component.h source/Iron/Rendering/SpriteRenderer.cpp
         source/Iron/Rendering/SpriteRenderer.h source/Iron/Scene/Scene.cpp source/Iron/Scene/Scene.h
         source/Iron/Scene/Transformation.cpp source/Iron/Scene/Transformation.h source/Iron/Core/Log.cpp
         source/Iron/Core/Log.h source/Iron/Rendering/Camera.cpp source/Iron/Rendering/Camera.h source/Iron/Core/Time.cpp
@@ -47,7 +47,10 @@ set(SOURCE_FILES
         source/Iron/Physics/Collision.h source/Iron/UI/RectTransformation.cpp source/Iron/UI/RectTransformation.h
         source/Iron/UI/UIComponent.cpp source/Iron/UI/UIComponent.h source/Iron/UI/UIRenderer.cpp
         source/Iron/UI/UIRenderer.h source/Iron/UI/UIImage.cpp source/Iron/UI/UIImage.h
-        source/Iron/Scripting/UIInternalCalls.cpp source/Iron/Scripting/UIInternalCalls.h)
+        source/Iron/Scripting/UIInternalCalls.cpp source/Iron/Scripting/UIInternalCalls.h
+        source/Iron/EntityComponentSystem/EntitiesRegistry.h source/Iron/EntityComponentSystem/Entity.h
+        source/Iron/Scene/NameComponent.cpp source/Iron/Scene/NameComponent.h source/Iron/Scene/SceneHelper.h
+        source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Core/ResourceID.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
