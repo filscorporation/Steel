@@ -10,7 +10,10 @@ using ScriptPointer = intptr_t;
 class ScriptComponent : public Component
 {
 public:
-    explicit ScriptComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
+    explicit ScriptComponent(EntityID ownerEntityID) : Component(ownerEntityID)
+    {
+        _scriptPointer = 0;
+    }
 
     void Init(const char* fullName, ScriptPointer scriptPointer);
     ScriptPointer GetScriptPointer() const;

@@ -2,6 +2,7 @@
 
 #include <typeinfo>
 #include <typeindex>
+#include <vector>
 #include <unordered_map>
 
 #include "Entity.h"

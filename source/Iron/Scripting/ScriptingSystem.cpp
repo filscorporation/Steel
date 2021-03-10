@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "ScriptingSystem.h"
 #include "ScriptingCore.h"
 #include "../Core/Log.h"
@@ -6,13 +8,15 @@
 #if defined(_WIN32) || defined(_WIN64)
 #define DEBUG_MONO_LIB_PATH "C:\\Program Files (x86)\\Mono\\lib"
 #define DEBUG_MONO_ETC_PATH "C:\\Program Files (x86)\\Mono\\etc"
-#endif
-#ifdef __unix__
-#define DEBUG_MONO_LIB_PATH "/usr\\lib"
-#define DEBUG_MONO_ETC_PATH "/usr\\lib\\mono"
-#endif
 #define DEBUG_API_DLL_PATH "..\\..\\includes\\Iron\\api\\IronCustom\\bin\\Debug\\IronCore.dll"
 #define DEBUG_SCRIPTS_DLL_PATH "..\\..\\includes\\Iron\\api\\IronCustom\\bin\\Debug\\IronCustom.dll"
+#endif
+#ifdef __unix__
+#define DEBUG_MONO_LIB_PATH "/usr/lib/"
+#define DEBUG_MONO_ETC_PATH "/usr/lib/mono"
+#define DEBUG_API_DLL_PATH "../../includes/Iron/api/IronCustom/bin/Debug/IronCore.dll"
+#define DEBUG_SCRIPTS_DLL_PATH "../../includes/Iron/api/IronCustom/bin/Debug/IronCustom.dll"
+#endif
 
 MonoDomain* domain;
 MonoImage* coreAssemblyImage;
@@ -22,6 +26,17 @@ bool ScriptingSystem::isInitialized = false;
 
 MonoImage* LoadAssembly(const char* fileName)
 {
+    std::ifstream assemblyFile;
+    assemblyFile.exceptions(std::ifstream::badbit);
+    assemblyFile.open(fileName);
+    if (!assemblyFile.good())
+    {
+        assemblyFile.close();
+        Log::LogError("Error loading assembly, file does not exist: " + std::string(fileName));
+        return nullptr;
+    }
+    assemblyFile.close();
+
     MonoAssembly* assembly = mono_domain_assembly_open(domain, fileName);
     if (assembly == nullptr)
     {

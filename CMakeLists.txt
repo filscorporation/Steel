@@ -111,10 +111,11 @@ endif ()
 
 # box2d
 include_directories(includes/box2d/include)
-target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-debug/bin/${BOX2D_NAME})
+target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-release/bin/${BOX2D_NAME})
 
 #mono
 include_directories(includes/mono/include)
-target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/mono/lib/${MONO_NAME})
+#target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/mono/lib/${MONO_NAME})
+target_link_libraries(Iron PRIVATE /usr/lib/libmonosgen-2.0.so)
 
 target_compile_definitions(Iron PRIVATE)
