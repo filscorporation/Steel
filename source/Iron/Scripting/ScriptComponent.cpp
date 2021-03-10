@@ -5,6 +5,8 @@ void ScriptComponent::Init(const char* fullName, ScriptPointer scriptPointer)
 {
     _fullName = fullName;
     _scriptPointer = scriptPointer;
+
+    OnCreate();
 }
 
 ScriptPointer ScriptComponent::GetScriptPointer() const
@@ -14,8 +16,7 @@ ScriptPointer ScriptComponent::GetScriptPointer() const
 
 void ScriptComponent::OnCreate()
 {
-    // Called from scripting api
-    //ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCreate);
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCreate);
 }
 
 void ScriptComponent::OnUpdate()

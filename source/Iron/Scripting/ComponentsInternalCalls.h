@@ -2,7 +2,10 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+
+#include "../Core/ResourceID.h"
 #include "../Physics/RigidBody.h"
+#include "../Rendering/Camera.h"
 
 namespace ComponentsInternalCalls
 {

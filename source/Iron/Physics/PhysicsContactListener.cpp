@@ -7,8 +7,10 @@ void PhysicsContactListener::BeginContact(b2Contact* contact)
     auto entityA = (EntityID)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
     auto entityB = (EntityID)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
-    GetComponentS<RigidBody>(entityA).GetPhysicsTransformation();
-    GetComponentS<RigidBody>(entityB).GetPhysicsTransformation();
+    if (HasComponentS<RigidBody>(entityA))
+        GetComponentS<RigidBody>(entityA).GetPhysicsTransformation();
+    if (HasComponentS<RigidBody>(entityB))
+        GetComponentS<RigidBody>(entityB).GetPhysicsTransformation();
 
     if (HasComponentS<ScriptComponent>(entityA))
     {
@@ -27,8 +29,10 @@ void PhysicsContactListener::EndContact(b2Contact* contact)
     auto entityA = (EntityID)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
     auto entityB = (EntityID)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
-    GetComponentS<RigidBody>(entityA).GetPhysicsTransformation();
-    GetComponentS<RigidBody>(entityB).GetPhysicsTransformation();
+    if (HasComponentS<RigidBody>(entityA))
+        GetComponentS<RigidBody>(entityA).GetPhysicsTransformation();
+    if (HasComponentS<RigidBody>(entityB))
+        GetComponentS<RigidBody>(entityB).GetPhysicsTransformation();
 
     if (HasComponentS<ScriptComponent>(entityA))
     {

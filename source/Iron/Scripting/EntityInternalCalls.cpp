@@ -9,6 +9,12 @@ EntityID EntityInternalCalls::Entity_CreateNewEntity()
     return Application::Instance->GetCurrentScene()->CreateEntity();
 }
 
+bool EntityInternalCalls::Entity_DestroyEntity(EntityID id)
+{
+    Application::Instance->GetCurrentScene()->DestroyEntity(id);
+    return true;
+}
+
 bool EntityInternalCalls::Entity_AddComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))

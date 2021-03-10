@@ -195,6 +195,12 @@ MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
 
 void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod* method)
 {
+    if (scriptPointer == 0)
+    {
+        Log::LogError("Trying to call method in null pointer object");
+        return;
+    }
+
     MonoObject* exception = nullptr;
     void* params[1];
     params[0] = &scriptPointer;
@@ -209,6 +215,12 @@ void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod* method)
 
 void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod *method, EntityID param)
 {
+    if (scriptPointer == 0)
+    {
+        Log::LogError("Trying to call method in null pointer object");
+        return;
+    }
+
     MonoObject* exception = nullptr;
     void* params[2];
     params[0] = &scriptPointer;

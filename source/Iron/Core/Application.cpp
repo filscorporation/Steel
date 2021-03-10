@@ -114,15 +114,17 @@ void Application::RunUpdate()
     for (auto& script : scripts)
         script.second.OnFixedUpdate();
 
-    for (auto& script : scripts)
-        script.second.OnFixedUpdate();
-
     state = ApplicationStates::OnLateUpdate;
 
     for (auto& script : scripts)
         script.second.OnLateUpdate();
 
+    // Clean destroyed entities
+    state = ApplicationStates::CleaningDestroyedEntities;
+    scene->CleanDestroyedEntities();
+
     Time::Update();
+
     Renderer::OnBeforeRender(scene->GetMainCamera());
 
     state = ApplicationStates::OnRender;
@@ -141,10 +143,6 @@ void Application::RunUpdate()
         uiRenderer.second.OnRender();
 
     Renderer::OnAfterRender();
-
-    //Update scene
-    state = ApplicationStates::CleaningDestroyedEntities;
-    scene->CleanDestroyedEntities();
 
     Screen::SwapBuffers();
 

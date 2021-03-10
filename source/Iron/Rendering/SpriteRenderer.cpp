@@ -1,14 +1,10 @@
 #include "SpriteRenderer.h"
 #include "Renderer.h"
-#include "../Core/Application.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
 void SpriteRenderer::OnRender()
 {
-    if (Application::Instance->GetCurrentScene()->IsEntityDestroyed(Owner))
-        return;
-
     if (_image == nullptr)
         return;
 

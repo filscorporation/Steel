@@ -5,9 +5,6 @@
 
 void UIRenderer::OnRender()
 {
-    if (Application::Instance->GetCurrentScene()->IsEntityDestroyed(Owner))
-        return;
-
     if (_image == nullptr)
         return;
 

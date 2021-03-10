@@ -25,22 +25,23 @@ namespace Iron
         }
 
         public Transformation Transformation => GetComponent<Transformation>();
+
+        public void Destroy() => DestroyEntity_Internal(ID);
         
         public T AddComponent<T>() where T : Component, new()
         {
-            T component = new T();
-            if (component is ScriptComponent)
+            T component;
+            if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
             {
+                component = new T();
                 IntPtr scriptPointer = GCHandle.ToIntPtr(GCHandle.Alloc(component));
+                component.Entity = this;
+                
                 if (!AddScriptComponent_Internal(ID, typeof(T), scriptPointer))
                 {
                     GCHandle.FromIntPtr(scriptPointer).Free();
                     return null;
                 }
-
-                component.Entity = this;
-                // TODO: maybe it should be done from engine, but then it is important so take calls ordering in consideration
-                component.OnCreate();
 
                 return component;
             }
@@ -48,6 +49,7 @@ namespace Iron
             if (!AddComponent_Internal(ID, typeof(T)))
                 return null;
 
+            component = new T();
             component.Entity = this;
             
             return component;
@@ -104,6 +106,9 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateNewEntity_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool DestroyEntity_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool AddComponent_Internal(uint entityID, Type type);

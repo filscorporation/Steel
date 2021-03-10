@@ -7,6 +7,7 @@
 namespace EntityInternalCalls
 {
     EntityID Entity_CreateNewEntity();
+    bool Entity_DestroyEntity(EntityID id);
     bool Entity_AddComponent(EntityID id, void* type);
     bool Entity_AddScriptComponent(EntityID id, void* type, ScriptPointer scriptPointer);
     bool Entity_HasComponent(EntityID id, void* type);

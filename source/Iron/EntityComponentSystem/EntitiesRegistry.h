@@ -59,12 +59,14 @@ public:
     EntitiesRegistry() = default;
     ~EntitiesRegistry()
     {
+        isCleared = true;
         CleanAllEntities();
     };
 
 private:
     std::vector<bool> freeEntityIDs; // TODO: maybe not the best solution
     EntityID nextFreeEntityID = 0;
+    bool isCleared = false;
 
 public:
     EntityID CreateNewEntity()
@@ -159,6 +161,9 @@ public:
     template<class T>
     bool HasComponent(EntityID entityID)
     {
+        if (isCleared)
+            return false;
+
         auto typeID = TYPE_ID(T);
 
         ComponentsPoolWrapper<T>* pool;
@@ -181,6 +186,9 @@ public:
     template<class T>
     bool RemoveComponent(EntityID entityID)
     {
+        if (isCleared)
+            return false;
+
         auto typeID = TYPE_ID(T);
 
         ComponentsPoolWrapper<T>* pool;

@@ -47,6 +47,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Animation::SetLoop_Internal", (void*)CoreInternalCalls::Animation_SetLoop);
 
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal", (void*)EntityInternalCalls::Entity_CreateNewEntity);
+    mono_add_internal_call("Iron.Entity::DestroyEntity_Internal", (void*)EntityInternalCalls::Entity_DestroyEntity);
     mono_add_internal_call("Iron.Entity::AddComponent_Internal", (void*)EntityInternalCalls::Entity_AddComponent);
     mono_add_internal_call("Iron.Entity::AddScriptComponent_Internal", (void*)EntityInternalCalls::Entity_AddScriptComponent);
     mono_add_internal_call("Iron.Entity::HasComponent_Internal", (void *) EntityInternalCalls::Entity_HasComponent);
