@@ -51,7 +51,7 @@ private:
     ResourcesManager* resources;
     Scene* scene;
 
-    float fpsTimer = 0;
+    float fpsTimer = 0.0f;
     int fpsCounter = 0;
 
     void Init(ApplicationSettings settings);

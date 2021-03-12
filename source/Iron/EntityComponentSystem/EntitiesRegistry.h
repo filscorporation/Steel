@@ -6,13 +6,15 @@
 #include <unordered_map>
 
 #include "Entity.h"
+#include "SparseSet.h"
+#include "ComponentSystem.h"
 
 #define TYPE_ID(m_type) std::type_index(typeid(m_type))
 using ComponentTypeID = std::type_index;
 
 // Stores all components of one type by entityID
 template <typename T>
-using ComponentsPool = std::unordered_map<EntityID, T>; // TODO: replace with sparse set
+using ComponentsPool = SparseSet<T>;
 
 // Base class to store components pool
 class ComponentsPoolWrapperBase
@@ -27,28 +29,43 @@ template <typename T>
 class ComponentsPoolWrapper : public ComponentsPoolWrapperBase
 {
 public:
-    ComponentsPool<T> Value;
+    ComponentsPool<T> Storage;
+    ComponentSystem<T>* System = nullptr;
 
     void DeleteByEntityID(EntityID entityID) override
     {
-        if (Value.find(entityID) != Value.end())
-            Value.erase(entityID);
+        if (System != nullptr)
+        {
+            auto& component = Storage.Get(entityID);
+            System->OnComponentRemoved(entityID, component);
+        }
+        Storage.Remove(entityID);
     }
 };
 
 // Stores all components pools by Component type ID
 using ComponentsMap = std::unordered_map<ComponentTypeID, ComponentsPoolWrapperBase*>;
 
-// TODO
+// Allows to iterate over certain component
 template <typename T>
 struct ComponentIterator
 {
 public:
     explicit ComponentIterator(ComponentsPoolWrapper<T>* pool) { _pool = pool; }
 
-    using iterator = typename std::unordered_map<EntityID, T>::iterator;
-    iterator begin() { return _pool->Value.begin(); }
-    iterator end() { return _pool->Value.end(); }
+    T& operator[] (int index)
+    {
+        return _pool->Storage[index];
+    }
+
+    int Size()
+    {
+        return _pool->Storage.Size();
+    }
+
+    using Iterator = typename ComponentsPool<T>::Iterator;
+    Iterator begin() { return _pool->Storage.begin(); }
+    Iterator end() { return _pool->Storage.end(); }
 
 private:
     ComponentsPoolWrapper<T>* _pool;
@@ -63,6 +80,49 @@ public:
         isCleared = true;
         CleanAllEntities();
     };
+
+    template<typename T>
+    void RegisterSystem(ComponentSystem<T>* system)
+    {
+        auto typeID = TYPE_ID(T);
+
+        ComponentsPoolWrapper<T>* pool;
+        if (componentsMap.find(typeID) == componentsMap.end())
+        {
+            pool = new ComponentsPoolWrapper<T>();
+            componentsMap[typeID] = pool;
+        }
+        else
+        {
+            pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
+        }
+
+        if (pool->System != nullptr)
+            Log::LogWarning("Replacing component system: " + std::string(typeID.name()));
+
+        pool->System = system;
+    }
+
+    template<typename T>
+    bool RemoveSystem()
+    {
+        auto typeID = TYPE_ID(T);
+
+        ComponentsPoolWrapper<T>* pool;
+        if (componentsMap.find(typeID) == componentsMap.end())
+        {
+            return false;
+        }
+        else
+        {
+            pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
+        }
+
+        if (pool->System == nullptr)
+            return false;
+
+        pool->System = nullptr;
+    }
 
 private:
     std::vector<bool> freeEntityIDs; // TODO: maybe not the best solution
@@ -93,8 +153,7 @@ public:
 
     bool EntityExists(EntityID entityID)
     {
-        // TODO
-        return true;
+        return !freeEntityIDs[entityID];
     }
 
     void DeleteEntity(EntityID entityID)
@@ -150,13 +209,18 @@ public:
         {
             pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
 
-            if (pool->Value.find(entityID) != pool->Value.end())
-                return pool->Value.at(entityID);
+            if (pool->Storage.Has(entityID))
+                return pool->Storage.Get(entityID);
         }
 
-        pool->Value.emplace(entityID, entityID);
+        if (pool->Storage.Has(entityID))
+            return pool->Storage.Get(entityID);
 
-        return pool->Value.at(entityID);
+        auto& component = pool->Storage.Add(entityID);
+        if (pool->System != nullptr)
+            pool->System->OnComponentAdded(entityID, component);
+
+        return component;
     }
 
     template<class T>
@@ -173,7 +237,7 @@ public:
         else
             pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
 
-        return pool->Value.find(entityID) != pool->Value.end();
+        return pool->Storage.Has(entityID);
     }
 
     template<class T>
@@ -181,7 +245,7 @@ public:
     {
         // Out of all methods, "get" doesn't check if there is component for the reason of return type
         // So HasComponent() should be used before it
-        return ((ComponentsPoolWrapper<T>*)componentsMap[TYPE_ID(T)])->Value.at(entityID);
+        return ((ComponentsPoolWrapper<T>*)componentsMap[TYPE_ID(T)])->Storage.Get(entityID);
     }
 
     template<class T>
@@ -197,11 +261,17 @@ public:
         {
             pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
 
-            if (pool->Value.find(entityID) != pool->Value.end())
+            if (!pool->Storage.Has(entityID))
+                return false;
+
+            if (pool->System != nullptr)
             {
-                pool->Value.erase(entityID);
-                return true;
+                auto& component = pool->Storage.Get(entityID);
+                pool->System->OnComponentRemoved(entityID, component);
             }
+            pool->Storage.Remove(entityID);
+
+            return true;
         }
 
         return false;

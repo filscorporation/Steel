@@ -1,13 +1,13 @@
 #include "ResourcesManager.h"
 #include "../Core/Log.h"
-#include "../Audio/AudioSystem.h"
+#include "../Audio/AudioCore.h"
 #include "../Audio/WavLoader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #include <GLAD/glad.h>
 #include <fstream>
-// TODO: remove al dependency into AudioSystem
+// TODO: remove al dependency into AudioCore
 #include <AL/al.h>
 
 ResourcesManager::~ResourcesManager()
@@ -123,7 +123,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
         return nullptr;
     }
 
-    if (!AudioSystem::Initialized())
+    if (!AudioCore::Initialized())
     {
         Log::LogError("Can't load audio: audio system is not initialized");
         return nullptr;
@@ -138,7 +138,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
     audioTrack->ID = audioTracks.size() + 1;
 
     alGenBuffers((ALuint)1, &audioBuffer);
-    if (AudioSystem::CheckForErrors())
+    if (AudioCore::CheckForErrors())
     {
         Log::LogError("Error generating audio buffer");
         return nullptr;
@@ -146,7 +146,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
     alBufferData(audioBuffer, ToALFormat(audioTrack->NumberOfChannels, audioTrack->BitsPerSample),
                  data, (ALsizei)audioTrack->NumberOfSamples, audioTrack->SampleRate);
     delete data;
-    if (AudioSystem::CheckForErrors())
+    if (AudioCore::CheckForErrors())
     {
         Log::LogError("Error loading audio data to buffer");
         delete audioTrack;

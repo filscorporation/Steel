@@ -1,16 +1,25 @@
 #include "../Core/Log.h"
 #include "Physics.h"
+#include "PhysicsSystem.h"
 #include "PhysicsCore.h"
+#include "../Core/Application.h"
+
+PhysicsSystem* Physics::physicsSystem = nullptr;
 
 void Physics::Init()
 {
     PhysicsCore::CreateWorld();
+
+    physicsSystem = new PhysicsSystem();
+    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<RigidBody>(physicsSystem);
 
     Log::LogInfo("Physics initialized");
 }
 
 void Physics::Terminate()
 {
+    delete physicsSystem;
+
     PhysicsCore::DeleteWorld();
 }
 

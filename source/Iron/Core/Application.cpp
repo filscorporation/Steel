@@ -11,7 +11,7 @@
 #include "Input.h"
 #include "Log.h"
 #include "Time.h"
-#include "../Audio/AudioSystem.h"
+#include "../Audio/AudioCore.h"
 #include "../Physics/Physics.h"
 #include "../Rendering/Renderer.h"
 #include "../Scripting/ScriptingSystem.h"
@@ -44,7 +44,7 @@ void Application::Init(ApplicationSettings settings)
     scene->CreateMainCamera();
 
     Renderer::Init();
-    AudioSystem::Init(scene->GetMainCamera().Owner);
+    AudioCore::Init(scene->GetMainCamera().Owner);
     Physics::Init();
 
     Log::LogInfo("Application initialized");
@@ -88,36 +88,39 @@ void Application::RunUpdate()
     // Update animations, sound and scripts
     auto animators = scene->GetEntitiesRegistry()->GetComponentIterator<Animator>();
     for (auto& animator : animators)
-        animator.second.OnUpdate();
+        animator.OnUpdate();
 
     auto audioSources = scene->GetEntitiesRegistry()->GetComponentIterator<AudioSource>();
     for (auto& audioSource : audioSources)
-        audioSource.second.OnUpdate();
+        audioSource.OnUpdate();
 
     auto audioListeners = scene->GetEntitiesRegistry()->GetComponentIterator<AudioListener>();
     for (auto& audioListener : audioListeners)
-        audioListener.second.OnUpdate();
+        audioListener.OnUpdate();
 
     auto scripts = scene->GetEntitiesRegistry()->GetComponentIterator<ScriptComponent>();
-    for (auto& script : scripts)
-        script.second.OnUpdate();
+    int size = scripts.Size();
+    // Iterating over scripts with index because they can modify components in update
+    for (int i = 0; i < size; i++)
+        scripts[i].OnUpdate();
 
-    state = ApplicationStates::OnPhysicsUpdate;
-    // TODO: wrong delta time; physics should run on different thread with fixed delta time
-    Physics::Simulate(Time::DeltaTime());
-    // TODO: change to physics double sided list of rigid bodies
+    if (Time::FixedUpdate())
+    {
+        state = ApplicationStates::OnPhysicsUpdate;
+        Physics::Simulate(Time::FixedDeltaTime());
 
-    auto rigidBodies = scene->GetEntitiesRegistry()->GetComponentIterator<RigidBody>();
-    for (auto& rigidBody : rigidBodies)
-        rigidBody.second.GetPhysicsTransformation();
+        auto rigidBodies = scene->GetEntitiesRegistry()->GetComponentIterator<RigidBody>();
+        for (auto& rigidBody : rigidBodies)
+            rigidBody.GetPhysicsTransformation();
 
-    for (auto& script : scripts)
-        script.second.OnFixedUpdate();
+        for (int i = 0; i < size; i++)
+            scripts[i].OnFixedUpdate();
+    }
 
     state = ApplicationStates::OnLateUpdate;
 
-    for (auto& script : scripts)
-        script.second.OnLateUpdate();
+    for (int i = 0; i < size; i++)
+        scripts[i].OnLateUpdate();
 
     // Clean destroyed entities
     state = ApplicationStates::CleaningDestroyedEntities;
@@ -132,7 +135,7 @@ void Application::RunUpdate()
 
     auto spriteRenderers = scene->GetEntitiesRegistry()->GetComponentIterator<SpriteRenderer>();
     for (auto& spriteRenderer : spriteRenderers)
-        spriteRenderer.second.OnRender();
+        spriteRenderer.OnRender();
 
     // Clear depth buffer before rendering UI
     Renderer::PrepareUIRender();
@@ -140,7 +143,7 @@ void Application::RunUpdate()
 
     auto uiRenderers = scene->GetEntitiesRegistry()->GetComponentIterator<UIRenderer>();
     for (auto& uiRenderer : uiRenderers)
-        uiRenderer.second.OnRender();
+        uiRenderer.OnRender();
 
     Renderer::OnAfterRender();
 
@@ -170,7 +173,7 @@ void Application::Terminate()
     delete resources;
 
     Physics::Terminate();
-    AudioSystem::Terminate();
+    AudioCore::Terminate();
     Renderer::Terminate();
     Screen::Terminate();
     ScriptingSystem::Terminate();

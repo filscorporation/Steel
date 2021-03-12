@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "PhysicsContactListener.h"
+#include "../EntityComponentSystem/ComponentSystem.h"
+#include "RigidBody.h"
 
 class PhysicsCore
 {

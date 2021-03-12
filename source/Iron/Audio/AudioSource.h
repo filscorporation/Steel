@@ -6,8 +6,7 @@
 class AudioSource : public Component
 {
 public:
-    explicit AudioSource(EntityID ownerEntityID);
-    ~AudioSource() override;
+    explicit AudioSource(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
     void OnUpdate();
 
@@ -22,4 +21,6 @@ private:
     unsigned int sourceID;
     float sourceVolume = 1.0f;
     bool sourceIsLoop = false;
+
+    friend class AudioSystem;
 };

@@ -1,23 +1,13 @@
 #include "AudioSource.h"
-#include "AudioSystem.h"
+#include "AudioCore.h"
 #include "../Core/Log.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
-AudioSource::AudioSource(EntityID ownerEntityID) : Component(ownerEntityID)
-{
-    sourceID = AudioSystem::CreateSource();
-}
-
-AudioSource::~AudioSource()
-{
-    AudioSystem::DeleteSource(sourceID);
-}
-
 void AudioSource::OnUpdate()
 {
     // TODO: check if changed
-    AudioSystem::SetSourcePosition(sourceID, GetComponentS<Transformation>(Owner).GetPosition());
+    AudioCore::SetSourcePosition(sourceID, GetComponentS<Transformation>(Owner).GetPosition());
 }
 
 void AudioSource::Play(AudioTrack *audioTrack)
@@ -28,13 +18,13 @@ void AudioSource::Play(AudioTrack *audioTrack)
         return;
     }
 
-    AudioSystem::SetSourceBuffer(sourceID, audioTrack->BufferID);
-    AudioSystem::PlaySource(sourceID);
+    AudioCore::SetSourceBuffer(sourceID, audioTrack->BufferID);
+    AudioCore::PlaySource(sourceID);
 }
 
 void AudioSource::Stop()
 {
-    AudioSystem::StopSource(sourceID);
+    AudioCore::StopSource(sourceID);
 }
 
 bool AudioSource::GetIsLoop()
@@ -47,7 +37,7 @@ void AudioSource::SetIsLoop(bool isLoop)
     if (sourceIsLoop != isLoop)
     {
         sourceIsLoop = isLoop;
-        AudioSystem::SetSourceIsLoop(sourceID, isLoop);
+        AudioCore::SetSourceIsLoop(sourceID, isLoop);
     }
 }
 
@@ -61,6 +51,6 @@ void AudioSource::SetVolume(float volume)
     if (sourceVolume != volume)
     {
         sourceVolume = volume;
-        AudioSystem::SetSourceVolume(sourceID, volume);
+        AudioCore::SetSourceVolume(sourceID, volume);
     }
 }

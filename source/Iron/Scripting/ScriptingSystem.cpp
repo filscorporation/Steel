@@ -24,18 +24,26 @@ MonoImage* customAssemblyImage;
 
 bool ScriptingSystem::isInitialized = false;
 
+inline bool FileExists (const char* fileName)
+{
+    if (FILE *file = fopen(fileName, "r"))
+    {
+        fclose(file);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 MonoImage* LoadAssembly(const char* fileName)
 {
-    std::ifstream assemblyFile;
-    assemblyFile.exceptions(std::ifstream::badbit);
-    assemblyFile.open(fileName);
-    if (!assemblyFile.good())
+    if (!FileExists(fileName))
     {
-        assemblyFile.close();
         Log::LogError("Error loading assembly, file does not exist: " + std::string(fileName));
         return nullptr;
     }
-    assemblyFile.close();
 
     MonoAssembly* assembly = mono_domain_assembly_open(domain, fileName);
     if (assembly == nullptr)

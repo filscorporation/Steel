@@ -7,19 +7,6 @@
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
-RigidBody::RigidBody(EntityID ownerEntityID) : Component(ownerEntityID)
-{
-    info = new RigidBodyInfo();
-    _mass = 1.0f;
-
-    // TODO: set dynamic type on init
-}
-
-RigidBody::~RigidBody()
-{
-    RemovePhysicsBody();
-}
-
 void RigidBody::SetDynamic()
 {
     b2BodyDef groundBodyDef;
@@ -84,7 +71,8 @@ void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
     switch (type)
     {
         case RigidBodyTypes::None:
-            RemovePhysicsBody();
+            // TODO: will be done by the system
+            //RemovePhysicsBody();
             break;
         case RigidBodyTypes::Dynamic:
             SetDynamic();
@@ -109,15 +97,6 @@ void RigidBody::SetAutoFixture()
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
     info->Body->CreateFixture(&fixtureDef);
-}
-
-void RigidBody::RemovePhysicsBody()
-{
-    if (info == nullptr)
-        return;
-
-    PhysicsCore::GetWorld()->DestroyBody(info->Body);
-    delete info;
 }
 
 void RigidBody::UpdatePhysicsTransformation()

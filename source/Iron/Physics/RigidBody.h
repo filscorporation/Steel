@@ -16,14 +16,12 @@ namespace RigidBodyTypes
 // TODO: hide class physics logic in PhysicsCore
 class RigidBody : public Component
 {
-    // TODO: change to physics core
-    friend class Application;
+    friend class PhysicsSystem;
 
     struct RigidBodyInfo;
 
 public:
-    explicit RigidBody(EntityID ownerEntityID);
-    ~RigidBody() override;
+    explicit RigidBody(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
     void SetDynamic();
     void SetStatic();
@@ -38,11 +36,10 @@ public:
     void UpdatePhysicsTransformation();
 
 private:
-    RigidBodyInfo* info;
+    RigidBodyInfo* info = nullptr;
     bool inGetTransformation = false;
-    float _mass;
+    float _mass = 1.0f;
     RigidBodyTypes::RigidBodyType _type = RigidBodyTypes::None;
 
     void SetAutoFixture();
-    void RemovePhysicsBody();
 };

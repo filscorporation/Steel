@@ -30,7 +30,7 @@ set(SOURCE_FILES
         source/Iron/Animation/Animation.cpp source/Iron/Animation/Animation.h source/Iron/Rendering/Sprite.cpp
         source/Iron/Rendering/Sprite.h source/Iron/Audio/AudioTrack.cpp source/Iron/Audio/AudioTrack.h
         source/Iron/Audio/AudioSource.cpp source/Iron/Audio/AudioSource.h source/Iron/Audio/AudioListener.cpp
-        source/Iron/Audio/AudioListener.h source/Iron/Audio/AudioSystem.cpp source/Iron/Audio/AudioSystem.h
+        source/Iron/Audio/AudioListener.h source/Iron/Audio/AudioCore.cpp source/Iron/Audio/AudioCore.h
         source/Iron/Audio/WavLoader.cpp source/Iron/Audio/WavLoader.h source/Iron/Physics/PhysicsCore.cpp
         source/Iron/Physics/PhysicsCore.h source/Iron/Physics/Collider.cpp source/Iron/Physics/Collider.h
         source/Iron/Physics/BoxCollider.cpp source/Iron/Physics/BoxCollider.h source/Iron/Physics/RigidBody.cpp
@@ -50,7 +50,10 @@ set(SOURCE_FILES
         source/Iron/Scripting/UIInternalCalls.cpp source/Iron/Scripting/UIInternalCalls.h
         source/Iron/EntityComponentSystem/EntitiesRegistry.h source/Iron/EntityComponentSystem/Entity.h
         source/Iron/Scene/NameComponent.cpp source/Iron/Scene/NameComponent.h source/Iron/Scene/SceneHelper.h
-        source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Core/ResourceID.h)
+        source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Core/ResourceID.h
+        source/Iron/EntityComponentSystem/SparseSet.h source/Iron/EntityComponentSystem/ComponentSystem.h
+        source/Iron/Physics/PhysicsSystem.cpp source/Iron/Physics/PhysicsSystem.h source/Iron/Audio/AudioSystem.cpp
+        source/Iron/Audio/AudioSystem.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -102,11 +105,11 @@ target_link_libraries(Iron PRIVATE OpenAL)
 
 if (UNIX AND NOT APPLE)
     set(BOX2D_NAME "libbox2d.a")
-    set(MONO_NAME "libmonosgen-2.0.so")
+    set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
 endif ()
 if (WIN32)
     set(BOX2D_NAME "box2d.lib")
-    set(MONO_NAME "mono-2.0-sgen.lib")
+    set(MONO_PATH "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
 endif ()
 
 # box2d
@@ -115,7 +118,6 @@ target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-bu
 
 #mono
 include_directories(includes/mono/include)
-#target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/mono/lib/${MONO_NAME})
-target_link_libraries(Iron PRIVATE /usr/lib/libmonosgen-2.0.so)
+target_link_libraries(Iron PRIVATE ${MONO_NAME})
 
 target_compile_definitions(Iron PRIVATE)
