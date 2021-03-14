@@ -30,14 +30,17 @@ public:
 
     bool Has(EntityID id)
     {
-        return sparse.size() > id && dense[sparse[id]] == id;
+        EntityID s_id;
+        return sparse.size() > id && dense.size() > (s_id = sparse[id]) && dense[s_id] == id;
     }
 
-    T& Add(EntityID id)
+    T& Add(EntityID id, EntityID param)
     {
-        data.emplace_back(id);
+        // TODO: passing 2 parameters is bad
+        data.emplace_back(param);
         dense.emplace_back(id);
-        sparse.resize(id + 1);
+        if (sparse.size() < id + 1)
+            sparse.resize(id + 1);
         sparse[id] = size;
         size++;
 
@@ -46,7 +49,7 @@ public:
 
     void Remove(EntityID id)
     {
-        Move(size - 1, id);
+        Move(size - 1, sparse[id]);
         size --;
         data.erase(data.end() - 1);
         dense.erase(dense.end() - 1);
@@ -65,6 +68,6 @@ private:
 
         dense[to] = dense[from];
         data[to] = data[from];
-        sparse[dense[to]] = dense[to];
+        sparse[dense[to]] = to;
     }
 };

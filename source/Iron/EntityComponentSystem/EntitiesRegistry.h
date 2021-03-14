@@ -9,6 +9,10 @@
 #include "SparseSet.h"
 #include "ComponentSystem.h"
 
+#define ENTITY_ID_MASK 0xFFFFFu
+#define ENTITY_VERSION_MASK 0xFFFu
+#define ENTITY_ID_SHIFT 20u
+
 #define TYPE_ID(m_type) std::type_index(typeid(m_type))
 using ComponentTypeID = std::type_index;
 
@@ -21,7 +25,8 @@ class ComponentsPoolWrapperBase
 {
 public:
     virtual ~ComponentsPoolWrapperBase() = default;
-    virtual void DeleteByEntityID(EntityID entityID) = 0;
+    virtual void BeforeDeleteByEntityID(EntityID entityID, EntityID id) = 0;
+    virtual void DeleteByEntityID(EntityID entityID, EntityID id) = 0;
 };
 
 // Wrapper around ComponentsPool
@@ -32,14 +37,35 @@ public:
     ComponentsPool<T> Storage;
     ComponentSystem<T>* System = nullptr;
 
-    void DeleteByEntityID(EntityID entityID) override
+    ~ComponentsPoolWrapper()
     {
         if (System != nullptr)
         {
-            auto& component = Storage.Get(entityID);
+            for (auto& component : Storage)
+            {
+                System->OnComponentRemoved(component.Owner, component);
+            }
+        }
+    }
+
+    void BeforeDeleteByEntityID(EntityID entityID, EntityID id) override
+    {
+        if (!Storage.Has(id))
+            return;
+
+        if (System != nullptr)
+        {
+            auto& component = Storage.Get(id);
             System->OnComponentRemoved(entityID, component);
         }
-        Storage.Remove(entityID);
+    }
+
+    void DeleteByEntityID(EntityID entityID, EntityID id) override
+    {
+        if (!Storage.Has(id))
+            return;
+
+        Storage.Remove(id);
     }
 };
 
@@ -125,27 +151,52 @@ public:
     }
 
 private:
-    std::vector<bool> freeEntityIDs; // TODO: maybe not the best solution
-    EntityID nextFreeEntityID = 0;
+    std::vector<EntityID> entityIDs;
+    int freeIDsCount = 0;
+    EntityID nextFreeID = 0;
+
     bool isCleared = false;
+
+    static EntityID EntityIDCombine(EntityID id, EntityID version)
+    {
+        return (id << ENTITY_ID_SHIFT) + version;
+    }
+
+    static EntityID EntityIDIncrementVersion(EntityID id)
+    {
+        return EntityIDGetVersion(id) == ENTITY_VERSION_MASK
+            ? EntityIDCombine(EntityIDGetID(id), 1)
+            : id + 1;
+    }
+
+    static EntityID EntityIDGetID(EntityID entityID)
+    {
+        return (entityID & ENTITY_ID_MASK << ENTITY_ID_SHIFT) >> ENTITY_ID_SHIFT;
+    }
+
+    static EntityID EntityIDGetVersion(EntityID entityID)
+    {
+        return entityID & ENTITY_VERSION_MASK;
+    }
 
 public:
     EntityID CreateNewEntity()
     {
-        if (nextFreeEntityID == freeEntityIDs.size())
+        EntityID result;
+        if (freeIDsCount == 0)
         {
-            freeEntityIDs.push_back(false);
-            return nextFreeEntityID++;
+            result = EntityIDCombine(entityIDs.size(), 1);
+            entityIDs.emplace_back(result);
         }
-
-        EntityID result = nextFreeEntityID;
-        freeEntityIDs[nextFreeEntityID] = false;
-        nextFreeEntityID++;
-        while (nextFreeEntityID < freeEntityIDs.size())
+        else
         {
-            if (freeEntityIDs[nextFreeEntityID])
-                break;
-            nextFreeEntityID++;
+            freeIDsCount--;
+            result = EntityIDCombine(nextFreeID, EntityIDGetVersion(entityIDs[nextFreeID]));
+            if (freeIDsCount > 0)
+            {
+                nextFreeID = EntityIDGetID(entityIDs[nextFreeID]);
+                entityIDs[EntityIDGetID(result)] = result;
+            }
         }
 
         return result;
@@ -153,24 +204,40 @@ public:
 
     bool EntityExists(EntityID entityID)
     {
-        return !freeEntityIDs[entityID];
+        return EntityIDGetVersion(entityIDs[EntityIDGetID(entityID)]) == EntityIDGetVersion(entityID);
     }
 
     void DeleteEntity(EntityID entityID)
     {
-        freeEntityIDs[entityID] = true;
-        nextFreeEntityID = nextFreeEntityID < entityID ? nextFreeEntityID : entityID;
+        if (!EntityExists(entityID))
+            return;
+
+        // Increase this entityID version by one
+        entityIDs[EntityIDGetID(entityID)] = EntityIDIncrementVersion(entityID);
+        if (freeIDsCount != 0)
+        {
+            // If there are any free ids already, create link from current deleted id to previously deleted
+            entityIDs[EntityIDGetID(entityID)] = EntityIDCombine(nextFreeID, EntityIDGetVersion(entityIDs[EntityIDGetID(entityID)]));
+        }
+        // Next free id is current deleted
+        nextFreeID = EntityIDGetID(entityID);
+        freeIDsCount++;
 
         for (auto component : componentsMap)
         {
-            component.second->DeleteByEntityID(entityID);
+            component.second->BeforeDeleteByEntityID(entityID, EntityIDGetID(entityID));
+        }
+        for (auto component : componentsMap)
+        {
+            component.second->DeleteByEntityID(entityID, EntityIDGetID(entityID));
         }
     }
 
     void CleanAllEntities()
     {
-        freeEntityIDs.clear();
-        nextFreeEntityID = 0;
+        entityIDs.clear();
+        nextFreeID = 0;
+        freeIDsCount = 0;
         for (auto poolPair : componentsMap)
         {
             delete poolPair.second;
@@ -198,6 +265,7 @@ public:
     T& AddComponent(EntityID entityID)
     {
         auto typeID = TYPE_ID(T);
+        EntityID id = EntityIDGetID(entityID);
 
         ComponentsPoolWrapper<T>* pool;
         if (componentsMap.find(typeID) == componentsMap.end())
@@ -208,15 +276,12 @@ public:
         else
         {
             pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
-
-            if (pool->Storage.Has(entityID))
-                return pool->Storage.Get(entityID);
         }
 
-        if (pool->Storage.Has(entityID))
-            return pool->Storage.Get(entityID);
+        if (pool->Storage.Has(id))
+            return pool->Storage.Get(id);
 
-        auto& component = pool->Storage.Add(entityID);
+        auto& component = pool->Storage.Add(id, entityID);
         if (pool->System != nullptr)
             pool->System->OnComponentAdded(entityID, component);
 
@@ -230,6 +295,7 @@ public:
             return false;
 
         auto typeID = TYPE_ID(T);
+        EntityID id = EntityIDGetID(entityID);
 
         ComponentsPoolWrapper<T>* pool;
         if (componentsMap.find(typeID) == componentsMap.end())
@@ -237,15 +303,17 @@ public:
         else
             pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
 
-        return pool->Storage.Has(entityID);
+        return pool->Storage.Has(id);
     }
 
     template<class T>
     T& GetComponent(EntityID entityID)
     {
+        EntityID id = EntityIDGetID(entityID);
+
         // Out of all methods, "get" doesn't check if there is component for the reason of return type
         // So HasComponent() should be used before it
-        return ((ComponentsPoolWrapper<T>*)componentsMap[TYPE_ID(T)])->Storage.Get(entityID);
+        return ((ComponentsPoolWrapper<T>*)componentsMap[TYPE_ID(T)])->Storage.Get(id);
     }
 
     template<class T>
@@ -255,21 +323,22 @@ public:
             return false;
 
         auto typeID = TYPE_ID(T);
+        EntityID id = EntityIDGetID(entityID);
 
         ComponentsPoolWrapper<T>* pool;
         if (componentsMap.find(typeID) != componentsMap.end())
         {
             pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
 
-            if (!pool->Storage.Has(entityID))
+            if (!pool->Storage.Has(id))
                 return false;
 
             if (pool->System != nullptr)
             {
-                auto& component = pool->Storage.Get(entityID);
+                auto& component = pool->Storage.Get(id);
                 pool->System->OnComponentRemoved(entityID, component);
             }
-            pool->Storage.Remove(entityID);
+            pool->Storage.Remove(id);
 
             return true;
         }
