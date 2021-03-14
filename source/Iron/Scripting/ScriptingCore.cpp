@@ -5,6 +5,7 @@
 #include "../Audio/AudioSource.h"
 #include "../Core/Log.h"
 #include "../Physics/BoxCollider.h"
+#include "../Physics/CircleCollider.h"
 #include "../Physics/RigidBody.h"
 #include "../Rendering/Camera.h"
 #include "../Rendering/SpriteRenderer.h"
@@ -64,6 +65,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(Transformation, API_CLASS(Transformation))
     CACHE_CLASS(NameComponent, API_CLASS(NameComponent))
     CACHE_CLASS(BoxCollider, API_CLASS(BoxCollider))
+    CACHE_CLASS(CircleCollider, API_CLASS(CircleCollider))
     CACHE_CLASS(RigidBody, API_CLASS(RigidBody))
     CACHE_CLASS(SpriteRenderer, API_CLASS(SpriteRenderer))
     CACHE_CLASS(Camera, API_CLASS(Camera))
@@ -84,6 +86,8 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return AddComponentS<Transformation>(entity);
     if (monoClass == CACHED_CLASS(BoxCollider))
         return AddComponentS<BoxCollider>(entity);
+    if (monoClass == CACHED_CLASS(CircleCollider))
+        return AddComponentS<CircleCollider>(entity);
     if (monoClass == CACHED_CLASS(RigidBody))
         return AddComponentS<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))
@@ -118,6 +122,8 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass *monoCl
         return HasComponentS<Transformation>(entity) || HasComponentS<RectTransformation>(entity); // TODO: for UI, rework
     if (monoClass == CACHED_CLASS(BoxCollider))
         return HasComponentS<BoxCollider>(entity);
+    if (monoClass == CACHED_CLASS(CircleCollider))
+        return HasComponentS<CircleCollider>(entity);
     if (monoClass == CACHED_CLASS(RigidBody))
         return HasComponentS<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))
@@ -150,6 +156,8 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *mon
         return RemoveComponentS<Transformation>(entity);
     if (monoClass == CACHED_CLASS(BoxCollider))
         return RemoveComponentS<BoxCollider>(entity);
+    if (monoClass == CACHED_CLASS(CircleCollider))
+        return RemoveComponentS<CircleCollider>(entity);
     if (monoClass == CACHED_CLASS(RigidBody))
         return RemoveComponentS<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))

@@ -102,6 +102,8 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.RigidBody::SetRigidBodyType_Internal", (void*)ComponentsInternalCalls::RigidBody_SetRigidBodyType);
     mono_add_internal_call("Iron.BoxCollider::GetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_GetSize);
     mono_add_internal_call("Iron.BoxCollider::SetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_SetSize);
+    mono_add_internal_call("Iron.CircleCollider::GetRadius_Internal", (void*)ComponentsInternalCalls::CircleCollider_GetRadius);
+    mono_add_internal_call("Iron.CircleCollider::SetRadius_Internal", (void*)ComponentsInternalCalls::CircleCollider_SetRadius);
 
     mono_add_internal_call("Iron.RectTransformation::GetAnchorMin_Internal", (void*)UIInternalCalls::RectTransformation_GetAnchorMin);
     mono_add_internal_call("Iron.RectTransformation::SetAnchorMin_Internal", (void*)UIInternalCalls::RectTransformation_SetAnchorMin);

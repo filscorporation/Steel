@@ -60,4 +60,6 @@ namespace ComponentsInternalCalls
     void RigidBody_SetRigidBodyType(EntityID entityID, RigidBodyTypes::RigidBodyType type);
     void BoxCollider_GetSize(EntityID entityID, glm::vec2* size);
     void BoxCollider_SetSize(EntityID entityID, glm::vec2* size);
+    float CircleCollider_GetRadius(EntityID entityID);
+    void CircleCollider_SetRadius(EntityID entityID, float radius);
 }

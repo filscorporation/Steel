@@ -53,7 +53,7 @@ set(SOURCE_FILES
         source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Core/ResourceID.h
         source/Iron/EntityComponentSystem/SparseSet.h source/Iron/EntityComponentSystem/ComponentSystem.h
         source/Iron/Physics/PhysicsSystem.cpp source/Iron/Physics/PhysicsSystem.h source/Iron/Audio/AudioSystem.cpp
-        source/Iron/Audio/AudioSystem.h)
+        source/Iron/Audio/AudioSystem.h source/Iron/Physics/CircleCollider.cpp source/Iron/Physics/CircleCollider.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

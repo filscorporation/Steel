@@ -57,6 +57,7 @@
         <Compile Include="Math\Vector3.cs" />
         <Compile Include="Entity\Transformation.cs" />
         <Compile Include="Physics\BoxCollider.cs" />
+        <Compile Include="Physics\CircleCollider.cs" />
         <Compile Include="Physics\Collider.cs" />
         <Compile Include="Physics\Collision.cs" />
         <Compile Include="Physics\Physics.cs" />

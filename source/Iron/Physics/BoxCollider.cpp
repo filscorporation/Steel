@@ -1,14 +1,15 @@
 #include <box2d/box2d.h>
+
 #include "../Rendering/SpriteRenderer.h"
 #include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 #include "BoxCollider.h"
 #include "PhysicsInfo.h"
-#include "../Scene/Transformation.h"
 
 BoxCollider::BoxCollider(EntityID ownerEntityID) : Collider(ownerEntityID)
 {
     info = new BoxColliderInfo();
-    info->GroundBox = new b2PolygonShape();
+    info->BoxShape = new b2PolygonShape();
     SetSizeAutomatically();
 }
 
@@ -26,7 +27,7 @@ void BoxCollider::SetSizeAutomatically()
     }
     else
         _size = GetComponentS<Transformation>(Owner).GetScale();
-    info->GroundBox->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
+    info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
 }
 
 glm::vec2 BoxCollider::GetSize()
@@ -37,5 +38,5 @@ glm::vec2 BoxCollider::GetSize()
 void BoxCollider::SetSize(glm::vec2 size)
 {
     _size = size;
-    info->GroundBox->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
+    info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
 }

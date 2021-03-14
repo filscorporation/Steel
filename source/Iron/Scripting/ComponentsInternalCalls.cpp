@@ -4,8 +4,8 @@
 #include "../Audio/AudioSource.h"
 #include "../Audio/AudioListener.h"
 #include "../Core/Application.h"
-#include "../Core/Log.h"
 #include "../Physics/BoxCollider.h"
+#include "../Physics/CircleCollider.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Rendering/Camera.h"
 #include "../Scene/Transformation.h"
@@ -304,4 +304,18 @@ void ComponentsInternalCalls::BoxCollider_SetSize(EntityID entityID, glm::vec2* 
     GET_COMPONENT_OR_RETURN(BoxCollider, )
 
     component.SetSize(*size);
+}
+
+float ComponentsInternalCalls::CircleCollider_GetRadius(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(CircleCollider, 0.0f)
+
+    return component.GetRadius();
+}
+
+void ComponentsInternalCalls::CircleCollider_SetRadius(EntityID entityID, float radius)
+{
+    GET_COMPONENT_OR_RETURN(CircleCollider, )
+
+    component.SetRadius(radius);
 }

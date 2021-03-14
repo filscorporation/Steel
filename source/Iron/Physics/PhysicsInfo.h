@@ -2,6 +2,7 @@
 
 #include "RigidBody.h"
 #include "BoxCollider.h"
+#include "CircleCollider.h"
 
 struct RigidBody::RigidBodyInfo
 {
@@ -10,5 +11,10 @@ struct RigidBody::RigidBodyInfo
 
 struct BoxCollider::BoxColliderInfo
 {
-    b2PolygonShape* GroundBox;
+    b2PolygonShape* BoxShape;
+};
+
+struct CircleCollider::CircleColliderInfo
+{
+    b2CircleShape* CircleShape;
 };

@@ -13,6 +13,7 @@ struct CachedData
     MonoClass* classTransformation;
     MonoClass* classNameComponent;
     MonoClass* classBoxCollider;
+    MonoClass* classCircleCollider;
     MonoClass* classRigidBody;
     MonoClass* classSpriteRenderer;
     MonoClass* classCamera;

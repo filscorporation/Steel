@@ -88,15 +88,24 @@ void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
 
 void RigidBody::SetAutoFixture()
 {
-    if (!HasComponentS<BoxCollider>(Owner))
-        return;
-
-    auto& bc = GetComponentS<BoxCollider>(Owner);
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = bc.info->GroundBox;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.3f;
-    info->Body->CreateFixture(&fixtureDef);
+    if (HasComponentS<BoxCollider>(Owner))
+    {
+        auto& bc = GetComponentS<BoxCollider>(Owner);
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = bc.info->BoxShape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.3f;
+        info->Body->CreateFixture(&fixtureDef);
+    }
+    if (HasComponentS<CircleCollider>(Owner))
+    {
+        auto& cc = GetComponentS<CircleCollider>(Owner);
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = cc.info->CircleShape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.3f;
+        info->Body->CreateFixture(&fixtureDef);
+    }
 }
 
 void RigidBody::UpdatePhysicsTransformation()
