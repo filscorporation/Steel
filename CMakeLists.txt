@@ -109,12 +109,18 @@ if (UNIX AND NOT APPLE)
 endif ()
 if (WIN32)
     set(BOX2D_NAME "box2d.lib")
-    set(MONO_PATH "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
+    set(MONO_NAME "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
 endif ()
 
 # box2d
 include_directories(includes/box2d/include)
-target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-release/bin/${BOX2D_NAME})
+if (${CMAKE_BUILD_TYPE} MATCHES Debug)
+    message("Debug")
+    target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-debug/bin/${BOX2D_NAME})
+else()
+    message("Release")
+    target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-release/bin/${BOX2D_NAME})
+endif()
 
 #mono
 include_directories(includes/mono/include)
