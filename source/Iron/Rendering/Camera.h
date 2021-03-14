@@ -39,7 +39,7 @@ private:
     float _width = 4.0f;
     float _height = 3.0f;
     float _nearClippingPlane = 0.1f;
-    float _farClippingPlane = 10.0f;
+    float _farClippingPlane = 100.0f;
     CameraResizeModes::CameraResizeMode _resizeMode = CameraResizeModes::KeepHeight;
 
     glm::mat4 viewProjection;

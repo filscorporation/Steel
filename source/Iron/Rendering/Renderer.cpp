@@ -3,6 +3,8 @@
 #include "SpriteRenderer.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
+#include "../Scene/Transformation.h"
+#include "../UI/UIRenderer.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -21,6 +23,9 @@ GLuint textureIDs[MAX_TEXTURE_SLOTS];
 GLuint indexBufferID, vertexDataBufferID;
 GLuint viewProjectionUniform;
 
+int Renderer::DrawCallsStats = 0;
+int Renderer::VerticesStats = 0;
+
 void Renderer::Init()
 {
     Log::LogInfo("Begin renderer init");
@@ -33,7 +38,7 @@ void Renderer::Init()
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Create shader and initialize it's texture slots variable
     shader = new Shader(BuiltInShaders::VertexShader, BuiltInShaders::FragmentShader);
@@ -110,12 +115,39 @@ void Renderer::OnBeforeRender(Camera& camera)
     glm::mat4 viewProjection = camera.GetViewProjection();
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(viewProjection));
 
+    // Sort all objects by Z
+    struct
+    {
+        bool operator()(const Transformation& a, const Transformation& b) const { return a.GetPosition().z > b.GetPosition().z; }
+    } ZComparer;
+    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->SortComponents<Transformation>(ZComparer);
+    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->ApplyOrder<Transformation, SpriteRenderer>();
+
+    // Start first batch
     StartBatch();
+
+    DrawCallsStats = 0;
+    VerticesStats = 0;
 }
 
 void Renderer::OnAfterRender()
 {
     EndBatch();
+}
+
+void Renderer::DrawScene()
+{
+    auto spriteRenderers = Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->GetComponentIterator<SpriteRenderer>();
+
+    // Opaque pass
+    for (int i = 0; i < spriteRenderers.Size(); ++i)
+        if (!spriteRenderers[i].IsTransparent())
+            spriteRenderers[i].OnRender();
+
+    // Transparent pass
+    for (int i = spriteRenderers.Size() - 1; i >=0; --i)
+        if (spriteRenderers[i].IsTransparent())
+            spriteRenderers[i].OnRender();
 }
 
 void Renderer::Clear(glm::vec3 color)
@@ -132,6 +164,13 @@ void Renderer::PrepareUIRender()
     glm::mat4 uiViewProjection = Screen::GetUIViewProjection();
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(uiViewProjection));
     glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::DrawUI()
+{
+    auto uiRenderers = Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->GetComponentIterator<UIRenderer>();
+    for (auto& uiRenderer : uiRenderers)
+        uiRenderer.OnRender();
 }
 
 void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID)
@@ -189,6 +228,7 @@ void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, glm::vec2 te
     }
 
     renderCallsCount++;
+    VerticesStats += 4;
 }
 
 void Renderer::StartBatch()
@@ -202,6 +242,7 @@ void Renderer::EndBatch()
     if (renderCallsCount == 0)
         return;
 
+    DrawCallsStats ++;
     DrawBatchedData();
 }
 

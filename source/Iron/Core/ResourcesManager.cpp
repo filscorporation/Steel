@@ -60,6 +60,7 @@ Sprite* ResourcesManager::LoadImage(const char* filePath)
     image->Path = filePath;
     image->Width = w;
     image->Height = h;
+    image->IsTransparent = c == 4;
 
     images.push_back(image);
 

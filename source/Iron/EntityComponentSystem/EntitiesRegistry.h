@@ -4,6 +4,7 @@
 #include <typeindex>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
 
 #include "Entity.h"
 #include "SparseSet.h"
@@ -11,7 +12,7 @@
 
 #define ENTITY_ID_MASK 0xFFFFFu
 #define ENTITY_VERSION_MASK 0xFFFu
-#define ENTITY_ID_SHIFT 20u
+#define ENTITY_ID_SHIFT 12u
 
 #define TYPE_ID(m_type) std::type_index(typeid(m_type))
 using ComponentTypeID = std::type_index;
@@ -259,6 +260,59 @@ public:
         }
 
         return ComponentIterator<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID]);
+    }
+
+    template<class T, class Comparer>
+    bool SortComponents(Comparer comparer)
+    {
+        auto typeID = TYPE_ID(T);
+
+        if (componentsMap.find(typeID) == componentsMap.end())
+            return false;
+
+        auto pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
+        if (pool->Storage.Size() <= 0)
+            return false;
+
+        // Sort
+        if (std::is_sorted(pool->Storage.data.begin(), pool->Storage.data.end(), comparer))
+            return false;
+        std::sort(pool->Storage.begin(), pool->Storage.end(), comparer);
+
+        // Restore links
+        for (int i = 0; i < pool->Storage.size; ++i)
+        {
+            pool->Storage.dense[i] = EntityIDGetID(pool->Storage.data[i].Owner);
+            pool->Storage.sparse[pool->Storage.dense[i]] = i;
+        }
+
+        return true;
+    }
+
+    template<class SourceT, class TargetT>
+    void ApplyOrder()
+    {
+        auto sourceTypeID = TYPE_ID(SourceT);
+        auto targetTypeID = TYPE_ID(TargetT);
+
+        if (componentsMap.find(sourceTypeID) == componentsMap.end() || componentsMap.find(targetTypeID) == componentsMap.end())
+            return;
+
+        auto sourcePool = (ComponentsPoolWrapper<SourceT>*)componentsMap[sourceTypeID];
+        auto targetPool = (ComponentsPoolWrapper<TargetT>*)componentsMap[targetTypeID];
+        if (sourcePool->Storage.Size() <= 0 || targetPool->Storage.Size() <= 0)
+            return;
+
+        int currentID = 0;
+        for (int i = 0; i < sourcePool->Storage.size; ++i)
+        {
+            EntityID id = EntityIDGetID(sourcePool->Storage.data[i].Owner);
+            if (targetPool->Storage.Has(id))
+            {
+                targetPool->Storage.Swap(targetPool->Storage.sparse[id], currentID);
+                currentID++;
+            }
+        }
     }
 
     template<class T>

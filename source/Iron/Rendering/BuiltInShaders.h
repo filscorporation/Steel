@@ -75,7 +75,7 @@ namespace BuiltInShaders
 "        case 30: texel = texture(images[30], texCoord); break;\n"
 "        case 31: texel = texture(images[31], texCoord); break;\n"
 "    }\n"
-"    if (texel.a < 0.05)\n"
+"    if (texel.a < 0.01)\n"
 "        discard;\n"
 "    color = texel * vertexColor;\n"
 "}";

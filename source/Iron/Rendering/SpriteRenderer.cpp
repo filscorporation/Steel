@@ -26,6 +26,8 @@ void SpriteRenderer::OnRender()
 void SpriteRenderer::SetImage(Sprite* image)
 {
     _image = image;
+
+    _isTransparent = _image != nullptr && _image->IsTransparent;
 }
 
 Sprite* SpriteRenderer::GetImage()
@@ -40,4 +42,9 @@ glm::vec2 SpriteRenderer::GetWorldSize()
 
     // TODO: use sprite size
     return GetComponentS<Transformation>(Owner).GetScale();
+}
+
+bool SpriteRenderer::IsTransparent() const
+{
+    return _isTransparent;
 }

@@ -16,7 +16,9 @@ public:
     void SetImage(Sprite* image);
     Sprite* GetImage();
     glm::vec2 GetWorldSize();
+    bool IsTransparent() const;
 
 private:
     Sprite* _image;
+    bool _isTransparent = false;
 };

@@ -20,8 +20,8 @@ void Scene::CreateMainCamera()
 {
     _mainCameraEntity = CreateEntity();
     auto& mainCamera = entitiesRegistry->AddComponent<Camera>(_mainCameraEntity);
-    entitiesRegistry->GetComponent<Transformation>(_mainCameraEntity).SetPosition(glm::vec3(0.0f, 0.0f, 3.0f)); // TODO: check
-    mainCamera.SetHeight(3.0f); // TODO: check
+    entitiesRegistry->GetComponent<Transformation>(_mainCameraEntity).SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+    mainCamera.SetHeight(3.0f);
 }
 
 EntitiesRegistry* Scene::GetEntitiesRegistry()

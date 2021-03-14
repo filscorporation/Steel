@@ -70,4 +70,17 @@ private:
         data[to] = data[from];
         sparse[dense[to]] = to;
     }
+
+    inline void Swap(EntityID from, EntityID to)
+    {
+        if (from == to)
+            return;
+
+        std::swap(dense[to], dense[from]);
+        std::swap(data[to], data[from]);
+        sparse[dense[to]] = to;
+        sparse[dense[from]] = from;
+    }
+
+    friend class EntitiesRegistry;
 };

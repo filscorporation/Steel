@@ -248,10 +248,10 @@ void Input::SendMouseCallbacks()
     {
         auto& sr = GetComponentS<ScriptComponent>(lastMouseOverCollider);
 
-        if (IsAnyMouseButtonPressed())
-            sr.OnMousePressed();
         if (IsAnyMouseButtonJustPressed())
             sr.OnMouseJustPressed();
+        if (IsAnyMouseButtonPressed())
+            sr.OnMousePressed();
         if (IsAnyMouseButtonJustReleased())
             sr.OnMouseJustReleased();
     }

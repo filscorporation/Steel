@@ -14,6 +14,7 @@ public:
     unsigned int TextureID;
     int Width;
     int Height;
+    bool IsTransparent;
 
     bool IsSpriteSheet = false;
     int TileWidth;

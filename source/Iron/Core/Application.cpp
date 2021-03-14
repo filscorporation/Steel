@@ -101,7 +101,7 @@ void Application::RunUpdate()
     auto scripts = scene->GetEntitiesRegistry()->GetComponentIterator<ScriptComponent>();
     int size = scripts.Size();
     // Iterating over scripts with index because they can modify components in update
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; ++i)
         scripts[i].OnUpdate();
 
     if (Time::FixedUpdate())
@@ -132,18 +132,11 @@ void Application::RunUpdate()
 
     state = ApplicationStates::OnRender;
     // Draw sprites
-
-    auto spriteRenderers = scene->GetEntitiesRegistry()->GetComponentIterator<SpriteRenderer>();
-    for (auto& spriteRenderer : spriteRenderers)
-        spriteRenderer.OnRender();
-
+    Renderer::DrawScene();
     // Clear depth buffer before rendering UI
     Renderer::PrepareUIRender();
     // Draw UI on top
-
-    auto uiRenderers = scene->GetEntitiesRegistry()->GetComponentIterator<UIRenderer>();
-    for (auto& uiRenderer : uiRenderers)
-        uiRenderer.OnRender();
+    Renderer::DrawUI();
 
     Renderer::OnAfterRender();
 
@@ -157,8 +150,9 @@ void Application::RunUpdate()
     fpsTimer += Time::DeltaTime();
     if (fpsTimer > 2.0f)
     {
-        Log::LogInfo("FPS " + std::to_string(fpsCounter / 2));
-        //Log::LogInfo("Entities in scene " + std::to_string(scene->GetEntitiesRegistry().));
+        Log::LogInfo("FPS " + std::to_string(fpsCounter / 2)
+            + ", draw calls " + std::to_string(Renderer::DrawCallsStats)
+            + ", vertices " + std::to_string(Renderer::VerticesStats));
         fpsTimer = 0;
         fpsCounter = 0;
     }
