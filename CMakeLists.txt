@@ -53,7 +53,9 @@ set(SOURCE_FILES
         source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Core/ResourceID.h
         source/Iron/EntityComponentSystem/SparseSet.h source/Iron/EntityComponentSystem/ComponentSystem.h
         source/Iron/Physics/PhysicsSystem.cpp source/Iron/Physics/PhysicsSystem.h source/Iron/Audio/AudioSystem.cpp
-        source/Iron/Audio/AudioSystem.h source/Iron/Physics/CircleCollider.cpp source/Iron/Physics/CircleCollider.h)
+        source/Iron/Audio/AudioSystem.h source/Iron/Physics/CircleCollider.cpp source/Iron/Physics/CircleCollider.h
+        source/Iron/Scene/HierarchyNode.cpp source/Iron/Scene/HierarchyNode.h source/Iron/Scene/Hierarchy.h
+        source/Iron/Scene/Hierarchy.cpp)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -115,10 +117,8 @@ endif ()
 # box2d
 include_directories(includes/box2d/include)
 if (${CMAKE_BUILD_TYPE} MATCHES Debug)
-    message("Debug")
     target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-debug/bin/${BOX2D_NAME})
 else()
-    message("Release")
     target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-release/bin/${BOX2D_NAME})
 endif()
 

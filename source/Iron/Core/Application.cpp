@@ -85,19 +85,7 @@ void Application::RunUpdate()
     // Update and render objects in scene
     state = ApplicationStates::OnUpdate;
 
-    // Update animations, sound and scripts
-    auto animators = scene->GetEntitiesRegistry()->GetComponentIterator<Animator>();
-    for (auto& animator : animators)
-        animator.OnUpdate();
-
-    auto audioSources = scene->GetEntitiesRegistry()->GetComponentIterator<AudioSource>();
-    for (auto& audioSource : audioSources)
-        audioSource.OnUpdate();
-
-    auto audioListeners = scene->GetEntitiesRegistry()->GetComponentIterator<AudioListener>();
-    for (auto& audioListener : audioListeners)
-        audioListener.OnUpdate();
-
+    // Update scripts
     auto scripts = scene->GetEntitiesRegistry()->GetComponentIterator<ScriptComponent>();
     int size = scripts.Size();
     // Iterating over scripts with index because they can modify components in update
@@ -107,6 +95,8 @@ void Application::RunUpdate()
     if (Time::FixedUpdate())
     {
         state = ApplicationStates::OnPhysicsUpdate;
+        // Apply transformations to physics objects and then simulate
+        Physics::UpdatePhysicsTransformations();
         Physics::Simulate(Time::FixedDeltaTime());
 
         auto rigidBodies = scene->GetEntitiesRegistry()->GetComponentIterator<RigidBody>();
@@ -122,9 +112,26 @@ void Application::RunUpdate()
     for (int i = 0; i < size; i++)
         scripts[i].OnLateUpdate();
 
+    // Update inner components
+    auto animators = scene->GetEntitiesRegistry()->GetComponentIterator<Animator>();
+    for (auto& animator : animators)
+        animator.OnUpdate();
+
+    auto audioSources = scene->GetEntitiesRegistry()->GetComponentIterator<AudioSource>();
+    for (auto& audioSource : audioSources)
+        audioSource.OnUpdate();
+
+    auto audioListeners = scene->GetEntitiesRegistry()->GetComponentIterator<AudioListener>();
+    for (auto& audioListener : audioListeners)
+        audioListener.OnUpdate();
+
     // Clean destroyed entities
     state = ApplicationStates::CleaningDestroyedEntities;
     scene->CleanDestroyedEntities();
+
+    // Sort hierarchy from parents to children and then apply transforms
+    scene->SortByHierarchy();
+    scene->UpdateGlobalTransformation();
 
     Time::Update();
 

@@ -63,6 +63,8 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Transformation::SetRotation_Internal", (void*)ComponentsInternalCalls::Transformation_SetRotation);
     mono_add_internal_call("Iron.Transformation::GetScale_Internal", (void*)ComponentsInternalCalls::Transformation_GetScale);
     mono_add_internal_call("Iron.Transformation::SetScale_Internal", (void*)ComponentsInternalCalls::Transformation_SetScale);
+    mono_add_internal_call("Iron.Transformation::GetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_GetParent);
+    mono_add_internal_call("Iron.Transformation::SetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_SetParent);
 
     mono_add_internal_call("Iron.AudioListener::GetVolume_Internal", (void*)ComponentsInternalCalls::AudioListener_GetVolume);
     mono_add_internal_call("Iron.AudioListener::SetVolume_Internal", (void*)ComponentsInternalCalls::AudioListener_SetVolume);

@@ -17,6 +17,10 @@ namespace ComponentsInternalCalls
     glm::vec3 Transformation_GetScale(EntityID entityID);
     void Transformation_SetScale(EntityID entityID, glm::vec3 scale);
 
+    // Hierarchy Node
+    EntityID HierarchyNode_GetParent(EntityID entityID);
+    void HierarchyNode_SetParent(EntityID entityID, EntityID parentEntityID);
+
     // Audio
     float AudioListener_GetVolume(EntityID entityID);
     void AudioListener_SetVolume(EntityID entityID, float volume);

@@ -11,6 +11,7 @@ class Physics
 public:
     static void Init();
     static void Terminate();
+    static void UpdatePhysicsTransformations();
     static void Simulate(float deltaTime);
 
     static std::vector<EntityID> PointCast(glm::vec2 center);

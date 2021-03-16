@@ -6,8 +6,9 @@
 
 void AudioSource::OnUpdate()
 {
-    // TODO: check if changed
-    AudioCore::SetSourcePosition(sourceID, GetComponentS<Transformation>(Owner).GetPosition());
+    auto& transform = GetComponentS<Transformation>(Owner);
+    if (transform.DidTransformationChange())
+        AudioCore::SetSourcePosition(sourceID, transform.GetPosition());
 }
 
 void AudioSource::Play(AudioTrack *audioTrack)

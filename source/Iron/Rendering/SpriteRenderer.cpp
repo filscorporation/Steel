@@ -8,19 +8,22 @@ void SpriteRenderer::OnRender()
     if (_image == nullptr)
         return;
 
+    auto& transform = GetComponentS<Transformation>(Owner);
     if (_image->IsSpriteSheet)
     {
         glm::vec2 texCoords[4];
         _image->GetTexCoord(CurrentImageTileIndex, texCoords);
         Renderer::DrawQuad(
-                GetComponentS<Transformation>(Owner).GetTransformationMatrix(),
+                transform.GetTransformationMatrix(),
                 _image->TextureID,
                 texCoords);
     }
     else
     {
-        Renderer::DrawQuad(GetComponentS<Transformation>(Owner).GetTransformationMatrix(), _image->TextureID);
+        Renderer::DrawQuad(transform.GetTransformationMatrix(), _image->TextureID);
     }
+    // TODO: maybe not the best place to do that..
+    transform.SetTransformationChanged(false);
 }
 
 void SpriteRenderer::SetImage(Sprite* image)

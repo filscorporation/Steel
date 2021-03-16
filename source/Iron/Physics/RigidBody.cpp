@@ -123,8 +123,10 @@ void RigidBody::UpdatePhysicsTransformation()
 
 void RigidBody::GetPhysicsTransformation()
 {
+    if (_type == RigidBodyTypes::Static)
+        return;
+
     inGetTransformation = true;
-    // TODO: check body type
     float z = GetComponentS<Transformation>(Owner).GetPosition().z;
     auto position = info->Body->GetPosition();
     float rotation = info->Body->GetAngle();

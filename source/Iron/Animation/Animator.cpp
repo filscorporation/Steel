@@ -50,7 +50,6 @@ void Animator::Restart()
 
 void ApplyFrame(EntityID entity, Keyframe keyframe)
 {
-    // TODO: cache component
     auto& sr = GetComponentS<SpriteRenderer>(entity);
     if (sr.GetImage() == nullptr && keyframe.SpriteID != -1 || sr.GetImage()->ID != keyframe.SpriteID)
     {
@@ -75,7 +74,7 @@ void Animator::OnUpdate()
     animationTime += Time::DeltaTime() * Speed;
     NormalizedTime = animationTime / Animations[currentAnimation]->Length();
 
-    for (int i = 0; i < currentCurveFrame.size(); ++i)
+    for (uint32_t i = 0; i < currentCurveFrame.size(); ++i)
     {
         if (Speed > 0)
         {
@@ -107,7 +106,7 @@ void Animator::OnUpdate()
         {
             // TODO: make normalized time show number of cycles for loop animations
             NormalizedTime = Speed < 0 ? NormalizedTime + 1.0f : NormalizedTime - 1.0f;
-            for (int i = 0; i < Animations[currentAnimation]->Curves.size(); ++i)
+            for (uint32_t i = 0; i < Animations[currentAnimation]->Curves.size(); ++i)
             {
                 currentCurveFrame[i] = Speed < 0 ? Animations[currentAnimation]->Curves[i].Keyframes.size() : 0;
                 ApplyFrame(Owner, Animations[currentAnimation]->Curves[i].Keyframes[0]);

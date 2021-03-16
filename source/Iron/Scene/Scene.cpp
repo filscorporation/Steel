@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "Transformation.h"
 #include "NameComponent.h"
+#include "HierarchyNode.h"
+#include "Hierarchy.h"
 
 int Scene::EntitiesWasCreated = 0;
 
@@ -31,12 +33,19 @@ EntitiesRegistry* Scene::GetEntitiesRegistry()
 
 EntityID Scene::CreateEntity()
 {
+    return CreateEntity("New entity", NULL_ENTITY);
+}
+
+EntityID Scene::CreateEntity(const char* name, EntityID parent)
+{
     EntitiesWasCreated++;
 
     auto entity = entitiesRegistry->CreateNewEntity();
-    auto& name = entitiesRegistry->AddComponent<NameComponent>(entity);
-    name.Name = "New entity";
+    auto& nameComponent = entitiesRegistry->AddComponent<NameComponent>(entity);
+    nameComponent.Name = name;
     entitiesRegistry->AddComponent<Transformation>(entity);
+    entitiesRegistry->AddComponent<HierarchyNode>(entity);
+    LinkChildToParent(entitiesRegistry, entity, parent);
 
     return entity;
 }
@@ -44,15 +53,6 @@ EntityID Scene::CreateEntity()
 void Scene::DestroyEntity(EntityID entity)
 {
     entitiesToDelete.push_back(entity);
-}
-
-bool Scene::IsEntityDestroyed(EntityID entity)
-{
-    // TODO: too slow
-    if(std::find(entitiesToDelete.begin(), entitiesToDelete.end(), entity) != entitiesToDelete.end())
-        return true;
-    else
-        return false;
 }
 
 void Scene::DestroyAndRemoveEntity(EntityID entity)
@@ -65,8 +65,24 @@ void Scene::DestroyEntityInner(EntityID entity)
     entitiesRegistry->DeleteEntity(entity);
 }
 
+void Scene::SortByHierarchy()
+{
+    // Sort all objects by hierarchy depth
+    struct
+    {
+        bool operator()(const HierarchyNode& a, const HierarchyNode& b) const { return a.HierarchyDepth < b.HierarchyDepth; }
+    } DepthComparer;
+    entitiesRegistry->SortComponents<HierarchyNode>(DepthComparer);
+}
+
+void Scene::UpdateGlobalTransformation()
+{
+
+}
+
 void Scene::CleanDestroyedEntities()
 {
+    // TODO: destroy entity's children
     for (auto entity : entitiesToDelete)
     {
         if (entity != NULL_ENTITY)

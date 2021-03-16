@@ -1,7 +1,7 @@
 #include "Time.h"
 #include <GLFW/glfw3.h>
 
-double Time::lastFrameTime = 0;
+float Time::lastFrameTime = 0;
 float Time::deltaTime = 0.0f;
 
 float Time::fixedUpdateDeltaTime = 0.02f;
@@ -21,7 +21,7 @@ float Time::FixedDeltaTime()
 
 void Time::Update()
 {
-    double currentTime = glfwGetTime();
+    auto currentTime = (float)glfwGetTime();
     deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
 }

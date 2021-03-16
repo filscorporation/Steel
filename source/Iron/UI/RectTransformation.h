@@ -9,7 +9,7 @@ public:
 
     glm::mat4 GetTransformationMatrix() override;
 
-    glm::vec3 GetPosition() const override;
+    glm::vec3 GetPosition() override;
     void SetPosition(const glm::vec3& position) override;
 
     glm::vec2 GetAnchorMin() const;
@@ -26,8 +26,6 @@ public:
     void SetSize(const glm::vec2& size);
     glm::vec2 GetPivot() const;
     void SetPivot(const glm::vec2& pivot);
-
-    void UpdatePhysicsTransformation() override;
 
 private:
     glm::mat4 _transformationMatrix;

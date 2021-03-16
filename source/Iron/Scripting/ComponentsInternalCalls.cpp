@@ -8,6 +8,8 @@
 #include "../Physics/CircleCollider.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Rendering/Camera.h"
+#include "../Scene/Hierarchy.h"
+#include "../Scene/HierarchyNode.h"
 #include "../Scene/Transformation.h"
 #include "../Scene/SceneHelper.h"
 
@@ -51,6 +53,18 @@ void ComponentsInternalCalls::Transformation_SetScale(EntityID entityID, glm::ve
     GET_COMPONENT_OR_RETURN(Transformation, )
 
     component.SetScale(scale);
+}
+
+EntityID ComponentsInternalCalls::HierarchyNode_GetParent(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(HierarchyNode, NULL_ENTITY)
+
+    return component.ParentNode;
+}
+
+void ComponentsInternalCalls::HierarchyNode_SetParent(EntityID entityID, EntityID parentEntityID)
+{
+    LinkChildToParent(Application::Instance->GetCurrentScene()->GetEntitiesRegistry(), entityID, parentEntityID);
 }
 
 float ComponentsInternalCalls::AudioListener_GetVolume(EntityID entityID)

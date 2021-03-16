@@ -118,7 +118,7 @@ void Renderer::OnBeforeRender(Camera& camera)
     // Sort all objects by Z
     struct
     {
-        bool operator()(const Transformation& a, const Transformation& b) const { return a.GetPosition().z > b.GetPosition().z; }
+        bool operator()(Transformation& a, Transformation& b) const { return a.GetPosition().z > b.GetPosition().z; }
     } ZComparer;
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->SortComponents<Transformation>(ZComparer);
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->ApplyOrder<Transformation, SpriteRenderer>();

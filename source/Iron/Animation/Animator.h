@@ -25,7 +25,7 @@ public:
 private:
     bool initialized = false;
     int currentAnimation = 0;
-    std::vector<int> currentCurveFrame;
+    std::vector<uint32_t> currentCurveFrame;
 
     void Init();
 };

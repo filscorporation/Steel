@@ -6,6 +6,7 @@ namespace Iron
 {
     public class Entity
     {
+        internal const uint NULL_ENTITY_ID = 0;
         public uint ID { get; }
         
         public string Name

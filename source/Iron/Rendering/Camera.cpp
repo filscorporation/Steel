@@ -83,7 +83,7 @@ void Camera::UpdateSize()
 
 glm::mat4 Camera::GetViewProjection()
 {
-    if (IsCameraDirty() || GetComponentS<Transformation>(Owner).IsTransformationDirty())
+    if (IsCameraDirty() || GetComponentS<Transformation>(Owner).DidTransformationChange())
     {
         SetCameraDirty(false);
         glm::mat4 projection = glm::ortho(

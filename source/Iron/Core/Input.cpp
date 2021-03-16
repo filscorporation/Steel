@@ -61,15 +61,15 @@ void MouseCallback(GLFWwindow* window, int button, int action, int mods)
 
 void CursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 {
-    mousePosition.x = xPos;
+    mousePosition.x = (float)xPos;
     // GLFW coordinate system is upside down by Y-axis
-    mousePosition.y = Screen::GetHeight() - yPos;
+    mousePosition.y = (float)Screen::GetHeight() - (float)yPos;
 }
 
 void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
-    mouseScrollDelta.x = xOffset;
-    mouseScrollDelta.y = yOffset;
+    mouseScrollDelta.x = (float)xOffset;
+    mouseScrollDelta.y = (float)yOffset;
 
     scrollDeltaIsDirty = true;
 }
@@ -203,7 +203,7 @@ void Input::SendMouseCallbacks()
     // Pick the nearest by z object
     float z, maxZ = GetComponentS<Transformation>(hits[0]).GetPosition().z;
     int closestEntityID = 0;
-    for (int i = 0; i < hits.size(); i++)
+    for (size_t i = 0; i < hits.size(); i++)
     {
         z = GetComponentS<Transformation>(hits[i]).GetPosition().z;
         if (z > maxZ)

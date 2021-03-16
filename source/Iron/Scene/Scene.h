@@ -15,8 +15,11 @@ public:
     ~Scene();
     void CreateMainCamera();
     EntityID CreateEntity();
+    EntityID CreateEntity(const char* name, EntityID parent);
     void DestroyEntity(EntityID entity);
-    bool IsEntityDestroyed(EntityID entity);
+
+    void SortByHierarchy();
+    void UpdateGlobalTransformation();
     void CleanDestroyedEntities();
     void CleanAllEntities();
 

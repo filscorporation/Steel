@@ -5,11 +5,13 @@
 // TODO: use in sets
 #define TRANSFORM_EPS 0.000001f
 
+// TODO: rework for hierarchy
+
 glm::mat4 RectTransformation::GetTransformationMatrix()
 {
-    if (IsTransformationDirty() || Screen::IsScreenSizeDirty())
+    if (IsMatrixDirty() || Screen::IsScreenSizeDirty())
     {
-        SetTransformationDirty(false);
+        SetMatrixDirty(false);
 
         // TODO: apply parent transformations, for now parent is screen
         glm::vec2 parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
@@ -43,7 +45,7 @@ glm::mat4 RectTransformation::GetTransformationMatrix()
     return _transformationMatrix;
 }
 
-glm::vec3 RectTransformation::GetPosition() const
+glm::vec3 RectTransformation::GetPosition()
 {
     return GetAnchoredPosition();
 }
@@ -60,7 +62,7 @@ glm::vec2 RectTransformation::GetAnchorMin() const
 
 void RectTransformation::SetAnchorMin(const glm::vec2& anchor)
 {
-    SetTransformationDirty(true);
+    //SetTransformationDirty(true);
 
     _anchorMin = anchor;
     _anchorMax.x = std::max(_anchorMin.x, _anchorMax.x);
@@ -74,7 +76,7 @@ glm::vec2 RectTransformation::GetAnchorMax() const
 
 void RectTransformation::SetAnchorMax(const glm::vec2& anchor)
 {
-    SetTransformationDirty(true);
+    //SetTransformationDirty(true);
 
     _anchorMax = anchor;
     _anchorMin.x = std::min(_anchorMin.x, _anchorMax.x);
@@ -88,7 +90,7 @@ glm::vec3 RectTransformation::GetAnchoredPosition() const
 
 void RectTransformation::SetAnchoredPosition(const glm::vec3& position)
 {
-    SetTransformationDirty(true);
+    //SetTransformationDirty(true);
 
     _anchoredPosition = position;
 }
@@ -100,7 +102,7 @@ glm::vec2 RectTransformation::GetOffsetMin() const
 
 void RectTransformation::SetOffsetMin(const glm::vec2& offset)
 {
-    SetTransformationDirty(true);
+    //SetTransformationDirty(true);
 
     _offsetMin = offset;
 }
@@ -112,7 +114,7 @@ glm::vec2 RectTransformation::GetOffsetMax() const
 
 void RectTransformation::SetOffsetMax(const glm::vec2& offset)
 {
-    SetTransformationDirty(true);
+    //SetTransformationDirty(true);
 
     _offsetMax = offset;
 }
@@ -124,7 +126,7 @@ glm::vec2 RectTransformation::GetSize() const
 
 void RectTransformation::SetSize(const glm::vec2& size)
 {
-    SetTransformationDirty(true);
+    //SetTransformationDirty(true);
 
     _size = glm::vec2(std::max(size.x, 0.0f), std::max(size.y, 0.0f));
 }
@@ -136,12 +138,7 @@ glm::vec2 RectTransformation::GetPivot() const
 
 void RectTransformation::RectTransformation::SetPivot(const glm::vec2& pivot)
 {
-    SetTransformationDirty(true);
+    //SetTransformationDirty(true);
 
     _pivot = pivot;
-}
-
-void RectTransformation::UpdatePhysicsTransformation()
-{
-    // UI can't have physics
 }

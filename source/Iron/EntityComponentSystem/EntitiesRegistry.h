@@ -280,7 +280,7 @@ public:
         std::sort(pool->Storage.begin(), pool->Storage.end(), comparer);
 
         // Restore links
-        for (int i = 0; i < pool->Storage.size; ++i)
+        for (uint32_t i = 0; i < pool->Storage.size; ++i)
         {
             pool->Storage.dense[i] = EntityIDGetID(pool->Storage.data[i].Owner);
             pool->Storage.sparse[pool->Storage.dense[i]] = i;

@@ -13,7 +13,7 @@ private:
     static void Update();
     static bool FixedUpdate();
 
-    static double lastFrameTime;
+    static float lastFrameTime;
     static float deltaTime;
 
     static float fixedUpdateDeltaTime;

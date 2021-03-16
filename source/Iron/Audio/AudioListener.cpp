@@ -1,16 +1,12 @@
 #include "AudioListener.h"
 #include "AudioCore.h"
-#include "../Core/Application.h"
 #include "../Scene/Transformation.h"
 #include "../Scene/SceneHelper.h"
 
 void AudioListener::OnUpdate()
 {
-    if (Application::Instance->GetCurrentScene()->IsEntityDestroyed(Owner))
-        return;
-
     auto& transform = GetComponentS<Transformation>(Owner);
-    if (transform.IsTransformationDirty())
+    if (transform.DidTransformationChange())
         AudioCore::SetListenerPosition(transform.GetPosition());
 }
 
