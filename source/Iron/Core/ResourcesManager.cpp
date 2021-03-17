@@ -10,6 +10,12 @@
 // TODO: remove al dependency into AudioCore
 #include <AL/al.h>
 
+#ifdef DISTRIBUTE_BUILD
+#define RESOURCES_PATH "Resources\\"
+#else
+#define RESOURCES_PATH "..\\resources\\"
+#endif
+
 ResourcesManager::~ResourcesManager()
 {
     for (auto image : images)
@@ -34,7 +40,11 @@ Sprite* ResourcesManager::LoadImage(const char* filePath)
 {
     //TODO: completely rework
 
-    std::ifstream infile(filePath);
+    std::string fullPathString = RESOURCES_PATH;
+    fullPathString += filePath;
+    const char* fullPath = fullPathString.c_str();
+
+    std::ifstream infile(fullPath);
     if (!infile.good())
     {
         Log::LogError("File does not exist");
@@ -42,7 +52,7 @@ Sprite* ResourcesManager::LoadImage(const char* filePath)
     }
 
     int w, h, c;
-    unsigned char* imageData = stbi_load(filePath, &w, &h, &c, 4);
+    unsigned char* imageData = stbi_load(fullPath, &w, &h, &c, 4);
     GLuint texture;
 
     glGenTextures(1, &texture);
@@ -57,14 +67,14 @@ Sprite* ResourcesManager::LoadImage(const char* filePath)
     auto image = new Sprite();
     image->ID = images.size() + 1;
     image->TextureID = (uint64_t)texture;
-    image->Path = filePath;
+    image->Path = fullPath;
     image->Width = w;
     image->Height = h;
     image->IsTransparent = c == 4;
 
     images.push_back(image);
 
-    Log::LogInfo("Sprite loaded: " + std::string(filePath) + ", " + std::to_string(image->ID));
+    Log::LogInfo("Sprite loaded: " + std::string(fullPath) + ", " + std::to_string(image->ID));
 
     return image;
 }
@@ -117,7 +127,11 @@ static inline ALenum ToALFormat(int channels, int samples)
 
 AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
 {
-    std::ifstream infile(filePath);
+    std::string fullPathString = RESOURCES_PATH;
+    fullPathString += filePath;
+    const char* fullPath = fullPathString.c_str();
+
+    std::ifstream infile(fullPath);
     if (!infile.good())
     {
         Log::LogError("File does not exist");
@@ -132,7 +146,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
 
     ALuint audioBuffer;
     char* data;
-    auto audioTrack = WavLoader::LoadWav(filePath, &data);
+    auto audioTrack = WavLoader::LoadWav(fullPath, &data);
     if (audioTrack == nullptr)
         return nullptr;
 
@@ -157,7 +171,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
     audioTrack->BufferID = audioBuffer;
     audioTracks.push_back(audioTrack);
 
-    Log::LogInfo("Audio track loaded: " + std::string(filePath) + ", " + std::to_string(audioTrack->ID));
+    Log::LogInfo("Audio track loaded: " + std::string(fullPath) + ", " + std::to_string(audioTrack->ID));
 
     return audioTrack;
 }

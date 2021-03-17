@@ -15,16 +15,17 @@
 #include "../Physics/Physics.h"
 #include "../Rendering/Renderer.h"
 #include "../Scripting/ScriptingSystem.h"
-#include "../Rendering/SpriteRenderer.h"
-#include "../UI/UIRenderer.h"
 #include "../Animation/Animator.h"
-#include "../Audio/AudioSource.h"
 #include "../Audio/AudioListener.h"
 
 Application* Application::Instance;
 
 Application::Application(ApplicationSettings settings)
 {
+#ifdef RELEASE_BUILD
+    FreeConsole();
+#endif
+
     Instance = this;
 
     state = ApplicationStates::Initializing;

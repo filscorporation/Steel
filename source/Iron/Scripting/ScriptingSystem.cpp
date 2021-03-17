@@ -10,6 +10,10 @@
 #define DEBUG_MONO_ETC_PATH "C:\\Program Files (x86)\\Mono\\etc"
 #define DEBUG_API_DLL_PATH "..\\..\\includes\\Iron\\api\\IronCustom\\bin\\Debug\\IronCore.dll"
 #define DEBUG_SCRIPTS_DLL_PATH "..\\..\\includes\\Iron\\api\\IronCustom\\bin\\Debug\\IronCustom.dll"
+#define DISTRIBUTE_MONO_LIB_PATH "Mono\\lib"
+#define DISTRIBUTE_MONO_ETC_PATH "Mono\\etc"
+#define DISTRIBUTE_API_DLL_PATH "Bin\\IronCore.dll"
+#define DISTRIBUTE_SCRIPTS_DLL_PATH "Bin\\IronCustom.dll"
 #endif
 #ifdef __unix__
 #define DEBUG_MONO_LIB_PATH "/usr/lib/"
@@ -66,15 +70,28 @@ void ScriptingSystem::Init()
     Log::LogInfo("Scripting system init");
 
     mono_config_parse(nullptr);
+#ifdef DISTRIBUTE_BUILD
+    mono_set_dirs(DISTRIBUTE_MONO_LIB_PATH, DISTRIBUTE_MONO_ETC_PATH);
+#else
     mono_set_dirs(DEBUG_MONO_LIB_PATH, DEBUG_MONO_ETC_PATH);
+#endif
     domain = mono_jit_init("IronDomain");
 
+#ifdef DISTRIBUTE_BUILD
+    coreAssemblyImage = LoadAssembly(DISTRIBUTE_API_DLL_PATH);
+#else
     coreAssemblyImage = LoadAssembly(DEBUG_API_DLL_PATH);
+#endif
     if (coreAssemblyImage == nullptr)
     {
         return;
     }
+
+#ifdef DISTRIBUTE_BUILD
+    customAssemblyImage = LoadAssembly(DISTRIBUTE_SCRIPTS_DLL_PATH);
+#else
     customAssemblyImage = LoadAssembly(DEBUG_SCRIPTS_DLL_PATH);
+#endif
     if (customAssemblyImage == nullptr)
     {
         return;

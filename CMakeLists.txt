@@ -5,6 +5,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -ldl -lpthread -lm")
 endif()
 
+if (${CMAKE_BUILD_TYPE} MATCHES Debug)
+    add_compile_definitions(DEBUG_BUILD)
+else()
+    add_compile_definitions(RELEASE_BUILD)
+endif()
+
+# For distribute builds
+#add_compile_definitions(DISTRIBUTE_BUILD)
+
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
