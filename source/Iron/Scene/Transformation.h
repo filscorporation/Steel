@@ -65,7 +65,7 @@ protected:
 
     static void SetTransformationDirtyRecursively(EntitiesRegistry* registry, EntityID entityID);
 
-    bool transformationChanged = false;
+    bool transformationChanged = true;
     bool dirtyPosition = false;
     bool dirtyRotation = false;
     bool dirtyScale = false;

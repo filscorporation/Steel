@@ -34,7 +34,7 @@ namespace Iron
 
                 return parent;
             }
-            set => SetParent_Internal(Entity.ID, value.Entity.ID);
+            set => SetParent_Internal(Entity.ID, value == null ? Entity.NULL_ENTITY_ID : value.Entity.ID);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

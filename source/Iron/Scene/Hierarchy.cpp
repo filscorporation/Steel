@@ -23,13 +23,24 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     if (child == NULL_ENTITY)
         return;
 
+    auto& childNode = registry->GetComponent<HierarchyNode>(child);
+
+    if (child == parent || childNode.ParentNode == parent)
+        return;
+
+    // Check if child is parent for new parent (possible loop)
+    if (CheckIsParentUpwards(registry, parent, child))
+    {
+        Log::LogWarning("Trying to create hierarchy loop");
+        return;
+    }
+
     // Cache child global transformations
     auto& childTransformation = registry->GetComponent<Transformation>(child);
     glm::vec3 positionCache = childTransformation.GetPosition();
     glm::vec3 rotationCache = childTransformation.GetRotation();
     glm::vec3 scaleCache = childTransformation.GetScale();
 
-    auto& childNode = registry->GetComponent<HierarchyNode>(child);
     if (childNode.ParentNode != NULL_ENTITY)
     {
         // Child already has a parent, we need to change links
@@ -63,7 +74,7 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     }
     else
     {
-        // Moving this
+        // Moving this child to another parent
         auto& parentNode = registry->GetComponent<HierarchyNode>(parent);
         childNode.ParentNode = parent;
         childNode.HierarchyDepth = parentNode.HierarchyDepth + 1;
@@ -104,6 +115,24 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     childTransformation.SetScale(scaleCache);
 }
 
+bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent)
+{
+    if (parent == NULL_ENTITY)
+        return true;
+
+    EntityID currentNodeID = child;
+    while (currentNodeID != NULL_ENTITY)
+    {
+        auto& currentNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+        if (currentNode.ParentNode == parent)
+            return true;
+
+        currentNodeID = currentNode.ParentNode;
+    }
+
+    return false;
+}
+
 std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent)
 {
     if (parent == NULL_ENTITY)
@@ -118,12 +147,13 @@ std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent
         return result;
 
     result.reserve(parentNode.ChildrenCount);
-    auto& currentChildNode = registry->GetComponent<HierarchyNode>(parentNode.FirstChildNode);
+    EntityID currentNodeID = parentNode.FirstChildNode;
     for (uint32_t i = 0; i < parentNode.ChildrenCount; ++i)
     {
-        // This is valid because children nodes links are looped
-        currentChildNode = registry->GetComponent<HierarchyNode>(currentChildNode.NextNode);
-        result[i] = currentChildNode.PreviousNode;
+        auto& currentChildNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+        result.push_back(currentChildNode.PreviousNode);
+
+        currentNodeID = currentChildNode.NextNode;
     }
 
     return result;

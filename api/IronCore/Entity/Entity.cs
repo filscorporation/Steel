@@ -105,6 +105,11 @@ namespace Iron
             return component;
         }
 
+        public override string ToString()
+        {
+            return $"{Name} ({ID})";
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateNewEntity_Internal();
 

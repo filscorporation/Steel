@@ -10,19 +10,22 @@ void ForeachChildren(EntitiesRegistry* registry, HierarchyNode& parentNode, Func
     if (parentNode.ChildrenCount == 0)
         return;
 
-    auto& currentChildNode = registry->GetComponent<HierarchyNode>(parentNode.FirstChildNode);
+    EntityID currentNodeID = parentNode.FirstChildNode;
     for (uint32_t i = 0; i < parentNode.ChildrenCount; ++i)
     {
-        // This is valid because children nodes links are looped
-        currentChildNode = registry->GetComponent<HierarchyNode>(currentChildNode.NextNode);
-        function(registry, currentChildNode.Owner);
+        auto& currentChildNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+        function(registry, currentNodeID);
         // Recursively call for children
         ForeachChildren(registry, currentChildNode, function);
+
+        currentNodeID = currentChildNode.NextNode;
     }
 }
 
 void UpdateChildrenDepthAndSetDirty(EntitiesRegistry* registry, HierarchyNode& parentNode);
 
 void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID parent);
+
+bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent);
 
 std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent);

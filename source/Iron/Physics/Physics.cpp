@@ -31,7 +31,7 @@ void Physics::UpdatePhysicsTransformations()
     auto transforms = Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->GetComponentIterator<Transformation>();
     for (auto& transform : transforms)
     {
-        if (transform.DidTransformationChange())
+        if (true /*transform.DidTransformationChange()*/) // TODO: does not work with fixed update, rework
         {
             auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
             if (registry->HasComponent<RigidBody>(transform.Owner))
