@@ -1,28 +1,22 @@
 #include "../Core/Application.h"
 #include "Transformation.h"
 #include "HierarchyNode.h"
-#include "Hierarchy.h"
 
 #define TRANSFORM_EPS 0.000001f
 
 glm::vec3 Transformation::GetPosition()
 {
-    if (IsPositionDirty())
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& node = registry->GetComponent<HierarchyNode>(Owner);
+    if (node.ParentNode == NULL_ENTITY)
     {
-        auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-        auto& node = registry->GetComponent<HierarchyNode>(Owner);
-        if (node.ParentNode == NULL_ENTITY)
-        {
-            _position = _localPosition;
-        }
-        else
-        {
-            auto& parentTransformation = registry->GetComponent<Transformation>(node.ParentNode);
-            // Transform our local position to parent
-            _position = parentTransformation.GetTransformationMatrix() * glm::vec4(_localPosition, 1.0f);
-        }
-
-        SetPositionDirty(false);
+        _position = _localPosition;
+    }
+    else
+    {
+        auto& parentTransformation = registry->GetComponent<Transformation>(node.ParentNode);
+        // Transform our local position to parent
+        _position = parentTransformation.GetTransformationMatrix() * glm::vec4(_localPosition, 1.0f);
     }
 
     return _position;
@@ -30,12 +24,6 @@ glm::vec3 Transformation::GetPosition()
 
 void Transformation::SetPosition(const glm::vec3& position)
 {
-    if (!IsPositionDirty()
-        && std::abs(_position.x - position.x) < TRANSFORM_EPS
-        && std::abs(_position.y - position.y) < TRANSFORM_EPS
-        && std::abs(_position.z - position.z) < TRANSFORM_EPS)
-        return;
-
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& node = registry->GetComponent<HierarchyNode>(Owner);
 
@@ -52,29 +40,21 @@ void Transformation::SetPosition(const glm::vec3& position)
     }
 
     SetTransformationChanged(true);
-    SetMatrixDirty(true);
-    SetInverseMatrixDirty(true);
-    ForeachChildren(registry, node, SetTransformationDirtyRecursively);
 }
 
 glm::vec3 Transformation::GetRotation()
 {
-    if (IsRotationDirty())
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& node = registry->GetComponent<HierarchyNode>(Owner);
+    if (node.ParentNode == NULL_ENTITY)
     {
-        auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-        auto& node = registry->GetComponent<HierarchyNode>(Owner);
-        if (node.ParentNode == NULL_ENTITY)
-        {
-            _rotation = _localRotation;
-        }
-        else
-        {
-            auto& parentTransformation = registry->GetComponent<Transformation>(node.ParentNode);
-            // For rotation it should be enough to add parent's rotation to out local
-            _rotation = parentTransformation.GetRotation() + _localRotation;
-        }
-
-        SetRotationDirty(false);
+        _rotation = _localRotation;
+    }
+    else
+    {
+        auto& parentTransformation = registry->GetComponent<Transformation>(node.ParentNode);
+        // For rotation it should be enough to add parent's rotation to out local
+        _rotation = parentTransformation.GetRotation() + _localRotation;
     }
 
     return _rotation;
@@ -82,12 +62,6 @@ glm::vec3 Transformation::GetRotation()
 
 void Transformation::SetRotation(const glm::vec3& rotation)
 {
-    if (!IsRotationDirty()
-        && std::abs(_rotation.x - rotation.x) < TRANSFORM_EPS
-        && std::abs(_rotation.y - rotation.y) < TRANSFORM_EPS
-        && std::abs(_rotation.z - rotation.z) < TRANSFORM_EPS)
-        return;
-
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& node = registry->GetComponent<HierarchyNode>(Owner);
 
@@ -104,29 +78,21 @@ void Transformation::SetRotation(const glm::vec3& rotation)
     }
 
     SetTransformationChanged(true);
-    SetMatrixDirty(true);
-    SetInverseMatrixDirty(true);
-    ForeachChildren(registry, node, SetTransformationDirtyRecursively);
 }
 
 glm::vec3 Transformation::GetScale()
 {
-    if (IsScaleDirty())
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& node = registry->GetComponent<HierarchyNode>(Owner);
+    if (node.ParentNode == NULL_ENTITY)
     {
-        auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-        auto& node = registry->GetComponent<HierarchyNode>(Owner);
-        if (node.ParentNode == NULL_ENTITY)
-        {
-            _scale = _localScale;
-        }
-        else
-        {
-            auto& parentTransformation = registry->GetComponent<Transformation>(node.ParentNode);
-            // For scale it should be enough to multiply parent's scale to out local
-            _scale = parentTransformation.GetScale() * _localScale;
-        }
-
-        SetScaleDirty(false);
+        _scale = _localScale;
+    }
+    else
+    {
+        auto& parentTransformation = registry->GetComponent<Transformation>(node.ParentNode);
+        // For scale it should be enough to multiply parent's scale to out local
+        _scale = parentTransformation.GetScale() * _localScale;
     }
 
     return _scale;
@@ -134,12 +100,6 @@ glm::vec3 Transformation::GetScale()
 
 void Transformation::SetScale(const glm::vec3& scale)
 {
-    if (!IsScaleDirty()
-        && std::abs(_scale.x - scale.x) < TRANSFORM_EPS
-        && std::abs(_scale.y - scale.y) < TRANSFORM_EPS
-        && std::abs(_scale.z - scale.z) < TRANSFORM_EPS)
-        return;
-
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& node = registry->GetComponent<HierarchyNode>(Owner);
 
@@ -156,9 +116,6 @@ void Transformation::SetScale(const glm::vec3& scale)
     }
 
     SetTransformationChanged(true);
-    SetMatrixDirty(true);
-    SetInverseMatrixDirty(true);
-    ForeachChildren(registry, node, SetTransformationDirtyRecursively);
 }
 
 glm::vec3 Transformation::GetLocalPosition() const
@@ -176,13 +133,6 @@ void Transformation::SetLocalPosition(const glm::vec3& position)
     _localPosition = position;
 
     SetTransformationChanged(true);
-    SetPositionDirty(true);
-    SetMatrixDirty(true);
-    SetInverseMatrixDirty(true);
-
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& node = registry->GetComponent<HierarchyNode>(Owner);
-    ForeachChildren(registry, node, SetTransformationDirtyRecursively);
 }
 
 glm::vec3 Transformation::GetLocalRotation() const
@@ -200,13 +150,6 @@ void Transformation::SetLocalRotation(const glm::vec3& rotation)
     _localRotation = rotation;
 
     SetTransformationChanged(true);
-    SetRotationDirty(true);
-    SetMatrixDirty(true);
-    SetInverseMatrixDirty(true);
-
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& node = registry->GetComponent<HierarchyNode>(Owner);
-    ForeachChildren(registry, node, SetTransformationDirtyRecursively);
 }
 
 glm::vec3 Transformation::GetLocalScale() const
@@ -217,58 +160,80 @@ glm::vec3 Transformation::GetLocalScale() const
 void Transformation::SetLocalScale(const glm::vec3& scale)
 {
     if (   std::abs(_localScale.x - scale.x) < TRANSFORM_EPS
-           && std::abs(_localScale.y - scale.y) < TRANSFORM_EPS
-           && std::abs(_localScale.z - scale.z) < TRANSFORM_EPS)
+        && std::abs(_localScale.y - scale.y) < TRANSFORM_EPS
+        && std::abs(_localScale.z - scale.z) < TRANSFORM_EPS)
         return;
 
     _localScale = scale;
 
     SetTransformationChanged(true);
-    SetScaleDirty(true);
-    SetMatrixDirty(true);
-    SetInverseMatrixDirty(true);
-
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& node = registry->GetComponent<HierarchyNode>(Owner);
-    ForeachChildren(registry, node, SetTransformationDirtyRecursively);
 }
 
-glm::mat4 Transformation::GetTransformationMatrix()
+const glm::mat4& Transformation::GetTransformationMatrixCached()
 {
-    if (IsMatrixDirty())
-    {
-        SetMatrixDirty(false);
+    return _transformationMatrix;
+}
 
-        _transformationMatrix =
-                glm::translate(glm::mat4(1.0f), GetPosition())
-               * glm::toMat4(glm::quat(GetRotation()))
-               * glm::scale(glm::mat4(1.0f), GetScale());
+void Transformation::UpdateTransformation(ComponentAccessor<Transformation>& transformationsAccessor, HierarchyNode& hierarchyNode)
+{
+    _transformationMatrix =
+            glm::translate(glm::mat4(1.0f), _localPosition)
+            * glm::toMat4(glm::quat(_localRotation))
+            * glm::scale(glm::mat4(1.0f), _localScale);
+    _position = _localPosition;
+
+    if (hierarchyNode.ParentNode != NULL_ENTITY)
+    {
+        auto& parentTransformation = transformationsAccessor.Get(hierarchyNode.ParentNode);
+        auto& parentMatrix = parentTransformation.GetTransformationMatrixCached();
+        _transformationMatrix = parentMatrix * _transformationMatrix;
+        _position = parentMatrix * glm::vec4(_position, 1.0f);
+    }
+}
+
+const glm::mat4& Transformation::GetTransformationMatrix()
+{
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& node = registry->GetComponent<HierarchyNode>(Owner);
+
+    _transformationMatrix =
+            glm::translate(glm::mat4(1.0f), _localPosition)
+            * glm::toMat4(glm::quat(_localRotation))
+            * glm::scale(glm::mat4(1.0f), _localScale);
+
+    if (node.ParentNode != NULL_ENTITY)
+    {
+        auto& parentTransformation = registry->GetComponent<Transformation>(node.ParentNode);
+        _transformationMatrix = parentTransformation.GetTransformationMatrix() * _transformationMatrix;
     }
 
     return _transformationMatrix;
 }
 
-glm::mat4 Transformation::GetInverseTransformationMatrix()
+const glm::mat4& Transformation::GetInverseTransformationMatrix()
 {
-    if (IsInverseMatrixDirty())
-    {
-        SetInverseMatrixDirty(false);
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& node = registry->GetComponent<HierarchyNode>(Owner);
 
-        _inverseTransformationMatrix = glm::inverse(GetTransformationMatrix());
+    _transformationMatrix =
+            glm::translate(glm::mat4(1.0f), _localPosition)
+            * glm::toMat4(glm::quat(_localRotation))
+            * glm::scale(glm::mat4(1.0f), _localScale);
+
+    if (node.ParentNode != NULL_ENTITY)
+    {
+        auto& parentTransformation = registry->GetComponent<Transformation>(node.ParentNode);
+        _transformationMatrix = parentTransformation.GetTransformationMatrix() * _transformationMatrix;
     }
+
+    _inverseTransformationMatrix = glm::inverse(_transformationMatrix);
 
     return _inverseTransformationMatrix;
 }
 
-void Transformation::SetTransformationDirtyRecursively(EntitiesRegistry* registry, EntityID entityID)
+float Transformation::GetSortingOrder() const
 {
-    auto& transform = registry->GetComponent<Transformation>(entityID);
-    transform.SetTransformationChanged(true);
-    transform.SetPositionDirty(true);
-    transform.SetRotationDirty(true);
-    transform.SetScaleDirty(true);
-    transform.SetMatrixDirty(true);
-    transform.SetInverseMatrixDirty(true);
+    return _position.z;
 }
 
 bool Transformation::DidTransformationChange() const
@@ -279,54 +244,4 @@ bool Transformation::DidTransformationChange() const
 void Transformation::SetTransformationChanged(bool changed)
 {
     transformationChanged = changed;
-}
-
-bool Transformation::IsPositionDirty() const
-{
-    return dirtyPosition;
-}
-
-void Transformation::SetPositionDirty(bool dirty)
-{
-    dirtyPosition = dirty;
-}
-
-bool Transformation::IsRotationDirty() const
-{
-    return dirtyRotation;
-}
-
-void Transformation::SetRotationDirty(bool dirty)
-{
-    dirtyRotation = dirty;
-}
-
-bool Transformation::IsScaleDirty() const
-{
-    return dirtyScale;
-}
-
-void Transformation::SetScaleDirty(bool dirty)
-{
-    dirtyScale = dirty;
-}
-
-bool Transformation::IsMatrixDirty() const
-{
-    return dirtyMatrix;
-}
-
-void Transformation::SetMatrixDirty(bool dirty)
-{
-    dirtyMatrix = dirty;
-}
-
-bool Transformation::IsInverseMatrixDirty() const
-{
-    return dirtyInverseMatrix;
-}
-
-void Transformation::SetInverseMatrixDirty(bool dirty)
-{
-    dirtyInverseMatrix = dirty;
 }

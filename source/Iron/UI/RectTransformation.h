@@ -7,7 +7,7 @@ class RectTransformation : public Transformation
 public:
     explicit RectTransformation(EntityID ownerEntityID) : Transformation(ownerEntityID) { }
 
-    glm::mat4 GetTransformationMatrix() override;
+    const glm::mat4& GetTransformationMatrix() override;
 
     glm::vec3 GetPosition() override;
     void SetPosition(const glm::vec3& position) override;

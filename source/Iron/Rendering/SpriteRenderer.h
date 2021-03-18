@@ -4,6 +4,7 @@
 
 #include "Sprite.h"
 #include "../EntityComponentSystem/Component.h"
+#include "../Scene/Transformation.h"
 
 class SpriteRenderer : public Component
 {
@@ -12,7 +13,7 @@ public:
 
     int CurrentImageTileIndex = 0;
 
-    void OnRender();
+    void OnRender(Transformation& transformation);
     void SetImage(Sprite* image);
     Sprite* GetImage();
     glm::vec2 GetWorldSize();

@@ -77,7 +77,12 @@ void Scene::SortByHierarchy()
 
 void Scene::UpdateGlobalTransformation()
 {
-
+    auto hierarchyNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
+    auto transformationsAccessor = entitiesRegistry->GetComponentAccessor<Transformation>();
+    for (auto& hierarchyNode : hierarchyNodes)
+    {
+        transformationsAccessor.Get(hierarchyNode.Owner).UpdateTransformation(transformationsAccessor, hierarchyNode);
+    }
 }
 
 void Scene::CleanDestroyedEntities()

@@ -107,11 +107,8 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
 
     // Apply saved global position, so child will not move after changing parent
     // TODO: actually there is no need to set dirty and update anyone matrices, as child global position did not change
-    childTransformation.SetPositionDirty(true);
     childTransformation.SetPosition(positionCache);
-    childTransformation.SetRotationDirty(true);
     childTransformation.SetRotation(rotationCache);
-    childTransformation.SetScaleDirty(true);
     childTransformation.SetScale(scaleCache);
 }
 

@@ -22,7 +22,7 @@ Application* Application::Instance;
 
 Application::Application(ApplicationSettings settings)
 {
-#ifdef RELEASE_BUILD
+#ifdef DISTRIBUTE_BUILD
     FreeConsole();
 #endif
 

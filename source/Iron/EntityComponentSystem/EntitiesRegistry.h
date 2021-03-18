@@ -98,6 +98,10 @@ private:
     ComponentsPoolWrapper<T>* _pool;
 };
 
+// Allows access to certain component type without using components types hashmap
+template <typename T>
+class ComponentAccessor;
+
 class EntitiesRegistry
 {
 public:
@@ -158,6 +162,7 @@ private:
 
     bool isCleared = false;
 
+public:
     static EntityID EntityIDCombine(EntityID id, EntityID version)
     {
         return (id << ENTITY_ID_SHIFT) + version;
@@ -260,6 +265,19 @@ public:
         }
 
         return ComponentIterator<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID]);
+    }
+
+    template <typename T>
+    ComponentAccessor<T> GetComponentAccessor()
+    {
+        auto typeID = TYPE_ID(T);
+
+        if (componentsMap.find(typeID) == componentsMap.end())
+        {
+            return ComponentAccessor<T>(new ComponentsPoolWrapper<T>());
+        }
+
+        return ComponentAccessor<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID]);
     }
 
     template<class T, class Comparer>
@@ -399,4 +417,21 @@ public:
 
         return false;
     }
+};
+
+// Allows access to certain component type without using components types hashmap
+template <typename T>
+class ComponentAccessor
+{
+public:
+    explicit ComponentAccessor(ComponentsPoolWrapper<T>* componentsPool) { _componentsPool = componentsPool; }
+
+    T& Get(EntityID entityID)
+    {
+        EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
+        return _componentsPool->Storage.Get(id);
+    }
+
+private:
+    ComponentsPoolWrapper<T>* _componentsPool;
 };

@@ -8,6 +8,7 @@
 
 #include "../EntityComponentSystem/Component.h"
 #include "../EntityComponentSystem/EntitiesRegistry.h"
+#include "HierarchyNode.h"
 
 class Transformation : public Component
 {
@@ -28,32 +29,15 @@ public:
     glm::vec3 GetLocalScale() const;
     void SetLocalScale(const glm::vec3& scale);
 
-    virtual glm::mat4 GetTransformationMatrix();
-    virtual glm::mat4 GetInverseTransformationMatrix();
+    virtual const glm::mat4& GetTransformationMatrixCached();
+    virtual void UpdateTransformation(ComponentAccessor<Transformation>& transformationsAccessor, HierarchyNode& hierarchyNode);
+    virtual const glm::mat4& GetTransformationMatrix();
+    virtual const glm::mat4& GetInverseTransformationMatrix();
+    float GetSortingOrder() const;
 
     // Did anything in transformation change in this frame
     bool DidTransformationChange() const;
     void SetTransformationChanged(bool changed);
-
-    // Is global position valid
-    bool IsPositionDirty() const;
-    void SetPositionDirty(bool dirty);
-
-    // Is global rotation valid
-    bool IsRotationDirty() const;
-    void SetRotationDirty(bool dirty);
-
-    // Is global scale valid
-    bool IsScaleDirty() const;
-    void SetScaleDirty(bool dirty);
-
-    // Is transformation matrix valid
-    bool IsMatrixDirty() const;
-    void SetMatrixDirty(bool dirty);
-
-    // Is inverse transformation matrix valid
-    bool IsInverseMatrixDirty() const;
-    void SetInverseMatrixDirty(bool dirty);
 
 protected:
     glm::vec3 _position = { 0.0f, 0.0f, 0.0f };
@@ -63,14 +47,7 @@ protected:
     glm::vec3 _localRotation = { 0.0f, 0.0f, 0.0f };
     glm::vec3 _localScale = { 1.0f, 1.0f, 1.0f };
 
-    static void SetTransformationDirtyRecursively(EntitiesRegistry* registry, EntityID entityID);
-
     bool transformationChanged = true;
-    bool dirtyPosition = false;
-    bool dirtyRotation = false;
-    bool dirtyScale = false;
-    bool dirtyMatrix = true;
-    bool dirtyInverseMatrix = true;
 
 private:
     glm::mat4 _transformationMatrix = glm::mat4(1.0f);

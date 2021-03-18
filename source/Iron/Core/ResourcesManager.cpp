@@ -11,9 +11,9 @@
 #include <AL/al.h>
 
 #ifdef DISTRIBUTE_BUILD
-#define RESOURCES_PATH "Resources\\"
+#define RESOURCES_PATH "Resources/"
 #else
-#define RESOURCES_PATH "..\\resources\\"
+#define RESOURCES_PATH "../resources/"
 #endif
 
 ResourcesManager::~ResourcesManager()

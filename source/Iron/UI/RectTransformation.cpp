@@ -7,12 +7,10 @@
 
 // TODO: rework for hierarchy
 
-glm::mat4 RectTransformation::GetTransformationMatrix()
+const glm::mat4& RectTransformation::GetTransformationMatrix()
 {
-    if (IsMatrixDirty() || Screen::IsScreenSizeDirty())
+    if (true || Screen::IsScreenSizeDirty())
     {
-        SetMatrixDirty(false);
-
         // TODO: apply parent transformations, for now parent is screen
         glm::vec2 parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
 

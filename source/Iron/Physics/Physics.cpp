@@ -28,29 +28,24 @@ void Physics::Terminate()
 
 void Physics::UpdatePhysicsTransformations()
 {
-    auto transforms = Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->GetComponentIterator<Transformation>();
-    for (auto& transform : transforms)
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto rigidBodies = registry->GetComponentIterator<RigidBody>();
+    for (auto& rigidBody : rigidBodies)
     {
-        if (true /*transform.DidTransformationChange()*/) // TODO: does not work with fixed update, rework
-        {
-            auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-            if (registry->HasComponent<RigidBody>(transform.Owner))
-            {
-                auto& rb = registry->GetComponent<RigidBody>(transform.Owner);
-                rb.UpdatePhysicsTransformation();
-            }
-            // TODO: use Collider type after components relations will be implemented
-            if (registry->HasComponent<BoxCollider>(transform.Owner))
-            {
-                auto& bc = registry->GetComponent<BoxCollider>(transform.Owner);
-                bc.SetSizeAutomatically();
-            }
-            if (registry->HasComponent<CircleCollider>(transform.Owner))
-            {
-                auto& cc = registry->GetComponent<CircleCollider>(transform.Owner);
-                cc.SetSizeAutomatically();
-            }
-        }
+        rigidBody.UpdatePhysicsTransformation();
+    }
+
+    // TODO: use Collider type after components relations will be implemented
+    auto boxColliders = registry->GetComponentIterator<BoxCollider>();
+    for (auto& boxCollider : boxColliders)
+    {
+        boxCollider.SetSizeAutomatically();
+    }
+
+    auto circleColliders = registry->GetComponentIterator<CircleCollider>();
+    for (auto& circleCollider : circleColliders)
+    {
+        circleCollider.SetSizeAutomatically();
     }
 }
 

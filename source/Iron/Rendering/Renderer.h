@@ -17,8 +17,8 @@ public:
     static void Clear(glm::vec3 color);
     static void PrepareUIRender();
     static void DrawUI();
-    static void DrawQuad(glm::mat4 transformation, GLuint textureID);
-    static void DrawQuad(glm::mat4 transformation, GLuint textureID, glm::vec2 textureCoords[4]);
+    static void DrawQuad(const glm::mat4& transformation, GLuint textureID);
+    static void DrawQuad(const glm::mat4& transformation, GLuint textureID, glm::vec2 textureCoords[4]);
 
     static int DrawCallsStats;
     static int VerticesStats;

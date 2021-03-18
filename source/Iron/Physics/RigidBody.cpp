@@ -113,6 +113,7 @@ void RigidBody::UpdatePhysicsTransformation()
     if (inGetTransformation)
         return;
 
+    // TODO: maybe synchronise with global positions calculation at the end of frame
     auto position = GetComponentS<Transformation>(Owner).GetPosition();
     b2Vec2 b2Position;
 

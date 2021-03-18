@@ -118,7 +118,7 @@ void Renderer::OnBeforeRender(Camera& camera)
     // Sort all objects by Z
     struct
     {
-        bool operator()(Transformation& a, Transformation& b) const { return a.GetPosition().z > b.GetPosition().z; }
+        bool operator()(Transformation& a, Transformation& b) const { return a.GetSortingOrder() > b.GetSortingOrder(); }
     } ZComparer;
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->SortComponents<Transformation>(ZComparer);
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->ApplyOrder<Transformation, SpriteRenderer>();
@@ -137,17 +137,19 @@ void Renderer::OnAfterRender()
 
 void Renderer::DrawScene()
 {
-    auto spriteRenderers = Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->GetComponentIterator<SpriteRenderer>();
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto spriteRenderers = entitiesRegistry->GetComponentIterator<SpriteRenderer>();
+    auto transformationsAccessor = entitiesRegistry->GetComponentAccessor<Transformation>();
 
     // Opaque pass
     for (int i = 0; i < spriteRenderers.Size(); ++i)
         if (!spriteRenderers[i].IsTransparent())
-            spriteRenderers[i].OnRender();
+            spriteRenderers[i].OnRender(transformationsAccessor.Get(spriteRenderers[i].Owner));
 
     // Transparent pass
     for (int i = spriteRenderers.Size() - 1; i >=0; --i)
         if (spriteRenderers[i].IsTransparent())
-            spriteRenderers[i].OnRender();
+            spriteRenderers[i].OnRender(transformationsAccessor.Get(spriteRenderers[i].Owner));
 }
 
 void Renderer::Clear(glm::vec3 color)
@@ -173,12 +175,12 @@ void Renderer::DrawUI()
         uiRenderer.OnRender();
 }
 
-void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID)
+void Renderer::DrawQuad(const glm::mat4& transformation, GLuint textureID)
 {
     Renderer::DrawQuad(transformation, textureID, defaultTextureCoords);
 }
 
-void Renderer::DrawQuad(glm::mat4 transformation, GLuint textureID, glm::vec2 textureCoords[4])
+void Renderer::DrawQuad(const glm::mat4& transformation, GLuint textureID, glm::vec2 textureCoords[4])
 {
     if (renderCallsCount >= MAX_RENDER_CALLS)
     {
