@@ -1,3 +1,5 @@
+#include <mono/metadata/debug-helpers.h>
+
 #include "ScriptingCore.h"
 #include "ScriptingCallsRegister.h"
 #include "../Animation/Animator.h"
@@ -14,8 +16,6 @@
 #include "../UI/UIImage.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/NameComponent.h"
-
-#include <mono/metadata/debug-helpers.h>
 
 EngineCallsMethods ScriptingCore::EngineCalls;
 CachedData* ScriptingCore::cachedData;
@@ -182,6 +182,42 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *mon
     return false;
 }
 
+std::vector<EntityID> ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* monoClass)
+{
+    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    if (monoClass == CACHED_CLASS(NameComponent))
+        RETURN_COMPONENT_OWNERS(NameComponent)
+    if (monoClass == CACHED_CLASS(Transformation))
+        RETURN_COMPONENT_OWNERS(Transformation)
+    if (monoClass == CACHED_CLASS(BoxCollider))
+        RETURN_COMPONENT_OWNERS(BoxCollider)
+    if (monoClass == CACHED_CLASS(CircleCollider))
+        RETURN_COMPONENT_OWNERS(CircleCollider)
+    if (monoClass == CACHED_CLASS(RigidBody))
+        RETURN_COMPONENT_OWNERS(RigidBody)
+    if (monoClass == CACHED_CLASS(SpriteRenderer))
+        RETURN_COMPONENT_OWNERS(SpriteRenderer)
+    if (monoClass == CACHED_CLASS(Camera))
+        RETURN_COMPONENT_OWNERS(Camera)
+    if (monoClass == CACHED_CLASS(AudioListener))
+        RETURN_COMPONENT_OWNERS(AudioListener)
+    if (monoClass == CACHED_CLASS(AudioSource))
+        RETURN_COMPONENT_OWNERS(AudioSource)
+    if (monoClass == CACHED_CLASS(Animator))
+        RETURN_COMPONENT_OWNERS(Animator)
+    if (monoClass == CACHED_CLASS(RectTransformation))
+        RETURN_COMPONENT_OWNERS(RectTransformation)
+    if (monoClass == CACHED_CLASS(UIRenderer))
+        RETURN_COMPONENT_OWNERS(UIRenderer)
+    if (monoClass == CACHED_CLASS(UIImage))
+        RETURN_COMPONENT_OWNERS(UIImage)
+
+    Log::LogError("Could not find cached class");
+
+    return std::vector<EntityID>();
+}
+
 MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
 {
     MonoMethodDesc* description = mono_method_desc_new(methodName, NULL);
@@ -266,4 +302,28 @@ void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
         Log::LogError("Error calling entry point");
         mono_print_unhandled_exception(exception);
     }
+}
+
+MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t> &inArray)
+{
+    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_uint32_class(), inArray.size());
+
+    for (int i = 0; i < inArray.size(); ++i)
+    {
+        mono_array_set(outArray, uint32_t, i, inArray[i]);
+    }
+
+    return outArray;
+}
+
+MonoArray* ScriptingCore::ToMonoIntPtrArray(const std::vector<intptr_t>& inArray)
+{
+    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_intptr_class(), inArray.size());
+
+    for (int i = 0; i < inArray.size(); ++i)
+    {
+        mono_array_set(outArray, intptr_t, i, inArray[i]);
+    }
+
+    return outArray;
 }

@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Iron
 {
@@ -36,6 +38,20 @@ namespace Iron
             }
             set => SetParent_Internal(Entity.ID, value == null ? Entity.NULL_ENTITY_ID : value.Entity.ID);
         }
+        
+        public IEnumerable<Transformation> Children
+        {
+            get
+            {
+                foreach (uint childEntityID in GetChildren_Internal(Entity.ID))
+                {
+                    Transformation childTransform = new Transformation();
+                    childTransform.Entity = new Entity(childEntityID);
+
+                    yield return childTransform;
+                }
+            }
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Vector3 GetPosition_Internal(uint entityID);
@@ -60,5 +76,8 @@ namespace Iron
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetParent_Internal(uint entityID, uint parentEntityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint[] GetChildren_Internal(uint entityID);
     }
 }

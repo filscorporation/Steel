@@ -1,3 +1,5 @@
+#include <mono/jit/jit.h>
+
 #include "EntityInternalCalls.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
@@ -136,4 +138,31 @@ MonoString* EntityInternalCalls::Entity_GetName(EntityID id)
 void EntityInternalCalls::Entity_SetName(EntityID id, MonoString* name)
 {
     AddComponentS<NameComponent>(id).Name = mono_string_to_utf8(name);
+}
+
+MonoArray* EntityInternalCalls::Component_FindAllOfType(void* type)
+{
+    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
+    if (monoType == nullptr)
+    {
+        Log::LogError("Error getting mono type for find");
+        return nullptr;
+    }
+
+    MonoClass* monoClass = mono_class_from_mono_type(monoType);
+    if (monoClass == nullptr)
+    {
+        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
+        return nullptr;
+    }
+
+    return ScriptingCore::ToMonoUInt32Array(ScriptingCore::ComponentOwnersFromMonoClass(monoClass));
+}
+
+MonoArray* EntityInternalCalls::Component_FindAllScriptsOfType(EntityID id, void* type)
+{
+    // TODO: not implemented
+    Log::LogWarning("Finding all components of ScriptComponent type is not supported yet");
+
+    return nullptr;
 }

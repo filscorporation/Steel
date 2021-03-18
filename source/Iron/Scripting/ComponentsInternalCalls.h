@@ -2,6 +2,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+#include <mono/jit/jit.h>
 
 #include "../Core/ResourceID.h"
 #include "../Physics/RigidBody.h"
@@ -20,6 +21,7 @@ namespace ComponentsInternalCalls
     // Hierarchy Node
     EntityID HierarchyNode_GetParent(EntityID entityID);
     void HierarchyNode_SetParent(EntityID entityID, EntityID parentEntityID);
+    MonoArray* HierarchyNode_GetChildren(EntityID entityID);
 
     // Audio
     float AudioListener_GetVolume(EntityID entityID);

@@ -12,6 +12,7 @@
 #include "../Scene/HierarchyNode.h"
 #include "../Scene/Transformation.h"
 #include "../Scene/SceneHelper.h"
+#include "../Scripting/ScriptingCore.h"
 
 glm::vec3 ComponentsInternalCalls::Transformation_GetPosition(EntityID entityID)
 {
@@ -64,7 +65,14 @@ EntityID ComponentsInternalCalls::HierarchyNode_GetParent(EntityID entityID)
 
 void ComponentsInternalCalls::HierarchyNode_SetParent(EntityID entityID, EntityID parentEntityID)
 {
-    LinkChildToParent(Application::Instance->GetCurrentScene()->GetEntitiesRegistry(), entityID, parentEntityID);
+    auto* registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    LinkChildToParent(registry, entityID, parentEntityID);
+}
+
+MonoArray* ComponentsInternalCalls::HierarchyNode_GetChildren(EntityID entityID)
+{
+    auto* registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    return ScriptingCore::ToMonoUInt32Array(GetAllChildren(registry, entityID));
 }
 
 float ComponentsInternalCalls::AudioListener_GetVolume(EntityID entityID)

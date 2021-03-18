@@ -17,4 +17,7 @@ namespace EntityInternalCalls
 
     MonoString* Entity_GetName(EntityID id);
     void Entity_SetName(EntityID id, MonoString* name);
+
+    MonoArray* Component_FindAllOfType(void* type);
+    MonoArray* Component_FindAllScriptsOfType(EntityID id, void* type);
 }
