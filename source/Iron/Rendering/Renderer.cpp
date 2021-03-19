@@ -175,51 +175,53 @@ void Renderer::DrawUI()
         uiRenderer.OnRender();
 }
 
-void Renderer::DrawQuad(const glm::mat4& transformation, GLuint textureID)
+void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID)
 {
-    Renderer::DrawQuad(transformation, textureID, defaultTextureCoords);
+    Renderer::DrawQuad(quadCacheResult, transformation, textureID, defaultTextureCoords);
 }
 
-void Renderer::DrawQuad(const glm::mat4& transformation, GLuint textureID, glm::vec2 textureCoords[4])
+void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID, glm::vec2 textureCoords[4])
 {
-    if (renderCallsCount >= MAX_RENDER_CALLS)
-    {
-        EndBatch();
-        StartBatch();
-    }
-
-    int textureIDIndex = -1;
-    for (int i = 0; i < texturesCount; ++i)
-    {
-        if (textureIDs[i] == textureID)
-        {
-            textureIDIndex = i;
-            break;
-        }
-    }
-
-    if (textureIDIndex == -1)
-    {
-        if (texturesCount >= MAX_TEXTURE_SLOTS)
-        {
-            EndBatch();
-            StartBatch();
-        }
-
-        textureIDIndex = texturesCount;
-        textureIDs[textureIDIndex] = textureID;
-        texturesCount++;
-    }
+    int textureIDIndex = FindTextureSlot(textureID);
 
     glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
     for (int i = 0; i < 4; ++i)
     {
-        glm::vec4 transformed = transformation * defaultVertexPositions[i];
+        quadCacheResult.Vertices[i] = transformation * defaultVertexPositions[i];
 
-        vertexBufferData[offset++] = transformed[0];
-        vertexBufferData[offset++] = transformed[1];
-        vertexBufferData[offset++] = transformed[2];
+        vertexBufferData[offset++] = quadCacheResult.Vertices[i][0];
+        vertexBufferData[offset++] = quadCacheResult.Vertices[i][1];
+        vertexBufferData[offset++] = quadCacheResult.Vertices[i][2];
+        vertexBufferData[offset++] = color[0];
+        vertexBufferData[offset++] = color[1];
+        vertexBufferData[offset++] = color[2];
+        vertexBufferData[offset++] = color[3];
+        vertexBufferData[offset++] = textureCoords[i][0];
+        vertexBufferData[offset++] = textureCoords[i][1];
+        vertexBufferData[offset++] = (GLfloat)textureIDIndex;
+    }
+
+    renderCallsCount++;
+    VerticesStats += 4;
+}
+
+void Renderer::DrawQuadCached(const QuadCache& quadCache, GLuint textureID)
+{
+    Renderer::DrawQuadCached(quadCache, textureID, defaultTextureCoords);
+}
+
+void Renderer::DrawQuadCached(const QuadCache& quadCache, GLuint textureID, glm::vec2 textureCoords[4])
+{
+    int textureIDIndex = FindTextureSlot(textureID);
+
+    glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
+    for (int i = 0; i < 4; ++i)
+    {
+        vertexBufferData[offset++] = quadCache.Vertices[i][0];
+        vertexBufferData[offset++] = quadCache.Vertices[i][1];
+        vertexBufferData[offset++] = quadCache.Vertices[i][2];
         vertexBufferData[offset++] = color[0];
         vertexBufferData[offset++] = color[1];
         vertexBufferData[offset++] = color[2];
@@ -291,4 +293,38 @@ void Renderer::DrawBatchedData()
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glDeleteVertexArrays(1, &vertexArrayID);
+}
+
+int Renderer::FindTextureSlot(GLuint textureID)
+{
+    if (renderCallsCount >= MAX_RENDER_CALLS)
+    {
+        EndBatch();
+        StartBatch();
+    }
+
+    int textureIDIndex = -1;
+    for (int i = 0; i < texturesCount; ++i)
+    {
+        if (textureIDs[i] == textureID)
+        {
+            textureIDIndex = i;
+            break;
+        }
+    }
+
+    if (textureIDIndex == -1)
+    {
+        if (texturesCount >= MAX_TEXTURE_SLOTS)
+        {
+            EndBatch();
+            StartBatch();
+        }
+
+        textureIDIndex = texturesCount;
+        textureIDs[textureIDIndex] = textureID;
+        texturesCount++;
+    }
+
+    return textureIDIndex;
 }

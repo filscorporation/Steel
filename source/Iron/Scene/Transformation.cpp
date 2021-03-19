@@ -176,15 +176,32 @@ const glm::mat4& Transformation::GetTransformationMatrixCached()
 
 void Transformation::UpdateTransformation(ComponentAccessor<Transformation>& transformationsAccessor, HierarchyNode& hierarchyNode)
 {
-    _transformationMatrix =
-            glm::translate(glm::mat4(1.0f), _localPosition)
-            * glm::toMat4(glm::quat(_localRotation))
-            * glm::scale(glm::mat4(1.0f), _localScale);
-    _position = _localPosition;
+    if (hierarchyNode.ParentNode == NULL_ENTITY)
+    {
+        if (!DidTransformationChange())
+            return;
 
-    if (hierarchyNode.ParentNode != NULL_ENTITY)
+        _transformationMatrix =
+                glm::translate(glm::mat4(1.0f), _localPosition)
+                * glm::toMat4(glm::quat(_localRotation))
+                * glm::scale(glm::mat4(1.0f), _localScale);
+        _position = _localPosition;
+    }
+    else
     {
         auto& parentTransformation = transformationsAccessor.Get(hierarchyNode.ParentNode);
+
+        if (!DidTransformationChange() && !parentTransformation.DidTransformationChange())
+            return;
+        else
+            SetTransformationChanged(true);
+
+        _transformationMatrix =
+                glm::translate(glm::mat4(1.0f), _localPosition)
+                * glm::toMat4(glm::quat(_localRotation))
+                * glm::scale(glm::mat4(1.0f), _localScale);
+        _position = _localPosition;
+
         auto& parentMatrix = parentTransformation.GetTransformationMatrixCached();
         _transformationMatrix = parentMatrix * _transformationMatrix;
         _position = parentMatrix * glm::vec4(_position, 1.0f);

@@ -11,16 +11,26 @@ void SpriteRenderer::OnRender(Transformation& transformation)
     {
         glm::vec2 texCoords[4];
         _image->GetTexCoord(CurrentImageTileIndex, texCoords);
-        Renderer::DrawQuad(
-                transformation.GetTransformationMatrixCached(),
-                _image->TextureID,
-                texCoords);
+        if (transformation.DidTransformationChange())
+            Renderer::DrawQuad(
+                    quadCache,
+                    transformation.GetTransformationMatrixCached(),
+                    _image->TextureID,
+                    texCoords);
+        else
+            Renderer::DrawQuadCached(
+                    quadCache,
+                    _image->TextureID,
+                    texCoords);
     }
     else
     {
-        Renderer::DrawQuad(transformation.GetTransformationMatrixCached(), _image->TextureID);
+        if (transformation.DidTransformationChange())
+            Renderer::DrawQuad(quadCache, transformation.GetTransformationMatrixCached(), _image->TextureID);
+        else
+            Renderer::DrawQuadCached(quadCache, _image->TextureID);
     }
-    // TODO: maybe not the best place to do that..
+
     transformation.SetTransformationChanged(false);
 }
 

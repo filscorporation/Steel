@@ -3,6 +3,7 @@
 #include <glm/vec2.hpp>
 
 #include "Sprite.h"
+#include "RendererData.h"
 #include "../EntityComponentSystem/Component.h"
 #include "../Scene/Transformation.h"
 
@@ -21,5 +22,6 @@ public:
 
 private:
     Sprite* _image;
+    QuadCache quadCache;
     bool _isTransparent = false;
 };

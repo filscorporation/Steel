@@ -11,5 +11,5 @@ void UIRenderer::OnRender()
     glm::mat4 transformation = GetComponentS<RectTransformation>(Owner).GetTransformationMatrix();
 
     // TODO: passing draw UI data logic
-    Renderer::DrawQuad(transformation, _image->TextureID);
+    //Renderer::DrawQuad(transformation, _image->TextureID);
 }

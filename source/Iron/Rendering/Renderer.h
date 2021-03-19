@@ -2,7 +2,8 @@
 
 #include <GLAD/glad.h>
 #include <glm/glm.hpp>
-#include <array>
+
+#include "RendererData.h"
 #include "Camera.h"
 
 class Renderer
@@ -17,8 +18,10 @@ public:
     static void Clear(glm::vec3 color);
     static void PrepareUIRender();
     static void DrawUI();
-    static void DrawQuad(const glm::mat4& transformation, GLuint textureID);
-    static void DrawQuad(const glm::mat4& transformation, GLuint textureID, glm::vec2 textureCoords[4]);
+    static void DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID);
+    static void DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID, glm::vec2 textureCoords[4]);
+    static void DrawQuadCached(const QuadCache& quadCache, GLuint textureID);
+    static void DrawQuadCached(const QuadCache& quadCache, GLuint textureID, glm::vec2 textureCoords[4]);
 
     static int DrawCallsStats;
     static int VerticesStats;
@@ -27,4 +30,5 @@ private:
     static void StartBatch();
     static void EndBatch();
     static void DrawBatchedData();
+    static int FindTextureSlot(GLuint textureID);
 };
