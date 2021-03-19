@@ -426,6 +426,12 @@ class ComponentAccessor
 public:
     explicit ComponentAccessor(ComponentsPoolWrapper<T>* componentsPool) { _componentsPool = componentsPool; }
 
+    bool Has(EntityID entityID)
+    {
+        EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
+        return _componentsPool->Storage.Has(id);
+    }
+
     T& Get(EntityID entityID)
     {
         EntityID id = EntitiesRegistry::EntityIDGetID(entityID);

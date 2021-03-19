@@ -35,18 +35,19 @@ void UIInternalCalls::RectTransformation_SetAnchorMax(EntityID entityID, glm::ve
     component.SetAnchorMax(*anchor);
 }
 
-glm::vec3 UIInternalCalls::RectTransformation_GetAnchoredPosition(EntityID entityID)
-{
-    GET_COMPONENT_OR_RETURN(RectTransformation, glm::vec3(0.0f))
-
-    return component.GetAnchoredPosition();
-}
-
-void UIInternalCalls::RectTransformation_SetAnchoredPosition(EntityID entityID, glm::vec3 position)
+void UIInternalCalls::RectTransformation_GetAnchoredPosition(EntityID entityID, glm::vec2* position)
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    component.SetAnchoredPosition(position);
+    position->x = component.GetAnchoredPosition().x;
+    position->y = component.GetAnchoredPosition().y;
+}
+
+void UIInternalCalls::RectTransformation_SetAnchoredPosition(EntityID entityID, glm::vec2* position)
+{
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
+
+    component.SetAnchoredPosition(*position);
 }
 
 void UIInternalCalls::RectTransformation_GetOffsetMin(EntityID entityID, glm::vec2* offset)

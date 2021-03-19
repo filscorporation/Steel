@@ -1,57 +1,8 @@
 #include "RectTransformation.h"
 #include "../Rendering/Screen.h"
-#include "../Core/Log.h"
+#include "../Core/Application.h"
 
-// TODO: use in sets
 #define TRANSFORM_EPS 0.000001f
-
-// TODO: rework for hierarchy
-
-const glm::mat4& RectTransformation::GetTransformationMatrix()
-{
-    if (true || Screen::IsScreenSizeDirty())
-    {
-        // TODO: apply parent transformations, for now parent is screen
-        glm::vec2 parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
-
-        glm::vec3 realPosition;
-        glm::vec3 realScale;
-        for (int i = 0; i < 2; ++i)
-        {
-            if (std::abs(_anchorMin[i] - _anchorMax[i]) < TRANSFORM_EPS)
-            {
-                realScale[i] = _scale[i] * _size[i];
-                realPosition[i] = parentSize[i] * _anchorMin[i] + _anchoredPosition[i] + (_pivot[i] - 0.5f) * realScale[i];
-            }
-            else
-            {
-                float xMin = parentSize[i] * _anchorMin[i] + _offsetMin[i];
-                float xMax = parentSize[i] * _anchorMax[i] - _offsetMax[i];
-                realScale[i] = xMax - xMin;
-                realPosition[i] = xMin + 0.5f * realScale[i];
-            }
-        }
-        realPosition.z = _anchoredPosition.z;
-        realScale.z = 1.0f;
-
-        glm::mat4 rotationMatrix = glm::toMat4(glm::quat(_rotation)); // TODO: rotate around pivot
-        _transformationMatrix = glm::translate(glm::mat4(1.0f), realPosition)
-                                * rotationMatrix
-                                * glm::scale(glm::mat4(1.0f), realScale);
-    }
-
-    return _transformationMatrix;
-}
-
-glm::vec3 RectTransformation::GetPosition()
-{
-    return GetAnchoredPosition();
-}
-
-void RectTransformation::SetPosition(const glm::vec3 &position)
-{
-    SetAnchoredPosition(position);
-}
 
 glm::vec2 RectTransformation::GetAnchorMin() const
 {
@@ -60,11 +11,15 @@ glm::vec2 RectTransformation::GetAnchorMin() const
 
 void RectTransformation::SetAnchorMin(const glm::vec2& anchor)
 {
-    //SetTransformationDirty(true);
+    if (   std::abs(_anchorMin.x - anchor.x) < TRANSFORM_EPS
+        && std::abs(_anchorMin.y - anchor.y) < TRANSFORM_EPS)
+        return;
 
     _anchorMin = anchor;
     _anchorMax.x = std::max(_anchorMin.x, _anchorMax.x);
     _anchorMax.y = std::max(_anchorMin.y, _anchorMax.y);
+
+    SetTransformationChanged(true);
 }
 
 glm::vec2 RectTransformation::GetAnchorMax() const
@@ -74,23 +29,31 @@ glm::vec2 RectTransformation::GetAnchorMax() const
 
 void RectTransformation::SetAnchorMax(const glm::vec2& anchor)
 {
-    //SetTransformationDirty(true);
+    if (   std::abs(_anchorMax.x - anchor.x) < TRANSFORM_EPS
+        && std::abs(_anchorMax.y - anchor.y) < TRANSFORM_EPS)
+        return;
 
     _anchorMax = anchor;
     _anchorMin.x = std::min(_anchorMin.x, _anchorMax.x);
     _anchorMin.y = std::min(_anchorMin.y, _anchorMax.y);
+
+    SetTransformationChanged(true);
 }
 
-glm::vec3 RectTransformation::GetAnchoredPosition() const
+glm::vec2 RectTransformation::GetAnchoredPosition() const
 {
     return _anchoredPosition;
 }
 
-void RectTransformation::SetAnchoredPosition(const glm::vec3& position)
+void RectTransformation::SetAnchoredPosition(const glm::vec2& position)
 {
-    //SetTransformationDirty(true);
+    if (   std::abs(_anchoredPosition.x - position.x) < TRANSFORM_EPS
+        && std::abs(_anchoredPosition.y - position.y) < TRANSFORM_EPS)
+        return;
 
     _anchoredPosition = position;
+
+    SetTransformationChanged(true);
 }
 
 glm::vec2 RectTransformation::GetOffsetMin() const
@@ -100,9 +63,13 @@ glm::vec2 RectTransformation::GetOffsetMin() const
 
 void RectTransformation::SetOffsetMin(const glm::vec2& offset)
 {
-    //SetTransformationDirty(true);
+    if (   std::abs(_offsetMin.x - offset.x) < TRANSFORM_EPS
+        && std::abs(_offsetMin.y - offset.y) < TRANSFORM_EPS)
+        return;
 
     _offsetMin = offset;
+
+    SetTransformationChanged(true);
 }
 
 glm::vec2 RectTransformation::GetOffsetMax() const
@@ -112,9 +79,13 @@ glm::vec2 RectTransformation::GetOffsetMax() const
 
 void RectTransformation::SetOffsetMax(const glm::vec2& offset)
 {
-    //SetTransformationDirty(true);
+    if (   std::abs(_offsetMax.x - offset.x) < TRANSFORM_EPS
+        && std::abs(_offsetMax.y - offset.y) < TRANSFORM_EPS)
+        return;
 
     _offsetMax = offset;
+
+    SetTransformationChanged(true);
 }
 
 glm::vec2 RectTransformation::GetSize() const
@@ -124,9 +95,13 @@ glm::vec2 RectTransformation::GetSize() const
 
 void RectTransformation::SetSize(const glm::vec2& size)
 {
-    //SetTransformationDirty(true);
+    if (   std::abs(_size.x - size.x) < TRANSFORM_EPS
+        && std::abs(_size.y - size.y) < TRANSFORM_EPS)
+        return;
 
     _size = glm::vec2(std::max(size.x, 0.0f), std::max(size.y, 0.0f));
+
+    SetTransformationChanged(true);
 }
 
 glm::vec2 RectTransformation::GetPivot() const
@@ -136,7 +111,162 @@ glm::vec2 RectTransformation::GetPivot() const
 
 void RectTransformation::RectTransformation::SetPivot(const glm::vec2& pivot)
 {
-    //SetTransformationDirty(true);
+    if (   std::abs(_pivot.x - pivot.x) < TRANSFORM_EPS
+        && std::abs(_pivot.y - pivot.y) < TRANSFORM_EPS)
+        return;
 
     _pivot = pivot;
+
+    SetTransformationChanged(true);
+}
+
+glm::vec3 RectTransformation::GetRotation()
+{
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& node = registry->GetComponent<HierarchyNode>(Owner);
+    if (node.ParentNode == NULL_ENTITY)
+    {
+        _rotation = _localRotation;
+    }
+    else
+    {
+        auto& parentRT = registry->GetComponent<RectTransformation>(node.ParentNode);
+        // For rotation it should be enough to add parent's rotation to out local
+        _rotation = parentRT.GetRotation() + _localRotation;
+    }
+
+    return _rotation;
+}
+
+void RectTransformation::SetRotation(const glm::vec3& rotation)
+{
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& node = registry->GetComponent<HierarchyNode>(Owner);
+
+    _rotation = rotation;
+    if (node.ParentNode == NULL_ENTITY)
+    {
+        _localRotation = _rotation;
+    }
+    else
+    {
+        auto& parentRT = registry->GetComponent<RectTransformation>(node.ParentNode);
+        // For rotation it should be enough to subtract parent's rotation from target global
+        _localRotation = _rotation - parentRT.GetRotation();
+    }
+
+    SetTransformationChanged(true);
+}
+
+glm::vec3 RectTransformation::GetLocalRotation() const
+{
+    return _localRotation;
+}
+
+void RectTransformation::SetLocalRotation(const glm::vec3& rotation)
+{
+    if (   std::abs(_localRotation.x - rotation.x) < TRANSFORM_EPS
+        && std::abs(_localRotation.y - rotation.y) < TRANSFORM_EPS
+        && std::abs(_localRotation.z - rotation.z) < TRANSFORM_EPS)
+        return;
+
+    _localRotation = rotation;
+
+    SetTransformationChanged(true);
+}
+
+const glm::mat4& RectTransformation::GetTransformationMatrixCached()
+{
+    return _transformationMatrix;
+}
+
+void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformation>& rtAccessor, HierarchyNode& hierarchyNode)
+{
+    glm::vec2 parentSize;
+
+    if (hierarchyNode.ParentNode == NULL_ENTITY)
+    {
+        if (!DidTransformationChange() && !Screen::IsScreenSizeDirty())
+            return;
+        else
+            SetTransformationChanged(true);
+
+        parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
+        _globalSortingOrder = _sortingOrder;
+    }
+    else
+    {
+        auto& parentRT = rtAccessor.Get(hierarchyNode.ParentNode);
+
+        if (!DidTransformationChange() && !parentRT.DidTransformationChange() && !Screen::IsScreenSizeDirty())
+            return;
+        else
+            SetTransformationChanged(true);
+
+        parentSize = parentRT.GetSize();
+        _globalSortingOrder = parentRT.GetGlobalSortingOrder() + _sortingOrder;
+    }
+
+    glm::vec3 realPosition;
+    for (int i = 0; i < 2; ++i)
+    {
+        if (std::abs(_anchorMin[i] - _anchorMax[i]) < TRANSFORM_EPS)
+        {
+            realPosition[i] = parentSize[i] * _anchorMin[i] + _anchoredPosition[i] + (_pivot[i] - 0.5f) * _size[i];
+        }
+        else
+        {
+            float xMin = parentSize[i] * _anchorMin[i] + _offsetMin[i];
+            float xMax = parentSize[i] * _anchorMax[i] - _offsetMax[i];
+            _size[i] = xMax - xMin;
+            realPosition[i] = xMin + 0.5f * _size[i];
+        }
+    }
+    realPosition.z = _sortingOrder;
+
+    _transformationMatrix = glm::translate(glm::mat4(1.0f), realPosition)
+                            * glm::toMat4(glm::quat(_rotation))
+                            * glm::scale(glm::mat4(1.0f), glm::vec3(_size, 1.0f));
+}
+
+float RectTransformation::GetSortingOrder() const
+{
+    return _sortingOrder;
+}
+
+void RectTransformation::SetSortingOrder(float sortingOrder)
+{
+    _sortingOrder = sortingOrder;
+}
+
+float RectTransformation::GetGlobalSortingOrder()
+{
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& node = registry->GetComponent<HierarchyNode>(Owner);
+    if (node.ParentNode == NULL_ENTITY)
+    {
+        _globalSortingOrder = _sortingOrder;
+    }
+    else
+    {
+        auto& parentRT = registry->GetComponent<RectTransformation>(node.ParentNode);
+        _globalSortingOrder = parentRT.GetGlobalSortingOrder() + _sortingOrder;
+    }
+
+    return _globalSortingOrder;
+}
+
+float RectTransformation::GetGlobalSortingOrderCached() const
+{
+    return _globalSortingOrder;
+}
+
+bool RectTransformation::DidTransformationChange() const
+{
+    return transformationChanged;
+}
+
+void RectTransformation::SetTransformationChanged(bool changed)
+{
+    transformationChanged = changed;
 }

@@ -1,5 +1,6 @@
 #include "UIComponent.h"
 #include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 
 UIComponent::UIComponent(EntityID ownerEntityID) : Component(ownerEntityID)
 {

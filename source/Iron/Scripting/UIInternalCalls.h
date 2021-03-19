@@ -13,8 +13,8 @@ namespace UIInternalCalls
     void RectTransformation_SetAnchorMin(EntityID entityID, glm::vec2* anchor);
     void RectTransformation_GetAnchorMax(EntityID entityID, glm::vec2* anchor);
     void RectTransformation_SetAnchorMax(EntityID entityID, glm::vec2* anchor);
-    glm::vec3 RectTransformation_GetAnchoredPosition(EntityID entityID);
-    void RectTransformation_SetAnchoredPosition(EntityID entityID, glm::vec3 position);
+    void RectTransformation_GetAnchoredPosition(EntityID entityID, glm::vec2* position);
+    void RectTransformation_SetAnchoredPosition(EntityID entityID, glm::vec2* position);
     void RectTransformation_GetOffsetMin(EntityID entityID, glm::vec2* offset);
     void RectTransformation_SetOffsetMin(EntityID entityID, glm::vec2* offset);
     void RectTransformation_GetOffsetMax(EntityID entityID, glm::vec2* offset);

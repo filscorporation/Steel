@@ -2,7 +2,7 @@
 
 namespace Iron
 {
-    public class RectTransformation : Transformation
+    public class RectTransformation : Component
     {
         public Vector2 AnchorMin
         {
@@ -24,10 +24,14 @@ namespace Iron
             set => SetAnchorMax_Internal(Entity.ID, ref value);
         }
 
-        public Vector3 AnchoredPosition
+        public Vector2 AnchoredPosition
         {
-            get => GetAnchoredPosition_Internal(Entity.ID);
-            set => SetAnchoredPosition_Internal(Entity.ID, value);
+            get
+            {
+                GetAnchoredPosition_Internal(Entity.ID, out Vector2 position);
+                return position;
+            }
+            set => SetAnchoredPosition_Internal(Entity.ID, ref value);
         }
         
         public Vector2 OffsetMin
@@ -83,10 +87,10 @@ namespace Iron
         private static extern void SetAnchorMax_Internal(uint entityID, ref Vector2 anchor);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 GetAnchoredPosition_Internal(uint entityID);
+        private static extern Vector3 GetAnchoredPosition_Internal(uint entityID, out Vector2 position);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAnchoredPosition_Internal(uint entityID, Vector3 position);
+        private static extern void SetAnchoredPosition_Internal(uint entityID, ref Vector2 position);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void GetOffsetMin_Internal(uint entityID, out Vector2 offset);

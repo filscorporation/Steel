@@ -81,7 +81,8 @@ void Scene::UpdateGlobalTransformation()
     auto transformationsAccessor = entitiesRegistry->GetComponentAccessor<Transformation>();
     for (auto& hierarchyNode : hierarchyNodes)
     {
-        transformationsAccessor.Get(hierarchyNode.Owner).UpdateTransformation(transformationsAccessor, hierarchyNode);
+        if (transformationsAccessor.Has(hierarchyNode.Owner))
+            transformationsAccessor.Get(hierarchyNode.Owner).UpdateTransformation(transformationsAccessor, hierarchyNode);
     }
 }
 

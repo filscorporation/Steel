@@ -84,6 +84,8 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return AddComponentS<NameComponent>(entity);
     if (monoClass == CACHED_CLASS(Transformation))
         return AddComponentS<Transformation>(entity);
+    if (monoClass == CACHED_CLASS(RectTransformation))
+        return AddComponentS<RectTransformation>(entity);
     if (monoClass == CACHED_CLASS(BoxCollider))
         return AddComponentS<BoxCollider>(entity);
     if (monoClass == CACHED_CLASS(CircleCollider))
@@ -100,8 +102,6 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return AddComponentS<AudioSource>(entity);
     if (monoClass == CACHED_CLASS(Animator))
         return AddComponentS<Animator>(entity);
-    if (monoClass == CACHED_CLASS(RectTransformation))
-        return AddComponentS<RectTransformation>(entity);
     if (monoClass == CACHED_CLASS(UIRenderer))
         return AddComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
@@ -119,7 +119,9 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass *monoCl
     if (monoClass == CACHED_CLASS(NameComponent))
         return HasComponentS<NameComponent>(entity);
     if (monoClass == CACHED_CLASS(Transformation))
-        return HasComponentS<Transformation>(entity) || HasComponentS<RectTransformation>(entity); // TODO: for UI, rework
+        return HasComponentS<Transformation>(entity);
+    if (monoClass == CACHED_CLASS(RectTransformation))
+        return HasComponentS<RectTransformation>(entity);
     if (monoClass == CACHED_CLASS(BoxCollider))
         return HasComponentS<BoxCollider>(entity);
     if (monoClass == CACHED_CLASS(CircleCollider))
@@ -154,6 +156,8 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *mon
         return RemoveComponentS<NameComponent>(entity);
     if (monoClass == CACHED_CLASS(Transformation))
         return RemoveComponentS<Transformation>(entity);
+    if (monoClass == CACHED_CLASS(RectTransformation))
+        return RemoveComponentS<RectTransformation>(entity);
     if (monoClass == CACHED_CLASS(BoxCollider))
         return RemoveComponentS<BoxCollider>(entity);
     if (monoClass == CACHED_CLASS(CircleCollider))
@@ -170,8 +174,6 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *mon
         return RemoveComponentS<AudioSource>(entity);
     if (monoClass == CACHED_CLASS(Animator))
         return RemoveComponentS<Animator>(entity);
-    if (monoClass == CACHED_CLASS(RectTransformation))
-        return RemoveComponentS<RectTransformation>(entity);
     if (monoClass == CACHED_CLASS(UIRenderer))
         return RemoveComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
@@ -190,6 +192,8 @@ std::vector<EntityID> ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* mon
         RETURN_COMPONENT_OWNERS(NameComponent)
     if (monoClass == CACHED_CLASS(Transformation))
         RETURN_COMPONENT_OWNERS(Transformation)
+    if (monoClass == CACHED_CLASS(RectTransformation))
+        RETURN_COMPONENT_OWNERS(RectTransformation)
     if (monoClass == CACHED_CLASS(BoxCollider))
         RETURN_COMPONENT_OWNERS(BoxCollider)
     if (monoClass == CACHED_CLASS(CircleCollider))
@@ -206,8 +210,6 @@ std::vector<EntityID> ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* mon
         RETURN_COMPONENT_OWNERS(AudioSource)
     if (monoClass == CACHED_CLASS(Animator))
         RETURN_COMPONENT_OWNERS(Animator)
-    if (monoClass == CACHED_CLASS(RectTransformation))
-        RETURN_COMPONENT_OWNERS(RectTransformation)
     if (monoClass == CACHED_CLASS(UIRenderer))
         RETURN_COMPONENT_OWNERS(UIRenderer)
     if (monoClass == CACHED_CLASS(UIImage))

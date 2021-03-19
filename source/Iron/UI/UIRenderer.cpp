@@ -1,15 +1,19 @@
 #include "UIRenderer.h"
 #include "../Core/Application.h"
 #include "../Rendering/Renderer.h"
-#include "../Scene/SceneHelper.h"
 
-void UIRenderer::OnRender()
+void UIRenderer::OnRender(RectTransformation& rectTransformation)
 {
     if (_image == nullptr)
         return;
 
-    glm::mat4 transformation = GetComponentS<RectTransformation>(Owner).GetTransformationMatrix();
+    if (rectTransformation.DidTransformationChange())
+        Renderer::DrawQuad(quadCache, rectTransformation.GetTransformationMatrixCached(), _image->TextureID);
+    else
+        Renderer::DrawQuadCached(quadCache, _image->TextureID);
+}
 
-    // TODO: passing draw UI data logic
-    //Renderer::DrawQuad(transformation, _image->TextureID);
+bool UIRenderer::IsTransparent() const
+{
+    return _isTransparent;
 }

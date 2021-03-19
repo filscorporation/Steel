@@ -33,13 +33,16 @@ public:
     virtual void UpdateTransformation(ComponentAccessor<Transformation>& transformationsAccessor, HierarchyNode& hierarchyNode);
     virtual const glm::mat4& GetTransformationMatrix();
     virtual const glm::mat4& GetInverseTransformationMatrix();
-    float GetSortingOrder() const;
+    float GetGlobalSortingOrderCached() const;
 
     // Did anything in transformation change in this frame
     bool DidTransformationChange() const;
     void SetTransformationChanged(bool changed);
 
-protected:
+private:
+    glm::mat4 _transformationMatrix = glm::mat4(1.0f);
+    glm::mat4 _inverseTransformationMatrix = glm::mat4(1.0f);
+
     glm::vec3 _position = { 0.0f, 0.0f, 0.0f };
     glm::vec3 _rotation = { 0.0f, 0.0f, 0.0f };
     glm::vec3 _scale = { 1.0f, 1.0f, 1.0f };
@@ -48,8 +51,4 @@ protected:
     glm::vec3 _localScale = { 1.0f, 1.0f, 1.0f };
 
     bool transformationChanged = true;
-
-private:
-    glm::mat4 _transformationMatrix = glm::mat4(1.0f);
-    glm::mat4 _inverseTransformationMatrix = glm::mat4(1.0f);
 };

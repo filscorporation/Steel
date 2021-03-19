@@ -18,7 +18,9 @@ void UIImage::SetImage(Sprite *image)
         Log::LogError("UI image has no UI renderer attached");
         return;
     }
-    GetComponentS<UIRenderer>(Owner)._image = _image;
+    auto& uii = GetComponentS<UIRenderer>(Owner);
+    uii._image = _image;
+    uii._isTransparent = _image->IsTransparent;
 
     if (!HasComponentS<RectTransformation>(Owner))
     {

@@ -248,7 +248,7 @@ const glm::mat4& Transformation::GetInverseTransformationMatrix()
     return _inverseTransformationMatrix;
 }
 
-float Transformation::GetSortingOrder() const
+float Transformation::GetGlobalSortingOrderCached() const
 {
     return _position.z;
 }

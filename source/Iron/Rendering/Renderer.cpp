@@ -118,7 +118,8 @@ void Renderer::OnBeforeRender(Camera& camera)
     // Sort all objects by Z
     struct
     {
-        bool operator()(Transformation& a, Transformation& b) const { return a.GetSortingOrder() > b.GetSortingOrder(); }
+        bool operator()(Transformation& a, Transformation& b) const
+        { return a.GetGlobalSortingOrderCached() > b.GetGlobalSortingOrderCached(); }
     } ZComparer;
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->SortComponents<Transformation>(ZComparer);
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->ApplyOrder<Transformation, SpriteRenderer>();
@@ -163,6 +164,26 @@ void Renderer::PrepareUIRender()
     EndBatch();
     StartBatch();
 
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    // Update rect transformations if needed
+    auto hierarchyNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
+    auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
+    for (auto& hierarchyNode : hierarchyNodes)
+    {
+        if (rtAccessor.Has(hierarchyNode.Owner))
+            rtAccessor.Get(hierarchyNode.Owner).UpdateTransformation(rtAccessor, hierarchyNode);
+    }
+
+    // Sort all UI objects by SortingOrder
+    struct
+    {
+        bool operator()(RectTransformation& a, RectTransformation& b) const
+        { return a.GetGlobalSortingOrderCached() > b.GetGlobalSortingOrderCached(); }
+    } SOComparer;
+    entitiesRegistry->SortComponents<RectTransformation>(SOComparer);
+    entitiesRegistry->ApplyOrder<RectTransformation, UIRenderer>();
+
     glm::mat4 uiViewProjection = Screen::GetUIViewProjection();
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(uiViewProjection));
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -170,9 +191,19 @@ void Renderer::PrepareUIRender()
 
 void Renderer::DrawUI()
 {
-    auto uiRenderers = Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->GetComponentIterator<UIRenderer>();
-    for (auto& uiRenderer : uiRenderers)
-        uiRenderer.OnRender();
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto uiRenderers = entitiesRegistry->GetComponentIterator<UIRenderer>();
+    auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
+
+    // Opaque pass
+    for (int i = 0; i < uiRenderers.Size(); ++i)
+        if (!uiRenderers[i].IsTransparent())
+            uiRenderers[i].OnRender(rtAccessor.Get(uiRenderers[i].Owner));
+
+    // Transparent pass
+    for (int i = uiRenderers.Size() - 1; i >=0; --i)
+        if (uiRenderers[i].IsTransparent())
+            uiRenderers[i].OnRender(rtAccessor.Get(uiRenderers[i].Owner));
 }
 
 void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID)
