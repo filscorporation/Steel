@@ -1,12 +1,15 @@
 #pragma once
 
 #include <cstdint>
+
 #include "ScriptingCore.h"
 #include "ScriptComponent.h"
 
 namespace EntityInternalCalls
 {
     EntityID Entity_CreateNewEntity();
+    EntityID Entity_CreateNewEntity2(MonoString* name);
+    EntityID Entity_CreateNewEntity3(MonoString* name, EntityID parentEntityID);
     bool Entity_DestroyEntity(EntityID id);
     bool Entity_AddComponent(EntityID id, void* type);
     bool Entity_AddScriptComponent(EntityID id, void* type, ScriptPointer scriptPointer);

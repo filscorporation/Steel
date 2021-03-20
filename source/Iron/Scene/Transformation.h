@@ -13,7 +13,7 @@
 class Transformation : public Component
 {
 public:
-    explicit Transformation(EntityID ownerEntityID) : Component(ownerEntityID) { }
+    explicit Transformation(EntityID ownerEntityID);
 
     virtual glm::vec3 GetPosition();
     virtual void SetPosition(const glm::vec3& position);

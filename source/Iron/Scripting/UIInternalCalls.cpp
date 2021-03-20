@@ -1,3 +1,5 @@
+#include <mono/jit/jit.h>
+
 #include "UIInternalCalls.h"
 #include "InternalCallsCommon.h"
 #include "../UI/UIImage.h"
@@ -110,6 +112,34 @@ void UIInternalCalls::RectTransformation_SetSize(EntityID entityID, glm::vec2* s
     component.SetSize(*size);
 }
 
+float UIInternalCalls::RectTransformation_GetSortingOrder(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RectTransformation, 0.0f)
+
+    return component.GetSortingOrder();
+}
+
+void UIInternalCalls::RectTransformation_SetSortingOrder(EntityID entityID, float sortingOrder)
+{
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
+
+    component.SetSortingOrder(sortingOrder);
+}
+
+glm::vec3 UIInternalCalls::RectTransformation_GetRotation(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RectTransformation, glm::vec3(0.0f))
+
+    return component.GetRotation();
+}
+
+void UIInternalCalls::RectTransformation_SetRotation(EntityID entityID, glm::vec3 rotation)
+{
+    GET_COMPONENT_OR_RETURN(RectTransformation, )
+
+    component.SetRotation(rotation);
+}
+
 ResourceID UIInternalCalls::UIImage_GetSprite(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIImage, 0)
@@ -123,4 +153,19 @@ void UIInternalCalls::UIImage_SetSprite(EntityID entityID, ResourceID spriteID)
     GET_COMPONENT_OR_RETURN(UIImage, )
 
     component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
+}
+
+EntityID UIInternalCalls::UI_CreateUIElement()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();
+}
+
+EntityID UIInternalCalls::UI_CreateUIElement2(MonoString* name)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement(mono_string_to_utf8(name), NULL_ENTITY);
+}
+
+EntityID UIInternalCalls::UI_CreateUIElement3(MonoString* name, EntityID parentEntityID)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement(mono_string_to_utf8(name), parentEntityID);
 }

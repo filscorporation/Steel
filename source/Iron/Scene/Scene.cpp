@@ -3,7 +3,6 @@
 #include "Scene.h"
 #include "Transformation.h"
 #include "NameComponent.h"
-#include "HierarchyNode.h"
 #include "Hierarchy.h"
 
 int Scene::EntitiesWasCreated = 0;
@@ -11,10 +10,12 @@ int Scene::EntitiesWasCreated = 0;
 Scene::Scene()
 {
     entitiesRegistry = new EntitiesRegistry();
+    uiLayer = new UILayer(this);
 }
 
 Scene::~Scene()
 {
+    delete uiLayer;
     delete entitiesRegistry;
 }
 
@@ -31,6 +32,11 @@ EntitiesRegistry* Scene::GetEntitiesRegistry()
     return entitiesRegistry;
 }
 
+UILayer* Scene::GetUILayer()
+{
+    return uiLayer;
+}
+
 EntityID Scene::CreateEntity()
 {
     return CreateEntity("New entity", NULL_ENTITY);
@@ -38,9 +44,7 @@ EntityID Scene::CreateEntity()
 
 EntityID Scene::CreateEntity(const char* name, EntityID parent)
 {
-    EntitiesWasCreated++;
-
-    auto entity = entitiesRegistry->CreateNewEntity();
+    auto entity = CreateEmptyEntity();
     auto& nameComponent = entitiesRegistry->AddComponent<NameComponent>(entity);
     nameComponent.Name = name;
     entitiesRegistry->AddComponent<Transformation>(entity);
@@ -48,6 +52,13 @@ EntityID Scene::CreateEntity(const char* name, EntityID parent)
     LinkChildToParent(entitiesRegistry, entity, parent);
 
     return entity;
+}
+
+EntityID Scene::CreateEmptyEntity()
+{
+    EntitiesWasCreated++;
+
+    return entitiesRegistry->CreateNewEntity();
 }
 
 void Scene::DestroyEntity(EntityID entity)

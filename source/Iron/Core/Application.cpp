@@ -144,7 +144,7 @@ void Application::RunUpdate()
     // Clear depth buffer before rendering UI
     Renderer::PrepareUIRender();
     // Draw UI on top
-    Renderer::DrawUI();
+    scene->GetUILayer()->Draw();
 
     Renderer::OnAfterRender();
 

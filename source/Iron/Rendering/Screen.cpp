@@ -4,10 +4,8 @@
 #include "Screen.h"
 #include "../Core/Input.h"
 #include "../Core/Application.h"
-#include "../Rendering/Camera.h"
-#include "../Core/Log.h"
 
-#define UI_MIN_DISTANCE -0.01f
+#define UI_MIN_DISTANCE -100.0f
 #define UI_MAX_DISTANCE 100.0f
 
 GLFWwindow* _window;
@@ -122,8 +120,6 @@ void Screen::SetColor(glm::vec3 color)
 
 glm::mat4 Screen::GetUIViewProjection()
 {
-    // TODO: maybe it should be in some UICamera component
-
     return _viewProjection;
 }
 

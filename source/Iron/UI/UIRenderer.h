@@ -13,7 +13,7 @@ public:
     bool IsTransparent() const;
 
 private:
-    Sprite* _image; // TODO: UI data
+    Sprite* _image;
     QuadCache quadCache;
     bool _isTransparent = false;
 

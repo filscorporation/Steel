@@ -1,8 +1,16 @@
-#include "../Core/Application.h"
 #include "Transformation.h"
-#include "HierarchyNode.h"
+#include "SceneHelper.h"
+#include "../UI/RectTransformation.h"
 
 #define TRANSFORM_EPS 0.000001f
+
+Transformation::Transformation(EntityID ownerEntityID) : Component(ownerEntityID)
+{
+    if (HasComponentS<RectTransformation>(ownerEntityID))
+    {
+        Log::LogError("Adding Transformation to object with RectTransformation will lead to undefined behaviour.");
+    }
+}
 
 glm::vec3 Transformation::GetPosition()
 {

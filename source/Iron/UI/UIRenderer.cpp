@@ -11,6 +11,8 @@ void UIRenderer::OnRender(RectTransformation& rectTransformation)
         Renderer::DrawQuad(quadCache, rectTransformation.GetTransformationMatrixCached(), _image->TextureID);
     else
         Renderer::DrawQuadCached(quadCache, _image->TextureID);
+
+    rectTransformation.SetTransformationChanged(false);
 }
 
 bool UIRenderer::IsTransparent() const

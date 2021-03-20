@@ -1,8 +1,18 @@
 #include "RectTransformation.h"
 #include "../Rendering/Screen.h"
 #include "../Core/Application.h"
+#include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 
 #define TRANSFORM_EPS 0.000001f
+
+RectTransformation::RectTransformation(EntityID ownerEntityID) : Component(ownerEntityID)
+{
+    if (HasComponentS<Transformation>(ownerEntityID))
+    {
+        Log::LogError("Adding Transformation to objects with RectTransformation will lead to undefined behaviour.");
+    }
+}
 
 glm::vec2 RectTransformation::GetAnchorMin() const
 {
@@ -91,6 +101,11 @@ void RectTransformation::SetOffsetMax(const glm::vec2& offset)
 glm::vec2 RectTransformation::GetSize() const
 {
     return _size;
+}
+
+glm::vec2 RectTransformation::GetRealSizeCached() const
+{
+    return _realSize;
 }
 
 void RectTransformation::SetSize(const glm::vec2& size)
@@ -183,6 +198,7 @@ const glm::mat4& RectTransformation::GetTransformationMatrixCached()
 void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformation>& rtAccessor, HierarchyNode& hierarchyNode)
 {
     glm::vec2 parentSize;
+    glm::vec2 parentPosition;
 
     if (hierarchyNode.ParentNode == NULL_ENTITY)
     {
@@ -192,6 +208,7 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
             SetTransformationChanged(true);
 
         parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
+        parentPosition = parentSize * 0.5f;
         _globalSortingOrder = _sortingOrder;
     }
     else
@@ -203,30 +220,30 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
         else
             SetTransformationChanged(true);
 
-        parentSize = parentRT.GetSize();
-        _globalSortingOrder = parentRT.GetGlobalSortingOrder() + _sortingOrder;
+        parentSize = parentRT.GetRealSizeCached();
+        parentPosition = parentRT.GetRealPositionCached();
+        _globalSortingOrder = parentRT.GetGlobalSortingOrderCached() + _sortingOrder;
     }
 
-    glm::vec3 realPosition;
     for (int i = 0; i < 2; ++i)
     {
         if (std::abs(_anchorMin[i] - _anchorMax[i]) < TRANSFORM_EPS)
         {
-            realPosition[i] = parentSize[i] * _anchorMin[i] + _anchoredPosition[i] + (_pivot[i] - 0.5f) * _size[i];
+            _realPosition[i] = parentPosition[i] + parentSize[i] * (_anchorMin[i] - 0.5f) + _anchoredPosition[i] + (_pivot[i] - 0.5f) * _size[i];
+            _realSize = _size;
         }
         else
         {
-            float xMin = parentSize[i] * _anchorMin[i] + _offsetMin[i];
-            float xMax = parentSize[i] * _anchorMax[i] - _offsetMax[i];
-            _size[i] = xMax - xMin;
-            realPosition[i] = xMin + 0.5f * _size[i];
+            float min = parentPosition[i] + parentSize[i] * (_anchorMin[i] - 0.5f) + _offsetMin[i];
+            float max = parentPosition[i] + parentSize[i] * (_anchorMax[i] - 0.5f) - _offsetMax[i];
+            _realSize[i] = max - min;
+            _realPosition[i] = min + 0.5f * _realSize[i];
         }
     }
-    realPosition.z = _sortingOrder;
 
-    _transformationMatrix = glm::translate(glm::mat4(1.0f), realPosition)
+    _transformationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(_realPosition, -_globalSortingOrder))
                             * glm::toMat4(glm::quat(_rotation))
-                            * glm::scale(glm::mat4(1.0f), glm::vec3(_size, 1.0f));
+                            * glm::scale(glm::mat4(1.0f), glm::vec3(_realSize, 1.0f));
 }
 
 float RectTransformation::GetSortingOrder() const
@@ -236,7 +253,12 @@ float RectTransformation::GetSortingOrder() const
 
 void RectTransformation::SetSortingOrder(float sortingOrder)
 {
+    if (std::abs(_sortingOrder - sortingOrder) < TRANSFORM_EPS)
+        return;
+
     _sortingOrder = sortingOrder;
+
+    SetTransformationChanged(true);
 }
 
 float RectTransformation::GetGlobalSortingOrder()
@@ -259,6 +281,11 @@ float RectTransformation::GetGlobalSortingOrder()
 float RectTransformation::GetGlobalSortingOrderCached() const
 {
     return _globalSortingOrder;
+}
+
+const glm::vec2& RectTransformation::GetRealPositionCached()
+{
+    return _realPosition;
 }
 
 bool RectTransformation::DidTransformationChange() const

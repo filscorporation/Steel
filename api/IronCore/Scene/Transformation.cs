@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Iron
 {
@@ -24,35 +22,6 @@ namespace Iron
             set => SetScale_Internal(Entity.ID, value);
         }
 
-        public Transformation Parent
-        {
-            get
-            {
-                uint parentEntityID = GetParent_Internal(Entity.ID);
-                if (parentEntityID == Entity.NULL_ENTITY_ID)
-                    return null;
-                Transformation parent = new Transformation();
-                parent.Entity = new Entity(parentEntityID);
-
-                return parent;
-            }
-            set => SetParent_Internal(Entity.ID, value == null ? Entity.NULL_ENTITY_ID : value.Entity.ID);
-        }
-        
-        public IEnumerable<Transformation> Children
-        {
-            get
-            {
-                foreach (uint childEntityID in GetChildren_Internal(Entity.ID))
-                {
-                    Transformation childTransform = new Transformation();
-                    childTransform.Entity = new Entity(childEntityID);
-
-                    yield return childTransform;
-                }
-            }
-        }
-
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Vector3 GetPosition_Internal(uint entityID);
         
@@ -70,14 +39,5 @@ namespace Iron
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetScale_Internal(uint entityID, Vector3 scale);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint GetParent_Internal(uint entityID);
-        
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetParent_Internal(uint entityID, uint parentEntityID);
-        
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint[] GetChildren_Internal(uint entityID);
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -23,6 +25,16 @@ namespace Iron
         public Entity()
         {
             ID = CreateNewEntity_Internal();
+        }
+        
+        public Entity(string name)
+        {
+            ID = CreateNewEntity_Internal2(name);
+        }
+        
+        public Entity(string name, Entity parent)
+        {
+            ID = CreateNewEntity_Internal3(name, parent?.ID ?? NULL_ENTITY_ID);
         }
 
         public Transformation Transformation => GetComponent<Transformation>();
@@ -105,6 +117,22 @@ namespace Iron
             return component;
         }
 
+        public Entity Parent
+        {
+            get
+            {
+                uint parentEntityID = GetParent_Internal(ID);
+
+                return parentEntityID == NULL_ENTITY_ID ? null : new Entity(parentEntityID);
+            }
+            set => SetParent_Internal(ID, value?.ID ?? NULL_ENTITY_ID);
+        }
+        
+        public IEnumerable<Entity> Children
+        {
+            get { return GetChildren_Internal(ID).Select(childEntityID => new Entity(childEntityID)); }
+        }
+
         public override string ToString()
         {
             return $"{Name} ({ID})";
@@ -112,6 +140,12 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateNewEntity_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateNewEntity_Internal2(string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateNewEntity_Internal3(string name, uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool DestroyEntity_Internal(uint entityID);
@@ -139,5 +173,14 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetName_Internal(uint entityID, string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint GetParent_Internal(uint entityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetParent_Internal(uint entityID, uint parentEntityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint[] GetChildren_Internal(uint entityID);
     }
 }

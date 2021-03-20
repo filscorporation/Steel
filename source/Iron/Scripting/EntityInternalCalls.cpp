@@ -11,6 +11,16 @@ EntityID EntityInternalCalls::Entity_CreateNewEntity()
     return Application::Instance->GetCurrentScene()->CreateEntity();
 }
 
+EntityID EntityInternalCalls::Entity_CreateNewEntity2(MonoString* name)
+{
+    return Application::Instance->GetCurrentScene()->CreateEntity(mono_string_to_utf8(name), NULL_ENTITY);
+}
+
+EntityID EntityInternalCalls::Entity_CreateNewEntity3(MonoString* name, EntityID parentEntityID)
+{
+    return Application::Instance->GetCurrentScene()->CreateEntity(mono_string_to_utf8(name), parentEntityID);
+}
+
 bool EntityInternalCalls::Entity_DestroyEntity(EntityID id)
 {
     Application::Instance->GetCurrentScene()->DestroyEntity(id);

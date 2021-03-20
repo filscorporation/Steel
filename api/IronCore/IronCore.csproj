@@ -75,6 +75,7 @@
         <Compile Include="Rendering\SpriteRenderer.cs" />
         <Compile Include="Scene\Transformation.cs" />
         <Compile Include="UI\RectTransformation.cs" />
+        <Compile Include="UI\UI.cs" />
         <Compile Include="UI\UIComponent.cs" />
         <Compile Include="UI\UIImage.cs" />
     </ItemGroup>

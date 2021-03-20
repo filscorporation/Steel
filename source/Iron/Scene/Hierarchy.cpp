@@ -35,11 +35,16 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
         return;
     }
 
-    // Cache child global transformations
-    auto& childTransformation = registry->GetComponent<Transformation>(child);
-    glm::vec3 positionCache = childTransformation.GetPosition();
-    glm::vec3 rotationCache = childTransformation.GetRotation();
-    glm::vec3 scaleCache = childTransformation.GetScale();
+    // Cache child global transformations (not for UI)
+    glm::vec3 positionCache, rotationCache, scaleCache;
+    bool isTransformation = registry->HasComponent<Transformation>(child);
+    if (isTransformation)
+    {
+        auto& childTransformation = registry->GetComponent<Transformation>(child);
+        positionCache = childTransformation.GetPosition();
+        rotationCache = childTransformation.GetRotation();
+        scaleCache = childTransformation.GetScale();
+    }
 
     if (childNode.ParentNode != NULL_ENTITY)
     {
@@ -105,11 +110,14 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     childNode.IsDirty = true;
     UpdateChildrenDepthAndSetDirty(registry, childNode);
 
-    // Apply saved global position, so child will not move after changing parent
-    // TODO: actually there is no need to set dirty and update anyone matrices, as child global position did not change
-    childTransformation.SetPosition(positionCache);
-    childTransformation.SetRotation(rotationCache);
-    childTransformation.SetScale(scaleCache);
+    // Apply saved global position, so child will not move after changing parent (not for UI)
+    if (isTransformation)
+    {
+        auto &childTransformation = registry->GetComponent<Transformation>(child);
+        childTransformation.SetPosition(positionCache);
+        childTransformation.SetRotation(rotationCache);
+        childTransformation.SetScale(scaleCache);
+    }
 }
 
 bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent)

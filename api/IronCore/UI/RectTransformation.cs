@@ -74,6 +74,18 @@ namespace Iron
             set => SetSize_Internal(Entity.ID, ref value);
         }
 
+        public float SortingOrder
+        {
+            get => GetSortingOrder_Internal(Entity.ID);
+            set => SetSortingOrder_Internal(Entity.ID, value);
+        }
+        
+        public Vector3 Rotation
+        {
+            get => GetRotation_Internal(Entity.ID);
+            set => SetRotation_Internal(Entity.ID, value);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void GetAnchorMin_Internal(uint entityID, out Vector2 anchor);
         
@@ -115,5 +127,17 @@ namespace Iron
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetSize_Internal(uint entityID, ref Vector2 size);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float GetSortingOrder_Internal(uint entityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetSortingOrder_Internal(uint entityID, float sortingOrder);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Vector3 GetRotation_Internal(uint entityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetRotation_Internal(uint entityID, Vector3 rotation);
     }
 }

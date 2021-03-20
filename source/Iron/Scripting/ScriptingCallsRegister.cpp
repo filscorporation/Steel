@@ -47,6 +47,8 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Animation::SetLoop_Internal", (void*)CoreInternalCalls::Animation_SetLoop);
 
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal", (void*)EntityInternalCalls::Entity_CreateNewEntity);
+    mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal2", (void*)EntityInternalCalls::Entity_CreateNewEntity2);
+    mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal3", (void*)EntityInternalCalls::Entity_CreateNewEntity3);
     mono_add_internal_call("Iron.Entity::DestroyEntity_Internal", (void*)EntityInternalCalls::Entity_DestroyEntity);
     mono_add_internal_call("Iron.Entity::AddComponent_Internal", (void*)EntityInternalCalls::Entity_AddComponent);
     mono_add_internal_call("Iron.Entity::AddScriptComponent_Internal", (void*)EntityInternalCalls::Entity_AddScriptComponent);
@@ -56,6 +58,9 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Entity::RemoveScriptComponent_Internal", (void*)EntityInternalCalls::Entity_RemoveScriptComponent);
     mono_add_internal_call("Iron.Entity::GetName_Internal", (void*)EntityInternalCalls::Entity_GetName);
     mono_add_internal_call("Iron.Entity::SetName_Internal", (void*)EntityInternalCalls::Entity_SetName);
+    mono_add_internal_call("Iron.Entity::GetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_GetParent);
+    mono_add_internal_call("Iron.Entity::SetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_SetParent);
+    mono_add_internal_call("Iron.Entity::GetChildren_Internal", (void*)ComponentsInternalCalls::HierarchyNode_GetChildren);
 
     mono_add_internal_call("Iron.Component::FindAllOfType_Internal", (void*)EntityInternalCalls::Component_FindAllOfType);
     mono_add_internal_call("Iron.Component::FindAllScriptsOfType_Internal", (void*)EntityInternalCalls::Component_FindAllScriptsOfType);
@@ -66,9 +71,6 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Transformation::SetRotation_Internal", (void*)ComponentsInternalCalls::Transformation_SetRotation);
     mono_add_internal_call("Iron.Transformation::GetScale_Internal", (void*)ComponentsInternalCalls::Transformation_GetScale);
     mono_add_internal_call("Iron.Transformation::SetScale_Internal", (void*)ComponentsInternalCalls::Transformation_SetScale);
-    mono_add_internal_call("Iron.Transformation::GetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_GetParent);
-    mono_add_internal_call("Iron.Transformation::SetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_SetParent);
-    mono_add_internal_call("Iron.Transformation::GetChildren_Internal", (void*)ComponentsInternalCalls::HierarchyNode_GetChildren);
 
     mono_add_internal_call("Iron.AudioListener::GetVolume_Internal", (void*)ComponentsInternalCalls::AudioListener_GetVolume);
     mono_add_internal_call("Iron.AudioListener::SetVolume_Internal", (void*)ComponentsInternalCalls::AudioListener_SetVolume);
@@ -125,7 +127,15 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.RectTransformation::SetPivot_Internal", (void*)UIInternalCalls::RectTransformation_SetPivot);
     mono_add_internal_call("Iron.RectTransformation::GetSize_Internal", (void*)UIInternalCalls::RectTransformation_GetSize);
     mono_add_internal_call("Iron.RectTransformation::SetSize_Internal", (void*)UIInternalCalls::RectTransformation_SetSize);
+    mono_add_internal_call("Iron.RectTransformation::GetSortingOrder_Internal", (void*)UIInternalCalls::RectTransformation_GetSortingOrder);
+    mono_add_internal_call("Iron.RectTransformation::SetSortingOrder_Internal", (void*)UIInternalCalls::RectTransformation_SetSortingOrder);
+    mono_add_internal_call("Iron.RectTransformation::GetRotation_Internal", (void*)UIInternalCalls::RectTransformation_GetRotation);
+    mono_add_internal_call("Iron.RectTransformation::SetRotation_Internal", (void*)UIInternalCalls::RectTransformation_SetRotation);
 
     mono_add_internal_call("Iron.UIImage::GetSprite_Internal", (void*)UIInternalCalls::UIImage_GetSprite);
     mono_add_internal_call("Iron.UIImage::SetSprite_Internal", (void*)UIInternalCalls::UIImage_SetSprite);
+
+    mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
+    mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);
+    mono_add_internal_call("Iron.UI::CreateUIElement_Internal3", (void*)UIInternalCalls::UI_CreateUIElement3);
 }

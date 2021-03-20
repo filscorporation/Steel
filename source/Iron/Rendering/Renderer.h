@@ -17,7 +17,6 @@ public:
     static void DrawScene();
     static void Clear(glm::vec3 color);
     static void PrepareUIRender();
-    static void DrawUI();
     static void DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID);
     static void DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID, glm::vec2 textureCoords[4]);
     static void DrawQuadCached(const QuadCache& quadCache, GLuint textureID);
