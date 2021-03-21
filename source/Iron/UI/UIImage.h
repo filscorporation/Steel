@@ -12,6 +12,6 @@ public:
     void SetImage(Sprite* image);
     Sprite* GetImage();
 
-private:
+protected:
     Sprite* _image;
 };

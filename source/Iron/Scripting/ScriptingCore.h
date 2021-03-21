@@ -24,6 +24,7 @@ struct CachedData
     MonoClass* classRectTransformation;
     MonoClass* classUIRenderer;
     MonoClass* classUIImage;
+    MonoClass* classUIButton;
 };
 
 struct EngineCallsMethods

@@ -14,6 +14,7 @@
 #include "../UI/RectTransformation.h"
 #include "../UI/UIRenderer.h"
 #include "../UI/UIImage.h"
+#include "../UI/UIButton.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/NameComponent.h"
 
@@ -75,6 +76,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(RectTransformation, API_CLASS(RectTransformation))
     CACHE_CLASS(UIRenderer, API_CLASS(UIRenderer))
     CACHE_CLASS(UIImage, API_CLASS(UIImage))
+    CACHE_CLASS(UIButton, API_CLASS(UIButton))
 }
 
 Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
@@ -106,6 +108,8 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return AddComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
         return AddComponentS<UIImage>(entity);
+    if (monoClass == CACHED_CLASS(UIButton))
+        return AddComponentS<UIButton>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -144,6 +148,8 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass *monoCl
         return HasComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
         return HasComponentS<UIImage>(entity);
+    if (monoClass == CACHED_CLASS(UIButton))
+        return HasComponentS<UIButton>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -178,6 +184,8 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *mon
         return RemoveComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
         return RemoveComponentS<UIImage>(entity);
+    if (monoClass == CACHED_CLASS(UIButton))
+        return RemoveComponentS<UIButton>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -214,6 +222,8 @@ std::vector<EntityID> ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* mon
         RETURN_COMPONENT_OWNERS(UIRenderer)
     if (monoClass == CACHED_CLASS(UIImage))
         RETURN_COMPONENT_OWNERS(UIImage)
+    if (monoClass == CACHED_CLASS(UIButton))
+        RETURN_COMPONENT_OWNERS(UIButton)
 
     Log::LogError("Could not find cached class");
 

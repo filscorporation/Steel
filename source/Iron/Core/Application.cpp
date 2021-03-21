@@ -145,6 +145,9 @@ void Application::RunUpdate()
     Renderer::PrepareUIRender();
     // Draw UI on top
     scene->GetUILayer()->Draw();
+    // Poll UI events
+    UIEvent uiEvent = Input::GetUIEvent();
+    scene->GetUILayer()->PollEvent(uiEvent);
 
     Renderer::OnAfterRender();
 

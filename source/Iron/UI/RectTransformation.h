@@ -35,6 +35,8 @@ public:
     glm::vec3 GetLocalRotation() const;
     void SetLocalRotation(const glm::vec3& rotation);
 
+    bool Contains(const glm::vec2& point) const;
+
     const glm::mat4& GetTransformationMatrixCached();
     void UpdateTransformation(ComponentAccessor<RectTransformation>& rtAccessor, HierarchyNode& hierarchyNode);
     float GetSortingOrder() const;

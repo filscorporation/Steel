@@ -33,6 +33,10 @@ namespace UIInternalCalls
     ResourceID UIImage_GetSprite(EntityID entityID);
     void UIImage_SetSprite(EntityID entityID, ResourceID spriteID);
 
+    // UI button
+    ResourceID UIButton_GetSprite(EntityID entityID);
+    void UIButton_SetSprite(EntityID entityID, ResourceID spriteID);
+
     // UI
     EntityID UI_CreateUIElement();
     EntityID UI_CreateUIElement2(MonoString* name);

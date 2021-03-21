@@ -166,16 +166,15 @@ void Renderer::PrepareUIRender()
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID)
+void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, const glm::vec4& color, GLuint textureID)
 {
-    Renderer::DrawQuad(quadCacheResult, transformation, textureID, defaultTextureCoords);
+    Renderer::DrawQuad(quadCacheResult, transformation, color, textureID, defaultTextureCoords);
 }
 
-void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, GLuint textureID, glm::vec2 textureCoords[4])
+void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, const glm::vec4& color, GLuint textureID, glm::vec2 textureCoords[4])
 {
     int textureIDIndex = FindTextureSlot(textureID);
 
-    glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
     for (int i = 0; i < 4; ++i)
     {
@@ -197,16 +196,15 @@ void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformat
     VerticesStats += 4;
 }
 
-void Renderer::DrawQuadCached(const QuadCache& quadCache, GLuint textureID)
+void Renderer::DrawQuadCached(const QuadCache& quadCache, const glm::vec4& color, GLuint textureID)
 {
-    Renderer::DrawQuadCached(quadCache, textureID, defaultTextureCoords);
+    Renderer::DrawQuadCached(quadCache, color, textureID, defaultTextureCoords);
 }
 
-void Renderer::DrawQuadCached(const QuadCache& quadCache, GLuint textureID, glm::vec2 textureCoords[4])
+void Renderer::DrawQuadCached(const QuadCache& quadCache, const glm::vec4& color, GLuint textureID, glm::vec2 textureCoords[4])
 {
     int textureIDIndex = FindTextureSlot(textureID);
 
-    glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
     for (int i = 0; i < 4; ++i)
     {

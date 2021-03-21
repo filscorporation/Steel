@@ -322,7 +322,7 @@ public:
             return;
 
         int currentID = 0;
-        for (int i = 0; i < sourcePool->Storage.size; ++i)
+        for (uint32_t i = 0; i < sourcePool->Storage.size; ++i)
         {
             EntityID id = EntityIDGetID(sourcePool->Storage.data[i].Owner);
             if (targetPool->Storage.Has(id))

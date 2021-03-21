@@ -1,5 +1,6 @@
 #include "UIImage.h"
 #include "../Scene/SceneHelper.h"
+#include "UIEventHandler.h"
 
 UIImage::UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID)
 {
@@ -11,6 +12,15 @@ UIImage::UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID)
     {
         AddComponentS<UIRenderer>(ownerEntityID);
     }
+
+    if (HasComponentS<UIEventHandler>(ownerEntityID))
+    {
+        Log::LogError("Entity already has UIEventHandler component attached, this may lead to conflicts. Keep one UIEventHandler per object");
+    }
+    else
+    {
+        AddComponentS<UIEventHandler>(ownerEntityID);
+    }
 }
 
 void UIImage::SetImage(Sprite *image)
@@ -19,7 +29,7 @@ void UIImage::SetImage(Sprite *image)
 
     if (!HasComponentS<UIRenderer>(Owner))
     {
-        Log::LogError("UI image has no UI renderer attached");
+        Log::LogError("UI entity has no UI renderer attached");
         return;
     }
     auto& uii = GetComponentS<UIRenderer>(Owner);
@@ -28,7 +38,7 @@ void UIImage::SetImage(Sprite *image)
 
     if (!HasComponentS<RectTransformation>(Owner))
     {
-        Log::LogError("UI image has no RectTransformation attached");
+        Log::LogError("UI entity has no RectTransformation attached");
         return;
     }
 

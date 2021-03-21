@@ -8,9 +8,9 @@ void UIRenderer::OnRender(RectTransformation& rectTransformation)
         return;
 
     if (rectTransformation.DidTransformationChange())
-        Renderer::DrawQuad(quadCache, rectTransformation.GetTransformationMatrixCached(), _image->TextureID);
+        Renderer::DrawQuad(quadCache, rectTransformation.GetTransformationMatrixCached(), _color, _image->TextureID);
     else
-        Renderer::DrawQuadCached(quadCache, _image->TextureID);
+        Renderer::DrawQuadCached(quadCache, _color, _image->TextureID);
 
     rectTransformation.SetTransformationChanged(false);
 }

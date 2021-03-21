@@ -6,6 +6,7 @@
 #include "MouseCodes.h"
 #include "../Rendering/Screen.h"
 #include "../EntityComponentSystem/Entity.h"
+#include "../UI/UIEvent.h"
 
 struct GLFWwindow;
 
@@ -21,6 +22,7 @@ public:
     static glm::vec2 GetMousePosition();
     static glm::vec2 GetMouseScrollDelta();
 
+    static UIEvent GetUIEvent();
     static void PollEvents();
     static void SendMouseCallbacks();
 

@@ -1,25 +1,17 @@
 #include <GLFW/glfw3.h>
+
 #include "Input.h"
+#include "ButtonStates.h"
 #include "../Core/Application.h"
 #include "../Physics/Physics.h"
 #include "../Scripting/ScriptComponent.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
-namespace ButtonStates
-{
-    enum ButtonState
-    {
-        NotPressed = 0,
-        JustPressed = 1,
-        IsHeld = 2,
-        JustReleased = 3,
-    };
-}
-
 ButtonStates::ButtonState pressedKeys[MAX_KEY_CODE + 1];
 ButtonStates::ButtonState pressedMouse[MAX_MOUSE_CODE + 1];
 glm::vec2 mousePosition;
+glm::vec2 lastMousePosition;
 glm::vec2 mouseScrollDelta;
 bool keyIsDirty = false;
 bool mouseIsDirty = false;
@@ -61,6 +53,8 @@ void MouseCallback(GLFWwindow* window, int button, int action, int mods)
 
 void CursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 {
+    lastMousePosition = mousePosition;
+
     mousePosition.x = (float)xPos;
     // GLFW coordinate system is upside down by Y-axis
     mousePosition.y = (float)Screen::GetHeight() - (float)yPos;
@@ -157,6 +151,20 @@ void CleanScrollDelta()
 {
     mouseScrollDelta.x = 0;
     mouseScrollDelta.y = 0;
+}
+
+UIEvent Input::GetUIEvent()
+{
+    // Input can only fill event data, event type flags will be calculated by event handlers
+    UIEvent uiEvent{};
+    uiEvent.Used = false;
+    uiEvent.MousePosition = mousePosition;
+    uiEvent.MouseDelta = mousePosition - lastMousePosition;
+    uiEvent.ScrollDelta = mouseScrollDelta;
+    uiEvent.LeftMouseButtonState = pressedMouse[MouseCodes::ButtonLeft];
+    uiEvent.RightMouseButtonState = pressedMouse[MouseCodes::ButtonRight];
+
+    return uiEvent;
 }
 
 void Input::PollEvents()

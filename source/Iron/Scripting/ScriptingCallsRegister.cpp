@@ -135,6 +135,9 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UIImage::GetSprite_Internal", (void*)UIInternalCalls::UIImage_GetSprite);
     mono_add_internal_call("Iron.UIImage::SetSprite_Internal", (void*)UIInternalCalls::UIImage_SetSprite);
 
+    mono_add_internal_call("Iron.UIButton::GetSprite_Internal", (void*)UIInternalCalls::UIButton_GetSprite);
+    mono_add_internal_call("Iron.UIButton::SetSprite_Internal", (void*)UIInternalCalls::UIButton_SetSprite);
+
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal3", (void*)UIInternalCalls::UI_CreateUIElement3);

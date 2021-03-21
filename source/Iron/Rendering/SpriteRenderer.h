@@ -22,6 +22,7 @@ public:
 
 private:
     Sprite* _image;
+    glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     QuadCache quadCache;
     bool _isTransparent = false;
 };

@@ -2,10 +2,10 @@
 
 #include "UIInternalCalls.h"
 #include "InternalCallsCommon.h"
-#include "../UI/UIImage.h"
 #include "../Core/Log.h"
 #include "../Core/Application.h"
 #include "../Scene/SceneHelper.h"
+#include "../UI/UIButton.h"
 
 void UIInternalCalls::RectTransformation_GetAnchorMin(EntityID entityID, glm::vec2* anchor)
 {
@@ -151,6 +151,21 @@ ResourceID UIInternalCalls::UIImage_GetSprite(EntityID entityID)
 void UIInternalCalls::UIImage_SetSprite(EntityID entityID, ResourceID spriteID)
 {
     GET_COMPONENT_OR_RETURN(UIImage, )
+
+    component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
+}
+
+ResourceID UIInternalCalls::UIButton_GetSprite(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIButton, 0)
+    auto image = component.GetImage();
+
+    return image == nullptr ? 0 : image->ID;
+}
+
+void UIInternalCalls::UIButton_SetSprite(EntityID entityID, ResourceID spriteID)
+{
+    GET_COMPONENT_OR_RETURN(UIButton, )
 
     component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
 }

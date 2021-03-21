@@ -2,6 +2,7 @@
 #include "UIRenderer.h"
 #include "../Scene/Hierarchy.h"
 #include "../Scene/NameComponent.h"
+#include "UIEventHandler.h"
 
 EntityID UILayer::CreateUIElement()
 {
@@ -44,15 +45,34 @@ void UILayer::Draw()
     entitiesRegistry->ApplyOrder<RectTransformation, UIRenderer>();
 
     // Draw
+    auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
     auto uiRenderers = entitiesRegistry->GetComponentIterator<UIRenderer>();
 
     // Opaque pass
     for (int i = 0; i < uiRenderers.Size(); ++i)
         if (!uiRenderers[i].IsTransparent())
-            uiRenderers[i].OnRender(rtAccessor.Get(uiRenderers[i].Owner));
+            uiRenderers[i].OnRender(rectTransformations[i]);
 
     // Transparent pass
     for (int i = uiRenderers.Size() - 1; i >= 0; --i)
         if (uiRenderers[i].IsTransparent())
-            uiRenderers[i].OnRender(rtAccessor.Get(uiRenderers[i].Owner));
+            uiRenderers[i].OnRender(rectTransformations[i]);
+}
+
+void UILayer::PollEvent(UIEvent& uiEvent)
+{
+    auto entitiesRegistry = _scene->GetEntitiesRegistry();
+    entitiesRegistry->ApplyOrder<RectTransformation, UIEventHandler>();
+    auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
+    auto uiEventHandlers = entitiesRegistry->GetComponentIterator<UIEventHandler>();
+
+    for (int i = 0; i < uiEventHandlers.Size(); ++i)
+        uiEventHandlers[i].HandleEvent(rectTransformations[i], uiEvent);
+
+    _isPointerOverUI = uiEvent.Used;
+}
+
+bool UILayer::IsPointerOverUI()
+{
+    return _isPointerOverUI;
 }

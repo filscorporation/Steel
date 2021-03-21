@@ -15,20 +15,22 @@ void SpriteRenderer::OnRender(Transformation& transformation)
             Renderer::DrawQuad(
                     quadCache,
                     transformation.GetTransformationMatrixCached(),
+                    _color,
                     _image->TextureID,
                     texCoords);
         else
             Renderer::DrawQuadCached(
                     quadCache,
+                    _color,
                     _image->TextureID,
                     texCoords);
     }
     else
     {
         if (transformation.DidTransformationChange())
-            Renderer::DrawQuad(quadCache, transformation.GetTransformationMatrixCached(), _image->TextureID);
+            Renderer::DrawQuad(quadCache, transformation.GetTransformationMatrixCached(), _color, _image->TextureID);
         else
-            Renderer::DrawQuadCached(quadCache, _image->TextureID);
+            Renderer::DrawQuadCached(quadCache, _color, _image->TextureID);
     }
 
     transformation.SetTransformationChanged(false);

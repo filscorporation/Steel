@@ -190,6 +190,14 @@ void RectTransformation::SetLocalRotation(const glm::vec3& rotation)
     SetTransformationChanged(true);
 }
 
+bool RectTransformation::Contains(const glm::vec2 &point) const
+{
+    return point.x > _realPosition.x - _realSize.x * 0.5f
+        && point.x < _realPosition.x + _realSize.x * 0.5f
+        && point.y > _realPosition.y - _realSize.y * 0.5f
+        && point.y < _realPosition.y + _realSize.y * 0.5f;
+}
+
 const glm::mat4& RectTransformation::GetTransformationMatrixCached()
 {
     return _transformationMatrix;
