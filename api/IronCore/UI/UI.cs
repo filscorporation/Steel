@@ -11,6 +11,8 @@ namespace Iron
         public static Entity CreateUIElement(string name, Entity parent)
             => new Entity(CreateUIElement_Internal3(name, parent?.ID ?? Entity.NULL_ENTITY_ID));
 
+        public static bool IsPointerOverUI() => IsPointerOverUI_Internal();
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUIElement_Internal();
 
@@ -19,5 +21,8 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUIElement_Internal3(string name, uint parentEntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool IsPointerOverUI_Internal();
     }
 }

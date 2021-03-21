@@ -37,8 +37,17 @@ namespace UIInternalCalls
     ResourceID UIButton_GetSprite(EntityID entityID);
     void UIButton_SetSprite(EntityID entityID, ResourceID spriteID);
 
+    // UI text
+    MonoString* UIText_GetText(EntityID entityID);
+    void UIText_SetText(EntityID entityID, MonoString* text);
+    int UIText_GetTextSize(EntityID entityID);
+    void UIText_SetTextSize(EntityID entityID, int textSize);
+    bool UIButton_GetIsTextAutoSize(EntityID entityID);
+    void UIButton_SetIsTextAutoSize(EntityID entityID, bool isAutoSize);
+
     // UI
     EntityID UI_CreateUIElement();
     EntityID UI_CreateUIElement2(MonoString* name);
     EntityID UI_CreateUIElement3(MonoString* name, EntityID parentEntityID);
+    bool UI_IsPointerOverUI();
 }

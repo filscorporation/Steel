@@ -138,7 +138,15 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UIButton::GetSprite_Internal", (void*)UIInternalCalls::UIButton_GetSprite);
     mono_add_internal_call("Iron.UIButton::SetSprite_Internal", (void*)UIInternalCalls::UIButton_SetSprite);
 
+    mono_add_internal_call("Iron.UIText::GetText_Internal", (void*)UIInternalCalls::UIText_GetText);
+    mono_add_internal_call("Iron.UIText::SetText_Internal", (void*)UIInternalCalls::UIText_SetText);
+    mono_add_internal_call("Iron.UIText::GetTextSize_Internal", (void*)UIInternalCalls::UIText_GetTextSize);
+    mono_add_internal_call("Iron.UIText::SetTextSize_Internal", (void*)UIInternalCalls::UIText_SetTextSize);
+    mono_add_internal_call("Iron.UIText::GetIsTextAutoSize_Internal", (void*)UIInternalCalls::UIButton_GetIsTextAutoSize);
+    mono_add_internal_call("Iron.UIText::SetIsTextAutoSize_Internal", (void*)UIInternalCalls::UIButton_SetIsTextAutoSize);
+
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal3", (void*)UIInternalCalls::UI_CreateUIElement3);
+    mono_add_internal_call("Iron.UI::IsPointerOverUI_Internal", (void*)UIInternalCalls::UI_IsPointerOverUI);
 }

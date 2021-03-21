@@ -66,7 +66,7 @@ set(SOURCE_FILES
         source/Iron/Scene/HierarchyNode.cpp source/Iron/Scene/HierarchyNode.h source/Iron/Scene/Hierarchy.h
         source/Iron/Scene/Hierarchy.cpp source/Iron/Rendering/RendererData.h source/Iron/UI/UILayer.cpp source/Iron/UI/UILayer.h
         source/Iron/UI/UIEventHandler.cpp source/Iron/UI/UIEventHandler.h source/Iron/UI/UIEvent.h source/Iron/Core/ButtonStates.h
-        source/Iron/UI/UIButton.cpp source/Iron/UI/UIButton.h)
+        source/Iron/UI/UIButton.cpp source/Iron/UI/UIButton.h source/Iron/UI/UIText.cpp source/Iron/UI/UIText.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

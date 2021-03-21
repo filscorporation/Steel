@@ -6,6 +6,7 @@
 #include "../Core/Application.h"
 #include "../Scene/SceneHelper.h"
 #include "../UI/UIButton.h"
+#include "../UI/UIText.h"
 
 void UIInternalCalls::RectTransformation_GetAnchorMin(EntityID entityID, glm::vec2* anchor)
 {
@@ -170,6 +171,48 @@ void UIInternalCalls::UIButton_SetSprite(EntityID entityID, ResourceID spriteID)
     component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
 }
 
+MonoString* UIInternalCalls::UIText_GetText(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIText, nullptr)
+
+    return mono_string_new(mono_domain_get(), component.GetText().c_str());
+}
+
+void UIInternalCalls::UIText_SetText(EntityID entityID, MonoString* text)
+{
+    GET_COMPONENT_OR_RETURN(UIText, )
+
+    component.SetText(mono_string_to_utf8(text));
+}
+
+int UIInternalCalls::UIText_GetTextSize(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIText, 0)
+
+    return component.GetTextSize();
+}
+
+void UIInternalCalls::UIText_SetTextSize(EntityID entityID, int textSize)
+{
+    GET_COMPONENT_OR_RETURN(UIText, )
+
+    component.SetTextSize(textSize);
+}
+
+bool UIInternalCalls::UIButton_GetIsTextAutoSize(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIText, 0)
+
+    return component.GetIsTextAutoSize();
+}
+
+void UIInternalCalls::UIButton_SetIsTextAutoSize(EntityID entityID, bool isAutoSize)
+{
+    GET_COMPONENT_OR_RETURN(UIText, )
+
+    component.SetIsTextAutoSize(isAutoSize);
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();
@@ -183,4 +226,9 @@ EntityID UIInternalCalls::UI_CreateUIElement2(MonoString* name)
 EntityID UIInternalCalls::UI_CreateUIElement3(MonoString* name, EntityID parentEntityID)
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement(mono_string_to_utf8(name), parentEntityID);
+}
+
+bool UIInternalCalls::UI_IsPointerOverUI()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->IsPointerOverUI();
 }

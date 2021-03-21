@@ -15,6 +15,7 @@
 #include "../UI/UIRenderer.h"
 #include "../UI/UIImage.h"
 #include "../UI/UIButton.h"
+#include "../UI/UIText.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/NameComponent.h"
 
@@ -77,6 +78,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(UIRenderer, API_CLASS(UIRenderer))
     CACHE_CLASS(UIImage, API_CLASS(UIImage))
     CACHE_CLASS(UIButton, API_CLASS(UIButton))
+    CACHE_CLASS(UIText, API_CLASS(UIText))
 }
 
 Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
@@ -110,6 +112,8 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return AddComponentS<UIImage>(entity);
     if (monoClass == CACHED_CLASS(UIButton))
         return AddComponentS<UIButton>(entity);
+    if (monoClass == CACHED_CLASS(UIText))
+        return AddComponentS<UIText>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -150,6 +154,8 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass *monoCl
         return HasComponentS<UIImage>(entity);
     if (monoClass == CACHED_CLASS(UIButton))
         return HasComponentS<UIButton>(entity);
+    if (monoClass == CACHED_CLASS(UIText))
+        return HasComponentS<UIText>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -186,6 +192,8 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *mon
         return RemoveComponentS<UIImage>(entity);
     if (monoClass == CACHED_CLASS(UIButton))
         return RemoveComponentS<UIButton>(entity);
+    if (monoClass == CACHED_CLASS(UIText))
+        return RemoveComponentS<UIText>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -224,6 +232,8 @@ std::vector<EntityID> ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* mon
         RETURN_COMPONENT_OWNERS(UIImage)
     if (monoClass == CACHED_CLASS(UIButton))
         RETURN_COMPONENT_OWNERS(UIButton)
+    if (monoClass == CACHED_CLASS(UIText))
+        RETURN_COMPONENT_OWNERS(UIText)
 
     Log::LogError("Could not find cached class");
 

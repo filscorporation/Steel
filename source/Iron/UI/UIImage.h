@@ -7,7 +7,7 @@
 class UIImage : public UIComponent
 {
 public:
-    explicit UIImage(EntityID ownerEntityID);
+    explicit UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
     void SetImage(Sprite* image);
     Sprite* GetImage();
