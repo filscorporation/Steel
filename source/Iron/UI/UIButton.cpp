@@ -1,6 +1,7 @@
 #include "UIButton.h"
 #include "UIEventHandler.h"
 #include "../Scene/SceneHelper.h"
+#include "../Scripting/ScriptingCore.h"
 
 UIButton::UIButton(EntityID ownerEntityID) : UIImage(ownerEntityID)
 {
@@ -31,6 +32,6 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent &ui
 
     if (eventType & UIEventTypes::MouseJustPressed)
     {
-        Log::LogInfo("Clicked button with ID " + std::to_string(Owner));
+        ScriptingCore::CallEventMethod(Owner, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
     }
 }

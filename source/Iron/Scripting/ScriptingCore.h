@@ -47,12 +47,18 @@ struct EngineCallsMethods
     MonoMethod* callOnMouseJustReleased;
 };
 
+struct EventManagerMethods
+{
+    MonoMethod* callInvokeCallbacks;
+};
+
 class ScriptingCore
 {
 public:
     static void Init(MonoImage* image);
     static void Terminate();
     static void LoadEngineCallsMethods(MonoImage* image);
+    static void LoadEventManagerMethods(MonoImage* image);
     static void RegisterInternalCalls();
     static void CacheAPITypes(MonoImage* image);
 
@@ -61,6 +67,7 @@ public:
     static bool RemoveComponentFromMonoClass(EntityID entity, MonoClass *monoClass);
     static std::vector<EntityID> ComponentOwnersFromMonoClass(MonoClass* monoClass);
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);
+    static void CallEventMethod(EntityID ownerEntityID, MonoMethod* method);
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method);
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method, EntityID param);
     static void FindAndCallEntryPoint(MonoImage* image);
@@ -68,6 +75,7 @@ public:
     static MonoArray* ToMonoIntPtrArray(const std::vector<intptr_t>& inArray);
 
     static EngineCallsMethods EngineCalls;
+    static EventManagerMethods EventManagerCalls;
 
 private:
 

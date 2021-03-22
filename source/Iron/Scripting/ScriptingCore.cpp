@@ -20,11 +20,13 @@
 #include "../Scene/NameComponent.h"
 
 EngineCallsMethods ScriptingCore::EngineCalls;
+EventManagerMethods ScriptingCore::EventManagerCalls;
 CachedData* ScriptingCore::cachedData;
 
 void ScriptingCore::Init(MonoImage* image)
 {
     LoadEngineCallsMethods(image);
+    LoadEventManagerMethods(image);
     RegisterInternalCalls();
     CacheAPITypes(image);
 }
@@ -53,6 +55,13 @@ void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
     EngineCalls.callOnMousePressed = mono_class_get_method_from_name(klass, "ComponentOnMousePressed", 1);
     EngineCalls.callOnMouseJustPressed = mono_class_get_method_from_name(klass, "ComponentOnMouseJustPressed", 1);
     EngineCalls.callOnMouseJustReleased = mono_class_get_method_from_name(klass, "ComponentOnMouseJustReleased", 1);
+}
+
+void ScriptingCore::LoadEventManagerMethods(MonoImage* image)
+{
+    MonoClass* klass = mono_class_from_name(image, "Iron", "EventManager");
+
+    EventManagerCalls.callInvokeCallbacks = mono_class_get_method_from_name(klass, "InvokeCallbacks", 1);
 }
 
 void ScriptingCore::RegisterInternalCalls()
@@ -257,6 +266,26 @@ MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
     }
 
     return method;
+}
+
+void ScriptingCore::CallEventMethod(EntityID ownerEntityID, MonoMethod* method)
+{
+    if (ownerEntityID == NULL_ENTITY)
+    {
+        Log::LogError("Trying to call method in null entity");
+        return;
+    }
+
+    MonoObject* exception = nullptr;
+    void* params[1];
+    params[0] = &ownerEntityID;
+    mono_runtime_invoke(method, nullptr, params, &exception);
+
+    if (exception != nullptr)
+    {
+        Log::LogError("Error calling method " + std::string(mono_method_full_name(method, true)));
+        mono_print_unhandled_exception(exception);
+    }
 }
 
 void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod* method)

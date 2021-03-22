@@ -74,6 +74,10 @@
         <Compile Include="Rendering\Sprite.cs" />
         <Compile Include="Rendering\SpriteRenderer.cs" />
         <Compile Include="Scene\Transformation.cs" />
+        <Compile Include="UI\CallbackAction.cs" />
+        <Compile Include="UI\CallbackList.cs" />
+        <Compile Include="UI\CallbackWrapper.cs" />
+        <Compile Include="UI\EventManager.cs" />
         <Compile Include="UI\RectTransformation.cs" />
         <Compile Include="UI\UI.cs" />
         <Compile Include="UI\UIButton.cs" />
