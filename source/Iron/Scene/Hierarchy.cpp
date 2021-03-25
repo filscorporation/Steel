@@ -113,7 +113,7 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     // Apply saved global position, so child will not move after changing parent (not for UI)
     if (isTransformation)
     {
-        auto &childTransformation = registry->GetComponent<Transformation>(child);
+        auto& childTransformation = registry->GetComponent<Transformation>(child);
         childTransformation.SetPosition(positionCache);
         childTransformation.SetRotation(rotationCache);
         childTransformation.SetScale(scaleCache);

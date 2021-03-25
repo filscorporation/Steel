@@ -1,25 +1,62 @@
 #pragma once
 
+#include "Font.h"
 #include "UIComponent.h"
+#include "UILetterRenderer.h"
 
-class UIText : public UIComponent
+namespace AlignmentTypes
+{
+    enum AlignmentType
+    {
+        TopLeft,
+        TopMiddle,
+        TopRight,
+        CenterLeft,
+        CenterMiddle,
+        CenterRight,
+        BottomLeft,
+        BottomMiddle,
+        BottomRight,
+    };
+}
+
+class UIText : public Component
 {
 public:
-    explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
+    explicit UIText(EntityID ownerEntityID);
+    ~UIText();
 
     void Rebuild();
 
-    std::string GetText() const;
-    void SetText(const std::string& text);
+    Font* GetFont() const;
+    void SetFont(Font* font);
+    std::wstring GetText() const;
     uint32_t GetTextSize() const;
     void SetTextSize(uint32_t size);
+    void SetText(const std::wstring& text);
+    const glm::vec4& GetColor() const;
+    void SetColor(glm::vec4 color);
     bool GetIsTextAutoSize() const;
     void SetIsTextAutoSize(bool isAutoSize);
+    AlignmentTypes::AlignmentType GetTextAlignment() const;
+    void SetTextAlignment(AlignmentTypes::AlignmentType alignmentType);
 
 private:
-    std::string _text;
+    void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
+    EntityID ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count) const;
+    void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const;
+
+    Font* _font = nullptr;
+    std::wstring _text;
     uint32_t _textSize = 14;
     bool _isTextAutoSize = false;
+    AlignmentTypes::AlignmentType _textAlignment = AlignmentTypes::CenterLeft;
+    glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
+    uint32_t _lettersChangedCount = 0;
     bool _dirtyText = false;
+    bool _dirtyTextColor = false;
+
+    EntityID lastLetterID = NULL_ENTITY;
+    uint32_t lettersCount = 0;
 };

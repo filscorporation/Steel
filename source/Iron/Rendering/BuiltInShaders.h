@@ -36,6 +36,7 @@ namespace BuiltInShaders
 "out vec4 color;\n"
 "\n"
 "uniform sampler2D images[32];\n"
+"uniform int draw_mode;\n"
 "\n"
 "void main()\n"
 "{\n"
@@ -75,8 +76,11 @@ namespace BuiltInShaders
 "        case 30: texel = texture(images[30], texCoord); break;\n"
 "        case 31: texel = texture(images[31], texCoord); break;\n"
 "    }\n"
-"    if (texel.a < 0.01)\n"
-"        discard;\n"
-"    color = texel * vertexColor;\n"
+"    switch(draw_mode)\n"
+"    {\n"
+"        case 0: color = vec4(0.0, 0.0, 0.0, 1.0); break;\n"
+"        case 1: color = texel * vertexColor; break;\n"
+"        case 2: color = vec4(vertexColor.rgb, texel.r); break;\n"
+"    }\n"
 "}";
 }

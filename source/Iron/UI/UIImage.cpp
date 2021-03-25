@@ -11,8 +11,9 @@ void UIImage::SetImage(Sprite *image)
         return;
     }
     auto& uii = GetComponentS<UIRenderer>(Owner);
-    uii._image = _image;
-    uii._isTransparent = _image->IsTransparent;
+    uii.IsRendered = _image != nullptr;
+    uii.TextureID = _image == nullptr ? 0 : _image->TextureID;
+    uii.IsTransparent = _image != nullptr && _image->IsTransparent;
 
     if (!HasComponentS<RectTransformation>(Owner))
     {

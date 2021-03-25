@@ -17,17 +17,17 @@ void UIButton::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType
     GetComponentS<UIButton>(handler).HandleEventInner(eventType, uiEvent);
 }
 
-void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent &uiEvent)
+void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
 {
     if (eventType & UIEventTypes::MouseEnter)
     {
         auto& uii = GetComponentS<UIRenderer>(Owner);
-        uii._color = glm::vec4(0.75f, 0.75f, 0.75f, 1.0f);
+        uii.Color = glm::vec4(0.75f, 0.75f, 0.75f, 1.0f);
     }
     if (eventType & UIEventTypes::MouseExit)
     {
         auto& uii = GetComponentS<UIRenderer>(Owner);
-        uii._color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        uii.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     if (eventType & UIEventTypes::MouseJustPressed)

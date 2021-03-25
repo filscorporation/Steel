@@ -1,8 +1,11 @@
 #include "UILayer.h"
 #include "UIRenderer.h"
+#include "UIEventHandler.h"
+#include "UILetterRenderer.h"
+#include "UIText.h"
+#include "../Rendering/Renderer.h"
 #include "../Scene/Hierarchy.h"
 #include "../Scene/NameComponent.h"
-#include "UIEventHandler.h"
 
 EntityID UILayer::CreateUIElement()
 {
@@ -35,6 +38,13 @@ void UILayer::Draw()
             rtAccessor.Get(hierarchyNode.Owner).UpdateTransformation(rtAccessor, hierarchyNode);
     }
 
+    // Rebuild text
+    auto texts = entitiesRegistry->GetComponentIterator<UIText>();
+    for (auto& text : texts)
+    {
+        text.Rebuild();
+    }
+
     // Sort all UI objects by SortingOrder
     struct
     {
@@ -47,16 +57,28 @@ void UILayer::Draw()
     // Draw
     auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
     auto uiRenderers = entitiesRegistry->GetComponentIterator<UIRenderer>();
+    auto textRenderers = entitiesRegistry->GetComponentIterator<UILetterRenderer>();
 
+    Renderer::SetDrawMode(DrawModes::Normal);
     // Opaque pass
     for (int i = 0; i < uiRenderers.Size(); ++i)
-        if (!uiRenderers[i].IsTransparent())
-            uiRenderers[i].OnRender(rectTransformations[i]);
+        if (!uiRenderers[i].IsTransparent)
+            uiRenderers[i].Render(rtAccessor.Get(uiRenderers[i].Owner));
+    Renderer::EndBatch();
 
+    Renderer::StartBatch();
+    Renderer::SetDrawMode(DrawModes::Text);
+    // Text letters
+    for (int i = 0; i < textRenderers.Size(); ++i)
+        textRenderers[i].Render();
+    Renderer::EndBatch();
+
+    Renderer::StartBatch();
+    Renderer::SetDrawMode(DrawModes::Normal);
     // Transparent pass
     for (int i = uiRenderers.Size() - 1; i >= 0; --i)
-        if (uiRenderers[i].IsTransparent())
-            uiRenderers[i].OnRender(rectTransformations[i]);
+        if (uiRenderers[i].IsTransparent)
+            uiRenderers[i].Render(rtAccessor.Get(uiRenderers[i].Owner));
 }
 
 void UILayer::PollEvent(UIEvent& uiEvent)

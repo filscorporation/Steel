@@ -66,7 +66,10 @@ set(SOURCE_FILES
         source/Iron/Scene/HierarchyNode.cpp source/Iron/Scene/HierarchyNode.h source/Iron/Scene/Hierarchy.h
         source/Iron/Scene/Hierarchy.cpp source/Iron/Rendering/RendererData.h source/Iron/UI/UILayer.cpp source/Iron/UI/UILayer.h
         source/Iron/UI/UIEventHandler.cpp source/Iron/UI/UIEventHandler.h source/Iron/UI/UIEvent.h source/Iron/Core/ButtonStates.h
-        source/Iron/UI/UIButton.cpp source/Iron/UI/UIButton.h source/Iron/UI/UIText.cpp source/Iron/UI/UIText.h)
+        source/Iron/UI/UIButton.cpp source/Iron/UI/UIButton.h source/Iron/UI/UIText.cpp source/Iron/UI/UIText.h
+        source/Iron/UI/UITextLetter.cpp source/Iron/UI/UITextLetter.h source/Iron/UI/Font.cpp source/Iron/UI/Font.h
+        source/Iron/UI/FontManager.cpp source/Iron/UI/FontManager.h source/Iron/UI/UILetterRenderer.cpp
+        source/Iron/UI/UILetterRenderer.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -119,10 +122,12 @@ target_link_libraries(Iron PRIVATE OpenAL)
 if (UNIX AND NOT APPLE)
     set(BOX2D_NAME "libbox2d.a")
     set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
+    set(FREETYPE_NAME "freetype.a")
 endif ()
 if (WIN32)
     set(BOX2D_NAME "box2d.lib")
     set(MONO_NAME "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
+    set(FREETYPE_NAME "freetype.lib")
 endif ()
 
 # box2d
@@ -136,5 +141,14 @@ endif()
 #mono
 include_directories(includes/mono/include)
 target_link_libraries(Iron PRIVATE ${MONO_NAME})
+
+#freetype
+add_subdirectory(includes/freetype2 EXCLUDE_FROM_ALL)
+include_directories(includes/freetype2/include)
+target_link_libraries(Iron PRIVATE freetype)
+
+#harfbuzz
+#add_subdirectory(includes/harfbuzz EXCLUDE_FROM_ALL)
+#target_link_libraries(Iron PRIVATE harfbuzz)
 
 target_compile_definitions(Iron PRIVATE)

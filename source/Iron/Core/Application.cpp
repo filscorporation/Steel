@@ -48,6 +48,8 @@ void Application::Init(ApplicationSettings settings)
     AudioCore::Init(scene->GetMainCamera().Owner);
     Physics::Init();
 
+    resources->LoadDefaultFont();
+
     Log::LogInfo("Application initialized");
 }
 

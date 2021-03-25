@@ -30,7 +30,6 @@
         public static Vector2 operator *(Vector2 a, float l) => new Vector2(a.X * l, a.Y * l);
         public static Vector2 operator /(Vector2 a, float l) => new Vector2(a.X / l, a.Y / l);
         public static Vector2 operator *(float l, Vector2 a) => new Vector2(a.X * l, a.Y * l);
-        public static Vector2 operator /(float l, Vector2 a) => new Vector2(a.X / l, a.Y / l);
         
         public static bool operator ==(Vector2 a, Vector2 b) => Equals(a, b);
         public static bool operator !=(Vector2 a, Vector2 b) => !Equals(a, b);

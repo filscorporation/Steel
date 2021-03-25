@@ -175,14 +175,14 @@ MonoString* UIInternalCalls::UIText_GetText(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIText, nullptr)
 
-    return mono_string_new(mono_domain_get(), component.GetText().c_str());
+    return mono_string_new_utf16(mono_domain_get(), component.GetText().c_str(), component.GetText().size());
 }
 
 void UIInternalCalls::UIText_SetText(EntityID entityID, MonoString* text)
 {
     GET_COMPONENT_OR_RETURN(UIText, )
 
-    component.SetText(mono_string_to_utf8(text));
+    component.SetText(mono_string_to_utf16(text));
 }
 
 int UIInternalCalls::UIText_GetTextSize(EntityID entityID)
@@ -199,6 +199,20 @@ void UIInternalCalls::UIText_SetTextSize(EntityID entityID, int textSize)
     component.SetTextSize(textSize);
 }
 
+glm::vec4 UIInternalCalls::UIText_GetColor(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIText, glm::vec4(0.0f))
+
+    return component.GetColor();
+}
+
+void UIInternalCalls::UIText_SetColor(EntityID entityID, glm::vec4 color)
+{
+    GET_COMPONENT_OR_RETURN(UIText, )
+
+    component.SetColor(color);
+}
+
 bool UIInternalCalls::UIButton_GetIsTextAutoSize(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIText, 0)
@@ -211,6 +225,20 @@ void UIInternalCalls::UIButton_SetIsTextAutoSize(EntityID entityID, bool isAutoS
     GET_COMPONENT_OR_RETURN(UIText, )
 
     component.SetIsTextAutoSize(isAutoSize);
+}
+
+bool UIInternalCalls::UIButton_GetTextAlignment(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIText, 0)
+
+    return component.GetTextAlignment();
+}
+
+void UIInternalCalls::UIButton_SetTextAlignment(EntityID entityID, AlignmentTypes::AlignmentType alignmentType)
+{
+    GET_COMPONENT_OR_RETURN(UIText, )
+
+    component.SetTextAlignment(alignmentType);
 }
 
 EntityID UIInternalCalls::UI_CreateUIElement()

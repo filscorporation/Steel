@@ -210,7 +210,8 @@ public:
 
     bool EntityExists(EntityID entityID)
     {
-        return EntityIDGetVersion(entityIDs[EntityIDGetID(entityID)]) == EntityIDGetVersion(entityID);
+        EntityID id = EntityIDGetID(entityID);
+        return id < entityIDs.size() && EntityIDGetVersion(entityIDs[id]) == EntityIDGetVersion(entityID);
     }
 
     void DeleteEntity(EntityID entityID)

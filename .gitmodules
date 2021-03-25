@@ -13,3 +13,6 @@
 [submodule "includes/box2d"]
 	path = includes/box2d
 	url = https://github.com/erincatto/box2d.git
+[submodule "includes/freetype2"]
+	path = includes/freetype2
+	url = https://github.com/aseprite/freetype2.git

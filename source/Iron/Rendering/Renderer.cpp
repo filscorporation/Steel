@@ -1,5 +1,5 @@
-#include "BuiltInShaders.h"
 #include "Renderer.h"
+#include "BuiltInShaders.h"
 #include "SpriteRenderer.h"
 #include "../Core/Application.h"
 
@@ -19,7 +19,10 @@ GLfloat* vertexBufferData;
 GLuint textureIDs[MAX_TEXTURE_SLOTS];
 GLuint indexBufferID, vertexDataBufferID;
 GLuint viewProjectionUniform;
+GLuint drawModeUniform;
 
+DrawModes::DrawMode Renderer::currentDrawMode = DrawModes::Normal;
+bool Renderer::DrawWireframe = false;
 int Renderer::DrawCallsStats = 0;
 int Renderer::VerticesStats = 0;
 
@@ -49,6 +52,8 @@ void Renderer::Init()
 
     // Camera transformation uniform
     viewProjectionUniform = glGetUniformLocation(shader->Program, "view_projection");
+    // Draw mode
+    drawModeUniform = glGetUniformLocation(shader->Program, "draw_mode");
 
     Log::LogInfo("Uniforms saved");
 
@@ -120,6 +125,8 @@ void Renderer::OnBeforeRender(Camera& camera)
     } ZComparer;
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->SortComponents<Transformation>(ZComparer);
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->ApplyOrder<Transformation, SpriteRenderer>();
+
+    SetDrawMode(DrawModes::Normal);
 
     // Start first batch
     StartBatch();
@@ -224,6 +231,15 @@ void Renderer::DrawQuadCached(const QuadCache& quadCache, const glm::vec4& color
     VerticesStats += 4;
 }
 
+void Renderer::SetDrawMode(DrawModes::DrawMode drawMode)
+{
+    if (currentDrawMode == drawMode)
+        return;
+
+    currentDrawMode = drawMode;
+    glUniform1i(drawModeUniform, (GLint)currentDrawMode);
+}
+
 void Renderer::StartBatch()
 {
     renderCallsCount = 0;
@@ -237,6 +253,23 @@ void Renderer::EndBatch()
 
     DrawCallsStats ++;
     DrawBatchedData();
+
+    if (DrawWireframe)
+    {
+        // Wireframe mode
+        auto drawModeBackup = currentDrawMode;
+        SetDrawMode(DrawModes::Wireframe);
+
+        glDisable(GL_DEPTH_TEST);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        DrawBatchedData();
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glEnable(GL_DEPTH_TEST);
+
+        SetDrawMode(drawModeBackup);
+    }
 }
 
 void Renderer::DrawBatchedData()
@@ -278,6 +311,7 @@ void Renderer::DrawBatchedData()
 
     // Draw
     glDrawElements(GL_TRIANGLES, renderCallsCount * 6, GL_UNSIGNED_INT, nullptr);
+
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);

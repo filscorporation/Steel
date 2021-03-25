@@ -6,6 +6,7 @@
 #include "ScriptingCore.h"
 #include "../Core/ResourceID.h"
 #include "../EntityComponentSystem/Entity.h"
+#include "../UI/UIText.h"
 
 namespace UIInternalCalls
 {
@@ -42,8 +43,12 @@ namespace UIInternalCalls
     void UIText_SetText(EntityID entityID, MonoString* text);
     int UIText_GetTextSize(EntityID entityID);
     void UIText_SetTextSize(EntityID entityID, int textSize);
+    glm::vec4 UIText_GetColor(EntityID entityID);
+    void UIText_SetColor(EntityID entityID, glm::vec4 color);
     bool UIButton_GetIsTextAutoSize(EntityID entityID);
     void UIButton_SetIsTextAutoSize(EntityID entityID, bool isAutoSize);
+    bool UIButton_GetTextAlignment(EntityID entityID);
+    void UIButton_SetTextAlignment(EntityID entityID, AlignmentTypes::AlignmentType alignmentType);
 
     // UI
     EntityID UI_CreateUIElement();

@@ -43,7 +43,6 @@
         public static Vector3 operator *(Vector3 a, float l) => new Vector3(a.X * l, a.Y * l, a.Z * l);
         public static Vector3 operator /(Vector3 a, float l) => new Vector3(a.X / l, a.Y / l, a.Z / l);
         public static Vector3 operator *(float l, Vector3 a) => new Vector3(a.X * l, a.Y * l, a.Z * l);
-        public static Vector3 operator /(float l, Vector3 a) => new Vector3(a.X / l, a.Y / l, a.Z / l);
         
         public static bool operator ==(Vector3 a, Vector3 b) => Equals(a, b);
         public static bool operator !=(Vector3 a, Vector3 b) => !Equals(a, b);

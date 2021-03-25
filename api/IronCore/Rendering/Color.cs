@@ -40,6 +40,34 @@
             B = (float)b / CHANNEL_MAX;
             A = 1.0f;
         }
+        
+        public static bool operator ==(Color a, Color b) => Equals(a, b);
+        public static bool operator !=(Color a, Color b) => !Equals(a, b);
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Color col)
+                return Math.Approximately(R, col.R)
+                       && Math.Approximately(G, col.G)
+                       && Math.Approximately(B, col.B)
+                       && Math.Approximately(A, col.A);
+            
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int result = 0;
+                result = (result * 397) ^ R.GetHashCode();
+                result = (result * 397) ^ G.GetHashCode();
+                result = (result * 397) ^ B.GetHashCode();
+                result = (result * 397) ^ A.GetHashCode();
+                
+                return result;
+            }
+        }
 
         public static Color Black => new Color(0, 0, 0);
         public static Color White => new Color(255, 255, 255);

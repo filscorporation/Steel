@@ -4,18 +4,15 @@
 void UIEventHandler::HandleEvent(const RectTransformation& rectTransformation, UIEvent& uiEvent)
 {
     bool contains = rectTransformation.Contains(uiEvent.MousePosition);
-    bool used = uiEvent.Used || contains && !IsTransparent;
+    bool wasUsed = uiEvent.Used;
+    uiEvent.Used = wasUsed || contains && !IsTransparent;
 
     if (EventCallback == nullptr)
-    {
-        uiEvent.Used = used;
         return;
-    }
 
     if (EventsMask & UIEventTypes::Any)
     {
         EventCallback(Owner, UIEventTypes::Any, uiEvent);
-        uiEvent.Used = used;
         return;
     }
 
@@ -26,24 +23,24 @@ void UIEventHandler::HandleEvent(const RectTransformation& rectTransformation, U
     {
         // Inner events - ones that only happen when pointer is inside UI element's rect
 
-        if (EventsMask & UIEventTypes::MouseEnter)
+        if (!wasUsed && !lastFrameContains)
         {
-            if (!uiEvent.Used && !lastFrameContains)
+            lastFrameContains = true;
+            if (EventsMask & UIEventTypes::MouseEnter)
             {
-                lastFrameContains = true;
                 eventType = eventType | UIEventTypes::MouseEnter;
             }
         }
         if (EventsMask & UIEventTypes::MouseOver)
         {
-            if (!uiEvent.Used)
+            if (!wasUsed)
             {
                 eventType = eventType | UIEventTypes::MouseOver;
             }
         }
         if (EventsMask & UIEventTypes::MouseJustPressed)
         {
-            if (!uiEvent.Used &&
+            if (!wasUsed &&
                 (uiEvent.LeftMouseButtonState == ButtonStates::JustPressed || uiEvent.RightMouseButtonState == ButtonStates::JustPressed))
             {
                 eventType = eventType | UIEventTypes::MouseJustPressed;
@@ -51,7 +48,7 @@ void UIEventHandler::HandleEvent(const RectTransformation& rectTransformation, U
         }
         if (EventsMask & UIEventTypes::MousePressed)
         {
-            if (!uiEvent.Used &&
+            if (!wasUsed &&
                 (uiEvent.LeftMouseButtonState == ButtonStates::IsHeld || uiEvent.RightMouseButtonState == ButtonStates::IsHeld))
             {
                 eventType = eventType | UIEventTypes::MousePressed;
@@ -59,13 +56,13 @@ void UIEventHandler::HandleEvent(const RectTransformation& rectTransformation, U
         }
         if (EventsMask & UIEventTypes::MouseJustReleased)
         {
-            if (!uiEvent.Used &&
+            if (!wasUsed &&
                 (uiEvent.LeftMouseButtonState == ButtonStates::JustReleased || uiEvent.RightMouseButtonState == ButtonStates::JustReleased))
             {
                 eventType = eventType | UIEventTypes::MouseJustReleased;
             }
         }
-        if (!uiEvent.Used && !isDragged && uiEvent.LeftMouseButtonState == ButtonStates::JustPressed)
+        if (!wasUsed && !isDragged && uiEvent.LeftMouseButtonState == ButtonStates::JustPressed)
         {
             isDragged = true;
             if (EventsMask & UIEventTypes::MouseDragBegin)
@@ -76,7 +73,7 @@ void UIEventHandler::HandleEvent(const RectTransformation& rectTransformation, U
     }
 
     // Outside events - they do not require pointer being inside UI element rect
-    if ((!contains || uiEvent.Used) && lastFrameContains)
+    if ((!contains || wasUsed) && lastFrameContains)
     {
         lastFrameContains = false;
         if (EventsMask & UIEventTypes::MouseExit)
@@ -127,6 +124,4 @@ void UIEventHandler::HandleEvent(const RectTransformation& rectTransformation, U
 
     if (eventType != 0)
         EventCallback(Owner, eventType, uiEvent);
-
-    uiEvent.Used = used;
 }

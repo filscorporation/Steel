@@ -1,17 +1,23 @@
 #pragma once
 
 #include <vector>
+
 #include "ResourceID.h"
-#include "../Rendering/Sprite.h"
 #include "../Animation/Animation.h"
 #include "../Audio/AudioTrack.h"
+#include "../Rendering/Sprite.h"
+#include "../UI/Font.h"
 
 class ResourcesManager
 {
 public:
+    ResourcesManager();
     ~ResourcesManager();
 
+    void LoadDefaultFont();
+
     Sprite* LoadImage(const char* filePath);
+    static bool IsImageTransparent(const unsigned char* imageData, int width, int height);
     Sprite* GetImage(ResourceID imageID);
     void UnloadImage(ResourceID imageID);
 
@@ -23,8 +29,15 @@ public:
     Animation* GetAnimation(ResourceID animationID);
     void RemoveAnimation(ResourceID animationID);
 
+    Font* LoadFont(const char* fontPath);
+    Font* GetFont(ResourceID fontID);
+    Font* DefaultFont();
+
 private:
     std::vector<Sprite*> images;
     std::vector<AudioTrack*> audioTracks;
     std::vector<Animation*> animations;
+    std::vector<Font*> fonts;
+
+    Font* defaultFont;
 };

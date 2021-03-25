@@ -2,20 +2,15 @@
 #include "../Core/Application.h"
 #include "../Rendering/Renderer.h"
 
-void UIRenderer::OnRender(RectTransformation& rectTransformation)
+void UIRenderer::Render(RectTransformation& rectTransformation)
 {
-    if (_image == nullptr)
+    if (!IsRendered)
         return;
 
     if (rectTransformation.DidTransformationChange())
-        Renderer::DrawQuad(quadCache, rectTransformation.GetTransformationMatrixCached(), _color, _image->TextureID);
+        Renderer::DrawQuad(quadCache, rectTransformation.GetTransformationMatrixCached(), Color, TextureID, TextureCoords);
     else
-        Renderer::DrawQuadCached(quadCache, _color, _image->TextureID);
+        Renderer::DrawQuadCached(quadCache, Color, TextureID, TextureCoords);
 
     rectTransformation.SetTransformationChanged(false);
-}
-
-bool UIRenderer::IsTransparent() const
-{
-    return _isTransparent;
 }
