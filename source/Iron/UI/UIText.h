@@ -24,7 +24,7 @@ class UIText : public Component
 {
 public:
     explicit UIText(EntityID ownerEntityID);
-    ~UIText();
+    ~UIText() override;
 
     void Rebuild();
 
@@ -56,6 +56,7 @@ private:
     uint32_t _lettersChangedCount = 0;
     bool _dirtyText = false;
     bool _dirtyTextColor = false;
+    glm::vec2 _lastRectSize = glm::vec2(0.0f, 0.0f);
 
     EntityID lastLetterID = NULL_ENTITY;
     uint32_t lettersCount = 0;

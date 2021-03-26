@@ -31,7 +31,7 @@ void UIText::Rebuild()
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    if (_font == nullptr)
+    if (_font == nullptr || _text.empty())
     {
         ForeachLetterDelete(entitiesRegistry, lettersCount);
         lastLetterID = NULL_ENTITY;
@@ -43,9 +43,18 @@ void UIText::Rebuild()
         return;
     }
 
+    auto newSize = rectTransformation.GetRealSizeCached();
+    if (std::abs(newSize.x  -_lastRectSize.x) > 0.001f || std::abs(newSize.y  -_lastRectSize.y) > 0.001f)
+    {
+        // If text rect changed in size, completely rebuild
+        _lettersChangedCount = lettersCount;
+        _dirtyText = true;
+        _lastRectSize = newSize;
+    }
+
     if (_dirtyText)
     {
-        // If alignment if not to the left, than we need to change all letters positions
+        // If alignment is not to the left, than we need to change all letters positions
         if (!(_textAlignment == AlignmentTypes::TopLeft
            || _textAlignment == AlignmentTypes::CenterLeft
            || _textAlignment == AlignmentTypes::BottomLeft))
@@ -147,7 +156,7 @@ void UIText::Rebuild()
             auto& letterRenderer = entitiesRegistry->AddComponent<UILetterRenderer>(letterEntityID);
 
             // If letter doesn't fit into rect, it will be hidden
-            letterRenderer.IsRendered = cursorX >= 0 && (float)cursorX + character.Advance < rectSize.x;
+            letterRenderer.IsRendered = cursorX >= 0 && (float)cursorX + character.Advance <= rectSize.x;
             letterRenderer.PreviousLetter = last;
             letterRenderer.Color = _color;
             letterRenderer.TextureID = atlas.TextureID;
@@ -189,7 +198,6 @@ void UIText::Rebuild()
 
     if (dirtyTransform)
     {
-        // TODO: if UIText rect changed in size, text will get scaled, need fix
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
         ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix);
         rectTransformation.SetTransformationChanged(false);
@@ -247,7 +255,7 @@ void UIText::SetTextSize(uint32_t size)
     _dirtyText = true;
 }
 
-const glm::vec4 &UIText::GetColor() const
+const glm::vec4& UIText::GetColor() const
 {
     return _color;
 }

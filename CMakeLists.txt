@@ -147,8 +147,4 @@ add_subdirectory(includes/freetype2 EXCLUDE_FROM_ALL)
 include_directories(includes/freetype2/include)
 target_link_libraries(Iron PRIVATE freetype)
 
-#harfbuzz
-#add_subdirectory(includes/harfbuzz EXCLUDE_FROM_ALL)
-#target_link_libraries(Iron PRIVATE harfbuzz)
-
 target_compile_definitions(Iron PRIVATE)

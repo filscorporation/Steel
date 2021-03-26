@@ -31,7 +31,7 @@ bool FontManager::IsInitialized()
 
 Font* FontManager::FontFromPath(const char* fontPath)
 {
-    auto* face = new FT_Face();
+    auto face = new FT_Face();
     if (FT_New_Face(FreeTypeLibrary, fontPath, 0, face))
     {
         Log::LogError("Failed to load font");

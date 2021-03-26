@@ -17,7 +17,6 @@ public:
     void LoadDefaultFont();
 
     Sprite* LoadImage(const char* filePath);
-    static bool IsImageTransparent(const unsigned char* imageData, int width, int height);
     Sprite* GetImage(ResourceID imageID);
     void UnloadImage(ResourceID imageID);
 
@@ -34,6 +33,8 @@ public:
     Font* DefaultFont();
 
 private:
+    static bool IsImageTransparent(const unsigned char* imageData, int width, int height);
+
     std::vector<Sprite*> images;
     std::vector<AudioTrack*> audioTracks;
     std::vector<Animation*> animations;

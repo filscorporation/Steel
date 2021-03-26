@@ -65,13 +65,13 @@ EntityID ComponentsInternalCalls::HierarchyNode_GetParent(EntityID entityID)
 
 void ComponentsInternalCalls::HierarchyNode_SetParent(EntityID entityID, EntityID parentEntityID)
 {
-    auto* registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     LinkChildToParent(registry, entityID, parentEntityID);
 }
 
 MonoArray* ComponentsInternalCalls::HierarchyNode_GetChildren(EntityID entityID)
 {
-    auto* registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     return ScriptingCore::ToMonoUInt32Array(GetAllChildren(registry, entityID));
 }
 

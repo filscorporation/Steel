@@ -97,21 +97,6 @@ Sprite* ResourcesManager::LoadImage(const char* filePath)
     return image;
 }
 
-bool ResourcesManager::IsImageTransparent(const unsigned char* imageData, int width, int height)
-{
-    for (int i = 0; i < width; ++i)
-    {
-        for (int j = 0; j < height; ++j)
-        {
-            auto alpha = imageData[(i * width + j) * 4 + 3];
-            if (alpha != 0 && alpha != 255)
-                return true;
-        }
-    }
-
-    return false;
-}
-
 Sprite* ResourcesManager::GetImage(ResourceID imageID)
 {
     if (imageID == NULL_RESOURCE)
@@ -316,4 +301,19 @@ Font* ResourcesManager::GetFont(ResourceID fontID)
 Font *ResourcesManager::DefaultFont()
 {
     return defaultFont;
+}
+
+bool ResourcesManager::IsImageTransparent(const unsigned char* imageData, int width, int height)
+{
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            auto alpha = imageData[(i * width + j) * 4 + 3];
+            if (alpha != 0 && alpha != 255)
+                return true;
+        }
+    }
+
+    return false;
 }
