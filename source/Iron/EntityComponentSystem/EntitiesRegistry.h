@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "Entity.h"
-#include "SparseSet.h"
+#include "SparseDataSet.h"
 #include "ComponentSystem.h"
 
 #define ENTITY_ID_MASK 0xFFFFFu
@@ -19,7 +19,7 @@ using ComponentTypeID = std::type_index;
 
 // Stores all components of one type by entityID
 template <typename T>
-using ComponentsPool = SparseSet<T>;
+using ComponentsPool = SparseDataSet<T>;
 
 // Base class to store components pool
 class ComponentsPoolWrapperBase
@@ -212,6 +212,11 @@ public:
     {
         EntityID id = EntityIDGetID(entityID);
         return id < entityIDs.size() && EntityIDGetVersion(entityIDs[id]) == EntityIDGetVersion(entityID);
+    }
+
+    EntityID EntityActual(EntityID id)
+    {
+        return entityIDs[id];
     }
 
     void DeleteEntity(EntityID entityID)

@@ -128,6 +128,9 @@ void Application::RunUpdate()
     for (auto& audioListener : audioListeners)
         audioListener.OnUpdate();
 
+    // Update UI elements
+    scene->GetUILayer()->Update();
+
     // Clean destroyed entities
     state = ApplicationStates::CleaningDestroyedEntities;
     scene->CleanDestroyedEntities();

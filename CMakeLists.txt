@@ -60,7 +60,7 @@ set(SOURCE_FILES
         source/Iron/EntityComponentSystem/EntitiesRegistry.h source/Iron/EntityComponentSystem/Entity.h
         source/Iron/Scene/NameComponent.cpp source/Iron/Scene/NameComponent.h source/Iron/Scene/SceneHelper.h
         source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Core/ResourceID.h
-        source/Iron/EntityComponentSystem/SparseSet.h source/Iron/EntityComponentSystem/ComponentSystem.h
+        source/Iron/EntityComponentSystem/SparseDataSet.h source/Iron/EntityComponentSystem/ComponentSystem.h
         source/Iron/Physics/PhysicsSystem.cpp source/Iron/Physics/PhysicsSystem.h source/Iron/Audio/AudioSystem.cpp
         source/Iron/Audio/AudioSystem.h source/Iron/Physics/CircleCollider.cpp source/Iron/Physics/CircleCollider.h
         source/Iron/Scene/HierarchyNode.cpp source/Iron/Scene/HierarchyNode.h source/Iron/Scene/Hierarchy.h
@@ -69,7 +69,7 @@ set(SOURCE_FILES
         source/Iron/UI/UIButton.cpp source/Iron/UI/UIButton.h source/Iron/UI/UIText.cpp source/Iron/UI/UIText.h
         source/Iron/UI/UITextLetter.cpp source/Iron/UI/UITextLetter.h source/Iron/UI/Font.cpp source/Iron/UI/Font.h
         source/Iron/UI/FontManager.cpp source/Iron/UI/FontManager.h source/Iron/UI/UILetterRenderer.cpp
-        source/Iron/UI/UILetterRenderer.h)
+        source/Iron/UI/UILetterRenderer.h source/Iron/EntityComponentSystem/SparseSet.h source/Iron/Math/Math.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

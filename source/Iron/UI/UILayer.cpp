@@ -24,6 +24,20 @@ EntityID UILayer::CreateUIElement(const char* name, EntityID parent)
     return entity;
 }
 
+void UILayer::Update()
+{
+    if (_buttonsToUpdate.Size() == 0)
+        return;
+
+    auto entitiesRegistry = _scene->GetEntitiesRegistry();
+    for (int i = _buttonsToUpdate.Size() - 1; i >= 0; --i)
+    {
+        auto& button = entitiesRegistry->GetComponent<UIButton>(entitiesRegistry->EntityActual(_buttonsToUpdate[i]));
+        if (!button.Update())
+            _buttonsToUpdate.Remove(_buttonsToUpdate[i]);
+    }
+}
+
 void UILayer::Draw()
 {
     // Prepare to draw
@@ -85,13 +99,27 @@ void UILayer::PollEvent(UIEvent& uiEvent)
 {
     auto entitiesRegistry = _scene->GetEntitiesRegistry();
     entitiesRegistry->ApplyOrder<RectTransformation, UIEventHandler>();
-    auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
+    auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
     auto uiEventHandlers = entitiesRegistry->GetComponentIterator<UIEventHandler>();
 
     for (int i = 0; i < uiEventHandlers.Size(); ++i)
-        uiEventHandlers[i].HandleEvent(rectTransformations[i], uiEvent);
+        uiEventHandlers[i].HandleEvent(rtAccessor.Get(uiEventHandlers[i].Owner), uiEvent);
 
     _isPointerOverUI = uiEvent.Used;
+}
+
+void UILayer::AddButtonToUpdateQueue(EntityID buttonID)
+{
+    auto id = EntitiesRegistry::EntityIDGetID(buttonID);
+    if (!_buttonsToUpdate.Has(id))
+        _buttonsToUpdate.Add(id);
+}
+
+void UILayer::RemoveButtonFromUpdateQueue(EntityID buttonID)
+{
+    auto id = EntitiesRegistry::EntityIDGetID(buttonID);
+    if (_buttonsToUpdate.Has(id))
+        _buttonsToUpdate.Remove(id);
 }
 
 bool UILayer::IsPointerOverUI()

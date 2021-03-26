@@ -171,6 +171,34 @@ void UIInternalCalls::UIButton_SetSprite(EntityID entityID, ResourceID spriteID)
     component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
 }
 
+bool UIInternalCalls::UIButton_GetInteractable(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIButton, false)
+
+    return component.GetInteractable();
+}
+
+void UIInternalCalls::UIButton_SetInteractable(EntityID entityID, bool interactable)
+{
+    GET_COMPONENT_OR_RETURN(UIButton, )
+
+    component.SetInteractable(interactable);
+}
+
+ButtonTransitionsInfo UIInternalCalls::UIButton_GetTransition(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIButton, ButtonTransitionsInfo())
+
+    return component.GetTransitionsInfo();
+}
+
+void UIInternalCalls::UIButton_SetTransition(EntityID entityID, ButtonTransitionsInfo info)
+{
+    GET_COMPONENT_OR_RETURN(UIButton, )
+
+    component.SetTransitionsInfo(info);
+}
+
 MonoString* UIInternalCalls::UIText_GetText(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIText, nullptr)

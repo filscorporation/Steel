@@ -9,6 +9,16 @@ void Sprite::SetAsSpriteSheet(int tileWidth, int tileHeight)
 
 void Sprite::GetTexCoord(int tileIndex, glm::vec2* texCoords)
 {
+    if (!IsSpriteSheet)
+    {
+        texCoords[0] = glm::vec2(1.0f, 0.0f);
+        texCoords[1] = glm::vec2(1.0f, 1.0f);
+        texCoords[2] = glm::vec2(0.0f, 0.0f);
+        texCoords[3] = glm::vec2(0.0f, 1.0f);
+
+        return;
+    }
+
     float tw = float(TileWidth) / float(Width);
     float th = float(TileHeight) / float(Height);
     int numPerRow = Width / TileWidth;

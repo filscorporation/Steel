@@ -7,6 +7,7 @@
 #include "../Core/ResourceID.h"
 #include "../EntityComponentSystem/Entity.h"
 #include "../UI/UIText.h"
+#include "../UI/UIButton.h"
 
 namespace UIInternalCalls
 {
@@ -37,6 +38,10 @@ namespace UIInternalCalls
     // UI button
     ResourceID UIButton_GetSprite(EntityID entityID);
     void UIButton_SetSprite(EntityID entityID, ResourceID spriteID);
+    bool UIButton_GetInteractable(EntityID entityID);
+    void UIButton_SetInteractable(EntityID entityID, bool interactable);
+    ButtonTransitionsInfo UIButton_GetTransition(EntityID entityID);
+    void UIButton_SetTransition(EntityID entityID, ButtonTransitionsInfo info);
 
     // UI text
     MonoString* UIText_GetText(EntityID entityID);

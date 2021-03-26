@@ -137,6 +137,10 @@ void ScriptingCallsRegister::RegisterInternalCalls()
 
     mono_add_internal_call("Iron.UIButton::GetSprite_Internal", (void*)UIInternalCalls::UIButton_GetSprite);
     mono_add_internal_call("Iron.UIButton::SetSprite_Internal", (void*)UIInternalCalls::UIButton_SetSprite);
+    mono_add_internal_call("Iron.UIButton::GetInteractable_Internal", (void*)UIInternalCalls::UIButton_GetInteractable);
+    mono_add_internal_call("Iron.UIButton::SetInteractable_Internal", (void*)UIInternalCalls::UIButton_SetInteractable);
+    mono_add_internal_call("Iron.UIButton::GetTransition_Internal", (void*)UIInternalCalls::UIButton_GetTransition);
+    mono_add_internal_call("Iron.UIButton::SetTransition_Internal", (void*)UIInternalCalls::UIButton_SetTransition);
 
     mono_add_internal_call("Iron.UIText::GetText_Internal", (void*)UIInternalCalls::UIText_GetText);
     mono_add_internal_call("Iron.UIText::SetText_Internal", (void*)UIInternalCalls::UIText_SetText);

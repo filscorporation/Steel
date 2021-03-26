@@ -75,6 +75,7 @@
         <Compile Include="Rendering\SpriteRenderer.cs" />
         <Compile Include="Scene\Transformation.cs" />
         <Compile Include="UI\AlignmentType.cs" />
+        <Compile Include="UI\ButtonTransitionInfo.cs" />
         <Compile Include="UI\CallbackAction.cs" />
         <Compile Include="UI\CallbackList.cs" />
         <Compile Include="UI\CallbackWrapper.cs" />

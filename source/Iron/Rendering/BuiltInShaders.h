@@ -82,5 +82,6 @@ namespace BuiltInShaders
 "        case 1: color = texel * vertexColor; break;\n"
 "        case 2: color = vec4(vertexColor.rgb, texel.r); break;\n"
 "    }\n"
+"    if (color.a < 0.01) discard;\n"
 "}";
 }
