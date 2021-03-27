@@ -28,6 +28,26 @@ public:
 };
 static QueryCallback queryCallback;
 
+class RayCastCallback : public b2RayCastCallback
+{
+public:
+    std::vector<RayCastHit> RayCastHits;
+
+    float ReportFixture(b2Fixture* fixture, const b2Vec2& point,
+                        const b2Vec2& normal, float fraction) override
+    {
+        RayCastHit hit{};
+        hit.BodyEntity = (EntityID)fixture->GetBody()->GetUserData().pointer;
+        hit.HitPoint = glm::vec2(point.x, point.y);
+        hit.HitNormal = glm::vec2(normal.x, normal.y);
+
+        RayCastHits.push_back(hit);
+
+        return true;
+    }
+};
+static RayCastCallback rayCastCallback;
+
 void PhysicsCore::CreateWorld()
 {
     b2Vec2 gravity(0.0f, GRAVITY);
@@ -90,4 +110,12 @@ std::vector<EntityID> PhysicsCore::AABBCast(glm::vec2 center, glm::vec2 size)
     queryCallback.FoundBodies.clear();
 
     return result;
+}
+
+std::vector<RayCastHit> PhysicsCore::LineCast(glm::vec2 pointA, glm::vec2 pointB)
+{
+    rayCastCallback.RayCastHits.clear();
+    world->RayCast(&rayCastCallback, b2Vec2(pointA.x, pointA.y), b2Vec2(pointB.x, pointB.y));
+
+    return rayCastCallback.RayCastHits;
 }

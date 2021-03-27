@@ -35,6 +35,11 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Screen::GetColor_Internal", (void*)CoreInternalCalls::Screen_GetColor);
     mono_add_internal_call("Iron.Screen::SetColor_Internal", (void*)CoreInternalCalls::Screen_SetColor);
 
+    mono_add_internal_call("Iron.Physics::Simulate_Internal", (void*)CoreInternalCalls::Physics_Simulate);
+    mono_add_internal_call("Iron.Physics::PointCast_Internal", (void*)CoreInternalCalls::Physics_PointCast);
+    mono_add_internal_call("Iron.Physics::AABBCast_Internal", (void*)CoreInternalCalls::Physics_AABBCast);
+    mono_add_internal_call("Iron.Physics::LineCast_Internal", (void*)CoreInternalCalls::Physics_LineCast);
+
     mono_add_internal_call("Iron.ResourcesManager::LoadImage_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadImage);
     mono_add_internal_call("Iron.ResourcesManager::LoadAudioTrack_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAudioTrack);
     mono_add_internal_call("Iron.AudioTrack::GetLength_Internal", (void*)CoreInternalCalls::AudioTrack_GetLength);

@@ -63,3 +63,8 @@ std::vector<EntityID> Physics::AABBCast(glm::vec2 center, glm::vec2 size)
 {
     return PhysicsCore::AABBCast(center, size);
 }
+
+std::vector<RayCastHit> Physics::LineCast(glm::vec2 pointA, glm::vec2 pointB)
+{
+    return PhysicsCore::LineCast(pointA, pointB);
+}

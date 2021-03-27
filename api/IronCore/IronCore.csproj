@@ -60,6 +60,7 @@
         <Compile Include="Physics\Collider.cs" />
         <Compile Include="Physics\Collision.cs" />
         <Compile Include="Physics\Physics.cs" />
+        <Compile Include="Physics\RayCastHit.cs" />
         <Compile Include="Physics\RigidBody.cs" />
         <Compile Include="Physics\RigidBodyType.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />

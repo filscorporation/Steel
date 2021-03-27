@@ -5,8 +5,9 @@
 #include <vector>
 
 #include "PhysicsContactListener.h"
-#include "../EntityComponentSystem/ComponentSystem.h"
+#include "Physics.h"
 #include "RigidBody.h"
+#include "../EntityComponentSystem/ComponentSystem.h"
 
 class PhysicsCore
 {
@@ -17,6 +18,7 @@ public:
 
     static std::vector<EntityID> PointCast(glm::vec2 center);
     static std::vector<EntityID> AABBCast(glm::vec2 center, glm::vec2 size);
+    static std::vector<RayCastHit> LineCast(glm::vec2 pointA, glm::vec2 pointB);
 
     static void Simulate(float deltaTime);
 };

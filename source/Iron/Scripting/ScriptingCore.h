@@ -61,6 +61,7 @@ public:
     static void LoadEventManagerMethods(MonoImage* image);
     static void RegisterInternalCalls();
     static void CacheAPITypes(MonoImage* image);
+    static void CacheDataTypes(MonoImage* image);
 
     static Component& AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success);
     static bool HasComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
@@ -74,17 +75,31 @@ public:
     static MonoArray* ToMonoUInt32Array(const std::vector<uint32_t>& inArray);
     static MonoArray* ToMonoIntPtrArray(const std::vector<intptr_t>& inArray);
 
+    template<typename T>
+    static MonoArray* ToMonoDataTypeArray(const std::vector<T>& inArray, int cachedDataTypeID)
+    {
+        MonoArray* outArray = mono_array_new(mono_domain_get(), cachedDataTypes[cachedDataTypeID], inArray.size());
+
+        for (int i = 0; i < inArray.size(); ++i)
+        {
+            mono_array_set(outArray, T, i, inArray[i]);
+        }
+
+        return outArray;
+    }
+
     static EngineCallsMethods EngineCalls;
     static EventManagerMethods EventManagerCalls;
 
 private:
 
-    static CachedData* cachedData;
+    static CachedData* cachedAPITypes;
+    static std::vector<MonoClass*> cachedDataTypes;
 };
 
 #define API_CLASS(m_class) mono_class_from_name(image, "Iron", #m_class)
-#define CACHE_CLASS(m_class, m_val) cachedData->class##m_class = m_val;
-#define CACHED_CLASS(m_class) cachedData->class##m_class
+#define CACHE_CLASS(m_class, m_val) cachedAPITypes->class##m_class = m_val;
+#define CACHED_CLASS(m_class) cachedAPITypes->class##m_class
 
 #define RETURN_COMPONENT_OWNERS(m_class) \
 { \

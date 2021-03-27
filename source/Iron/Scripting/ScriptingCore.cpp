@@ -21,7 +21,8 @@
 
 EngineCallsMethods ScriptingCore::EngineCalls;
 EventManagerMethods ScriptingCore::EventManagerCalls;
-CachedData* ScriptingCore::cachedData;
+CachedData* ScriptingCore::cachedAPITypes;
+std::vector<MonoClass*> ScriptingCore::cachedDataTypes;
 
 void ScriptingCore::Init(MonoImage* image)
 {
@@ -29,11 +30,12 @@ void ScriptingCore::Init(MonoImage* image)
     LoadEventManagerMethods(image);
     RegisterInternalCalls();
     CacheAPITypes(image);
+    CacheDataTypes(image);
 }
 
 void ScriptingCore::Terminate()
 {
-    delete cachedData;
+    delete cachedAPITypes;
 }
 
 void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
@@ -71,7 +73,7 @@ void ScriptingCore::RegisterInternalCalls()
 
 void ScriptingCore::CacheAPITypes(MonoImage* image)
 {
-    cachedData = new CachedData();
+    cachedAPITypes = new CachedData();
 
     CACHE_CLASS(Transformation, API_CLASS(Transformation))
     CACHE_CLASS(NameComponent, API_CLASS(NameComponent))
@@ -88,6 +90,11 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(UIImage, API_CLASS(UIImage))
     CACHE_CLASS(UIButton, API_CLASS(UIButton))
     CACHE_CLASS(UIText, API_CLASS(UIText))
+}
+
+void ScriptingCore::CacheDataTypes(MonoImage* image)
+{
+    cachedDataTypes.push_back(API_CLASS(RayCastHit));
 }
 
 Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)

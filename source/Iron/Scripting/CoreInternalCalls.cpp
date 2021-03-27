@@ -3,6 +3,7 @@
 #include "../Core/Input.h"
 #include "../Core/Log.h"
 #include "../Core/Time.h"
+#include "../Physics/Physics.h"
 
 void CoreInternalCalls::Application_Quit()
 {
@@ -227,3 +228,24 @@ void CoreInternalCalls::Log_LogError(MonoString* message)
 {
     Log::LogError(mono_string_to_utf8(message));
 }
+
+void CoreInternalCalls::Physics_Simulate(float deltaTime)
+{
+    Physics::Simulate(deltaTime);
+}
+
+MonoArray* CoreInternalCalls::Physics_PointCast(glm::vec2* point)
+{
+    return ScriptingCore::ToMonoUInt32Array(Physics::PointCast(*point));
+}
+
+MonoArray* CoreInternalCalls::Physics_AABBCast(glm::vec2* center, glm::vec2* size)
+{
+    return ScriptingCore::ToMonoUInt32Array(Physics::AABBCast(*center, *size));
+}
+
+MonoArray* CoreInternalCalls::Physics_LineCast(glm::vec2* pointA, glm::vec2* pointB)
+{
+    return ScriptingCore::ToMonoDataTypeArray<RayCastHit>(Physics::LineCast(*pointA, *pointB), 0);
+}
+
