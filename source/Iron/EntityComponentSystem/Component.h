@@ -10,5 +10,7 @@ public:
     explicit Component(EntityID ownerEntityID);
     virtual ~Component() = default;
 
+    bool IsAlive() const;
+
     EntityID Owner;
 };

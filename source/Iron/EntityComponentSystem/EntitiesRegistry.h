@@ -26,8 +26,14 @@ class ComponentsPoolWrapperBase
 {
 public:
     virtual ~ComponentsPoolWrapperBase() = default;
+
+    virtual void ClearRemoved() = 0;
+    virtual bool MoveFromActiveToInactive(EntityID entityID, EntityID id) = 0;
+    virtual bool MoveFromInactiveToActive(EntityID entityID, EntityID id) = 0;
+
     virtual void BeforeDeleteByEntityID(EntityID entityID, EntityID id) = 0;
     virtual void DeleteByEntityID(EntityID entityID, EntityID id) = 0;
+    virtual void AfterEntitySetActive(EntityID entityID, EntityID id, bool isActive) = 0;
 };
 
 // Wrapper around ComponentsPool
@@ -36,6 +42,7 @@ class ComponentsPoolWrapper : public ComponentsPoolWrapperBase
 {
 public:
     ComponentsPool<T> Storage;
+    ComponentsPool<T> InactiveStorage;
     ComponentSystem<T>* System = nullptr;
 
     ~ComponentsPoolWrapper()
@@ -49,16 +56,44 @@ public:
         }
     }
 
+    void ClearRemoved() override
+    {
+        Storage.Condense();
+        InactiveStorage.Condense();
+    }
+
+    bool MoveFromActiveToInactive(EntityID entityID, EntityID id) override
+    {
+        if (!Storage.Has(id))
+            return false;
+
+        std::swap(Storage.Get(id), InactiveStorage.Add(id, entityID));
+        Storage.Remove(id);
+
+        return true;
+    }
+
+    bool MoveFromInactiveToActive(EntityID entityID, EntityID id) override
+    {
+        if (!InactiveStorage.Has(id))
+            return false;
+
+        std::swap(InactiveStorage.Get(id), Storage.Add(id, entityID));
+        InactiveStorage.Remove(id);
+
+        return true;
+    }
+
     void BeforeDeleteByEntityID(EntityID entityID, EntityID id) override
     {
+        if (System == nullptr)
+            return;
+
         if (!Storage.Has(id))
             return;
 
-        if (System != nullptr)
-        {
-            auto& component = Storage.Get(id);
-            System->OnComponentRemoved(entityID, component);
-        }
+        auto& component = Storage.Get(id);
+        System->OnComponentRemoved(entityID, component);
     }
 
     void DeleteByEntityID(EntityID entityID, EntityID id) override
@@ -67,6 +102,29 @@ public:
             return;
 
         Storage.Remove(id);
+    }
+
+    void AfterEntitySetActive(EntityID entityID, EntityID id, bool isActive) override
+    {
+        if (System == nullptr)
+            return;
+
+        if (!(isActive && Storage.Has(id) || !isActive && InactiveStorage.Has(id)))
+            return;
+
+        if (System != nullptr)
+        {
+            if (isActive)
+            {
+                auto& component = Storage.Get(id);
+                System->OnEntityEnabled(entityID, component);
+            }
+            else
+            {
+                auto& component = InactiveStorage.Get(id);
+                System->OnEntityDisabled(entityID, component);
+            }
+        }
     }
 };
 
@@ -157,6 +215,8 @@ public:
 
 private:
     std::vector<EntityID> entityIDs;
+    std::vector<EntityStates::EntityState> entityStates;
+
     int freeIDsCount = 0;
     EntityID nextFreeID = 0;
 
@@ -193,6 +253,7 @@ public:
         {
             result = EntityIDCombine(entityIDs.size(), 1);
             entityIDs.emplace_back(result);
+            entityStates.emplace_back(EntityStates::IsActive | EntityStates::IsActiveSelf);
         }
         else
         {
@@ -202,6 +263,7 @@ public:
             {
                 nextFreeID = EntityIDGetID(entityIDs[nextFreeID]);
                 entityIDs[EntityIDGetID(result)] = result;
+                entityStates[EntityIDGetID(result)] = EntityStates::IsActive | EntityStates::IsActiveSelf;
             }
         }
 
@@ -219,6 +281,61 @@ public:
         return entityIDs[id];
     }
 
+    void EntitySetActive(EntityID entityID, bool active, bool self)
+    {
+        // TODO: apply to hierarchy
+
+        if (!EntityExists(entityID))
+            return;
+
+        auto id = EntityIDGetID(entityID);
+        EntityStates::EntityState state = entityStates[id];
+
+        if (active)
+        {
+            if (state & EntityStates::IsActiveSelf)
+                return;
+
+            for (auto pool : componentsMap)
+            {
+                pool.second->MoveFromInactiveToActive(entityID, id);
+            }
+
+            entityStates[id] = entityStates[id] | EntityStates::IsActive;
+            if (self)
+                entityStates[id] = entityStates[id] | EntityStates::IsActiveSelf;
+
+            for (auto pool : componentsMap)
+            {
+                pool.second->AfterEntitySetActive(entityID, id, active);
+            }
+        }
+        else
+        {
+            if (!(state & EntityStates::IsActiveSelf))
+                return;
+
+            for (auto pool : componentsMap)
+            {
+                pool.second->MoveFromActiveToInactive(entityID, id);
+            }
+
+            entityStates[id] = entityStates[id] & ~EntityStates::IsActive;
+            if (self)
+                entityStates[id] = entityStates[id] & ~EntityStates::IsActiveSelf;
+
+            for (auto pool : componentsMap)
+            {
+                pool.second->AfterEntitySetActive(entityID, id, active);
+            }
+        }
+    }
+
+    EntityStates::EntityState EntityGetState(EntityID entityID)
+    {
+        return EntityExists(entityID) ? entityStates[EntityIDGetID(entityID)] : (EntityStates::EntityState)0;
+    }
+
     void DeleteEntity(EntityID entityID)
     {
         if (!EntityExists(entityID))
@@ -231,6 +348,7 @@ public:
             // If there are any free ids already, create link from current deleted id to previously deleted
             entityIDs[EntityIDGetID(entityID)] = EntityIDCombine(nextFreeID, EntityIDGetVersion(entityIDs[EntityIDGetID(entityID)]));
         }
+        // TODO: move to clear removed
         // Next free id is current deleted
         nextFreeID = EntityIDGetID(entityID);
         freeIDsCount++;
@@ -248,6 +366,7 @@ public:
     void CleanAllEntities()
     {
         entityIDs.clear();
+        entityStates.clear();
         nextFreeID = 0;
         freeIDsCount = 0;
         for (auto poolPair : componentsMap)
@@ -359,7 +478,12 @@ public:
         if (pool->Storage.Has(id))
             return pool->Storage.Get(id);
 
-        auto& component = pool->Storage.Add(id, entityID);
+        if (pool->InactiveStorage.Has(id))
+            return pool->InactiveStorage.Get(id);
+
+        auto& component = entityStates[id] & EntityStates::IsActive
+                ? pool->Storage.Add(id, entityID)
+                : pool->InactiveStorage.Add(id, entityID);
         if (pool->System != nullptr)
             pool->System->OnComponentAdded(entityID, component);
 
@@ -381,7 +505,7 @@ public:
         else
             pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
 
-        return pool->Storage.Has(id);
+        return pool->Storage.Has(id) || pool->InactiveStorage.Has(id);
     }
 
     template<class T>
@@ -391,7 +515,9 @@ public:
 
         // Out of all methods, "get" doesn't check if there is component for the reason of return type
         // So HasComponent() should be used before it
-        return ((ComponentsPoolWrapper<T>*)componentsMap[TYPE_ID(T)])->Storage.Get(id);
+        return entityStates[id] & EntityStates::IsActive
+            ? ((ComponentsPoolWrapper<T>*)componentsMap[TYPE_ID(T)])->Storage.Get(id)
+            : ((ComponentsPoolWrapper<T>*)componentsMap[TYPE_ID(T)])->InactiveStorage.Get(id);
     }
 
     template<class T>
@@ -408,20 +534,33 @@ public:
         {
             pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
 
-            if (!pool->Storage.Has(id))
+            if (!pool->Storage.Has(id) && !pool->InactiveStorage.Has(id))
                 return false;
 
+            bool active = entityStates[id] & EntityStates::IsActive;
             if (pool->System != nullptr)
             {
-                auto& component = pool->Storage.Get(id);
+                auto& component = active ? pool->Storage.Get(id) : pool->InactiveStorage.Get(id);
                 pool->System->OnComponentRemoved(entityID, component);
             }
-            pool->Storage.Remove(id);
+            if (active)
+                pool->Storage.Remove(id);
+            else
+                pool->InactiveStorage.Remove(id);
 
             return true;
         }
 
         return false;
+    }
+
+    void ClearRemoved()
+    {
+        // TODO: possible bottle neck - iterating all storages each frame if something was removed
+        for (auto component : componentsMap)
+        {
+            component.second->ClearRemoved();
+        }
     }
 };
 

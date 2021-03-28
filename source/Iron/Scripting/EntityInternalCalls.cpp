@@ -137,6 +137,29 @@ ScriptPointer EntityInternalCalls::Entity_RemoveScriptComponent(EntityID id, voi
     return scriptPointer;
 }
 
+bool EntityInternalCalls::Entity_GetIsActive(EntityID entityID)
+{
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    return registry->EntityGetState(entityID) | EntityStates::IsActive;
+}
+
+bool EntityInternalCalls::Entity_GetIsActiveSelf(EntityID entityID)
+{
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    return registry->EntityGetState(entityID) | EntityStates::IsActiveSelf;
+}
+
+void EntityInternalCalls::Entity_SetIsActiveSelf(EntityID entityID, bool isActiveSelf)
+{
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    registry->EntitySetActive(entityID, isActiveSelf, true);
+}
+
+bool EntityInternalCalls::Entity_IsDestroyed(EntityID entityID)
+{
+    return !Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(entityID);
+}
+
 MonoString* EntityInternalCalls::Entity_GetName(EntityID id)
 {
     if (!HasComponentS<NameComponent>(id))

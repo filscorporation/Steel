@@ -48,14 +48,36 @@ public:
 
     void Remove(EntityID id)
     {
-        Move(size - 1, sparse[id]);
-        size --;
-        data.erase(data.end() - 1);
-        dense.erase(dense.end() - 1);
+        dense[sparse[id]] = NULL_ENTITY;
+        data[sparse[id]].Owner = NULL_ENTITY;
+        holes ++;
+    }
+
+    void Condense()
+    {
+        if (holes == 0)
+            return;
+
+        int denseSize = dense.size();
+        for (int i = 0; i < denseSize; ++i)
+        {
+            if (dense[i] == NULL_ENTITY)
+            {
+                Move(size - 1, i);
+                size --;
+                data.erase(data.end() - 1);
+                dense.erase(dense.end() - 1);
+                denseSize--;
+                i--;
+            }
+        }
+
+        holes = 0;
     }
 
 private:
     EntityID size = 0;
+    uint32_t holes = 0;
     std::vector<T> data;
     std::vector<EntityID> dense;
     std::vector<EntityID> sparse;
@@ -67,7 +89,8 @@ private:
 
         dense[to] = dense[from];
         data[to] = data[from];
-        sparse[dense[to]] = to;
+        if (dense[from] != NULL_ENTITY)
+            sparse[dense[to]] = to;
     }
 
     inline void Swap(EntityID from, EntityID to)
@@ -78,7 +101,8 @@ private:
         std::swap(dense[to], dense[from]);
         std::swap(data[to], data[from]);
         sparse[dense[to]] = to;
-        sparse[dense[from]] = from;
+        if (dense[from] != NULL_ENTITY)
+            sparse[dense[from]] = from;
     }
 
     friend class EntitiesRegistry;

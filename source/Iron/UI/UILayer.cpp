@@ -69,7 +69,6 @@ void UILayer::Draw()
     entitiesRegistry->ApplyOrder<RectTransformation, UIRenderer>();
 
     // Draw
-    auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
     auto uiRenderers = entitiesRegistry->GetComponentIterator<UIRenderer>();
     auto textRenderers = entitiesRegistry->GetComponentIterator<UILetterRenderer>();
 
@@ -102,8 +101,10 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
     auto uiEventHandlers = entitiesRegistry->GetComponentIterator<UIEventHandler>();
 
-    for (int i = 0; i < uiEventHandlers.Size(); ++i)
-        uiEventHandlers[i].HandleEvent(rtAccessor.Get(uiEventHandlers[i].Owner), uiEvent);
+    int size = uiEventHandlers.Size();
+    for (int i = 0; i < size; ++i)
+        if (uiEventHandlers[i].IsAlive())
+            uiEventHandlers[i].HandleEvent(rtAccessor.Get(uiEventHandlers[i].Owner), uiEvent);
 
     _isPointerOverUI = uiEvent.Used;
 }

@@ -90,10 +90,9 @@ void Application::RunUpdate()
 
     // Update scripts
     auto scripts = scene->GetEntitiesRegistry()->GetComponentIterator<ScriptComponent>();
-    int size = scripts.Size();
-    // Iterating over scripts with index because they can modify components in update
-    for (int i = 0; i < size; ++i)
-        scripts[i].OnUpdate();
+    int scriptsSize = scripts.Size();
+    for (int i = 0; i < scriptsSize; ++i)
+        if (scripts[i].IsAlive()) scripts[i].OnUpdate();
 
     if (Time::FixedUpdate())
     {
@@ -103,30 +102,35 @@ void Application::RunUpdate()
         Physics::Simulate(Time::FixedDeltaTime());
 
         auto rigidBodies = scene->GetEntitiesRegistry()->GetComponentIterator<RigidBody>();
-        for (auto& rigidBody : rigidBodies)
-            rigidBody.GetPhysicsTransformation();
+        int rigidBodiesSize = rigidBodies.Size();
+        for (int i = 0; i < rigidBodiesSize; ++i)
+            if (rigidBodies[i].IsAlive())
+                rigidBodies[i].GetPhysicsTransformation();
 
-        for (int i = 0; i < size; i++)
-            scripts[i].OnFixedUpdate();
+        for (int i = 0; i < scriptsSize; ++i)
+            if (scripts[i].IsAlive()) scripts[i].OnFixedUpdate();
     }
 
     state = ApplicationStates::OnLateUpdate;
 
-    for (int i = 0; i < size; i++)
-        scripts[i].OnLateUpdate();
+    for (int i = 0; i < scriptsSize; ++i)
+        if (scripts[i].IsAlive()) scripts[i].OnLateUpdate();
 
     // Update inner components
     auto animators = scene->GetEntitiesRegistry()->GetComponentIterator<Animator>();
-    for (auto& animator : animators)
-        animator.OnUpdate();
+    int animatorsSize = animators.Size();
+    for (int i = 0; i < animatorsSize; ++i)
+        if (animators[i].IsAlive()) animators[i].OnUpdate();
 
     auto audioSources = scene->GetEntitiesRegistry()->GetComponentIterator<AudioSource>();
-    for (auto& audioSource : audioSources)
-        audioSource.OnUpdate();
+    int audioSourcesSize = audioSources.Size();
+    for (int i = 0; i < audioSourcesSize; ++i)
+        if (audioSources[i].IsAlive()) audioSources[i].OnUpdate();
 
     auto audioListeners = scene->GetEntitiesRegistry()->GetComponentIterator<AudioListener>();
-    for (auto& audioListener : audioListeners)
-        audioListener.OnUpdate();
+    int audioListenersSize = audioListeners.Size();
+    for (int i = 0; i < audioListenersSize; ++i)
+        if (audioListeners[i].IsAlive()) audioListeners[i].OnUpdate();
 
     // Update UI elements
     scene->GetUILayer()->Update();

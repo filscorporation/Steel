@@ -15,6 +15,8 @@ void Physics::Init()
 
     physicsSystem = new PhysicsSystem();
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<RigidBody>(physicsSystem);
+    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<BoxCollider>(physicsSystem);
+    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<CircleCollider>(physicsSystem);
 
     Log::LogInfo("Physics initialized");
 }
@@ -30,22 +32,28 @@ void Physics::UpdatePhysicsTransformations()
 {
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto rigidBodies = registry->GetComponentIterator<RigidBody>();
-    for (auto& rigidBody : rigidBodies)
+    int rigidBodiesSize = rigidBodies.Size();
+    for (int i = 0; i < rigidBodiesSize; ++i)
     {
-        rigidBody.UpdatePhysicsTransformation();
+        if (rigidBodies[i].IsAlive())
+            rigidBodies[i].UpdatePhysicsTransformation();
     }
 
     // TODO: use Collider type after components relations will be implemented
     auto boxColliders = registry->GetComponentIterator<BoxCollider>();
-    for (auto& boxCollider : boxColliders)
+    int boxCollidersSize = boxColliders.Size();
+    for (int i = 0; i < boxCollidersSize; ++i)
     {
-        boxCollider.SetSizeAutomatically();
+        if (boxColliders[i].IsAlive())
+            boxColliders[i].SetSizeAutomatically();
     }
 
     auto circleColliders = registry->GetComponentIterator<CircleCollider>();
-    for (auto& circleCollider : circleColliders)
+    int circleCollidersSize = circleColliders.Size();
+    for (int i = 0; i < circleCollidersSize; ++i)
     {
-        circleCollider.SetSizeAutomatically();
+        if (circleColliders[i].IsAlive())
+            circleColliders[i].SetSizeAutomatically();
     }
 }
 

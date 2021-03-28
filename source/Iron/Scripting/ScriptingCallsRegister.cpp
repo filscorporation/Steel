@@ -70,6 +70,10 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Entity::GetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_GetParent);
     mono_add_internal_call("Iron.Entity::SetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_SetParent);
     mono_add_internal_call("Iron.Entity::GetChildren_Internal", (void*)ComponentsInternalCalls::HierarchyNode_GetChildren);
+    mono_add_internal_call("Iron.Entity::GetIsActive_Internal", (void*)EntityInternalCalls::Entity_GetIsActive);
+    mono_add_internal_call("Iron.Entity::GetIsActiveSelf_Internal", (void*)EntityInternalCalls::Entity_GetIsActiveSelf);
+    mono_add_internal_call("Iron.Entity::SetIsActiveSelf_Internal", (void*)EntityInternalCalls::Entity_SetIsActiveSelf);
+    mono_add_internal_call("Iron.Entity::IsDestroyed_Internal", (void*)EntityInternalCalls::Entity_IsDestroyed);
 
     mono_add_internal_call("Iron.Component::FindAllOfType_Internal", (void*)EntityInternalCalls::Component_FindAllOfType);
     mono_add_internal_call("Iron.Component::FindAllScriptsOfType_Internal", (void*)EntityInternalCalls::Component_FindAllScriptsOfType);

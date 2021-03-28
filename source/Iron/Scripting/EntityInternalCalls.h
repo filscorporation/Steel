@@ -18,6 +18,12 @@ namespace EntityInternalCalls
     bool Entity_RemoveComponent(EntityID id, void* type);
     ScriptPointer Entity_RemoveScriptComponent(EntityID id, void* type);
 
+    bool Entity_GetIsActive(EntityID entityID);
+    bool Entity_GetIsActiveSelf(EntityID entityID);
+    void Entity_SetIsActiveSelf(EntityID entityID, bool isActiveSelf);
+
+    bool Entity_IsDestroyed(EntityID entityID);
+
     MonoString* Entity_GetName(EntityID id);
     void Entity_SetName(EntityID id, MonoString* name);
 

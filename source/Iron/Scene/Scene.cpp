@@ -106,6 +106,8 @@ void Scene::CleanDestroyedEntities()
             DestroyAndRemoveEntity(entity);
     }
     entitiesToDelete.clear();
+
+    entitiesRegistry->ClearRemoved();
 }
 
 void Scene::CleanAllEntities()

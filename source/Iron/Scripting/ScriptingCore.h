@@ -105,10 +105,12 @@ private:
 { \
     std::vector<EntityID> result; \
     auto components = entitiesRegistry->GetComponentIterator<m_class>(); \
-    result.reserve(components.Size()); \
-    for (int i = 0; i < components.Size(); ++i) \
+    int size = components.Size(); \
+    result.reserve(size); \
+    for (int i = 0; i < size; ++i) \
     { \
-        result.push_back(components[i].Owner); \
+        if (components[i].IsAlive()) \
+            result.push_back(components[i].Owner); \
     } \
     return result; \
 }

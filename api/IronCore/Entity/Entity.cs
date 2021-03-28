@@ -8,7 +8,7 @@ namespace Iron
 {
     public class Entity
     {
-        internal const uint NULL_ENTITY_ID = 0;
+        internal const uint NULL_ENTITY_ID = 0xffffffff;
         public uint ID { get; }
         
         public string Name
@@ -38,6 +38,14 @@ namespace Iron
         }
 
         public Transformation Transformation => GetComponent<Transformation>();
+
+        public bool IsActive => GetIsActive_Internal(ID);
+
+        public bool IsActiveSelf
+        {
+            get => GetIsActiveSelf_Internal(ID);
+            set => SetIsActiveSelf_Internal(ID, value);
+        }
 
         public void Destroy() => DestroyEntity_Internal(ID);
         
@@ -133,6 +141,24 @@ namespace Iron
             get { return GetChildren_Internal(ID).Select(childEntityID => new Entity(childEntityID)); }
         }
 
+        public bool IsDestroyed() => IsDestroyed_Internal(ID);
+
+        public static bool operator ==(Entity a, Entity b) => Equals(a, b);
+        public static bool operator !=(Entity a, Entity b) => !Equals(a, b);
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Entity entity)
+                return ID == entity.ID;
+            
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
+        }
+
         public override string ToString()
         {
             return $"{Name} ({ID})";
@@ -146,6 +172,15 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateNewEntity_Internal3(string name, uint parentEntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool GetIsActive_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool GetIsActiveSelf_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetIsActiveSelf_Internal(uint entityID, bool isActiveSelf);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool DestroyEntity_Internal(uint entityID);
@@ -182,5 +217,8 @@ namespace Iron
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint[] GetChildren_Internal(uint entityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool IsDestroyed_Internal(uint entityID);
     }
 }

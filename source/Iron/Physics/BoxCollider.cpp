@@ -6,18 +6,6 @@
 #include "BoxCollider.h"
 #include "PhysicsInfo.h"
 
-BoxCollider::BoxCollider(EntityID ownerEntityID) : Collider(ownerEntityID)
-{
-    info = new BoxColliderInfo();
-    info->BoxShape = new b2PolygonShape();
-    SetSizeAutomatically();
-}
-
-BoxCollider::~BoxCollider()
-{
-
-}
-
 void BoxCollider::SetSizeAutomatically()
 {
     if (HasComponentS<SpriteRenderer>(Owner))
