@@ -4,6 +4,8 @@
 #include "../Core/Log.h"
 #include "../Core/Time.h"
 #include "../Physics/Physics.h"
+#include "../Math/Random.h"
+#include "../Math/PerlinNoise.h"
 
 void CoreInternalCalls::Application_Quit()
 {
@@ -249,3 +251,17 @@ MonoArray* CoreInternalCalls::Physics_LineCast(glm::vec2* pointA, glm::vec2* poi
     return ScriptingCore::ToMonoDataTypeArray<RayCastHit>(Physics::LineCast(*pointA, *pointB), 0);
 }
 
+float CoreInternalCalls::Random_NextFloat(float min, float max)
+{
+    return Random::NextFloat(min, max);
+}
+
+int CoreInternalCalls::Random_NextInt(int min, int max)
+{
+    return Random::NextInt(min, max);
+}
+
+float CoreInternalCalls::Random_PerlinNoise(float x, float y)
+{
+    return PerlinNoise::Get(x, y);
+}

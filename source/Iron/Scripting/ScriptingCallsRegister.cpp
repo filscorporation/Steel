@@ -40,6 +40,10 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Physics::AABBCast_Internal", (void*)CoreInternalCalls::Physics_AABBCast);
     mono_add_internal_call("Iron.Physics::LineCast_Internal", (void*)CoreInternalCalls::Physics_LineCast);
 
+    mono_add_internal_call("Iron.Random::NextFloat_Internal", (void*)CoreInternalCalls::Random_NextFloat);
+    mono_add_internal_call("Iron.Random::NextInt_Internal", (void*)CoreInternalCalls::Random_NextInt);
+    mono_add_internal_call("Iron.Random::PerlinNoise_Internal", (void*)CoreInternalCalls::Random_PerlinNoise);
+
     mono_add_internal_call("Iron.ResourcesManager::LoadImage_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadImage);
     mono_add_internal_call("Iron.ResourcesManager::LoadAudioTrack_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAudioTrack);
     mono_add_internal_call("Iron.AudioTrack::GetLength_Internal", (void*)CoreInternalCalls::AudioTrack_GetLength);

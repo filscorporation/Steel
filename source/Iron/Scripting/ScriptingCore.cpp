@@ -366,7 +366,7 @@ MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t> &inArray
 {
     MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_uint32_class(), inArray.size());
 
-    for (int i = 0; i < inArray.size(); ++i)
+    for (uint32_t i = 0; i < inArray.size(); ++i)
     {
         mono_array_set(outArray, uint32_t, i, inArray[i]);
     }
@@ -378,7 +378,7 @@ MonoArray* ScriptingCore::ToMonoIntPtrArray(const std::vector<intptr_t>& inArray
 {
     MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_intptr_class(), inArray.size());
 
-    for (int i = 0; i < inArray.size(); ++i)
+    for (uint32_t i = 0; i < inArray.size(); ++i)
     {
         mono_array_set(outArray, intptr_t, i, inArray[i]);
     }

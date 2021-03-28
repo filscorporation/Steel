@@ -62,4 +62,9 @@ namespace CoreInternalCalls
     MonoArray* Physics_PointCast(glm::vec2* point);
     MonoArray* Physics_AABBCast(glm::vec2* min, glm::vec2* max);
     MonoArray* Physics_LineCast(glm::vec2* pointA, glm::vec2* pointB);
+
+    // Random
+    float Random_NextFloat(float min, float max);
+    int Random_NextInt(int min, int max);
+    float Random_PerlinNoise(float x, float y);
 }

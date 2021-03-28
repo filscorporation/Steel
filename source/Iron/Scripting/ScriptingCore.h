@@ -80,7 +80,7 @@ public:
     {
         MonoArray* outArray = mono_array_new(mono_domain_get(), cachedDataTypes[cachedDataTypeID], inArray.size());
 
-        for (int i = 0; i < inArray.size(); ++i)
+        for (uint32_t i = 0; i < inArray.size(); ++i)
         {
             mono_array_set(outArray, T, i, inArray[i]);
         }
