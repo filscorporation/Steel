@@ -22,6 +22,8 @@ public:
     void OnCreate();
     void OnFixedUpdate();
     void OnLateUpdate();
+    void OnEnabled();
+    void OnDisabled();
 
     void OnCollisionEnter(Collision collision);
     void OnCollisionExit(Collision collision);

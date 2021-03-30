@@ -5,6 +5,11 @@ namespace Iron
 {
     internal static class ComponentEngineCalls
     {
+        private static void FreeScriptHandle(IntPtr componentPtr)
+        {
+            GCHandle.FromIntPtr(componentPtr).Free();
+        }
+        
         private static void ComponentOnCreate(IntPtr componentPtr)
         {
             ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnCreate();
@@ -23,6 +28,16 @@ namespace Iron
         private static void ComponentOnFixedUpdate(IntPtr componentPtr)
         {
             ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnFixedUpdate();
+        }
+        
+        private static void ComponentOnEnabled(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnEnabled();
+        }
+        
+        private static void ComponentOnDisabled(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnDisabled();
         }
         
         private static void ComponentOnCollisionEnter(IntPtr componentPtr, uint otherEntityID)

@@ -170,6 +170,9 @@ public:
     template<typename T>
     void RegisterSystem(ComponentSystem<T>* system)
     {
+        if (system == nullptr)
+            Log::LogWarning("Trying to register NULL system");
+
         auto typeID = TYPE_ID(T);
 
         ComponentsPoolWrapper<T>* pool;

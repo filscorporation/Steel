@@ -105,10 +105,7 @@ namespace Iron
             if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
             {
                 IntPtr scriptPointer = RemoveScriptComponent_Internal(ID, typeof(T));
-                if (scriptPointer == IntPtr.Zero)
-                    return false;
-                GCHandle.FromIntPtr(scriptPointer).Free();
-                return true;
+                return scriptPointer != IntPtr.Zero;
             }
 
             return RemoveComponent_Internal(ID, typeof(T));

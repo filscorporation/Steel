@@ -38,6 +38,17 @@ void ScriptComponent::OnFixedUpdate()
     ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnFixedUpdate);
 }
 
+void ScriptComponent::OnEnabled()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnEnabled);
+}
+
+void ScriptComponent::OnDisabled()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnDisabled);
+}
+
+
 void ScriptComponent::OnCollisionEnter(Collision collision)
 {
     hasCollision = true;

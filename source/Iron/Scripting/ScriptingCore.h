@@ -8,6 +8,7 @@
 #include "../EntityComponentSystem/Component.h"
 #include "../EntityComponentSystem/EntitiesRegistry.h"
 #include "ScriptComponent.h"
+#include "ScriptComponentSystem.h"
 
 struct CachedData
 {
@@ -30,10 +31,14 @@ struct CachedData
 
 struct EngineCallsMethods
 {
+    MonoMethod* freeScriptHandle;
+
     MonoMethod* callOnCreate;
     MonoMethod* callOnUpdate;
     MonoMethod* callOnLateUpdate;
     MonoMethod* callOnFixedUpdate;
+    MonoMethod* callOnEnabled;
+    MonoMethod* callOnDisabled;
 
     MonoMethod* callOnCollisionEnter;
     MonoMethod* callOnCollisionStay;
@@ -62,6 +67,8 @@ public:
     static void RegisterInternalCalls();
     static void CacheAPITypes(MonoImage* image);
     static void CacheDataTypes(MonoImage* image);
+
+    static void FreeScriptHandle(ScriptPointer scriptPointer);
 
     static Component& AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success);
     static bool HasComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
@@ -92,6 +99,8 @@ public:
     static EventManagerMethods EventManagerCalls;
 
 private:
+
+    static ScriptComponentSystem* scriptComponentSystem;
 
     static CachedData* cachedAPITypes;
     static std::vector<MonoClass*> cachedDataTypes;

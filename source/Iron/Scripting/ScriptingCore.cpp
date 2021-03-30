@@ -23,9 +23,14 @@ EngineCallsMethods ScriptingCore::EngineCalls;
 EventManagerMethods ScriptingCore::EventManagerCalls;
 CachedData* ScriptingCore::cachedAPITypes;
 std::vector<MonoClass*> ScriptingCore::cachedDataTypes;
+ScriptComponentSystem* ScriptingCore::scriptComponentSystem;
 
 void ScriptingCore::Init(MonoImage* image)
 {
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    scriptComponentSystem = new ScriptComponentSystem();
+    registry->RegisterSystem<ScriptComponent>(scriptComponentSystem);
+
     LoadEngineCallsMethods(image);
     LoadEventManagerMethods(image);
     RegisterInternalCalls();
@@ -36,16 +41,21 @@ void ScriptingCore::Init(MonoImage* image)
 void ScriptingCore::Terminate()
 {
     delete cachedAPITypes;
+    delete scriptComponentSystem;
 }
 
 void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
 {
     MonoClass* klass = mono_class_from_name(image, "Iron", "ComponentEngineCalls");
 
+    EngineCalls.freeScriptHandle = mono_class_get_method_from_name(klass, "FreeScriptHandle", 1);
+
     EngineCalls.callOnCreate = mono_class_get_method_from_name(klass, "ComponentOnCreate", 1);
     EngineCalls.callOnUpdate = mono_class_get_method_from_name(klass, "ComponentOnUpdate", 1);
     EngineCalls.callOnLateUpdate = mono_class_get_method_from_name(klass, "ComponentOnLateUpdate", 1);
     EngineCalls.callOnFixedUpdate = mono_class_get_method_from_name(klass, "ComponentOnFixedUpdate", 1);
+    EngineCalls.callOnEnabled = mono_class_get_method_from_name(klass, "ComponentOnEnabled", 1);
+    EngineCalls.callOnDisabled = mono_class_get_method_from_name(klass, "ComponentOnDisabled", 1);
 
     EngineCalls.callOnCollisionEnter = mono_class_get_method_from_name(klass, "ComponentOnCollisionEnter", 2);
     EngineCalls.callOnCollisionStay = mono_class_get_method_from_name(klass, "ComponentOnCollisionStay", 2);
@@ -95,6 +105,26 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
 void ScriptingCore::CacheDataTypes(MonoImage* image)
 {
     cachedDataTypes.push_back(API_CLASS(RayCastHit));
+}
+
+void ScriptingCore::FreeScriptHandle(ScriptPointer scriptPointer)
+{
+    if (scriptPointer == 0)
+    {
+        Log::LogError("Trying to free null pointer script");
+        return;
+    }
+
+    MonoObject* exception = nullptr;
+    void* params[1];
+    params[0] = &scriptPointer;
+    mono_runtime_invoke(ScriptingCore::EngineCalls.freeScriptHandle, nullptr, params, &exception);
+
+    if (exception != nullptr)
+    {
+        Log::LogError("Error freeing script handle");
+        mono_print_unhandled_exception(exception);
+    }
 }
 
 Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)

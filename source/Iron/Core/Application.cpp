@@ -36,14 +36,13 @@ void Application::Init(ApplicationSettings settings)
 {
     Log::LogInfo("Running in " + GetRuntimePath());
 
-    ScriptingSystem::Init();
-
     Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen);
 
     resources = new ResourcesManager();
     scene = new Scene();
     scene->CreateMainCamera();
 
+    ScriptingSystem::Init();
     Renderer::Init();
     AudioCore::Init(scene->GetMainCamera().Owner);
     Physics::Init();
