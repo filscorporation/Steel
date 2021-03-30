@@ -9,14 +9,21 @@ int Scene::EntitiesWasCreated = 0;
 
 Scene::Scene()
 {
+    hierarchySystem = new HierarchySystem();
+    transformationSystem = new TransformationSystem();
     entitiesRegistry = new EntitiesRegistry();
     uiLayer = new UILayer(this);
+    entitiesRegistry->RegisterSystem<HierarchyNode>(hierarchySystem);
+    entitiesRegistry->RegisterSystem<Transformation>(transformationSystem);
+    entitiesRegistry->RegisterSystem<RectTransformation>(transformationSystem);
 }
 
 Scene::~Scene()
 {
     delete uiLayer;
     delete entitiesRegistry;
+    delete transformationSystem;
+    delete hierarchySystem;
 }
 
 void Scene::CreateMainCamera()

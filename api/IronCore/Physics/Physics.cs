@@ -13,9 +13,9 @@ namespace Iron
             return PointCast_Internal(ref point).Select(entityID => new Entity(entityID));
         }
 
-        public static IEnumerable<Entity> AABBCast(Vector2 min, Vector2 max)
+        public static IEnumerable<Entity> AABBCast(Vector2 center, Vector2 size)
         {
-            return AABBCast_Internal(ref min, ref max).Select(entityID => new Entity(entityID));
+            return AABBCast_Internal(ref center, ref size).Select(entityID => new Entity(entityID));
         }
 
         public static IEnumerable<RayCastHit> LineCast(Vector2 pointA, Vector2 pointB)

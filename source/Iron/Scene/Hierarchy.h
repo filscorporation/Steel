@@ -29,3 +29,5 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
 bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent);
 
 std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent);
+
+void SetActiveRecursively(EntitiesRegistry* registry, HierarchyNode& parentNode, bool active);

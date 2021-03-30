@@ -42,9 +42,13 @@ bool UIButton::Update()
             break;
         case ButtonTransitionTypes::SpriteChange:
             SetImage(Application::Instance->GetResourcesManager()->GetImage(targetTransitionData.Value));
+            isInTransition = false;
+            transitionProgress = 0.0f;
             break;
         case ButtonTransitionTypes::SpriteTileChange:
             _image->GetTexCoord(targetTransitionData.Value, uii.TextureCoords);
+            isInTransition = false;
+            transitionProgress = 0.0f;
             break;
         case ButtonTransitionTypes::Animation:
             // TODO: not supported yet

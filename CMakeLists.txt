@@ -70,7 +70,8 @@ set(SOURCE_FILES
         source/Iron/UI/UITextLetter.cpp source/Iron/UI/UITextLetter.h source/Iron/UI/Font.cpp source/Iron/UI/Font.h
         source/Iron/UI/FontManager.cpp source/Iron/UI/FontManager.h source/Iron/UI/UILetterRenderer.cpp
         source/Iron/UI/UILetterRenderer.h source/Iron/EntityComponentSystem/SparseSet.h source/Iron/Math/Math.h
-        source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h)
+        source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h source/Iron/Scene/HierarchySystem.cpp
+        source/Iron/Scene/HierarchySystem.h source/Iron/Scene/TransformationSystem.cpp source/Iron/Scene/TransformationSystem.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

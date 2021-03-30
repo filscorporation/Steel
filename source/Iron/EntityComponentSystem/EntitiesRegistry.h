@@ -112,18 +112,15 @@ public:
         if (!(isActive && Storage.Has(id) || !isActive && InactiveStorage.Has(id)))
             return;
 
-        if (System != nullptr)
+        if (isActive)
         {
-            if (isActive)
-            {
-                auto& component = Storage.Get(id);
-                System->OnEntityEnabled(entityID, component);
-            }
-            else
-            {
-                auto& component = InactiveStorage.Get(id);
-                System->OnEntityDisabled(entityID, component);
-            }
+            auto& component = Storage.Get(id);
+            System->OnEntityEnabled(entityID, component);
+        }
+        else
+        {
+            auto& component = InactiveStorage.Get(id);
+            System->OnEntityDisabled(entityID, component);
         }
     }
 };
@@ -283,8 +280,6 @@ public:
 
     void EntitySetActive(EntityID entityID, bool active, bool self)
     {
-        // TODO: apply to hierarchy
-
         if (!EntityExists(entityID))
             return;
 
@@ -293,7 +288,7 @@ public:
 
         if (active)
         {
-            if (state & EntityStates::IsActiveSelf)
+            if (!self && (state & EntityStates::IsActive) || self && (state & EntityStates::IsActiveSelf))
                 return;
 
             for (auto pool : componentsMap)
@@ -312,7 +307,7 @@ public:
         }
         else
         {
-            if (!(state & EntityStates::IsActiveSelf))
+            if (!self && !(state & EntityStates::IsActive) || !(state & EntityStates::IsActiveSelf))
                 return;
 
             for (auto pool : componentsMap)
@@ -348,7 +343,6 @@ public:
             // If there are any free ids already, create link from current deleted id to previously deleted
             entityIDs[EntityIDGetID(entityID)] = EntityIDCombine(nextFreeID, EntityIDGetVersion(entityIDs[EntityIDGetID(entityID)]));
         }
-        // TODO: move to clear removed
         // Next free id is current deleted
         nextFreeID = EntityIDGetID(entityID);
         freeIDsCount++;
@@ -556,7 +550,6 @@ public:
 
     void ClearRemoved()
     {
-        // TODO: possible bottle neck - iterating all storages each frame if something was removed
         for (auto component : componentsMap)
         {
             component.second->ClearRemoved();

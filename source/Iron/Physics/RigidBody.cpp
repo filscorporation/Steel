@@ -67,6 +67,12 @@ void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
     if (type == _type)
         return;
 
+    if (_type != RigidBodyTypes::None)
+    {
+        // TODO: remove physics body
+        Log::LogWarning("Duplicate physics body for one entity will be created");
+    }
+
     _type = type;
     switch (type)
     {

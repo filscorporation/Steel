@@ -118,6 +118,10 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
         childTransformation.SetRotation(rotationCache);
         childTransformation.SetScale(scaleCache);
     }
+
+    // Apply new parent's active state to child entity (null parent similar to active)
+    bool isParentActiveGlobally = parent == NULL_ENTITY || (registry->EntityGetState(parent) & EntityStates::IsActive);
+    registry->EntitySetActive(child, isParentActiveGlobally, false);
 }
 
 bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent)
@@ -162,4 +166,28 @@ std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent
     }
 
     return result;
+}
+
+void SetActiveRecursively(EntitiesRegistry* registry, HierarchyNode& parentNode, bool active)
+{
+    if (parentNode.ChildrenCount == 0)
+        return;
+
+    EntityID currentNodeID = parentNode.FirstChildNode;
+    uint32_t childrenCount = parentNode.ChildrenCount;
+    for (uint32_t i = 0; i < childrenCount; ++i)
+    {
+        auto& currentChildNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+        // Save next node, because currentChildNode reference will move after EntitySetActive
+        auto nextNodeBackup = currentChildNode.NextNode;
+        // If component is already in deactivated state itself, then there is no need to apply any other state
+        if (registry->EntityGetState(currentNodeID) & EntityStates::IsActiveSelf)
+        {
+            // Recursively call for children
+            SetActiveRecursively(registry, currentChildNode, active);
+            registry->EntitySetActive(currentNodeID, active, false);
+        }
+
+        currentNodeID = nextNodeBackup;
+    }
 }

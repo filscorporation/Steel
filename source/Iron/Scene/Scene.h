@@ -6,6 +6,8 @@
 #include "../Rendering/Camera.h"
 #include "../Core/Application.h"
 #include "../UI/UILayer.h"
+#include "HierarchySystem.h"
+#include "TransformationSystem.h"
 
 class UILayer;
 
@@ -33,6 +35,9 @@ public:
     static int EntitiesWasCreated;
 
 private:
+    HierarchySystem* hierarchySystem;
+    TransformationSystem* transformationSystem;
+
     EntitiesRegistry* entitiesRegistry;
     UILayer* uiLayer;
     std::list<EntityID> entitiesToDelete;
