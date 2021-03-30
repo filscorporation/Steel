@@ -49,24 +49,7 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     if (childNode.ParentNode != NULL_ENTITY)
     {
         // Child already has a parent, we need to change links
-        auto& prevParentNode = registry->GetComponent<HierarchyNode>(childNode.ParentNode);
-        if (prevParentNode.ChildrenCount == 1)
-        {
-            // This child was the only child of its parent, remove all children then
-            prevParentNode.ChildrenCount = 0;
-            prevParentNode.FirstChildNode = NULL_ENTITY;
-        }
-        else
-        {
-            // This child was part of parent children, change links to keep hierarchy
-            prevParentNode.ChildrenCount--;
-            if (prevParentNode.FirstChildNode == child)
-                prevParentNode.FirstChildNode = childNode.NextNode;
-            auto& prevPrevNode = registry->GetComponent<HierarchyNode>(childNode.PreviousNode);
-            auto& prevNextNode = registry->GetComponent<HierarchyNode>(childNode.NextNode);
-            prevPrevNode.NextNode = childNode.NextNode;
-            prevNextNode.PreviousNode = childNode.PreviousNode;
-        }
+        RemoveChildFromItsParent(registry, childNode);
     }
 
     if (parent == NULL_ENTITY)
@@ -122,6 +105,29 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     // Apply new parent's active state to child entity (null parent similar to active)
     bool isParentActiveGlobally = parent == NULL_ENTITY || (registry->EntityGetState(parent) & EntityStates::IsActive);
     registry->EntitySetActive(child, isParentActiveGlobally, false);
+}
+
+void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNode)
+{
+    // Remove child from its parent and keep all links valid
+    auto& prevParentNode = registry->GetComponent<HierarchyNode>(childNode.ParentNode);
+    if (prevParentNode.ChildrenCount == 1)
+    {
+        // This child was the only child of its parent, remove all children then
+        prevParentNode.ChildrenCount = 0;
+        prevParentNode.FirstChildNode = NULL_ENTITY;
+    }
+    else
+    {
+        // This child was part of parent children, change links to keep hierarchy
+        prevParentNode.ChildrenCount--;
+        if (prevParentNode.FirstChildNode == childNode.Owner)
+            prevParentNode.FirstChildNode = childNode.NextNode;
+        auto& prevPrevNode = registry->GetComponent<HierarchyNode>(childNode.PreviousNode);
+        auto& prevNextNode = registry->GetComponent<HierarchyNode>(childNode.NextNode);
+        prevPrevNode.NextNode = childNode.NextNode;
+        prevNextNode.PreviousNode = childNode.PreviousNode;
+    }
 }
 
 bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent)
@@ -187,6 +193,27 @@ void SetActiveRecursively(EntitiesRegistry* registry, HierarchyNode& parentNode,
             SetActiveRecursively(registry, currentChildNode, active);
             registry->EntitySetActive(currentNodeID, active, false);
         }
+
+        currentNodeID = nextNodeBackup;
+    }
+}
+
+void DeleteRecursively(EntitiesRegistry* registry, HierarchyNode& parentNode)
+{
+    if (parentNode.ChildrenCount == 0)
+        return;
+
+    EntityID currentNodeID = parentNode.FirstChildNode;
+    uint32_t childrenCount = parentNode.ChildrenCount;
+    for (uint32_t i = 0; i < childrenCount; ++i)
+    {
+        auto& currentChildNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+        // Save next node, because currentChildNode reference will move after DeleteEntity
+        auto nextNodeBackup = currentChildNode.NextNode;
+
+        // Recursively call for children
+        DeleteRecursively(registry, currentChildNode);
+        registry->DeleteEntity(currentNodeID);
 
         currentNodeID = nextNodeBackup;
     }

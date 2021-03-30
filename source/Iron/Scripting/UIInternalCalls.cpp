@@ -5,8 +5,8 @@
 #include "../Core/Log.h"
 #include "../Core/Application.h"
 #include "../Scene/SceneHelper.h"
-#include "../UI/UIButton.h"
-#include "../UI/UIText.h"
+#include "../UI/UIElements/UIButton.h"
+#include "../UI/UIElements/UIText.h"
 
 void UIInternalCalls::RectTransformation_GetAnchorMin(EntityID entityID, glm::vec2* anchor)
 {

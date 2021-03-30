@@ -6,8 +6,8 @@
 #include "ScriptingCore.h"
 #include "../Core/ResourceID.h"
 #include "../EntityComponentSystem/Entity.h"
-#include "../UI/UIText.h"
-#include "../UI/UIButton.h"
+#include "../UI/UIElements/UIText.h"
+#include "../UI/UIElements/UIButton.h"
 
 namespace UIInternalCalls
 {

@@ -1,5 +1,5 @@
 #include "UIImage.h"
-#include "../Scene/SceneHelper.h"
+#include "../../Scene/SceneHelper.h"
 
 void UIImage::SetImage(Sprite *image)
 {

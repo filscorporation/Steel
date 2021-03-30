@@ -26,8 +26,12 @@ void UpdateChildrenDepthAndSetDirty(EntitiesRegistry* registry, HierarchyNode& p
 
 void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID parent);
 
+void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNode);
+
 bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent);
 
 std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent);
 
 void SetActiveRecursively(EntitiesRegistry* registry, HierarchyNode& parentNode, bool active);
+
+void DeleteRecursively(EntitiesRegistry* registry, HierarchyNode& parentNode);

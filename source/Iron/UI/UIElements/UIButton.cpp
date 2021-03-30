@@ -1,9 +1,9 @@
 #include "UIButton.h"
-#include "UIEventHandler.h"
-#include "../Core/Time.h"
-#include "../Math/Math.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scripting/ScriptingCore.h"
+#include "../UIEventHandler.h"
+#include "../../Core/Time.h"
+#include "../../Math/Math.h"
+#include "../../Scene/SceneHelper.h"
+#include "../../Scripting/ScriptingCore.h"
 
 UIButton::UIButton(EntityID ownerEntityID) : UIImage(ownerEntityID)
 {

@@ -1,7 +1,7 @@
 #include "UIText.h"
-#include "UIRenderer.h"
-#include "../Core/Application.h"
-#include "../Scene/SceneHelper.h"
+#include "../UIRenderer.h"
+#include "../../Core/Application.h"
+#include "../../Scene/SceneHelper.h"
 
 UIText::UIText(EntityID ownerEntityID) : Component(ownerEntityID)
 {
@@ -12,14 +12,6 @@ UIText::UIText(EntityID ownerEntityID) : Component(ownerEntityID)
     }
 
     _font = Application::Instance->GetResourcesManager()->DefaultFont();
-}
-
-UIText::~UIText()
-{
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    ForeachLetterDelete(entitiesRegistry, lettersCount);
-    lastLetterID = NULL_ENTITY;
-    lettersCount = 0;
 }
 
 void UIText::Rebuild()
@@ -329,12 +321,26 @@ EntityID UIText::ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count)
     return currentLetterID;
 }
 
+void UIText::ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const
+{
+    EntityID currentLetterID = lastLetterID;
+    auto lettersAccessor = registry->GetComponentAccessor<UILetterRenderer>();
+    for (uint32_t i = 0; i < lettersCount; ++i)
+    {
+        auto& currentLetter = active ? lettersAccessor.GetInactive(currentLetterID) : lettersAccessor.Get(currentLetterID);
+        currentLetterID = currentLetter.PreviousLetter;
+
+        registry->EntitySetActive(currentLetter.Owner, active, false);
+    }
+}
+
 void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const
 {
     EntityID currentLetterID = lastLetterID;
+    auto lettersAccessor = registry->GetComponentAccessor<UILetterRenderer>();
     for (uint32_t i = 0; i < lettersCount; ++i)
     {
-        auto& currentLetter = registry->GetComponent<UILetterRenderer>(currentLetterID);
+        auto& currentLetter = lettersAccessor.Get(currentLetterID);
         for (int j = 0; j < 4; ++j)
         {
             currentLetter.QuadCache.Vertices[j] = transformationMatrix * currentLetter.Vertices[j];

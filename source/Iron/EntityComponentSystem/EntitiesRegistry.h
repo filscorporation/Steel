@@ -288,7 +288,8 @@ public:
 
         if (active)
         {
-            if (!self && (state & EntityStates::IsActive) || self && (state & EntityStates::IsActiveSelf))
+            if (!self && (state & EntityStates::IsActive || !(state & EntityStates::IsActiveSelf))
+                || self && (state & EntityStates::IsActiveSelf))
                 return;
 
             for (auto pool : componentsMap)
@@ -555,6 +556,16 @@ public:
             component.second->ClearRemoved();
         }
     }
+
+    template<typename T>
+    void ClearRemoved()
+    {
+        auto typeID = TYPE_ID(T);
+        if (componentsMap.find(typeID) != componentsMap.end())
+        {
+            ((ComponentsPoolWrapper<T>*)componentsMap[typeID])->ClearRemoved();
+        }
+    }
 };
 
 // Allows access to certain component type without using components types hashmap
@@ -574,6 +585,18 @@ public:
     {
         EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
         return _componentsPool->Storage.Get(id);
+    }
+
+    bool HasInactive(EntityID entityID)
+    {
+        EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
+        return _componentsPool->InactiveStorage.Has(id);
+    }
+
+    T& GetInactive(EntityID entityID)
+    {
+        EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
+        return _componentsPool->InactiveStorage.Get(id);
     }
 
 private:

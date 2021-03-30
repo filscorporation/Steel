@@ -3,14 +3,16 @@
 #include "../EntityComponentSystem/SparseSet.h"
 #include "../Scene/Scene.h"
 #include "UIEvent.h"
-#include "UIButton.h"
+#include "UIElements/UIButton.h"
+#include "UISystem.h"
 
 class Scene;
 
 class UILayer
 {
 public:
-    explicit UILayer(Scene* scene) { _scene = scene; }
+    explicit UILayer(Scene* scene);
+    ~UILayer();
 
     void Update();
     void Draw();
@@ -29,4 +31,6 @@ private:
     bool _isPointerOverUI = false;
 
     SparseSet _buttonsToUpdate;
+
+    UISystem* uiSystem;
 };

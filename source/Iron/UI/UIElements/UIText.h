@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Font.h"
-#include "UIComponent.h"
-#include "UILetterRenderer.h"
+#include "../Font.h"
+#include "../UIComponent.h"
+#include "../UILetterRenderer.h"
 
 namespace AlignmentTypes
 {
@@ -24,7 +24,6 @@ class UIText : public Component
 {
 public:
     explicit UIText(EntityID ownerEntityID);
-    ~UIText() override;
 
     void Rebuild();
 
@@ -44,6 +43,7 @@ public:
 private:
     void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
     EntityID ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count) const;
+    void ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const;
     void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const;
 
     Font* _font = nullptr;
@@ -60,4 +60,6 @@ private:
 
     EntityID lastLetterID = NULL_ENTITY;
     uint32_t lettersCount = 0;
+
+    friend class UISystem;
 };

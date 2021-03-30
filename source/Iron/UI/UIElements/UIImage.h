@@ -1,8 +1,8 @@
 #pragma once
 
-#include "UIComponent.h"
-#include "UIRenderer.h"
-#include "../Rendering/Sprite.h"
+#include "../UIComponent.h"
+#include "../UIRenderer.h"
+#include "../../Rendering/Sprite.h"
 
 class UIImage : public UIComponent
 {

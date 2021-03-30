@@ -140,13 +140,13 @@ ScriptPointer EntityInternalCalls::Entity_RemoveScriptComponent(EntityID id, voi
 bool EntityInternalCalls::Entity_GetIsActive(EntityID entityID)
 {
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    return registry->EntityGetState(entityID) | EntityStates::IsActive;
+    return registry->EntityGetState(entityID) & EntityStates::IsActive;
 }
 
 bool EntityInternalCalls::Entity_GetIsActiveSelf(EntityID entityID)
 {
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    return registry->EntityGetState(entityID) | EntityStates::IsActiveSelf;
+    return registry->EntityGetState(entityID) & EntityStates::IsActiveSelf;
 }
 
 void EntityInternalCalls::Entity_SetIsActiveSelf(EntityID entityID, bool isActiveSelf)

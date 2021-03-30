@@ -13,9 +13,9 @@
 #include "../Rendering/SpriteRenderer.h"
 #include "../UI/RectTransformation.h"
 #include "../UI/UIRenderer.h"
-#include "../UI/UIImage.h"
-#include "../UI/UIButton.h"
-#include "../UI/UIText.h"
+#include "../UI/UIElements/UIImage.h"
+#include "../UI/UIElements/UIButton.h"
+#include "../UI/UIElements/UIText.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/NameComponent.h"
 

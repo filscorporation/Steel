@@ -55,7 +55,7 @@ set(SOURCE_FILES
         source/Iron/Physics/PhysicsContactListener.cpp source/Iron/Physics/PhysicsContactListener.h
         source/Iron/Physics/Collision.h source/Iron/UI/RectTransformation.cpp source/Iron/UI/RectTransformation.h
         source/Iron/UI/UIComponent.cpp source/Iron/UI/UIComponent.h source/Iron/UI/UIRenderer.cpp
-        source/Iron/UI/UIRenderer.h source/Iron/UI/UIImage.cpp source/Iron/UI/UIImage.h
+        source/Iron/UI/UIRenderer.h source/Iron/UI/UIElements/UIImage.cpp source/Iron/UI/UIElements/UIImage.h
         source/Iron/Scripting/UIInternalCalls.cpp source/Iron/Scripting/UIInternalCalls.h
         source/Iron/EntityComponentSystem/EntitiesRegistry.h source/Iron/EntityComponentSystem/Entity.h
         source/Iron/Scene/NameComponent.cpp source/Iron/Scene/NameComponent.h source/Iron/Scene/SceneHelper.h
@@ -66,12 +66,13 @@ set(SOURCE_FILES
         source/Iron/Scene/HierarchyNode.cpp source/Iron/Scene/HierarchyNode.h source/Iron/Scene/Hierarchy.h
         source/Iron/Scene/Hierarchy.cpp source/Iron/Rendering/RendererData.h source/Iron/UI/UILayer.cpp source/Iron/UI/UILayer.h
         source/Iron/UI/UIEventHandler.cpp source/Iron/UI/UIEventHandler.h source/Iron/UI/UIEvent.h source/Iron/Core/ButtonStates.h
-        source/Iron/UI/UIButton.cpp source/Iron/UI/UIButton.h source/Iron/UI/UIText.cpp source/Iron/UI/UIText.h
-        source/Iron/UI/UITextLetter.cpp source/Iron/UI/UITextLetter.h source/Iron/UI/Font.cpp source/Iron/UI/Font.h
+        source/Iron/UI/UIElements/UIButton.cpp source/Iron/UI/UIElements/UIButton.h source/Iron/UI/UIElements/UIText.cpp source/Iron/UI/UIElements/UIText.h
+        source/Iron/UI/UIElements/UITextLetter.cpp source/Iron/UI/UIElements/UITextLetter.h source/Iron/UI/Font.cpp source/Iron/UI/Font.h
         source/Iron/UI/FontManager.cpp source/Iron/UI/FontManager.h source/Iron/UI/UILetterRenderer.cpp
         source/Iron/UI/UILetterRenderer.h source/Iron/EntityComponentSystem/SparseSet.h source/Iron/Math/Math.h
         source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h source/Iron/Scene/HierarchySystem.cpp
-        source/Iron/Scene/HierarchySystem.h source/Iron/Scene/TransformationSystem.cpp source/Iron/Scene/TransformationSystem.h)
+        source/Iron/Scene/HierarchySystem.h source/Iron/Scene/TransformationSystem.cpp source/Iron/Scene/TransformationSystem.h
+        source/Iron/UI/UISystem.cpp source/Iron/UI/UISystem.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

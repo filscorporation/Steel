@@ -2,10 +2,23 @@
 #include "UIRenderer.h"
 #include "UIEventHandler.h"
 #include "UILetterRenderer.h"
-#include "UIText.h"
+#include "UIElements/UIText.h"
 #include "../Rendering/Renderer.h"
 #include "../Scene/Hierarchy.h"
 #include "../Scene/NameComponent.h"
+
+UILayer::UILayer(Scene* scene)
+{
+    _scene = scene;
+    uiSystem = new UISystem();
+    _scene->GetEntitiesRegistry()->RegisterSystem<UIText>(uiSystem);
+}
+
+UILayer::~UILayer()
+{
+    _scene->GetEntitiesRegistry()->RemoveSystem<UIText>();
+    delete uiSystem;
+}
 
 EntityID UILayer::CreateUIElement()
 {
@@ -58,6 +71,8 @@ void UILayer::Draw()
     {
         text.Rebuild();
     }
+    // After rebuilding text we need to condense letters list to not wait for the next frame
+    entitiesRegistry->ClearRemoved<UILetterRenderer>();
 
     // Sort all UI objects by SortingOrder
     struct
