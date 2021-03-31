@@ -13,6 +13,8 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Log::LogInfo_Internal", (void*)CoreInternalCalls::Log_LogInfo);
     mono_add_internal_call("Iron.Log::LogWarning_Internal", (void*)CoreInternalCalls::Log_LogWarning);
     mono_add_internal_call("Iron.Log::LogError_Internal", (void*)CoreInternalCalls::Log_LogError);
+    mono_add_internal_call("Iron.Debug::EnableDebugInfoWindow_Internal", (void*)CoreInternalCalls::Debug_EnableDebugInfoWindow);
+    mono_add_internal_call("Iron.Debug::DisableDebugInfoWindow_Internal", (void*)CoreInternalCalls::Debug_DisableDebugInfoWindow);
     mono_add_internal_call("Iron.Time::GetDeltaTime_Internal", (void*)CoreInternalCalls::Time_GetDeltaTime);
     mono_add_internal_call("Iron.Time::GetTimeScale_Internal", (void*)CoreInternalCalls::Time_GetTimeScale);
     mono_add_internal_call("Iron.Time::SetTimeScale_Internal", (void*)CoreInternalCalls::Time_SetTimeScale);

@@ -3,17 +3,6 @@
 #include "../../Core/Application.h"
 #include "../../Scene/SceneHelper.h"
 
-UIText::UIText(EntityID ownerEntityID) : Component(ownerEntityID)
-{
-    if (!HasComponentS<RectTransformation>(Owner))
-    {
-        Log::LogError("Adding UIComponents to objects without RectTransformation will lead to undefined behaviour. "
-                      "Create UI objects using UILayout, not Scene");
-    }
-
-    _font = Application::Instance->GetResourcesManager()->DefaultFont();
-}
-
 void UIText::Rebuild()
 {
     auto& rectTransformation = GetComponentS<RectTransformation>(Owner);

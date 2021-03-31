@@ -44,11 +44,12 @@ struct ButtonTransitionsInfo
     ButtonTransitionData Disabled;
 };
 
+typedef void(*ButtonCallback)();
+
 class UIButton : public UIImage
 {
 public:
-    explicit UIButton(EntityID ownerEntityID);
-    ~UIButton();
+    explicit UIButton(EntityID ownerEntityID) : UIImage(ownerEntityID) { };
 
     bool Update();
 
@@ -57,6 +58,8 @@ public:
 
     void SetInteractable(bool interactable);
     bool GetInteractable() const;
+
+    ButtonCallback Callback = nullptr;
 
 private:
     static void HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
@@ -70,4 +73,6 @@ private:
     bool isInTransition = false;
     ButtonTransitionData targetTransitionData;
     float transitionProgress = 0.0f;
+
+    friend class UISystem;
 };

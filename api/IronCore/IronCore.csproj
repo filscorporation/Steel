@@ -45,6 +45,7 @@
         <Compile Include="Audio\AudioTrack.cs" />
         <Compile Include="Core\Application.cs" />
         <Compile Include="Core\ApplicationState.cs" />
+        <Compile Include="Core\Debug.cs" />
         <Compile Include="Core\Input.cs" />
         <Compile Include="Core\KeyCodes.cs" />
         <Compile Include="Core\Log.cs" />

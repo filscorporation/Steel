@@ -12,11 +12,12 @@
 #include "Log.h"
 #include "Time.h"
 #include "../Audio/AudioCore.h"
+#include "../Audio/AudioListener.h"
+#include "../Animation/Animator.h"
+#include "../Debug/Debug.h"
 #include "../Physics/Physics.h"
 #include "../Rendering/Renderer.h"
 #include "../Scripting/ScriptingSystem.h"
-#include "../Animation/Animator.h"
-#include "../Audio/AudioListener.h"
 
 Application* Application::Instance;
 
@@ -48,6 +49,8 @@ void Application::Init(ApplicationSettings settings)
     Physics::Init();
 
     resources->LoadDefaultFont();
+
+    Debug::Init();
 
     Log::LogInfo("Application initialized");
 }
@@ -131,6 +134,9 @@ void Application::RunUpdate()
     for (int i = 0; i < audioListenersSize; ++i)
         if (audioListeners[i].IsAlive()) audioListeners[i].OnUpdate();
 
+    // Update debug info
+    Debug::Update();
+
     // Update UI elements
     scene->GetUILayer()->Update();
 
@@ -163,23 +169,13 @@ void Application::RunUpdate()
 
     if (Screen::WindowShouldClose())
         isRunning = false;
-
-    // TODO: testing fps (will be moved to debug UI)
-    fpsCounter ++;
-    fpsTimer += Time::DeltaTime();
-    if (fpsTimer > 2.0f)
-    {
-        Log::LogInfo("FPS " + std::to_string(fpsCounter / 2)
-            + ", draw calls " + std::to_string(Renderer::DrawCallsStats)
-            + ", vertices " + std::to_string(Renderer::VerticesStats));
-        fpsTimer = 0;
-        fpsCounter = 0;
-    }
 }
 
 void Application::Terminate()
 {
     Log::LogInfo("Entities was created " + std::to_string(Scene::EntitiesWasCreated));
+
+    Debug::Terminate();
 
     delete scene;
 

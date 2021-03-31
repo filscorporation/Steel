@@ -20,10 +20,10 @@ namespace AlignmentTypes
     };
 }
 
-class UIText : public Component
+class UIText : public UIComponent
 {
 public:
-    explicit UIText(EntityID ownerEntityID);
+    explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 
     void Rebuild();
 

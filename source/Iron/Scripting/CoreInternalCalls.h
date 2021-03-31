@@ -57,6 +57,10 @@ namespace CoreInternalCalls
     void Log_LogWarning(MonoString* message);
     void Log_LogError(MonoString* message);
 
+    // Debug
+    void Debug_EnableDebugInfoWindow();
+    void Debug_DisableDebugInfoWindow();
+
     // Physics
     void Physics_Simulate(float deltaTime);
     MonoArray* Physics_PointCast(glm::vec2* point);

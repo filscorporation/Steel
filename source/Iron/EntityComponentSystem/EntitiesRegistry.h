@@ -337,6 +337,9 @@ public:
 
     void DeleteEntity(EntityID entityID)
     {
+        if (isCleared)
+            return;
+
         if (!EntityExists(entityID))
             return;
 
@@ -363,14 +366,14 @@ public:
 
     void CleanAllEntities()
     {
-        entityIDs.clear();
-        entityStates.clear();
-        nextFreeID = 0;
-        freeIDsCount = 0;
         for (auto poolPair : componentsMap)
         {
             delete poolPair.second;
         }
+        entityIDs.clear();
+        entityStates.clear();
+        nextFreeID = 0;
+        freeIDsCount = 0;
     }
 
 private:

@@ -72,7 +72,8 @@ set(SOURCE_FILES
         source/Iron/UI/UILetterRenderer.h source/Iron/EntityComponentSystem/SparseSet.h source/Iron/Math/Math.h
         source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h source/Iron/Scene/HierarchySystem.cpp
         source/Iron/Scene/HierarchySystem.h source/Iron/Scene/TransformationSystem.cpp source/Iron/Scene/TransformationSystem.h
-        source/Iron/UI/UISystem.cpp source/Iron/UI/UISystem.h source/Iron/Scripting/ScriptComponentSystem.cpp source/Iron/Scripting/ScriptComponentSystem.h)
+        source/Iron/UI/UISystem.cpp source/Iron/UI/UISystem.h source/Iron/Scripting/ScriptComponentSystem.cpp source/Iron/Scripting/ScriptComponentSystem.h
+        source/Iron/Debug/Debug.cpp source/Iron/Debug/Debug.h source/Iron/Debug/DebugInfoWindow.cpp source/Iron/Debug/DebugInfoWindow.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

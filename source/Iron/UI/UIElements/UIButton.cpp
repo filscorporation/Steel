@@ -5,31 +5,6 @@
 #include "../../Scene/SceneHelper.h"
 #include "../../Scripting/ScriptingCore.h"
 
-UIButton::UIButton(EntityID ownerEntityID) : UIImage(ownerEntityID)
-{
-    auto& eh = GetComponentS<UIEventHandler>(ownerEntityID);
-
-    eh.EventCallback = HandleEvent;
-    eh.EventsMask = UIEventTypes::MouseEnter | UIEventTypes::MouseExit
-                  | UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustReleased;
-
-    _transitionsInfo.TransitionType = ButtonTransitionTypes::ColorShift;
-    _transitionsInfo.TransitionDuration = 0.3f;
-    _transitionsInfo.Normal.FromColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    _transitionsInfo.Hovered.FromColor(glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
-    _transitionsInfo.Clicked.FromColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-    _transitionsInfo.Disabled.FromColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
-}
-
-UIButton::~UIButton()
-{
-    if (isInTransition)
-    {
-        isInTransition = false;
-        Application::Instance->GetCurrentScene()->GetUILayer()->RemoveButtonFromUpdateQueue(Owner);
-    }
-}
-
 bool UIButton::Update()
 {
     transitionProgress += Time::DeltaTime();
@@ -113,6 +88,8 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& ui
     if (eventType & UIEventTypes::MouseJustPressed)
     {
         PlayTransition(_transitionsInfo.Clicked);
+        if (Callback != nullptr)
+            Callback();
         ScriptingCore::CallEventMethod(Owner, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
     }
     if (eventType & UIEventTypes::MouseJustReleased)

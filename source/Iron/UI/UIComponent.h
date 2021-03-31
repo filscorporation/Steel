@@ -6,7 +6,5 @@
 class UIComponent : public Component
 {
 public:
-    explicit UIComponent(EntityID ownerEntityID);
-
-    RectTransformation& GetRectTransform();
+    explicit UIComponent(EntityID ownerEntityID) : Component(ownerEntityID) { };
 };
