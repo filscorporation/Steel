@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "BuiltInShaders.h"
+#include "Screen.h"
 #include "SpriteRenderer.h"
 #include "../Core/Application.h"
 

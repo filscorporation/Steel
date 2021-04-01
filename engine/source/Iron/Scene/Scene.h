@@ -4,7 +4,6 @@
 
 #include "../EntityComponentSystem/EntitiesRegistry.h"
 #include "../Rendering/Camera.h"
-#include "../Core/Application.h"
 #include "../UI/UILayer.h"
 #include "HierarchySystem.h"
 #include "TransformationSystem.h"

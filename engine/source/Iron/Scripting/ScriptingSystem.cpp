@@ -18,8 +18,8 @@
 #ifdef __unix__
 #define DEBUG_MONO_LIB_PATH "/usr/lib/"
 #define DEBUG_MONO_ETC_PATH "/usr/lib/mono"
-#define DEBUG_API_DLL_PATH "../../includes/Iron/api/IronCustom/bin/Debug/IronCore.dll"
-#define DEBUG_SCRIPTS_DLL_PATH "../../includes/Iron/api/IronCustom/bin/Debug/IronCustom.dll"
+#define DEBUG_API_DLL_PATH "../../../engine/IronCustom/bin/Debug/IronCore.dll"
+#define DEBUG_SCRIPTS_DLL_PATH "../../../engine/IronCustom/bin/Debug/IronCustom.dll"
 #endif
 
 MonoDomain* domain;
@@ -94,6 +94,7 @@ void ScriptingSystem::Init()
 #endif
     if (customAssemblyImage == nullptr)
     {
+        Log::LogWarning("Could not find custom assembly at: " DEBUG_SCRIPTS_DLL_PATH);
         return;
     }
 
@@ -118,6 +119,12 @@ void ScriptingSystem::CallEntryPoint()
     if (!isInitialized)
     {
         Log::LogWarning("Scripting system is not initialized");
+        return;
+    }
+
+    if (customAssemblyImage == nullptr)
+    {
+        Log::LogWarning("Custom assembly is null");
         return;
     }
 

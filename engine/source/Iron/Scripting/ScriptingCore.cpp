@@ -368,6 +368,8 @@ void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod *method, 
 
 void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
 {
+    Log::LogInfo("FindAndCallEntryPoint");
+
     MonoClass* klass = mono_class_from_name(image, "IronCustom", "GameManager");
     if (klass == nullptr)
     {

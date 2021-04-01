@@ -50,7 +50,8 @@ ResourcesManager::~ResourcesManager()
 void ResourcesManager::LoadDefaultFont()
 {
     defaultFont = LoadFont("font.ttf");
-    defaultFont->AddSizeIfNotExists(32);
+    if (defaultFont != nullptr)
+        defaultFont->AddSizeIfNotExists(32);
 }
 
 Sprite* ResourcesManager::LoadImage(const char* filePath)

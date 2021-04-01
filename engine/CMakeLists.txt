@@ -22,6 +22,10 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
+set(BOX2D_BUILD_UNIT_TESTS OFF)
+set(BOX2D_BUILD_TESTBED OFF)
+set(BOX2D_BUILD_EXAMPLES OFF)
+
 set(GLAD_FILES includes/glad/src/glad.c)
 set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
@@ -124,23 +128,17 @@ target_include_directories(Iron PRIVATE ${ALSOFT_HEADERS_DIR})
 target_link_libraries(Iron PRIVATE OpenAL)
 
 if (UNIX AND NOT APPLE)
-    set(BOX2D_NAME "libbox2d.a")
     set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
     set(FREETYPE_NAME "freetype.a")
 endif ()
 if (WIN32)
-    set(BOX2D_NAME "box2d.lib")
     set(MONO_NAME "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
     set(FREETYPE_NAME "freetype.lib")
 endif ()
 
 # box2d
-include_directories(includes/box2d/include)
-if (${CMAKE_BUILD_TYPE} MATCHES Debug)
-    target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-debug/bin/${BOX2D_NAME})
-else()
-    target_link_libraries(Iron PRIVATE ${PROJECT_SOURCE_DIR}/includes/box2d/cmake-build-release/bin/${BOX2D_NAME})
-endif()
+add_subdirectory(includes/box2d EXCLUDE_FROM_ALL)
+target_link_libraries(Iron PRIVATE box2d)
 
 #mono
 include_directories(includes/mono/include)
