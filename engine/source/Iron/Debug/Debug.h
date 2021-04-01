@@ -18,5 +18,7 @@ public:
     static bool FreeCameraMode;
 
 private:
+    static void ControlCamera();
+
     static DebugInfoWindow* debugInfoWindow;
 };
