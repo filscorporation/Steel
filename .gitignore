@@ -1,6 +1,7 @@
 # Directories
 .idea/
-cmake-build-debug/
+engine/cmake-build-debug/
+engine/cmake-build-release/
 
 # Prerequisites
 *.d
@@ -19,9 +20,9 @@ cmake-build-debug/
 *.so
 *.dylib
 *.dll
-!includes/dll/*.dll
-!includes/mono/bin/*.dll
-!includes/mono/lib/*.so
+!engine/includes/dll/*.dll
+!engine/includes/mono/bin/*.dll
+!engine/includes/mono/lib/*.so
 
 # Fortran module files
 *.mod
