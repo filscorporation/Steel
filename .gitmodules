@@ -1,18 +1,18 @@
-[submodule "includes/glm"]
+[submodule "engine/includes/glm"]
 	path = engine/includes/glm
 	url = https://github.com/g-truc/glm.git
-[submodule "includes/stb"]
+[submodule "engine/includes/stb"]
 	path = engine/includes/stb
 	url = https://github.com/nothings/stb.git
-[submodule "includes/glfw"]
+[submodule "engine/includes/glfw"]
 	path = engine/includes/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "includes/openal-soft"]
+[submodule "engine/includes/openal-soft"]
 	path = engine/includes/openal-soft
 	url = https://github.com/kcat/openal-soft.git
-[submodule "includes/box2d"]
+[submodule "engine/includes/box2d"]
 	path = engine/includes/box2d
 	url = https://github.com/erincatto/box2d.git
-[submodule "includes/freetype2"]
+[submodule "engine/includes/freetype2"]
 	path = engine/includes/freetype2
 	url = https://github.com/aseprite/freetype2.git
