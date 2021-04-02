@@ -4,6 +4,10 @@ application/cmake-build-debug/
 application/cmake-build-release/
 engine/cmake-build-debug/
 engine/cmake-build-release/
+scripting/IronCore/obj
+scripting/IronCore/bin
+scripting/IronCustom/obj
+scripting/IronCustom/bin
 
 # Prerequisites
 *.d

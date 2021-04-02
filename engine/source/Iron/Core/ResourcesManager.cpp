@@ -16,7 +16,7 @@
 #define RESOURCES_PATH "Resources/"
 #else
 #define ENGINE_RESOURCES_PATH "../../../engine/resources/"
-#define RESOURCES_PATH "../resources/"
+#define RESOURCES_PATH "../../resources/"
 #endif
 
 ResourcesManager::ResourcesManager()
