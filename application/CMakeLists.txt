@@ -17,14 +17,15 @@ include_directories(../engine/source)
 # project target
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
 
+# glm
+include_directories(../engine/includes/glm)
+
 # iron
-add_subdirectory(../engine ${CMAKE_BINARY_DIR}/bin EXCLUDE_FROM_ALL)
+add_subdirectory(../engine ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} EXCLUDE_FROM_ALL)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Iron)
 
-# glm
-if (NOT TARGET glm)
-    add_subdirectory(includes/glm EXCLUDE_FROM_ALL)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE glm)
-else()
-    include_directories(../engine/includes/glm)
-endif()
+# copy precompiled libs to output
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_SOURCE_DIR}/../engine/includes/dll/
+        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/)

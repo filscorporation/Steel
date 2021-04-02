@@ -17,7 +17,7 @@ void UIImage::SetImage(Sprite *image)
     uii.TextureID = _image == nullptr ? 0 : _image->TextureID;
     uii.IsTransparent = _image != nullptr && _image->IsTransparent;
 
-    if (_image->IsSpriteSheet)
+    if (_image != nullptr && _image->IsSpriteSheet)
     {
         _image->GetTexCoord(0, uii.TextureCoords);
     }

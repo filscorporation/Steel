@@ -7,14 +7,19 @@
 #include "Iron/Core/Log.h"
 #include "Iron/Core/Time.h"
 #include "Iron/Core/Input.h"
+#include "Iron/Debug/Debug.h"
+#include "Iron/EntityComponentSystem/EntitiesRegistry.h"
 #include "Iron/EntityComponentSystem/Entity.h"
 #include "Iron/EntityComponentSystem/Component.h"
 #include "Iron/Physics/BoxCollider.h"
+#include "Iron/Physics/CircleCollider.h"
 #include "Iron/Physics/RigidBody.h"
 #include "Iron/Rendering/Camera.h"
 #include "Iron/Rendering/Screen.h"
 #include "Iron/Rendering/SpriteRenderer.h"
 #include "Iron/Scene/Transformation.h"
-
-// TODO: allow to include it independently
-#include <glm/glm.hpp>
+#include "Iron/UI/UILayer.h"
+#include "Iron/UI/RectTransformation.h"
+#include "Iron/UI/UIElements/UIButton.h"
+#include "Iron/UI/UIElements/UIImage.h"
+#include "Iron/UI/UIElements/UIText.h"

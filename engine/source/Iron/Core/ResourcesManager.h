@@ -16,7 +16,7 @@ public:
 
     void LoadDefaultFont();
 
-    Sprite* LoadImage(const char* filePath);
+    Sprite* LoadImage(const char* filePath, bool engineResource = false);
     Sprite* GetImage(ResourceID imageID);
     void UnloadImage(ResourceID imageID);
 
@@ -28,7 +28,7 @@ public:
     Animation* GetAnimation(ResourceID animationID);
     void RemoveAnimation(ResourceID animationID);
 
-    Font* LoadFont(const char* fontPath);
+    Font* LoadFont(const char* fontPath, bool engineResource = false);
     Font* GetFont(ResourceID fontID);
     Font* DefaultFont();
 

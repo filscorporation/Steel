@@ -1,5 +1,7 @@
 # Directories
 .idea/
+application/cmake-build-debug/
+application/cmake-build-release/
 engine/cmake-build-debug/
 engine/cmake-build-release/
 
@@ -33,7 +35,7 @@ engine/cmake-build-release/
 *.la
 *.a
 *.lib
-!includes/mono/lib/*.lib
+!engine/includes/mono/lib/*.lib
 
 # Executables
 *.exe

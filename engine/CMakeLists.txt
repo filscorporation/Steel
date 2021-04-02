@@ -102,8 +102,11 @@ set_property(TARGET openal-info PROPERTY FOLDER ${INCLUDE_FOLDER})
 add_library(Iron ${SOURCE_FILES})
 set_target_properties(Iron PROPERTIES COMPILE_DEFINITIONS BUILDER_STATIC_DEFINE)
 
-add_custom_command(TARGET Iron COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/includes/dll ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+# copy precompiled libs to output
+add_custom_command(TARGET Iron POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_SOURCE_DIR}/includes/dll/
+        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/)
 
 # opengl
 find_package(OpenGL REQUIRED)
@@ -121,6 +124,7 @@ target_link_libraries(Iron PRIVATE glfw)
 
 # glm
 add_subdirectory(includes/glm EXCLUDE_FROM_ALL)
+include_directories(includes/glm)
 target_link_libraries(Iron PRIVATE glm)
 
 # openal

@@ -12,8 +12,10 @@
 #include <AL/al.h>
 
 #ifdef DISTRIBUTE_BUILD
+#define ENGINE_RESOURCES_PATH "Resources/"
 #define RESOURCES_PATH "Resources/"
 #else
+#define ENGINE_RESOURCES_PATH "../../../engine/resources/"
 #define RESOURCES_PATH "../resources/"
 #endif
 
@@ -49,16 +51,16 @@ ResourcesManager::~ResourcesManager()
 
 void ResourcesManager::LoadDefaultFont()
 {
-    defaultFont = LoadFont("font.ttf");
+    defaultFont = LoadFont("font.ttf", true);
     if (defaultFont != nullptr)
         defaultFont->AddSizeIfNotExists(32);
 }
 
-Sprite* ResourcesManager::LoadImage(const char* filePath)
+Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
 {
     //TODO: completely rework
 
-    std::string fullPathString = RESOURCES_PATH;
+    std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
     fullPathString += filePath;
     const char* fullPath = fullPathString.c_str();
 
@@ -253,9 +255,9 @@ void ResourcesManager::RemoveAnimation(ResourceID animationID)
     delete animation;
 }
 
-Font* ResourcesManager::LoadFont(const char* fontPath)
+Font* ResourcesManager::LoadFont(const char* fontPath, bool engineResource)
 {
-    std::string fullPathString = RESOURCES_PATH;
+    std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
     fullPathString += fontPath;
     const char* fullPath = fullPathString.c_str();
 

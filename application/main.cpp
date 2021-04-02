@@ -2,21 +2,15 @@
 
 int main()
 {
-    Log::LogInfo("Starting");
-
+    // Create application with default settings
     ApplicationSettings settings = ApplicationSettings();
     Application app = Application(settings);
 
-    try
-    {
-        app.Run();
-    }
-    catch (const std::exception& ex)
-    {
-        Log::LogError("Error in application: " + std::string(ex.what()));
-    }
+    // Enable debug window
+    Debug::EnableDebugWindow();
 
-    Log::LogInfo("Ending");
+    // Run application main loop
+    app.Run();
 
     return 0;
 }

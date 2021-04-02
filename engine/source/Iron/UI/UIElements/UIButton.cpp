@@ -4,6 +4,7 @@
 #include "../../Math/Math.h"
 #include "../../Scene/SceneHelper.h"
 #include "../../Scripting/ScriptingCore.h"
+#include "../../Scripting/ScriptingSystem.h"
 
 bool UIButton::Update()
 {
@@ -90,7 +91,8 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& ui
         PlayTransition(_transitionsInfo.Clicked);
         if (Callback != nullptr)
             Callback();
-        ScriptingCore::CallEventMethod(Owner, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
+        if (ScriptingSystem::IsInitialized())
+            ScriptingCore::CallEventMethod(Owner, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
     }
     if (eventType & UIEventTypes::MouseJustReleased)
     {

@@ -130,3 +130,8 @@ void ScriptingSystem::CallEntryPoint()
 
     ScriptingCore::FindAndCallEntryPoint(customAssemblyImage);
 }
+
+bool ScriptingSystem::IsInitialized()
+{
+    return isInitialized;
+}

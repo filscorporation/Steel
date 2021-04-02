@@ -9,7 +9,7 @@ namespace IronCustom
             /*
             Entry point will be called after Application initialized and before main loop will start.
             Here you can initialize game objects, add components and other game related stuff.
-            This is temporary solution before editor and scene serialization will be added to engine.add
+            This is temporary solution before editor and scene serialization will be added to engine.
             Some code examples:
             
             -Create entity:
