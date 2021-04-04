@@ -1,13 +1,14 @@
 # Directories
 .idea/
-application/cmake-build-debug/
-application/cmake-build-release/
-engine/cmake-build-debug/
-engine/cmake-build-release/
+cmake-build-debug/
+cmake-build-release/
 scripting/IronCore/obj
 scripting/IronCore/bin
 scripting/IronCustom/obj
 scripting/IronCustom/bin
+
+# User files
+*.user
 
 # Prerequisites
 *.d

@@ -16,3 +16,6 @@
 [submodule "engine/includes/freetype2"]
 	path = engine/includes/freetype2
 	url = https://github.com/aseprite/freetype2.git
+[submodule "tests/includes/googletest"]
+	path = tests/includes/googletest
+	url = https://github.com/google/googletest.git
