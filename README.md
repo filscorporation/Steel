@@ -16,7 +16,7 @@ Iron is a 2D OpenSource C++ Engine with C# scripting support.
 * application - contains base C++ executable project that builds application powered by Iron Engine
 * editor - contains engine editor project (WIP)
 * engine - contains engine sources that can be compiled into library
-* examples - constains example projects
+* examples - contains example projects
 * scripting - contains projects to compile scripts dll. IronCore is used to expose engine API to custom scripts, IronCustom is a custom scripts project template
 * tests - contains autotests for various engine systems
 
@@ -24,7 +24,7 @@ Iron is a 2D OpenSource C++ Engine with C# scripting support.
 #### Requirements
 Project requires Mono to be installed (https://www.mono-project.com/docs/getting-started/install/)
 #### Supported platforms
-Windows and Linux currently supported. On windows for now it can only be compiled with VS compiler.
+Windows and Linux are currently supported. On windows for now it can only be compiled with VS compiler.
 #### Building project
 * Build IronCore C# project (scripting/IronCore)
 * Build IronCustom C# project (scripting/IronCustom)
