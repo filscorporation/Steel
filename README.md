@@ -1,6 +1,6 @@
 # Iron Engine
 
-Iron is 2D OpenSource C++ Engine with C# scripting support.
+Iron is a 2D OpenSource C++ Engine with C# scripting support.
 
 ## Current features
 * Windows and Linux support
@@ -13,11 +13,11 @@ Iron is 2D OpenSource C++ Engine with C# scripting support.
 * Full support of C# scripting with documented API (using Mono)
 
 ## Project structure
-* application - contains base C++ executable project, that builds application powered by Iron Engine
+* application - contains base C++ executable project that builds application powered by Iron Engine
 * editor - contains engine editor project (WIP)
-* engine - contains engine sources, that can be compiled into library
+* engine - contains engine sources that can be compiled into library
 * examples - constains example projects
-* scripting - contains projects to compile scripts dll. IronCore is used to expose engine API to custom scripts, IronCustom is custom scripts project template
+* scripting - contains projects to compile scripts dll. IronCore is used to expose engine API to custom scripts, IronCustom is a custom scripts project template
 * tests - contains autotests for various engine systems
 
 ## Installation
@@ -31,10 +31,10 @@ Windows and Linux currently supported. On windows for now it can only be compile
 * Build Application executable (application)
 * Run Application
 #### Distribution build
-There is currently an option in CMakeLists to enable distribution build. It will disable console and debugging functionality and use local paths for dependencies. This option is not finished and for now it is required to collect project files by hands (resources, dependencies dlls, scripting dlls). Later this option will help to build all-in-one final application.
+There is currently an option in CMakeLists to enable distribution build. It will disable console and debugging functionality and use local paths for dependencies. This option is not finished and for now it is required to collect project files by hands (resources, dependencies dlls, scripting dlls). Later this option will help to build an all-in-one final application.
 #### Release configuration
 Engine performance will drastically increase if built in release configuration.
 
-## Developing with Iron Engin
+## Developing with Iron Engine
 Scripting API is very similar to Unity. Some basic examples can be found in scripting/IronCustom/GameManager.cs and projects examples.
-To create your own application logic expand IronCustom project: create your own ScriptingComponents inheritors, override event functions and initialize starting scene members in GameManager.EntryPoint() method. Application resources loaded with ResourcesManager will be searched in application/resources folder.
+To create your own application logic expand IronCustom project: create ScriptingComponents inheritors, override event functions and initialize starting scene members in GameManager.EntryPoint() method. Application resources loaded with ResourcesManager will be searched in application/resources folder.
