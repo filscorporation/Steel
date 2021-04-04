@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Iron
 {
+    /// <summary>
+    /// Defines what type of button transition is selected
+    /// </summary>
     public enum ButtonTransitionType
     {
         ColorShift,
@@ -33,6 +36,9 @@ namespace Iron
         }
     }
     
+    /// <summary>
+    /// Base class for button transitions
+    /// </summary>
     public abstract class ButtonTransitionsInfo
     {
         internal ButtonTransitionsInfo(ButtonTransitionType type)
@@ -46,6 +52,9 @@ namespace Iron
         internal abstract ButtonTransitionsInfo_Internal ToInternal();
     }
 
+    /// <summary>
+    /// Button will change sprite color
+    /// </summary>
     public class ColorShiftTransition : ButtonTransitionsInfo
     {
         public ColorShiftTransition() : base(ButtonTransitionType.ColorShift)
@@ -53,9 +62,24 @@ namespace Iron
             
         }
         
+        /// <summary>
+        /// Normal button state
+        /// </summary>
         public Color Normal;
+        
+        /// <summary>
+        /// Button state when under the mouse cursor
+        /// </summary>
         public Color Hovered;
+        
+        /// <summary>
+        /// Button state when it gets clicked
+        /// </summary>
         public Color Clicked;
+        
+        /// <summary>
+        /// Button state when it was set as not interactable
+        /// </summary>
         public Color Disabled;
 
         internal override ButtonTransitionsInfo_Internal ToInternal()
@@ -83,7 +107,10 @@ namespace Iron
             };
         }
     }
-
+    
+    /// <summary>
+    /// Button will change sprite
+    /// </summary>
     public class SpriteChangeTransition : ButtonTransitionsInfo
     {
         public SpriteChangeTransition() : base(ButtonTransitionType.SpriteChange)
@@ -91,9 +118,24 @@ namespace Iron
             
         }
         
+        /// <summary>
+        /// Normal button state
+        /// </summary>
         public Sprite Normal;
+        
+        /// <summary>
+        /// Button state when under the mouse cursor
+        /// </summary>
         public Sprite Hovered;
+        
+        /// <summary>
+        /// Button state when it gets clicked
+        /// </summary>
         public Sprite Clicked;
+        
+        /// <summary>
+        /// Button state when it was set as not interactable
+        /// </summary>
         public Sprite Disabled;
 
         internal override ButtonTransitionsInfo_Internal ToInternal()
@@ -121,17 +163,35 @@ namespace Iron
             };
         }
     }
-
+    
+    /// <summary>
+    /// Button will change sprite tile index (sprite should be set as sprite sheet)
+    /// </summary>
     public class SpriteTileChangeTransition : ButtonTransitionsInfo
     {
         public SpriteTileChangeTransition() : base(ButtonTransitionType.SpriteTileChange)
         {
             
         }
-        
+
+        /// <summary>
+        /// Normal button state
+        /// </summary>
         public uint Normal;
+        
+        /// <summary>
+        /// Button state when under the mouse cursor
+        /// </summary>
         public uint Hovered;
+        
+        /// <summary>
+        /// Button state when it gets clicked
+        /// </summary>
         public uint Clicked;
+        
+        /// <summary>
+        /// Button state when it was set as not interactable
+        /// </summary>
         public uint Disabled;
 
         internal override ButtonTransitionsInfo_Internal ToInternal()
@@ -159,7 +219,10 @@ namespace Iron
             };
         }
     }
-
+    
+    /// <summary>
+    /// Button will play animation in attached animator
+    /// </summary>
     public class AnimationTransition : ButtonTransitionsInfo
     {
         public AnimationTransition() : base(ButtonTransitionType.Animation)
@@ -167,9 +230,24 @@ namespace Iron
             
         }
         
+        /// <summary>
+        /// Normal button state
+        /// </summary>
         public Animation Normal;
+        
+        /// <summary>
+        /// Button state when under the mouse cursor
+        /// </summary>
         public Animation Hovered;
+        
+        /// <summary>
+        /// Button state when it gets clicked
+        /// </summary>
         public Animation Clicked;
+        
+        /// <summary>
+        /// Button state when it was set as not interactable
+        /// </summary>
         public Animation Disabled;
 
         internal override ButtonTransitionsInfo_Internal ToInternal()

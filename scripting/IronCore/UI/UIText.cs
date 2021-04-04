@@ -3,32 +3,50 @@ using System.Text;
 
 namespace Iron
 {
+    /// <summary>
+    /// UI text
+    /// </summary>
     public class UIText : UIComponent
     {
+        /// <summary>
+        /// Text
+        /// </summary>
         public string Text
         {
             get => GetText_Internal(Entity.ID);
             set => SetText_Internal(Entity.ID, Encoding.UTF8.GetString(Encoding.Default.GetBytes(value)));
         }
         
+        /// <summary>
+        /// Text font size in pixels
+        /// </summary>
         public int TextSize
         {
             get => GetTextSize_Internal(Entity.ID);
             set => SetTextSize_Internal(Entity.ID, value);
         }
         
+        /// <summary>
+        /// Text color
+        /// </summary>
         public Color Color
         {
             get => GetColor_Internal(Entity.ID);
             set => SetColor_Internal(Entity.ID, value);
         }
         
+        /// <summary>
+        /// Should text size change automatically to fit in the rect
+        /// </summary>
         public bool IsTextAutoSize
         {
             get => GetIsTextAutoSize_Internal(Entity.ID);
             set => SetIsTextAutoSize_Internal(Entity.ID, value);
         }
         
+        /// <summary>
+        /// How text should position itself in the rect
+        /// </summary>
         public AlignmentType TextAlignment
         {
             get => GetTextAlignment_Internal(Entity.ID);

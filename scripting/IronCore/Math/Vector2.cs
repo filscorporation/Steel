@@ -1,9 +1,18 @@
 ﻿namespace Iron
 {
+    /// <summary>
+    /// Represents vector in 2D space
+    /// </summary>
     public struct Vector2
     {
+        /// <summary>
+        /// X component
+        /// </summary>
         public float X { get; }
 
+        /// <summary>
+        /// Y component
+        /// </summary>
         public float Y { get; }
 
         public Vector2(float x, float y)
@@ -12,14 +21,27 @@
             Y = y;
         }
         
+        /// <summary>
+        /// Vector with all components set to zero
+        /// </summary>
         public static Vector2 Zero => new Vector2(0, 0);
+        
+        /// <summary>
+        /// Vector with all components set to 1
+        /// </summary>
         public static Vector2 One => new Vector2(1, 1);
 
+        /// <summary>
+        /// Return new vector with X component changed
+        /// </summary>
         public Vector2 SetX(float x)
         {
             return new Vector2(x, Y);
         }
 
+        /// <summary>
+        /// Return new vector with Y component changed
+        /// </summary>
         public Vector2 SetY(float y)
         {
             return new Vector2(X, y);

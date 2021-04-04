@@ -2,10 +2,19 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Time related methods and properties
+    /// </summary>
     public static class Time
     {
+        /// <summary>
+        /// Time passed from the last frame
+        /// </summary>
         public static float DeltaTime => GetDeltaTime_Internal();
 
+        /// <summary>
+        /// Time multiplicator
+        /// </summary>
         public static float TimeScale
         {
             get => GetTimeScale_Internal();

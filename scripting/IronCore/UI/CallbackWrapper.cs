@@ -1,5 +1,8 @@
 ﻿namespace Iron
 {
+    /// <summary>
+    /// Wrapped around callback delegate
+    /// </summary>
     internal class CallbackWrapper
     {
         private event CallbackAction Delegate;

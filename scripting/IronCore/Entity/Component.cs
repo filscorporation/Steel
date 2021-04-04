@@ -5,24 +5,48 @@ using System.Runtime.InteropServices;
 
 namespace Iron
 {
+    /// <summary>
+    /// Base class for all components, that can be attached to <see cref="Entity"/>
+    /// </summary>
     public abstract class Component
     {
         internal Component() { }
         
+        /// <summary>
+        /// Entity this component is attached. Component is always attached to some entity
+        /// </summary>
         public Entity Entity { get; set; }
         
+        /// <summary>
+        /// Gets transformation components attached to entity (will be null for UI elements)
+        /// </summary>
         public Transformation Transformation => GetComponent<Transformation>();
 
+        /// <summary>
+        /// Check if this components entity has component of requested type
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>True if there is component attached</returns>
         public bool HasComponent<T>() where T : Component, new()
         {
             return Entity.HasComponent<T>();
         }
         
+        /// <summary>
+        /// Get component attached to the same entity as this
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>Component or null if there is no component of requested type attached</returns>
         public T GetComponent<T>() where T : Component, new()
         {
             return Entity.GetComponent<T>();
         }
 
+        /// <summary>
+        /// Returns all active components in the scene of requested type
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>Requested components enumeration</returns>
         public static IEnumerable<T> FindAllOfType<T>() where T : Component, new()
         {
             if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))

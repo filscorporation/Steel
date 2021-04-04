@@ -2,28 +2,47 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Components used to play <see cref="Animation"/>s
+    /// </summary>
     public class Animator : Component
     {
+        /// <summary>
+        /// Sets new animation and plays it
+        /// </summary>
+        /// <param name="animation">Animation to play</param>
         public void Play(Animation animation)
         {
             PlayAnimation_Internal(Entity.ID, animation.ID);
         }
         
+        /// <summary>
+        /// Play or continue current animation
+        /// </summary>
         public void Play()
         {
             Play_Internal(Entity.ID);
         }
         
+        /// <summary>
+        /// Pause animation
+        /// </summary>
         public void Pause()
         {
             Pause_Internal(Entity.ID);
         }
         
+        /// <summary>
+        /// Stop playing animation
+        /// </summary>
         public void Stop()
         {
             Stop_Internal(Entity.ID);
         }
         
+        /// <summary>
+        /// Play current animation from the start
+        /// </summary>
         public void Restart()
         {
             Restart_Internal(Entity.ID);

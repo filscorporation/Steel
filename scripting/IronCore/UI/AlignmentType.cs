@@ -1,5 +1,8 @@
 ﻿namespace Iron
 {
+    /// <summary>
+    /// Text alignment in the rect
+    /// </summary>
     public enum AlignmentType
     {
         TopLeft,

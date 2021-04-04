@@ -6,11 +6,21 @@ using System.Runtime.InteropServices;
 
 namespace Iron
 {
+    /// <summary>
+    /// Basic object in the scene, represented by the list of components attached
+    /// </summary>
     public class Entity
     {
         internal const uint NULL_ENTITY_ID = 0xffffffff;
+        
+        /// <summary>
+        /// Unique identifier
+        /// </summary>
         public uint ID { get; }
         
+        /// <summary>
+        /// Name
+        /// </summary>
         public string Name
         {
             get => GetName_Internal(ID);
@@ -22,33 +32,63 @@ namespace Iron
             ID = id;
         }
         
+        /// <summary>
+        /// Instantiates new entity in the scene
+        /// </summary>
+        /// <remarks>Note that UI elements should be created from <see cref="UI"/> class</remarks>
         public Entity()
         {
             ID = CreateNewEntity_Internal();
         }
         
+        /// <summary>
+        /// Instantiates new entity with a given name in the scene
+        /// </summary>
+        /// <remarks>Note that UI elements should be created from <see cref="UI"/> class</remarks>
         public Entity(string name)
         {
             ID = CreateNewEntity_Internal2(name);
         }
         
+        /// <summary>
+        /// Instantiates new entity with a given name and parent in the scene
+        /// </summary>
+        /// <remarks>Note that UI elements should be created from <see cref="UI"/> class</remarks>
         public Entity(string name, Entity parent)
         {
             ID = CreateNewEntity_Internal3(name, parent?.ID ?? NULL_ENTITY_ID);
         }
 
+        /// <summary>
+        /// Gets entity transformation component (will be null for UI elements)
+        /// </summary>
         public Transformation Transformation => GetComponent<Transformation>();
 
+        /// <summary>
+        /// Is entity active in the scene (including parents active status)
+        /// </summary>
         public bool IsActive => GetIsActive_Internal(ID);
 
+        /// <summary>
+        /// Is entity active by itself in the scene
+        /// </summary>
         public bool IsActiveSelf
         {
             get => GetIsActiveSelf_Internal(ID);
             set => SetIsActiveSelf_Internal(ID, value);
         }
 
+        /// <summary>
+        /// Requests to destroy entity in the end of the frame
+        /// </summary>
         public void Destroy() => DestroyEntity_Internal(ID);
         
+        /// <summary>
+        /// Attaches new components to the entity and returns it
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>Attached component or already existing one</returns>
+        /// <remarks>Components excluding scripts should be unique for the entity</remarks>
         public T AddComponent<T>() where T : Component, new()
         {
             T component;
@@ -76,11 +116,21 @@ namespace Iron
             return component;
         }
 
+        /// <summary>
+        /// Check if entity has component of requested type attached
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>True if there is component of requested type attached</returns>
         public bool HasComponent<T>() where T : Component, new()
         {
             return HasComponent_Internal(ID, typeof(T));
         }
         
+        /// <summary>
+        /// Get component attached to this entity
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>Component or null if there is no component of requested type attached</returns>
         public T GetComponent<T>() where T : Component, new()
         {
             if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
@@ -100,6 +150,12 @@ namespace Iron
             return component;
         }
         
+        /// <summary>
+        /// Removes attached component from this entity
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>True if there was component of requested type attached</returns>
+        /// <remarks>You should not remove <see cref="Transformation"/> and <see cref="RectTransformation"/> components</remarks>
         public bool RemoveComponent<T>() where T : Component
         {
             if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
@@ -122,6 +178,9 @@ namespace Iron
             return component;
         }
 
+        /// <summary>
+        /// Entity parent in the hierarchy or null if there is none
+        /// </summary>
         public Entity Parent
         {
             get
@@ -133,11 +192,18 @@ namespace Iron
             set => SetParent_Internal(ID, value?.ID ?? NULL_ENTITY_ID);
         }
         
+        /// <summary>
+        /// List of entity's children in the hierarchy if there is any
+        /// </summary>
         public IEnumerable<Entity> Children
         {
             get { return GetChildren_Internal(ID).Select(childEntityID => new Entity(childEntityID)); }
         }
 
+        /// <summary>
+        /// Check if entity already destroyed in the engine
+        /// </summary>
+        /// <returns>True if component was destroyed</returns>
         public bool IsDestroyed() => IsDestroyed_Internal(ID);
 
         public static bool operator ==(Entity a, Entity b) => Equals(a, b);

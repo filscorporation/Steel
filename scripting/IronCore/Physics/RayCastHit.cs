@@ -2,10 +2,24 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Information about line hitting physics object
+    /// </summary>
     public struct RayCastHit
     {
+        /// <summary>
+        /// Entity that was hit
+        /// </summary>
         public Entity Entity;
+        
+        /// <summary>
+        /// Point in the world where line entered entity collider
+        /// </summary>
         public Vector2 HitPoint;
+        
+        /// <summary>
+        /// Normal vector to hit point
+        /// </summary>
         public Vector2 HitNormal;
     }
     

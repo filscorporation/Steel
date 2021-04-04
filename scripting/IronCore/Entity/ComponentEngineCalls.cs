@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Iron
 {
+    /// <summary>
+    /// Internal class used to capture engine calls and redirect them to entities
+    /// </summary>
     internal static class ComponentEngineCalls
     {
         private static void FreeScriptHandle(IntPtr componentPtr)

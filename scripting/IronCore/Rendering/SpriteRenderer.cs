@@ -2,8 +2,14 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Components that will get rendered in the scene
+    /// </summary>
     public class SpriteRenderer : Component
     {
+        /// <summary>
+        /// Sprite to render
+        /// </summary>
         public Sprite Sprite
         {
             get => new Sprite(GetSprite_Internal(Entity.ID));

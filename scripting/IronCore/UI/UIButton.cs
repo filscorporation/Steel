@@ -2,6 +2,9 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Interactable UI element with click callback
+    /// </summary>
     public class UIButton : UIComponent
     {
         ~UIButton()
@@ -13,7 +16,9 @@ namespace Iron
             }
         }
 
-        private CallbackList onClick;
+        /// <summary>
+        /// Callback to call when button gets clicked by mouse buttons
+        /// </summary>
         public CallbackList OnClick
         {
             get
@@ -26,19 +31,29 @@ namespace Iron
                 return onClick;
             }
         }
+        private CallbackList onClick;
 
+        /// <summary>
+        /// Sprite to render
+        /// </summary>
         public Sprite Sprite
         {
             get => new Sprite(GetSprite_Internal(Entity.ID));
             set => SetSprite_Internal(Entity.ID, value?.ID ?? 0);
         }
 
+        /// <summary>
+        /// Should button be interactable (clickable)
+        /// </summary>
         public bool Interactable
         {
             get => GetInteractable_Internal(Entity.ID);
             set => SetInteractable_Internal(Entity.ID, value);
         }
 
+        /// <summary>
+        /// How button reacts to mouse interactions
+        /// </summary>
         public ButtonTransitionsInfo Transition
         {
             get => GetTransition_Internal(Entity.ID).ToButtonTransitionsInfo();

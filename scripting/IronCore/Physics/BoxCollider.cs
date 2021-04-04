@@ -2,8 +2,14 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Box shaped physics collider
+    /// </summary>
     public class BoxCollider : Collider
     {
+        /// <summary>
+        /// Collider size
+        /// </summary>
         public Vector2 Size
         {
             get

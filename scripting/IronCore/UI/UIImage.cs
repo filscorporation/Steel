@@ -2,8 +2,14 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// UI element that will get rendered in the UI layout
+    /// </summary>
     public class UIImage : UIComponent
     {
+        /// <summary>
+        /// Sprite to render
+        /// </summary>
         public Sprite Sprite
         {
             get => new Sprite(GetSprite_Internal(Entity.ID));

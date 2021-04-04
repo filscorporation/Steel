@@ -2,8 +2,14 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Component representing UI element position, rotation and size in the UI layout
+    /// </summary>
     public class RectTransformation : Component
     {
+        /// <summary>
+        /// Bottom left anchor point
+        /// </summary>
         public Vector2 AnchorMin
         {
             get
@@ -14,6 +20,9 @@ namespace Iron
             set => SetAnchorMin_Internal(Entity.ID, ref value);
         }
 
+        /// <summary>
+        /// Top right anchor point
+        /// </summary>
         public Vector2 AnchorMax
         {
             get
@@ -24,6 +33,9 @@ namespace Iron
             set => SetAnchorMax_Internal(Entity.ID, ref value);
         }
 
+        /// <summary>
+        /// Position relative to anchors
+        /// </summary>
         public Vector2 AnchoredPosition
         {
             get
@@ -34,6 +46,9 @@ namespace Iron
             set => SetAnchoredPosition_Internal(Entity.ID, ref value);
         }
         
+        /// <summary>
+        /// Offset from bottom left anchor
+        /// </summary>
         public Vector2 OffsetMin
         {
             get
@@ -43,7 +58,10 @@ namespace Iron
             }
             set => SetOffsetMin_Internal(Entity.ID, ref value);
         }
-
+        
+        /// <summary>
+        /// Offset from top right anchor
+        /// </summary>
         public Vector2 OffsetMax
         {
             get
@@ -53,7 +71,10 @@ namespace Iron
             }
             set => SetOffsetMax_Internal(Entity.ID, ref value);
         }
-
+        
+        /// <summary>
+        /// Rect pivot
+        /// </summary>
         public Vector2 Pivot
         {
             get
@@ -64,6 +85,9 @@ namespace Iron
             set => SetPivot_Internal(Entity.ID, ref value);
         }
 
+        /// <summary>
+        /// Rect size
+        /// </summary>
         public Vector2 Size
         {
             get
@@ -74,12 +98,18 @@ namespace Iron
             set => SetSize_Internal(Entity.ID, ref value);
         }
 
+        /// <summary>
+        /// Order when element will be drawn in UI, bigger - later
+        /// </summary>
         public float SortingOrder
         {
             get => GetSortingOrder_Internal(Entity.ID);
             set => SetSortingOrder_Internal(Entity.ID, value);
         }
         
+        /// <summary>
+        /// Element global rotation
+        /// </summary>
         public Vector3 Rotation
         {
             get => GetRotation_Internal(Entity.ID);

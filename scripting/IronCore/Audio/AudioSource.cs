@@ -2,22 +2,38 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Component used to play <see cref="AudioTrack"/>s in the scene
+    /// </summary>
     public class AudioSource : Component
     {
+        /// <summary>
+        /// Audio source volume
+        /// </summary>
         public float Volume
         {
             get => GetVolume_Internal(Entity.ID);
             set => SetVolume_Internal(Entity.ID, value);
         }
 
+        /// <summary>
+        /// Should it loop audio track it is playing
+        /// </summary>
         public bool Loop
         {
             get => GetLoop_Internal(Entity.ID);
             set => SetLoop_Internal(Entity.ID, value);
         }
 
+        /// <summary>
+        /// Play audio track
+        /// </summary>
+        /// <param name="audioTrack">Track to play</param>
         public void Play(AudioTrack audioTrack) => Play_Internal(Entity.ID, audioTrack?.ID ?? 0);
 
+        /// <summary>
+        /// Stops playing audio track
+        /// </summary>
         public void Stop() => Stop_Internal(Entity.ID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]

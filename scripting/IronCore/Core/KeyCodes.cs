@@ -1,25 +1,78 @@
 ﻿namespace Iron
 {
+    /// <summary>
+    /// Keyboard keys codes
+    /// </summary>
     public enum KeyCode
     {
         Space = 32,
-        Apostrophe = 39, /*'*/
-        Comma = 44, /*,*/
-        Minus = 45, /*-*/
-        Period = 46, /*.*/
-        Slash = 47, /*/*/
-        D0 = 48, /*0*/
-        D1 = 49, /*1*/
-        D2 = 50, /*2*/
-        D3 = 51, /*3*/
-        D4 = 52, /*4*/
-        D5 = 53, /*5*/
-        D6 = 54, /*6*/
-        D7 = 55, /*7*/
-        D8 = 56, /*8*/
-        D9 = 57, /*9*/
-        Semicolon = 59, /*;*/
-        Equal = 61, /*=*/
+        
+        /// <summary>
+        /// Symbol '
+        /// </summary>
+        Apostrophe = 39,
+        
+        Comma = 44,
+        Minus = 45,
+        Period = 46,
+        
+        /// <summary>
+        /// Slash /
+        /// </summary>
+        Slash = 47,
+        
+        /// <summary>
+        /// Digit 0 on top of the keyboard
+        /// </summary>
+        D0 = 48,
+        
+        /// <summary>
+        /// Digit 1 on top of the keyboard
+        /// </summary>
+        D1 = 49,
+        
+        /// <summary>
+        /// Digit 2 on top of the keyboard
+        /// </summary>
+        D2 = 50,
+        
+        /// <summary>
+        /// Digit 3 on top of the keyboard
+        /// </summary>
+        D3 = 51,
+        
+        /// <summary>
+        /// Digit 4 on top of the keyboard
+        /// </summary>
+        D4 = 52,
+        
+        /// <summary>
+        /// Digit 5 on top of the keyboard
+        /// </summary>
+        D5 = 53,
+        
+        /// <summary>
+        /// Digit 6 on top of the keyboard
+        /// </summary>
+        D6 = 54,
+        
+        /// <summary>
+        /// Digit 7 on top of the keyboard
+        /// </summary>
+        D7 = 55,
+        
+        /// <summary>
+        /// Digit 8 on top of the keyboard
+        /// </summary>
+        D8 = 56,
+        
+        /// <summary>
+        /// Digit 9 on top of the keyboard
+        /// </summary>
+        D9 = 57,
+        
+        Semicolon = 59,
+        Equal = 61,
         A = 65,
         B = 66,
         C = 67,
@@ -46,12 +99,29 @@
         X = 88,
         Y = 89,
         Z = 90,
-        LeftBracket = 91, /*[*/
-        Backslash = 92, /*\*/
-        RightBracket = 93, /*]*/
-        GraveAccent = 96, /*`*/
-        World1 = 161, /*Non-Us#1*/
-        World2 = 162, /*Non-Us#2*/
+        
+        /// <summary>
+        /// Left square bracket [
+        /// </summary>
+        LeftBracket = 91,
+        
+        /// <summary>
+        /// Backslash \
+        /// </summary>
+        Backslash = 92,
+        
+        /// <summary>
+        /// Right square bracket ]
+        /// </summary>
+        RightBracket = 93,
+        
+        /// <summary>
+        /// Symbol `
+        /// </summary>
+        GraveAccent = 96,
+        
+        World1 = 161,
+        World2 = 162,
 
         Escape = 256,
         Enter = 257,
@@ -97,16 +167,57 @@
         F23 = 312,
         F24 = 313,
         F25 = 314,
+        
+        /// <summary>
+        /// Digit 0 in num pad
+        /// </summary>
         Kp0 = 320,
+        
+        /// <summary>
+        /// Digit 1 in num pad
+        /// </summary>
         Kp1 = 321,
+        
+        /// <summary>
+        /// Digit 2 in num pad
+        /// </summary>
         Kp2 = 322,
+        
+        /// <summary>
+        /// Digit 3 in num pad
+        /// </summary>
         Kp3 = 323,
+        
+        /// <summary>
+        /// Digit 4 in num pad
+        /// </summary>
         Kp4 = 324,
+        
+        /// <summary>
+        /// Digit 5 in num pad
+        /// </summary>
         Kp5 = 325,
+        
+        /// <summary>
+        /// Digit 6 in num pad
+        /// </summary>
         Kp6 = 326,
+        
+        /// <summary>
+        /// Digit 7 in num pad
+        /// </summary>
         Kp7 = 327,
+        
+        /// <summary>
+        /// Digit 8 in num pad
+        /// </summary>
         Kp8 = 328,
+        
+        /// <summary>
+        /// Digit 9 in num pad
+        /// </summary>
         Kp9 = 329,
+        
         KpDecimal = 330,
         KpDivide = 331,
         KpMultiply = 332,

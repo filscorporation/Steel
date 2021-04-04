@@ -2,6 +2,9 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Redirects engine calls to registered callbacks
+    /// </summary>
     internal static class EventManager
     {
         private static readonly Dictionary<uint, CallbackList> eventCallbacks = new Dictionary<uint, CallbackList>();

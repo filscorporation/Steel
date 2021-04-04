@@ -2,8 +2,14 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Circle shaped physics collider
+    /// </summary>
     public class CircleCollider : Collider
     {
+        /// <summary>
+        /// Collider radius
+        /// </summary>
         public float Radius
         {
             get => GetRadius_Internal(Entity.ID);

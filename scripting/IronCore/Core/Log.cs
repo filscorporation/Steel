@@ -2,18 +2,33 @@
 
 namespace Iron
 {
+    /// <summary>
+    /// Logging methods
+    /// </summary>
     public static class Log
     {
+        /// <summary>
+        /// Log info message
+        /// </summary>
+        /// <param name="message">Message</param>
         public static void LogInfo(string message)
         {
             LogInfo_Internal(message);
         }
         
+        /// <summary>
+        /// Log warning message
+        /// </summary>
+        /// <param name="message">Message</param>
         public static void LogWarning(string message)
         {
             LogWarning_Internal(message);
         }
         
+        /// <summary>
+        /// Log error message
+        /// </summary>
+        /// <param name="message">Message</param>
         public static void LogError(string message)
         {
             LogError_Internal(message);

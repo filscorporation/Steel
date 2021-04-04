@@ -1,12 +1,30 @@
 ﻿namespace Iron
 {
+    /// <summary>
+    /// Represents RGBA color
+    /// </summary>
     public struct Color
     {
         private const int CHANNEL_MAX = 255;
         
+        /// <summary>
+        /// Red component
+        /// </summary>
         public float R { get; }
+        
+        /// <summary>
+        /// Green component
+        /// </summary>
         public float G { get; }
+        
+        /// <summary>
+        /// Blue component
+        /// </summary>
         public float B { get; }
+        
+        /// <summary>
+        /// Alpha component
+        /// </summary>
         public float A { get; }
 
         public Color(float r, float g, float b, float a)
