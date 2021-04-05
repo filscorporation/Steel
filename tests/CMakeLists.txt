@@ -14,7 +14,7 @@ add_subdirectory(includes/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 set(TESTS_PROJECT_SOURCES main.cpp TestsSetUp.h TestsSetUp.cpp)
-set(TESTS_FILES ApplicationTests.cpp)
+set(TESTS_FILES ApplicationTests.cpp SparseSetTest.cpp SparseDataSetTest.cpp)
 
 # target
 add_executable(RunAutoTests ${TESTS_PROJECT_SOURCES} ${TESTS_FILES})
