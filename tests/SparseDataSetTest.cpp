@@ -1,17 +1,17 @@
 #include "TestsSetUp.h"
 #include "Iron/EntityComponentSystem/SparseDataSet.h"
-#include "Iron/Scene/NameComponent.h"
+#include "common/TestComponent1.h"
 
 TEST(SparseDataSetTest, Initialization)
 {
-    SparseDataSet<NameComponent> set;
+    SparseDataSet<TestComponent1> set;
 
     EXPECT_EQ(set.Size(), 0);
 }
 
 TEST(SparseDataSetTest, Add)
 {
-    SparseDataSet<NameComponent> set;
+    SparseDataSet<TestComponent1> set;
 
     set.Add(0, 0);
     EXPECT_EQ(set.Size(), 1);
@@ -25,7 +25,7 @@ TEST(SparseDataSetTest, Add)
 
 TEST(SparseDataSetTest, RandomAdd)
 {
-    SparseDataSet<NameComponent> set;
+    SparseDataSet<TestComponent1> set;
     int values[] = { 3, 745456, 4, 1000, 6, 856348, 15, 9 };
     for (auto value : values)
     {
@@ -41,7 +41,7 @@ TEST(SparseDataSetTest, RandomAdd)
 
 TEST(SparseDataSetTest, GetAndModify)
 {
-    SparseDataSet<NameComponent> set;
+    SparseDataSet<TestComponent1> set;
 
     set.Add(0, 0);
     set.Add(1, 1);
@@ -53,7 +53,7 @@ TEST(SparseDataSetTest, GetAndModify)
 
 TEST(SparseDataSetTest, Remove)
 {
-    SparseDataSet<NameComponent> set;
+    SparseDataSet<TestComponent1> set;
 
     for (uint32_t i = 0; i < 1000; ++i)
     {
@@ -93,7 +93,7 @@ TEST(SparseDataSetTest, Remove)
 
 TEST(SparseDataSetTest, Iterator)
 {
-    SparseDataSet<NameComponent> set;
+    SparseDataSet<TestComponent1> set;
     uint32_t values[] = { 3, 745456, 4, 1000, 6, 856348, 15, 9 };
     for (auto value : values)
     {
@@ -140,7 +140,7 @@ TEST(SparseDataSetTest, Iterator)
 
 TEST(SparseDataSetTest, Indexing)
 {
-    SparseDataSet<NameComponent> set;
+    SparseDataSet<TestComponent1> set;
     set.Add(0, 0);
     set.Add(1, 1);
     set.Add(2, 2);
