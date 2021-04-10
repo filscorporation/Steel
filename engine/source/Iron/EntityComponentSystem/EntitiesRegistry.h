@@ -190,6 +190,7 @@ public:
             Log::LogWarning("Replacing component system: " + std::string(typeID.name()));
 
         pool->System = system;
+        system->Registry = this;
     }
 
     template<typename T>
@@ -211,6 +212,8 @@ public:
             return false;
 
         pool->System = nullptr;
+
+        return true;
     }
 
 private:

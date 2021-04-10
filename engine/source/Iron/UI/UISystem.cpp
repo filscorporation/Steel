@@ -4,38 +4,33 @@
 
 void UISystem::OnComponentAdded(EntityID entityID, UIText& component)
 {
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    CheckRectTransformation(entitiesRegistry, entityID);
+    CheckRectTransformation(ComponentSystem<UIText>::Registry, entityID);
 
     component._font = Application::Instance->GetResourcesManager()->DefaultFont();
 }
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIText& component)
 {
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    component.ForeachLetterDelete(entitiesRegistry, component.lettersCount);
+    component.ForeachLetterDelete(ComponentSystem<UIText>::Registry, component.lettersCount);
     component.lastLetterID = NULL_ENTITY;
     component.lettersCount = 0;
 }
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIText& component)
 {
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    component.ForeachLetterSetActive(entitiesRegistry, true);
+    component.ForeachLetterSetActive(ComponentSystem<UIText>::Registry, true);
 }
 
 void UISystem::OnEntityDisabled(EntityID entityID, UIText& component)
 {
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    component.ForeachLetterSetActive(entitiesRegistry, false);
+    component.ForeachLetterSetActive(ComponentSystem<UIText>::Registry, false);
 }
 
 void UISystem::OnComponentAdded(EntityID entityID, UIImage& component)
 {
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    CheckRectTransformation(entitiesRegistry, entityID);
-    TryAddUIRenderer(entitiesRegistry, entityID);
-    TryAddEventHandler(entitiesRegistry, entityID);
+    CheckRectTransformation(ComponentSystem<UIImage>::Registry, entityID);
+    TryAddUIRenderer(ComponentSystem<UIImage>::Registry, entityID);
+    TryAddEventHandler(ComponentSystem<UIImage>::Registry, entityID);
 }
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIImage& component)
@@ -49,12 +44,11 @@ void UISystem::OnEntityDisabled(EntityID entityID, UIImage& component)
 
 void UISystem::OnComponentAdded(EntityID entityID, UIButton& component)
 {
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    CheckRectTransformation(entitiesRegistry, entityID);
-    TryAddUIRenderer(entitiesRegistry, entityID);
-    TryAddEventHandler(entitiesRegistry, entityID);
+    CheckRectTransformation(ComponentSystem<UIButton>::Registry, entityID);
+    TryAddUIRenderer(ComponentSystem<UIButton>::Registry, entityID);
+    TryAddEventHandler(ComponentSystem<UIButton>::Registry, entityID);
 
-    auto& eh = entitiesRegistry->GetComponent<UIEventHandler>(entityID);
+    auto& eh = ComponentSystem<UIButton>::Registry->GetComponent<UIEventHandler>(entityID);
 
     eh.EventCallback = UIButton::HandleEvent;
     eh.EventsMask = UIEventTypes::MouseEnter | UIEventTypes::MouseExit
