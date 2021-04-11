@@ -1,6 +1,6 @@
 #include "TestsSetUp.h"
 
-TEST(ApplicationTests, Initialization)
+TEST(ApplicationTest, Initialization)
 {
     EXPECT_NE(TestApplication::App->Instance, nullptr);
 }

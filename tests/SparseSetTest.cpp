@@ -1,14 +1,14 @@
 #include "TestsSetUp.h"
 #include "Iron/EntityComponentSystem/SparseSet.h"
 
-TEST(SparseSetTests, Initialization)
+TEST(SparseSetTest, Initialization)
 {
     SparseSet set;
 
     EXPECT_EQ(set.Size(), 0);
 }
 
-TEST(SparseSetTests, Add)
+TEST(SparseSetTest, Add)
 {
     SparseSet set;
 
@@ -21,7 +21,7 @@ TEST(SparseSetTests, Add)
     EXPECT_FALSE(set.Has(2));
 }
 
-TEST(SparseSetTests, RandomAdd)
+TEST(SparseSetTest, RandomAdd)
 {
     SparseSet set;
     int values[] = { 3, 745456, 4, 1000, 6, 856348, 15, 9 };
@@ -37,7 +37,7 @@ TEST(SparseSetTests, RandomAdd)
     EXPECT_FALSE(set.Has(0));
 }
 
-TEST(SparseSetTests, Remove)
+TEST(SparseSetTest, Remove)
 {
     SparseSet set;
 
@@ -65,7 +65,7 @@ TEST(SparseSetTests, Remove)
     EXPECT_FALSE(set.Has(783));
 }
 
-TEST(SparseSetTests, Iterator)
+TEST(SparseSetTest, Iterator)
 {
     SparseSet set;
     int values[] = { 3, 745456, 4, 1000, 6, 856348, 15, 9 };
