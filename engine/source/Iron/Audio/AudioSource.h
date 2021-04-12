@@ -18,9 +18,10 @@ public:
     void SetVolume(float volume);
 
 private:
-    unsigned int sourceID;
+    uint32_t sourceID;
     float sourceVolume = 1.0f;
     bool sourceIsLoop = false;
+    ResourceID currentTrackID = NULL_RESOURCE;
 
     friend class AudioSystem;
 };

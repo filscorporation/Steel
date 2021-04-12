@@ -81,6 +81,7 @@ public:
     static void FindAndCallEntryPoint(MonoImage* image);
     static MonoArray* ToMonoUInt32Array(const std::vector<uint32_t>& inArray);
     static MonoArray* ToMonoIntPtrArray(const std::vector<intptr_t>& inArray);
+    static void FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t>& outArray);
 
     template<typename T>
     static MonoArray* ToMonoDataTypeArray(const std::vector<T>& inArray, int cachedDataTypeID)

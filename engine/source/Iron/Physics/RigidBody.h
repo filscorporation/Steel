@@ -13,11 +13,8 @@ namespace RigidBodyTypes
     };
 }
 
-// TODO: hide class physics logic in PhysicsCore
 class RigidBody : public Component
 {
-    friend class PhysicsSystem;
-
     struct RigidBodyInfo;
 
 public:
@@ -42,4 +39,6 @@ private:
     RigidBodyTypes::RigidBodyType _type = RigidBodyTypes::None;
 
     void SetAutoFixture();
+
+    friend class PhysicsSystem;
 };

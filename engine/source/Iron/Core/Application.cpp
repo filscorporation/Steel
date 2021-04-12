@@ -227,6 +227,5 @@ std::string Application::GetRuntimePath()
 
 std::string Application::GetDataPath()
 {
-    // TODO
-    return GetRuntimePath();
+    return GetRuntimePath() + "\\" + resources->GetResourcesPath();
 }

@@ -15,6 +15,7 @@ public:
     ~ResourcesManager();
 
     void LoadDefaultFont();
+    const char* GetResourcesPath();
 
     Sprite* LoadImage(const char* filePath, bool engineResource = false);
     Sprite* GetImage(ResourceID imageID);

@@ -1,7 +1,7 @@
 #include "UIImage.h"
 #include "../../Scene/SceneHelper.h"
 
-void UIImage::SetImage(Sprite *image)
+void UIImage::SetImage(Sprite* image)
 {
     bool wasNull = _image == nullptr;
     _image = image;

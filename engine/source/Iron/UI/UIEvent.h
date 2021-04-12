@@ -22,7 +22,7 @@ namespace UIEventTypes
         MouseDrag                   = 1 << 11,
         MouseDragEnd                = 1 << 12,
         ScrollDelta                 = 1 << 13,
-        Input                       = 1 << 14, // TODO
+        Input                       = 1 << 14,
     };
 
     inline UIEventType operator|(UIEventType a, UIEventType b)

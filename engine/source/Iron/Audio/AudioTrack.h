@@ -1,11 +1,15 @@
 #pragma once
 
+#include <cstdint>
+
+#include "../Core/ResourceID.h"
+
 struct AudioTrack
 {
 public:
-    unsigned int ID;
+    ResourceID ID;
     const char* Path;
-    unsigned int BufferID;
+    uint32_t BufferID;
     int SampleRate;
     int BitsPerSample;
     int NumberOfSamples;

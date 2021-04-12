@@ -7,7 +7,7 @@
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
-// TODO: fixes openal low default volume
+// Fixing openal low default volume
 const float VOLUME_MULTIPLIER = 32.0f;
 
 ALCdevice* device = nullptr;
@@ -156,7 +156,7 @@ void AudioCore::SetListenerVolume(float volume)
     }
 }
 
-unsigned int AudioCore::CreateSource()
+uint32_t AudioCore::CreateSource()
 {
     if (AssertInitialized())
         return -1;
@@ -173,7 +173,7 @@ unsigned int AudioCore::CreateSource()
     return source;
 }
 
-void AudioCore::DeleteSource(unsigned int sourceID)
+void AudioCore::DeleteSource(uint32_t sourceID)
 {
     if (AssertInitialized())
         return;
@@ -181,11 +181,11 @@ void AudioCore::DeleteSource(unsigned int sourceID)
     alDeleteSources(1, (ALuint*)&sourceID);
     if (CheckForErrors())
     {
-        Log::LogError("Error deleting source");
+        Log::LogError("Error deleting source " + std::to_string(sourceID));
     }
 }
 
-void AudioCore::SetSourcePosition(unsigned int sourceID, glm::vec3 position)
+void AudioCore::SetSourcePosition(uint32_t sourceID, glm::vec3 position)
 {
     if (AssertInitialized())
         return;
@@ -193,11 +193,11 @@ void AudioCore::SetSourcePosition(unsigned int sourceID, glm::vec3 position)
     alSource3f(sourceID, AL_POSITION, (ALfloat)position.x, (ALfloat)position.y, (ALfloat)position.z);
     if (CheckForErrors())
     {
-        Log::LogError("Error setting source position");
+        Log::LogError("Error setting source position " + std::to_string(sourceID));
     }
 }
 
-void AudioCore::SetSourceIsLoop(unsigned int sourceID, bool isLoop)
+void AudioCore::SetSourceIsLoop(uint32_t sourceID, bool isLoop)
 {
     if (AssertInitialized())
         return;
@@ -205,11 +205,11 @@ void AudioCore::SetSourceIsLoop(unsigned int sourceID, bool isLoop)
     alSourcei(sourceID, AL_LOOPING, isLoop ? AL_TRUE : AL_FALSE);
     if (CheckForErrors())
     {
-        Log::LogError("Error setting source is loop");
+        Log::LogError("Error setting source is loop " + std::to_string(sourceID));
     }
 }
 
-void AudioCore::SetSourceVolume(unsigned int sourceID, float volume)
+void AudioCore::SetSourceVolume(uint32_t sourceID, float volume)
 {
     if (AssertInitialized())
         return;
@@ -217,23 +217,24 @@ void AudioCore::SetSourceVolume(unsigned int sourceID, float volume)
     alSourcef(sourceID, AL_GAIN, (ALfloat)volume);
     if (CheckForErrors())
     {
-        Log::LogError("Error setting source volume");
+        Log::LogError("Error setting source volume " + std::to_string(sourceID));
     }
 }
 
-void AudioCore::SetSourceBuffer(unsigned int sourceID, unsigned int bufferID)
+void AudioCore::SetSourceBuffer(uint32_t sourceID, int bufferID)
 {
     if (AssertInitialized())
         return;
 
-    alSourcei(sourceID, AL_BUFFER, (ALuint)bufferID);
+    alSourceStop((ALuint)sourceID);
+    alSourcei(sourceID, AL_BUFFER, (ALint)bufferID);
     if (CheckForErrors())
     {
-        Log::LogError("Error setting source bugger");
+        Log::LogError("Error setting source buffer " + std::to_string(sourceID));
     }
 }
 
-void AudioCore::PlaySource(unsigned int sourceID)
+void AudioCore::PlaySource(uint32_t sourceID)
 {
     if (AssertInitialized())
         return;
@@ -241,11 +242,11 @@ void AudioCore::PlaySource(unsigned int sourceID)
     alSourcePlay((ALuint)sourceID);
     if (CheckForErrors())
     {
-        Log::LogError("Error playing from source");
+        Log::LogError("Error playing from source " + std::to_string(sourceID));
     }
 }
 
-void AudioCore::StopSource(unsigned int sourceID)
+void AudioCore::StopSource(uint32_t sourceID)
 {
     if (AssertInitialized())
         return;
@@ -253,6 +254,6 @@ void AudioCore::StopSource(unsigned int sourceID)
     alSourceStop((ALuint)sourceID);
     if (CheckForErrors())
     {
-        Log::LogError("Error stopping source");
+        Log::LogError("Error stopping source " + std::to_string(sourceID));
     }
 }

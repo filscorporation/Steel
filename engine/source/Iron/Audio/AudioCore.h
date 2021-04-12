@@ -16,14 +16,14 @@ public:
     static void SetListenerPosition(glm::vec3 position);
     static void SetListenerOrientation(glm::vec3 at, glm::vec3 up);
     static void SetListenerVolume(float volume);
-    static unsigned int CreateSource();
-    static void DeleteSource(unsigned int sourceID);
-    static void SetSourcePosition(unsigned int sourceID, glm::vec3 position);
-    static void SetSourceIsLoop(unsigned int sourceID, bool isLoop);
-    static void SetSourceVolume(unsigned int sourceID, float volume);
-    static void SetSourceBuffer(unsigned int sourceID, unsigned int bufferID);
-    static void PlaySource(unsigned int sourceID);
-    static void StopSource(unsigned int sourceID);
+    static uint32_t CreateSource();
+    static void DeleteSource(uint32_t sourceID);
+    static void SetSourcePosition(uint32_t sourceID, glm::vec3 position);
+    static void SetSourceIsLoop(uint32_t sourceID, bool isLoop);
+    static void SetSourceVolume(uint32_t sourceID, float volume);
+    static void SetSourceBuffer(uint32_t sourceID, int bufferID);
+    static void PlaySource(uint32_t sourceID);
+    static void StopSource(uint32_t sourceID);
 
 private:
     static bool AssertInitialized();

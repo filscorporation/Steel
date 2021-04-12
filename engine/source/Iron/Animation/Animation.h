@@ -1,16 +1,17 @@
 #pragma once
 
 #include <vector>
+
 #include "../Rendering/Sprite.h"
 
 // TODO: make type independent keyframes
 struct Keyframe
 {
-    Keyframe(float time, unsigned int spriteID, unsigned int tileIndex);
+    Keyframe(float time, ResourceID spriteID, uint32_t tileIndex);
 
     float Time;
-    unsigned int SpriteID;
-    unsigned int TileIndex;
+    uint32_t SpriteID;
+    uint32_t TileIndex;
 };
 
 struct Curve
@@ -22,11 +23,11 @@ struct Animation
 {
     Animation();
     Animation(Sprite* sourceSprite, float animationLength);
-    Animation(Sprite** sourceSprites, int sourceSpritesCount, float animationLength);
+    Animation(Sprite** sourceSprites, uint32_t sourceSpritesCount, float animationLength);
 
     float Length();
 
-    unsigned int ID;
+    ResourceID ID;
     const char* Name;
     bool Loop = false;
     std::vector<Curve> Curves;

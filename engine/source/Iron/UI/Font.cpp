@@ -40,11 +40,32 @@ unsigned int Font::TextureID(uint32_t size)
 void Font::AddSizeIfNotExists(uint32_t size)
 {
     if (characters.find(size) != characters.end())
+    {
+        characters[size].RefCount++;
         return;
+    }
 
     CharactersAtlas atlas;
     LoadFromSize(size, atlas);
+    atlas.RefCount++;
     characters[size] = atlas;
+}
+
+void Font::FreeSize(uint32_t size)
+{
+    if (characters.find(size) == characters.end())
+        return;
+
+    auto& atlas = characters[size];
+    if (atlas.RefCount == 0)
+        Log::LogWarning("Font ref count already is 0, freeing anyway");
+    else
+        atlas.RefCount--;
+
+    if (atlas.RefCount == 0 && FreeAtlasOnZeroRef)
+    {
+        FreeSizeInner(size);
+    }
 }
 
 void Font::InitData(void* data)
@@ -57,8 +78,8 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
     auto& face = *_data->FTFace;
     FT_Set_Pixel_Sizes(face, 0, size);
 
-    FT_GlyphSlot glyph = face->glyph;
-    unsigned int width = 0, height = 0;
+    auto& glyph = face->glyph;
+    uint32_t width = 0, height = 0;
     int minY = 0, maxY = 0;
 
     for (int i = CHARACTERS_START; i < CHARACTERS_NUMBER; i++)
@@ -68,7 +89,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
             continue;
         }
 
-        width += glyph->bitmap.width;
+        width += (glyph->bitmap.width + 1);
         height = std::max(height, glyph->bitmap.rows);
         minY = std::min(minY, glyph->bitmap_top - (int)glyph->bitmap.rows);
         maxY = std::max(maxY, glyph->bitmap_top);
@@ -86,7 +107,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
-    int x = 0;
+    uint32_t x = 0;
     for (int i = CHARACTERS_START; i < CHARACTERS_NUMBER; i++)
     {
         if (FT_Load_Char(face, i, FT_LOAD_RENDER))
@@ -104,7 +125,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
         };
         atlas.Characters[i] = character;
 
-        x += glyph->bitmap.width;
+        x += (glyph->bitmap.width + 1);
     }
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -112,4 +133,12 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
     atlas.Size = glm::ivec2(width, height);
     atlas.MinY = minY;
     atlas.MaxY = maxY;
+}
+
+void Font::FreeSizeInner(uint32_t size)
+{
+    auto& atlas = characters[size];
+
+    glDeleteTextures(1, &atlas.TextureID);
+    characters.erase(size);
 }

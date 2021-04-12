@@ -5,17 +5,9 @@ namespace Iron
     /// <summary>
     /// Loaded audio track
     /// </summary>
-    public class AudioTrack
+    public class AudioTrack : Resource
     {
-        internal AudioTrack(uint id)
-        {
-            ID = id;
-        }
-        
-        /// <summary>
-        /// Resource unique identificator
-        /// </summary>
-        public uint ID { get; private set; }
+        internal AudioTrack(uint id) : base(id) { }
 
         /// <summary>
         /// Track length in seconds

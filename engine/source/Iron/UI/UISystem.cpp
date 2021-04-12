@@ -4,7 +4,11 @@
 
 void UISystem::OnComponentAdded(EntityID entityID, UIText& component)
 {
-    CheckRectTransformation(ComponentSystem<UIText>::Registry, entityID);
+    if (!CheckRectTransformation(ComponentSystem<UIText>::Registry, entityID))
+    {
+        ComponentSystem<UIText>::Registry->RemoveComponent<UIText>(entityID);
+        return;
+    }
 
     component._font = Application::Instance->GetResourcesManager()->DefaultFont();
 }
@@ -28,7 +32,12 @@ void UISystem::OnEntityDisabled(EntityID entityID, UIText& component)
 
 void UISystem::OnComponentAdded(EntityID entityID, UIImage& component)
 {
-    CheckRectTransformation(ComponentSystem<UIImage>::Registry, entityID);
+    if (!CheckRectTransformation(ComponentSystem<UIImage>::Registry, entityID))
+    {
+        ComponentSystem<UIImage>::Registry->RemoveComponent<UIImage>(entityID);
+        return;
+    }
+
     TryAddUIRenderer(ComponentSystem<UIImage>::Registry, entityID);
     TryAddEventHandler(ComponentSystem<UIImage>::Registry, entityID);
 }
@@ -44,7 +53,11 @@ void UISystem::OnEntityDisabled(EntityID entityID, UIImage& component)
 
 void UISystem::OnComponentAdded(EntityID entityID, UIButton& component)
 {
-    CheckRectTransformation(ComponentSystem<UIButton>::Registry, entityID);
+    if (!CheckRectTransformation(ComponentSystem<UIButton>::Registry, entityID))
+    {
+        ComponentSystem<UIButton>::Registry->RemoveComponent<UIButton>(entityID);
+        return;
+    }
     TryAddUIRenderer(ComponentSystem<UIButton>::Registry, entityID);
     TryAddEventHandler(ComponentSystem<UIButton>::Registry, entityID);
 
@@ -77,20 +90,24 @@ void UISystem::OnEntityEnabled(EntityID entityID, UIButton& component)
 void UISystem::OnEntityDisabled(EntityID entityID, UIButton& component)
 { }
 
-void UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID)
+bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID)
 {
     if (!entitiesRegistry->HasComponent<RectTransformation>(entityID))
     {
         Log::LogError("Adding UIComponents to objects without RectTransformation will lead to undefined behaviour. "
                       "Create UI objects using UILayout, not Scene");
+
+        return false;
     }
+
+    return true;
 }
 
 void UISystem::TryAddUIRenderer(EntitiesRegistry* entitiesRegistry, EntityID entityID)
 {
     if (entitiesRegistry->HasComponent<UIRenderer>(entityID))
     {
-        Log::LogError("Entity " + std::to_string(entityID) + " already has UIRenderer component attached, "
+        Log::LogWarning("Entity " + std::to_string(entityID) + " already has UIRenderer component attached, "
                                                                     "this may lead to conflicts. Keep one UIComponent per object");
     }
     else
@@ -103,7 +120,7 @@ void UISystem::TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID e
 {
     if (entitiesRegistry->HasComponent<UIEventHandler>(entityID))
     {
-        Log::LogError("Entity " + std::to_string(entityID) + " already has UIEventHandler component attached, "
+        Log::LogWarning("Entity " + std::to_string(entityID) + " already has UIEventHandler component attached, "
                                                                     "this may lead to conflicts. Keep one UIEventHandler per object");
     }
     else

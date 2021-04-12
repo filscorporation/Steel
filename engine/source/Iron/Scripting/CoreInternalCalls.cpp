@@ -111,6 +111,19 @@ int CoreInternalCalls::Sprite_GetHeight(ResourceID spriteID)
     return image == nullptr ? 0 : image->Height;
 }
 
+int CoreInternalCalls::Sprite_GetPixelsPerUnit(ResourceID spriteID)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    return image == nullptr ? 0 : image->PixelsPerUnit;
+}
+
+void CoreInternalCalls::Sprite_SetPixelsPerUnit(ResourceID spriteID, int pixelsPerUnit)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    if (image != nullptr)
+        image->PixelsPerUnit = pixelsPerUnit;
+}
+
 ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, float length)
 {
     auto sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
@@ -122,6 +135,23 @@ ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, flo
 
     auto animation = new Animation(sprite, length);
     Application::Instance->GetResourcesManager()->AddAnimation(animation);
+
+    return animation->ID;
+}
+
+ResourceID CoreInternalCalls::Animation_FromSprites(MonoArray* spritesIDs, float length)
+{
+    std::vector<ResourceID> ids;
+    ScriptingCore::FromMonoUInt32Array(spritesIDs, ids);
+
+    auto sprites = new Sprite*[ids.size()];
+    for (int i = 0; i < ids.size(); ++i)
+    {
+        sprites[i] = Application::Instance->GetResourcesManager()->GetImage(ids[i]);
+    }
+    auto animation = new Animation(sprites, ids.size(), length);
+    Application::Instance->GetResourcesManager()->AddAnimation(animation);
+    delete[] sprites;
 
     return animation->ID;
 }

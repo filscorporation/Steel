@@ -51,9 +51,10 @@ void Animator::Restart()
 void ApplyFrame(EntityID entity, Keyframe keyframe)
 {
     auto& sr = GetComponentS<SpriteRenderer>(entity);
-    if (sr.GetImage() == nullptr && keyframe.SpriteID != -1 || sr.GetImage()->ID != keyframe.SpriteID)
+    if (sr.GetImage() == nullptr && keyframe.SpriteID != NULL_RESOURCE
+        || sr.GetImage() != nullptr && sr.GetImage()->ID != keyframe.SpriteID)
     {
-        if (keyframe.SpriteID == -1)
+        if (keyframe.SpriteID == NULL_RESOURCE)
             sr.SetImage(nullptr);
         else
             sr.SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));

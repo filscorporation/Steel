@@ -49,6 +49,7 @@ private:
     Font* _font = nullptr;
     std::wstring _text;
     uint32_t _textSize = 14;
+    uint32_t _textSizeRef = 0;
     bool _isTextAutoSize = false;
     AlignmentTypes::AlignmentType _textAlignment = AlignmentTypes::CenterLeft;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);

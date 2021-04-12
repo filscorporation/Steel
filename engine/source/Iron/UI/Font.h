@@ -22,7 +22,9 @@ struct CharactersAtlas
     glm::ivec2 Size;
     uint32_t MinY;
     uint32_t MaxY;
-    std::unordered_map<char, Character> Characters;
+    std::unordered_map<wchar_t, Character> Characters;
+
+    uint32_t RefCount = 0;
 };
 
 class Font
@@ -34,8 +36,11 @@ public:
     unsigned int TextureID(uint32_t size);
 
     void AddSizeIfNotExists(uint32_t size);
+    void FreeSize(uint32_t size);
 
     ResourceID ID;
+
+    bool FreeAtlasOnZeroRef = true;
 
 private:
     FontData* _data;
@@ -44,6 +49,7 @@ private:
 
     void InitData(void* data);
     void LoadFromSize(uint32_t size, CharactersAtlas& atlas);
+    void FreeSizeInner(uint32_t size);
 
     friend class FontManager;
     friend class UIText;

@@ -20,7 +20,6 @@ void PhysicsSystem::OnComponentRemoved(EntityID entityID, RigidBody& component)
 
 void PhysicsSystem::OnEntityEnabled(EntityID entityID, RigidBody& component)
 {
-    // TODO: rework rigid bodies initialization
     component.info = new RigidBody::RigidBodyInfo();
     auto typeBackup = component._type;
     component._type = RigidBodyTypes::None;

@@ -32,7 +32,10 @@ namespace CoreInternalCalls
     void Sprite_SetAsSpriteSheet(ResourceID spriteID, int tileWidth, int tileHeight);
     int Sprite_GetWidth(ResourceID spriteID);
     int Sprite_GetHeight(ResourceID spriteID);
+    int Sprite_GetPixelsPerUnit(ResourceID spriteID);
+    void Sprite_SetPixelsPerUnit(ResourceID spriteID, int pixelsPerUnit);
     ResourceID Animation_FromSpriteSheet(ResourceID spriteID, float length);
+    ResourceID Animation_FromSprites(MonoArray* spritesIDs, float length);
     float Animation_GetLength(ResourceID animationID);
     bool Animation_GetLoop(ResourceID animationID);
     void Animation_SetLoop(ResourceID animationID, bool loop);

@@ -20,6 +20,11 @@ void UIText::Rebuild()
         _dirtyText = false;
         _dirtyTextColor = false;
         rectTransformation.SetTransformationChanged(false);
+        if (_textSizeRef != 0)
+        {
+            _font->FreeSize(_textSizeRef);
+            _textSizeRef = 0;
+        }
 
         return;
     }
@@ -54,6 +59,9 @@ void UIText::Rebuild()
             _dirtyTextColor = false;
         }
 
+        if (_textSizeRef != 0 && _textSizeRef != _textSize)
+            _font->FreeSize(_textSizeRef);
+        _textSizeRef = _textSize;
         _font->AddSizeIfNotExists(_textSize);
         auto& atlas = _font->characters[_textSize];
         auto rectSize = rectTransformation.GetRealSizeCached();
@@ -125,10 +133,10 @@ void UIText::Rebuild()
 
         // Move cursor to first changed letter
         EntityID last = lastLetterID;
-        for (int i = 0; i < lettersCount; ++i)
+        for (uint32_t i = 0; i < lettersCount; ++i)
             cursorX += atlas.Characters[_text[i]].Advance;
         // Create letter renderer for each letter and calculate its transformation
-        for (int i = lettersCount; i < _text.size(); ++i)
+        for (uint32_t i = lettersCount; i < _text.size(); ++i)
         {
             wchar_t& c = _text[i];
             auto& character = atlas.Characters[c];
@@ -228,7 +236,7 @@ uint32_t UIText::GetTextSize() const
 
 void UIText::SetTextSize(uint32_t size)
 {
-    if (_textSize == size)
+    if (_textSize == size || size < 1)
         return;
 
     _lettersChangedCount = lettersCount;

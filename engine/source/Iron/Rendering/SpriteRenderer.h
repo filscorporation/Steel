@@ -12,7 +12,7 @@ class SpriteRenderer : public Component
 public:
     explicit SpriteRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    int CurrentImageTileIndex = 0;
+    uint32_t CurrentImageTileIndex = 0;
 
     void OnRender(Transformation& transformation);
     void SetImage(Sprite* image);

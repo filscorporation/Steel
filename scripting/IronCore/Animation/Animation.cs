@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Iron
@@ -7,17 +8,9 @@ namespace Iron
     /// <summary>
     /// Loaded animation clip
     /// </summary>
-    public class Animation
+    public class Animation : Resource
     {
-        internal Animation(uint id)
-        {
-            ID = id;
-        }
-        
-        /// <summary>
-        /// Resource unique identificator
-        /// </summary>
-        public uint ID { get; private set; }
+        internal Animation(uint id) : base(id) { }
 
         /// <summary>
         /// Is animation looped
@@ -39,6 +32,7 @@ namespace Iron
         /// <param name="sprite">Sprite that was set as sprite sheet</param>
         /// <param name="length">Desired animation length</param>
         /// <returns>New animation or null if creation was not successful</returns>
+        /// <remarks>Sprites will be put evenly on the timeline depending on length</remarks>
         public static Animation FromSpriteSheet(Sprite sprite, float length)
         {
             uint animationID = FromSpriteSheet_Internal(sprite.ID, length);
@@ -52,15 +46,19 @@ namespace Iron
         /// <param name="sprites">List of sprites</param>
         /// <param name="length">Desired animation length</param>
         /// <returns>New animation or null if creation was not successful</returns>
-        /// <remarks>Sprites will be put evenly on the timeline</remarks>
-        public static Animation FromSprites(List<Sprite> sprites, float length)
+        /// <remarks>Sprites will be put evenly on the timeline depending on length</remarks>
+        public static Animation FromSprites(IEnumerable<Sprite> sprites, float length)
         {
-            // TODO: pass list/array
-            throw new NotImplementedException();
+            uint animationID = FromSprites_Internal(sprites.Select(s => s?.ID ?? Resource.NULL_RESOURCE_ID).ToArray(), length);
+            
+            return animationID == 0 ? null : new Animation(animationID);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint FromSpriteSheet_Internal(uint spriteID, float length);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint FromSprites_Internal(uint[] spritesIDs, float length);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool GetLoop_Internal(uint animationID);

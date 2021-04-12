@@ -12,12 +12,16 @@ void SpriteRenderer::OnRender(Transformation& transformation)
         glm::vec2 texCoords[4];
         _image->GetTexCoord(CurrentImageTileIndex, texCoords);
         if (transformation.DidTransformationChange())
+        {
+            glm::mat4 matrix = transformation.GetTransformationMatrixCached()
+                * glm::scale(glm::mat4(1.0f), _image->GetRealWorldSize());
             Renderer::DrawQuad(
                     quadCache,
-                    transformation.GetTransformationMatrixCached(),
+                    matrix,
                     _color,
                     _image->TextureID,
                     texCoords);
+        }
         else
             Renderer::DrawQuadCached(
                     quadCache,
@@ -28,7 +32,11 @@ void SpriteRenderer::OnRender(Transformation& transformation)
     else
     {
         if (transformation.DidTransformationChange())
-            Renderer::DrawQuad(quadCache, transformation.GetTransformationMatrixCached(), _color, _image->TextureID);
+        {
+            glm::mat4 matrix = transformation.GetTransformationMatrixCached()
+                               * glm::scale(glm::mat4(1.0f), _image->GetRealWorldSize());
+            Renderer::DrawQuad(quadCache, matrix, _color, _image->TextureID);
+        }
         else
             Renderer::DrawQuadCached(quadCache, _color, _image->TextureID);
     }
@@ -53,8 +61,7 @@ glm::vec2 SpriteRenderer::GetWorldSize()
     if (_image == nullptr)
         return glm::vec2(0, 0);
 
-    // TODO: use sprite size
-    return GetComponentS<Transformation>(Owner).GetScale();
+    return GetComponentS<Transformation>(Owner).GetScale() * _image->GetRealWorldSize();
 }
 
 bool SpriteRenderer::IsTransparent() const

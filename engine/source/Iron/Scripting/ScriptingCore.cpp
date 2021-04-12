@@ -345,7 +345,7 @@ void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod* method)
     }
 }
 
-void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod *method, EntityID param)
+void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod* method, EntityID param)
 {
     if (scriptPointer == 0)
     {
@@ -385,7 +385,7 @@ void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
     }
 
     MonoObject* exception = nullptr;
-    mono_runtime_invoke(entryPointMethod, nullptr, nullptr, &exception);
+    mono_runtime_invoke(entryPointMethod, nullptr, nullptr,& exception);
 
     if (exception != nullptr)
     {
@@ -394,7 +394,7 @@ void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
     }
 }
 
-MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t> &inArray)
+MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t>& inArray)
 {
     MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_uint32_class(), inArray.size());
 
@@ -416,4 +416,15 @@ MonoArray* ScriptingCore::ToMonoIntPtrArray(const std::vector<intptr_t>& inArray
     }
 
     return outArray;
+}
+
+void ScriptingCore::FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t>& outArray)
+{
+    uint32_t length = mono_array_length(inArray);
+    outArray.reserve(length);
+
+    for (int i = 0; i < length; i++)
+    {
+        outArray.push_back(mono_array_get(inArray, intptr_t, i));
+    }
 }

@@ -93,7 +93,6 @@ std::vector<EntityID> PhysicsCore::PointCast(glm::vec2 center)
 
 std::vector<EntityID> PhysicsCore::AABBCast(glm::vec2 center, glm::vec2 size)
 {
-    // TODO: gives imprecise results
     auto aabb = b2AABB();
     aabb.lowerBound.Set(center.x - size.x * 0.5f, center.y - size.y * 0.5f);
     aabb.upperBound.Set(center.x + size.x * 0.5f, center.y + size.y * 0.5f);

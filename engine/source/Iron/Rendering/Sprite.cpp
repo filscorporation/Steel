@@ -31,6 +31,11 @@ void Sprite::GetTexCoord(int tileIndex, glm::vec2* texCoords)
     texCoords[3] = glm::vec2(tx, ty + th);
 }
 
+glm::vec3 Sprite::GetRealWorldSize()
+{
+    return glm::vec3((float)Width / (float)PixelsPerUnit, (float)Height / (float)PixelsPerUnit, 1.0f);
+}
+
 int Sprite::TilesCount()
 {
     return IsSpriteSheet ? Width / TileWidth * Height / TileHeight : 1;

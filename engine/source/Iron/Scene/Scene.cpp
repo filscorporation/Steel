@@ -106,7 +106,6 @@ void Scene::UpdateGlobalTransformation()
 
 void Scene::CleanDestroyedEntities()
 {
-    // TODO: destroy entity's children
     for (auto entity : entitiesToDelete)
     {
         if (entity != NULL_ENTITY)

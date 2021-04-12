@@ -5,26 +5,41 @@ Animation::Animation()
 
 }
 
-Animation::Animation(Sprite *sourceSprite, float animationLength)
+Animation::Animation(Sprite* sourceSprite, float animationLength)
 {
     length = animationLength;
     Curve curve;
-    int spriteTilesCount = sourceSprite->TilesCount();
-    for (int i = 0; i < spriteTilesCount; ++i)
+    if (sourceSprite == nullptr)
     {
-        Keyframe keyframe(i * animationLength / spriteTilesCount, sourceSprite->ID, i);
+        Keyframe keyframe(0.0f, NULL_RESOURCE, 0);
         curve.Keyframes.push_back(keyframe);
+    }
+    else
+    {
+        int spriteTilesCount = sourceSprite->TilesCount();
+        for (int i = 0; i < spriteTilesCount; ++i)
+        {
+            Keyframe keyframe((float)i * animationLength / (float)spriteTilesCount, sourceSprite->ID, i);
+            curve.Keyframes.push_back(keyframe);
+        }
     }
     Curves.push_back(curve);
 }
 
-Animation::Animation(Sprite **sourceSprites, int sourceSpritesCount, float animationLength)
+Animation::Animation(Sprite** sourceSprites, uint32_t sourceSpritesCount, float animationLength)
 {
+    if (sourceSpritesCount == 0)
+    {
+        length = 0.0f;
+        return;
+    }
+
     length = animationLength;
     Curve curve;
     for (int i = 0; i < sourceSpritesCount; ++i)
     {
-        Keyframe keyframe(i * animationLength / sourceSpritesCount, sourceSprites[i]->ID, i);
+        Keyframe keyframe((float)i * animationLength / (float)sourceSpritesCount,
+                          sourceSprites[i] == nullptr ? NULL_RESOURCE : sourceSprites[i]->ID, i);
         curve.Keyframes.push_back(keyframe);
     }
     Curves.push_back(curve);
@@ -35,7 +50,7 @@ float Animation::Length()
     return length;
 }
 
-Keyframe::Keyframe(float time, unsigned int spriteID, unsigned int tileIndex)
+Keyframe::Keyframe(float time, ResourceID spriteID, uint32_t tileIndex)
 {
     Time = time;
     SpriteID = spriteID;

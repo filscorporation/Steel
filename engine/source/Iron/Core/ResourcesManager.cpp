@@ -56,6 +56,11 @@ void ResourcesManager::LoadDefaultFont()
         defaultFont->AddSizeIfNotExists(32);
 }
 
+const char* ResourcesManager::GetResourcesPath()
+{
+    return RESOURCES_PATH;
+}
+
 Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
 {
     //TODO: completely rework

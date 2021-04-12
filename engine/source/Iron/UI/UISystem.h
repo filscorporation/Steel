@@ -24,7 +24,7 @@ public:
     void OnEntityDisabled(EntityID entityID, UIButton& component) override;
 
 private:
-    static void CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID);
+    static bool CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID);
     static void TryAddUIRenderer(EntitiesRegistry* entitiesRegistry, EntityID entityID);
     static void TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID entityID);
 };

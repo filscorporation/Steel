@@ -5,18 +5,10 @@ namespace Iron
     /// <summary>
     /// Loaded sprite
     /// </summary>
-    public class Sprite
+    public class Sprite : Resource
     {
-        internal Sprite(uint id)
-        {
-            ID = id;
-        }
+        internal Sprite(uint id) : base(id) { }
         
-        /// <summary>
-        /// Resource unique identificator
-        /// </summary>
-        public uint ID { get; private set; }
-
         /// <summary>
         /// Sprite width in pixels
         /// </summary>
@@ -26,6 +18,15 @@ namespace Iron
         /// Sprite height in pixels
         /// </summary>
         public int Height => GetHeight_Internal(ID);
+
+        /// <summary>
+        /// Image size in real world units
+        /// </summary>
+        public int PixelsPerUnit
+        {
+            get => GetPixelsPerUnit_Internal(ID);
+            set => SetPixelsPerUnit_Internal(ID, value);
+        }
 
         /// <summary>
         /// Sets sprite as sprite sheet, cuts it to multiple sprites
@@ -45,5 +46,11 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int GetHeight_Internal(uint spriteID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int GetPixelsPerUnit_Internal(uint spriteID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetPixelsPerUnit_Internal(uint spriteID, int pixelsPerUnit);
     }
 }

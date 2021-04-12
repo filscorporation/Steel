@@ -17,7 +17,7 @@ public:
     static void SetColor(glm::vec3 color);
     static glm::mat4 GetUIViewProjection();
 
-    static bool IsScreenSizeDirty(); // TODO: change to events
+    static bool IsScreenSizeDirty();
 
     static void UpdateSize();
     static void SwapBuffers();

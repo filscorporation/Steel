@@ -41,7 +41,18 @@ void RigidBody::SetStatic()
 
 void RigidBody::SetKinematic()
 {
-    // TODO: not implemented
+    b2BodyDef groundBodyDef;
+    glm::vec3 position = GetComponentS<Transformation>(Owner).GetPosition();
+    groundBodyDef.type = b2_kinematicBody;
+    groundBodyDef.position.Set(position.x, position.y);
+    groundBodyDef.userData = b2BodyUserData();
+    groundBodyDef.userData.pointer = (uintptr_t)Owner;
+
+    info->Body = PhysicsCore::GetWorld()->CreateBody(&groundBodyDef);
+    _mass = info->Body->GetMass();
+    _type = RigidBodyTypes::Kinematic;
+
+    SetAutoFixture();
 }
 
 float RigidBody::GetMass() const
@@ -64,22 +75,15 @@ RigidBodyTypes::RigidBodyType RigidBody::GetType() const
 
 void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
 {
-    if (type == _type)
-        return;
-
-    if (_type != RigidBodyTypes::None)
+    if (_type != RigidBodyTypes::None && type != _type)
     {
-        // TODO: remove physics body
-        Log::LogWarning("Duplicate physics body for one entity will be created");
+        Log::LogWarning("Rigid body type cannot be changed, remove and add new component instead");
+        return;
     }
 
     _type = type;
     switch (type)
     {
-        case RigidBodyTypes::None:
-            // TODO: will be done by the system
-            //RemovePhysicsBody();
-            break;
         case RigidBodyTypes::Dynamic:
             SetDynamic();
             break;
@@ -88,6 +92,8 @@ void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
             break;
         case RigidBodyTypes::Kinematic:
             SetKinematic();
+            break;
+        case RigidBodyTypes::None:
             break;
     }
 }

@@ -2,7 +2,6 @@
 #include "AudioCore.h"
 #include "../Core/Log.h"
 #include "../Scene/SceneHelper.h"
-#include "../Scene/Transformation.h"
 
 void AudioSource::OnUpdate()
 {
@@ -11,7 +10,7 @@ void AudioSource::OnUpdate()
         AudioCore::SetSourcePosition(sourceID, transform.GetPosition());
 }
 
-void AudioSource::Play(AudioTrack *audioTrack)
+void AudioSource::Play(AudioTrack* audioTrack)
 {
     if (audioTrack == nullptr)
     {
@@ -19,7 +18,11 @@ void AudioSource::Play(AudioTrack *audioTrack)
         return;
     }
 
-    AudioCore::SetSourceBuffer(sourceID, audioTrack->BufferID);
+    if (currentTrackID != audioTrack->BufferID)
+    {
+        AudioCore::SetSourceBuffer(sourceID, audioTrack->BufferID);
+        currentTrackID = audioTrack->BufferID;
+    }
     AudioCore::PlaySource(sourceID);
 }
 
