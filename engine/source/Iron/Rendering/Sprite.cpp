@@ -7,7 +7,7 @@ void Sprite::SetAsSpriteSheet(int tileWidth, int tileHeight)
     TileHeight = tileHeight;
 }
 
-void Sprite::GetTexCoord(int tileIndex, glm::vec2* texCoords)
+void Sprite::GetTexCoord(int tileIndex, glm::vec2* texCoords) const
 {
     if (!IsSpriteSheet)
     {
@@ -19,11 +19,11 @@ void Sprite::GetTexCoord(int tileIndex, glm::vec2* texCoords)
         return;
     }
 
-    float tw = float(TileWidth) / float(Width);
-    float th = float(TileHeight) / float(Height);
+    float tw = (float)TileWidth / (float)Width;
+    float th = (float)TileHeight / (float)Height;
     int numPerRow = Width / TileWidth;
-    float tx = (tileIndex % numPerRow) * tw;
-    float ty = (tileIndex / numPerRow) * th;
+    float tx = (float)(tileIndex % numPerRow) * tw;
+    float ty = ((float)tileIndex / (float)numPerRow) * th;
 
     texCoords[0] = glm::vec2(tx + tw, ty);
     texCoords[1] = glm::vec2(tx + tw, ty + th);
@@ -31,12 +31,12 @@ void Sprite::GetTexCoord(int tileIndex, glm::vec2* texCoords)
     texCoords[3] = glm::vec2(tx, ty + th);
 }
 
-glm::vec3 Sprite::GetRealWorldSize()
+glm::vec3 Sprite::GetRealWorldSize() const
 {
     return glm::vec3((float)Width / (float)PixelsPerUnit, (float)Height / (float)PixelsPerUnit, 1.0f);
 }
 
-int Sprite::TilesCount()
+int Sprite::TilesCount() const
 {
     return IsSpriteSheet ? Width / TileWidth * Height / TileHeight : 1;
 }

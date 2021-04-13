@@ -82,19 +82,7 @@ public:
     static MonoArray* ToMonoUInt32Array(const std::vector<uint32_t>& inArray);
     static MonoArray* ToMonoIntPtrArray(const std::vector<intptr_t>& inArray);
     static void FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t>& outArray);
-
-    template<typename T>
-    static MonoArray* ToMonoDataTypeArray(const std::vector<T>& inArray, int cachedDataTypeID)
-    {
-        MonoArray* outArray = mono_array_new(mono_domain_get(), cachedDataTypes[cachedDataTypeID], inArray.size());
-
-        for (uint32_t i = 0; i < inArray.size(); ++i)
-        {
-            mono_array_set(outArray, T, i, inArray[i]);
-        }
-
-        return outArray;
-    }
+    template<typename T> static MonoArray* ToMonoDataTypeArray(const std::vector<T>& inArray, int cachedDataTypeID);
 
     static EngineCallsMethods EngineCalls;
     static EventManagerMethods EventManagerCalls;
@@ -106,6 +94,19 @@ private:
     static CachedData* cachedAPITypes;
     static std::vector<MonoClass*> cachedDataTypes;
 };
+
+template<typename T>
+MonoArray* ScriptingCore::ToMonoDataTypeArray(const std::vector<T>& inArray, int cachedDataTypeID)
+{
+    MonoArray* outArray = mono_array_new(mono_domain_get(), cachedDataTypes[cachedDataTypeID], inArray.size());
+
+    for (uint32_t i = 0; i < inArray.size(); ++i)
+    {
+        mono_array_set(outArray, T, i, inArray[i]);
+    }
+
+    return outArray;
+}
 
 #define API_CLASS(m_class) mono_class_from_name(image, "Iron", #m_class)
 #define CACHE_CLASS(m_class, m_val) cachedAPITypes->class##m_class = m_val;

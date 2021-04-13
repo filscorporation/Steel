@@ -425,6 +425,6 @@ void ScriptingCore::FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t
 
     for (int i = 0; i < length; i++)
     {
-        outArray.push_back(mono_array_get(inArray, intptr_t, i));
+        outArray.push_back(mono_array_get(inArray, uint32_t, i));
     }
 }

@@ -75,13 +75,13 @@ bool CoreInternalCalls::Input_IsMouseJustReleased(int code)
 ResourceID CoreInternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {
     auto image = Application::Instance->GetResourcesManager()->LoadImage(mono_string_to_utf8(path));
-    return image == nullptr ? 0 : image->ID;
+    return image == nullptr ? NULL_RESOURCE : image->ID;
 }
 
 ResourceID CoreInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
 {
     auto track = Application::Instance->GetResourcesManager()->LoadAudioTrack(mono_string_to_utf8(path));
-    return track == nullptr ? 0 : track->ID;
+    return track == nullptr ? NULL_RESOURCE : track->ID;
 }
 
 float CoreInternalCalls::AudioTrack_GetLength(ResourceID audioTrackID)
@@ -130,7 +130,7 @@ ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, flo
     if (sprite == nullptr)
     {
         Log::LogError("Sprite does not exist: " + std::to_string(spriteID));
-        return 0;
+        return NULL_RESOURCE;
     }
 
     auto animation = new Animation(sprite, length);

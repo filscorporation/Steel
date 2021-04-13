@@ -23,7 +23,7 @@ public:
     int TileHeight;
 
     void SetAsSpriteSheet(int tileWidth, int tileHeight);
-    void GetTexCoord(int tileIndex, glm::vec2* texCoords);
-    glm::vec3 GetRealWorldSize();
-    int TilesCount();
+    void GetTexCoord(int tileIndex, glm::vec2* texCoords) const;
+    glm::vec3 GetRealWorldSize() const;
+    int TilesCount() const;
 };

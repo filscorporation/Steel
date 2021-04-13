@@ -52,6 +52,7 @@ void DebugInfoWindow::Create()
     }
 
     float y = 6;
+    float xOffset = 4;
 
     {
         auto fpsLabelEntity = scene->GetUILayer()->CreateUIElement("FPS label", debugWindowEntity);
@@ -63,7 +64,7 @@ void DebugInfoWindow::Create()
         fpsLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         fpsLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         fpsLabelRT.SetSize(glm::vec2(100, 20));
-        fpsLabelRT.SetAnchoredPosition(glm::vec2(50 + 2, -y - 20 * 0.5f));
+        fpsLabelRT.SetAnchoredPosition(glm::vec2(50 + xOffset, -y - 20 * 0.5f));
         fpsLabelRT.SetSortingOrder(-1);
     }
     {
@@ -92,7 +93,7 @@ void DebugInfoWindow::Create()
         drawCallsLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         drawCallsLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         drawCallsLabelRT.SetSize(glm::vec2(100, 20));
-        drawCallsLabelRT.SetAnchoredPosition(glm::vec2(50 + 2, -y - 20 * 0.5f));
+        drawCallsLabelRT.SetAnchoredPosition(glm::vec2(50 + xOffset, -y - 20 * 0.5f));
         drawCallsLabelRT.SetSortingOrder(-1);
     }
     {
@@ -121,7 +122,7 @@ void DebugInfoWindow::Create()
         verticesLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         verticesLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         verticesLabelRT.SetSize(glm::vec2(100, 20));
-        verticesLabelRT.SetAnchoredPosition(glm::vec2(50 + 2, -y - 20 * 0.5f));
+        verticesLabelRT.SetAnchoredPosition(glm::vec2(50 + xOffset, -y - 20 * 0.5f));
         verticesLabelRT.SetSortingOrder(-1);
     }
     {
@@ -150,7 +151,7 @@ void DebugInfoWindow::Create()
         labelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         labelRT.SetSize(glm::vec2(120, 20));
-        labelRT.SetAnchoredPosition(glm::vec2(60 + 2, -y - 20 * 0.5f));
+        labelRT.SetAnchoredPosition(glm::vec2(60 + xOffset, -y - 20 * 0.5f));
         labelRT.SetSortingOrder(-1);
     }
     {
@@ -189,7 +190,7 @@ void DebugInfoWindow::Create()
         labelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         labelRT.SetSize(glm::vec2(120, 20));
-        labelRT.SetAnchoredPosition(glm::vec2(60 + 2, -y - 20 * 0.5f));
+        labelRT.SetAnchoredPosition(glm::vec2(60 + xOffset, -y - 20 * 0.5f));
         labelRT.SetSortingOrder(-1);
     }
     {
