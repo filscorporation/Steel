@@ -1,12 +1,12 @@
 #include "ResourcesManager.h"
+#include "AsepriteLoader.h"
+#include "PngLoader.h"
 #include "../Core/Log.h"
 #include "../Audio/AudioCore.h"
 #include "../Audio/WavLoader.h"
+#include "../Rendering/OpenGLAPI.h"
 #include "../UI/FontManager.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
-#include <GLAD/glad.h>
 #include <fstream>
 // TODO: remove al dependency into AudioCore
 #include <AL/al.h>
@@ -28,7 +28,7 @@ ResourcesManager::~ResourcesManager()
 {
     for (auto image : images)
     {
-        glDeleteTextures(1, &image->TextureID);
+        OpenGLAPI::DeleteTexture(image->TextureID);
         delete image;
     }
 
@@ -47,6 +47,11 @@ ResourcesManager::~ResourcesManager()
     {
         delete font;
     }
+
+    for (auto data : asepriteDatas)
+    {
+        delete data;
+    }
 }
 
 void ResourcesManager::LoadDefaultFont()
@@ -63,46 +68,53 @@ const char* ResourcesManager::GetResourcesPath()
 
 Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
 {
-    //TODO: completely rework
-
     std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
     fullPathString += filePath;
-    const char* fullPath = fullPathString.c_str();
+    std::string fullPath = fullPathString;
 
     std::ifstream infile(fullPath);
     if (!infile.good())
     {
-        Log::LogError("Error loading image: file does not exist");
+        Log::LogError("Error loading image: file " + fullPath + " does not exist");
         return nullptr;
     }
 
-    int width, height, channels;
-    unsigned char* imageData = stbi_load(fullPath, &width, &height, &channels, 4);
-    GLuint texture;
+    Sprite* image;
+    std::string extension = fullPath.substr(fullPath.find_last_of('.') + 1);
+    if (extension == "png")
+    {
+        image = PngLoader::LoadImage(fullPath.c_str());
+        AddImage(image);
+    }
+    else if (extension == "aseprite")
+    {
+        AsepriteData data;
+        AsepriteLoader::LoadAsepriteData(fullPath.c_str(), false, data);
+        if (data.Sprites.size() == 0)
+        {
+            Log::LogError("Error loading image: no data in aseprite file");
+            return nullptr;
+        }
+        if (data.Sprites.size() > 1)
+            Log::LogWarning("Aseprite file contains multiple images but only first will be used");
 
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
+        image = data.Sprites[0];
+    }
+    else
+    {
+        Log::LogError("Error loading image: ." + extension + " files not supported");
+        return nullptr;
+    }
 
-    auto image = new Sprite();
-    image->ID = images.size() + 1;
-    image->TextureID = (uint64_t)texture;
-    image->Path = fullPath;
-    image->Width = width;
-    image->Height = height;
-    image->IsTransparent = channels == 4 && IsImageTransparent(imageData, width, height);
-
-    stbi_image_free(imageData);
-
-    images.push_back(image);
-
-    Log::LogInfo("Sprite loaded: " + std::string(fullPath) + ", " + std::to_string(image->ID));
+    Log::LogInfo("Sprite loaded: " + fullPath + ", " + std::to_string(image->ID));
 
     return image;
+}
+
+void ResourcesManager::AddImage(Sprite* image)
+{
+    image->ID = images.size() + 1;
+    images.push_back(image);
 }
 
 Sprite* ResourcesManager::GetImage(ResourceID imageID)
@@ -125,10 +137,73 @@ void ResourcesManager::UnloadImage(ResourceID imageID)
     if (sprite == nullptr)
         return;
 
-    glDeleteTextures(1, &sprite->TextureID);
+    OpenGLAPI::DeleteTexture(sprite->TextureID);
     //images.erase(images.begin() + imageID); // TODO: remove
     images[imageID - 1] = nullptr;
     delete sprite;
+}
+
+bool ResourcesManager::IsImageTransparent(const unsigned char* imageData, uint32_t width, uint32_t height)
+{
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            auto alpha = imageData[(i * width + j) * 4 + 3];
+            if (alpha != 0 && alpha != 255)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loopAll)
+{
+    std::string fullPathString = RESOURCES_PATH;
+    fullPathString += filePath;
+    std::string fullPath = fullPathString;
+    auto data = new AsepriteData();
+
+    std::ifstream infile(fullPath);
+    if (!infile.good())
+    {
+        Log::LogError("Error loading aseprite file: file " + fullPath + " does not exist");
+        return nullptr;
+    }
+
+    std::string extension = fullPath.substr(fullPath.find_last_of('.') + 1);
+    if (extension != "aseprite")
+    {
+        Log::LogError("Error loading aseprite file: ." + extension + " files not supported");
+    }
+
+    if (!AsepriteLoader::LoadAsepriteData(fullPath.c_str(), loopAll, *data))
+    {
+        delete data;
+        return nullptr;
+    }
+
+    data->ID = asepriteDatas.size() + 1;
+    asepriteDatas.push_back(data);
+
+    Log::LogInfo("Aseprite file loaded: " + fullPath + ", " + std::to_string(data->ID));
+
+    return data;
+}
+
+AsepriteData* ResourcesManager::GetAsepriteData(ResourceID resourceID)
+{
+    if (resourceID == NULL_RESOURCE)
+        return nullptr;
+
+    if (resourceID - 1 > asepriteDatas.size() || asepriteDatas[resourceID - 1] == nullptr)
+    {
+        Log::LogError("Aseprite data does not exist: " + std::to_string(resourceID));
+        return nullptr;
+    }
+
+    return asepriteDatas[resourceID - 1];
 }
 
 static inline ALenum ToALFormat(int channels, int samples)
@@ -232,6 +307,10 @@ void ResourcesManager::UnloadAudioTrack(ResourceID audioID)
 void ResourcesManager::AddAnimation(Animation* animation)
 {
     animation->ID = animations.size() + 1;
+    if (animation->Name.empty())
+    {
+        animation->Name = std::to_string(animation->ID);
+    }
     animations.push_back(animation);
 }
 
@@ -309,19 +388,4 @@ Font* ResourcesManager::GetFont(ResourceID fontID)
 Font *ResourcesManager::DefaultFont()
 {
     return defaultFont;
-}
-
-bool ResourcesManager::IsImageTransparent(const unsigned char* imageData, int width, int height)
-{
-    for (int i = 0; i < width; ++i)
-    {
-        for (int j = 0; j < height; ++j)
-        {
-            auto alpha = imageData[(i * width + j) * 4 + 3];
-            if (alpha != 0 && alpha != 255)
-                return true;
-        }
-    }
-
-    return false;
 }

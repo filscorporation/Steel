@@ -47,6 +47,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Random::PerlinNoise_Internal", (void*)CoreInternalCalls::Random_PerlinNoise);
 
     mono_add_internal_call("Iron.ResourcesManager::LoadImage_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadImage);
+    mono_add_internal_call("Iron.ResourcesManager::LoadAsepriteData_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAsepriteData);
     mono_add_internal_call("Iron.ResourcesManager::LoadAudioTrack_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAudioTrack);
     mono_add_internal_call("Iron.AudioTrack::GetLength_Internal", (void*)CoreInternalCalls::AudioTrack_GetLength);
     mono_add_internal_call("Iron.Sprite::SetAsSpriteSheet_Internal", (void*)CoreInternalCalls::Sprite_SetAsSpriteSheet);
@@ -56,9 +57,14 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Sprite::SetPixelsPerUnit_Internal", (void*)CoreInternalCalls::Sprite_SetPixelsPerUnit);
     mono_add_internal_call("Iron.Animation::FromSpriteSheet_Internal", (void*)CoreInternalCalls::Animation_FromSpriteSheet);
     mono_add_internal_call("Iron.Animation::FromSprites_Internal", (void*)CoreInternalCalls::Animation_FromSprites);
+    mono_add_internal_call("Iron.Animation::GetName_Internal", (void*)CoreInternalCalls::Animation_GetName);
+    mono_add_internal_call("Iron.Animation::SetName_Internal", (void*)CoreInternalCalls::Animation_SetName);
     mono_add_internal_call("Iron.Animation::GetLoop_Internal", (void*)CoreInternalCalls::Animation_GetLoop);
-    mono_add_internal_call("Iron.Animation::GetLength_Internal", (void*)CoreInternalCalls::Animation_GetLength);
     mono_add_internal_call("Iron.Animation::SetLoop_Internal", (void*)CoreInternalCalls::Animation_SetLoop);
+    mono_add_internal_call("Iron.Animation::GetLength_Internal", (void*)CoreInternalCalls::Animation_GetLength);
+    mono_add_internal_call("Iron.AsepriteData::GetSprites_Internal", (void*)CoreInternalCalls::AsepriteData_GetSprites);
+    mono_add_internal_call("Iron.AsepriteData::GetAnimations_Internal", (void*)CoreInternalCalls::AsepriteData_GetAnimations);
+    mono_add_internal_call("Iron.AsepriteData::CreateEntityFromAsepriteData_Internal", (void*)CoreInternalCalls::AsepriteData_CreateEntityFromAsepriteData);
 
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal", (void*)EntityInternalCalls::Entity_CreateNewEntity);
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal2", (void*)EntityInternalCalls::Entity_CreateNewEntity2);
@@ -103,6 +109,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.SpriteRenderer::SetSprite_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_SetSprite);
 
     mono_add_internal_call("Iron.Animator::PlayAnimation_Internal", (void*)ComponentsInternalCalls::Animator_PlayAnimation);
+    mono_add_internal_call("Iron.Animator::PlayAnimation_Internal2", (void*)ComponentsInternalCalls::Animator_PlayAnimation2);
     mono_add_internal_call("Iron.Animator::Play_Internal", (void*)ComponentsInternalCalls::Animator_Play);
     mono_add_internal_call("Iron.Animator::Pause_Internal", (void*)ComponentsInternalCalls::Animator_Pause);
     mono_add_internal_call("Iron.Animator::Stop_Internal", (void*)ComponentsInternalCalls::Animator_Stop);

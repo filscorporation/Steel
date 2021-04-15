@@ -8,15 +8,26 @@ namespace Iron
     public static class ResourcesManager
     {
         /// <summary>
-        /// Loads sprite into memory (supported formats: png)
+        /// Loads sprite into memory (supported formats: png, aseprite)
         /// </summary>
         /// <param name="path">Path to file relative to resources folder</param>
-        /// <returns>Loaded sprite or null if loading failed</returns>
-        /// <remarks>Loading same sprite twice will duplicate it in memory</remarks>
+        /// <returns>Loaded or existing sprite or null if loading failed</returns>
         public static Sprite LoadImage(string path)
         {
             uint spriteID = LoadImage_Internal(path);
-            return spriteID == 0 ? null : new Sprite(spriteID);
+            return spriteID == Resource.NULL_RESOURCE_ID ? null : new Sprite(spriteID);
+        }
+
+        /// <summary>
+        /// Load aseprite file and parse all frames and tags into sprites and animations
+        /// </summary>
+        /// <param name="path">Path to aseprite file in resources folder</param>
+        /// <param name="loopAll">Should all animations be set as loop by default</param>
+        /// <returns>Aseprite data or null if loading failed</returns>
+        public static AsepriteData LoadAsepriteData(string path, bool loopAll = false)
+        {
+            uint resourceID = LoadAsepriteData_Internal(path, loopAll);
+            return resourceID == Resource.NULL_RESOURCE_ID ? null : new AsepriteData(resourceID);
         }
         
         /// <summary>
@@ -28,11 +39,14 @@ namespace Iron
         public static AudioTrack LoadAudioTrack(string path)
         {
             uint audioTrackID = LoadAudioTrack_Internal(path);
-            return audioTrackID == 0 ? null : new AudioTrack(audioTrackID);
+            return audioTrackID == Resource.NULL_RESOURCE_ID ? null : new AudioTrack(audioTrackID);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint LoadImage_Internal(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint LoadAsepriteData_Internal(string path, bool loopAll);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint LoadAudioTrack_Internal(string path);

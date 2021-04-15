@@ -21,7 +21,7 @@ public:
     bool IsTransparent() const;
 
 private:
-    Sprite* _image;
+    Sprite* _image = nullptr;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     QuadCache quadCache;
     bool _isTransparent = false;

@@ -8,12 +8,21 @@ namespace Iron
     public class Animator : Component
     {
         /// <summary>
-        /// Sets new animation and plays it
+        /// Adds new animation if needed and plays it
         /// </summary>
         /// <param name="animation">Animation to play</param>
         public void Play(Animation animation)
         {
             PlayAnimation_Internal(Entity.ID, animation.ID);
+        }
+        
+        /// <summary>
+        /// Play existing in animator animation by name
+        /// </summary>
+        /// <param name="animationName">Animation to play name</param>
+        public void Play(string animationName)
+        {
+            PlayAnimation_Internal2(Entity.ID, animationName);
         }
         
         /// <summary>
@@ -50,6 +59,9 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void PlayAnimation_Internal(uint entityID, uint animationID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void PlayAnimation_Internal2(uint entityID, string animationName);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Play_Internal(uint entityID);

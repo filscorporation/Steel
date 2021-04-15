@@ -51,7 +51,6 @@
         <Compile Include="Core\Log.cs" />
         <Compile Include="Core\MouseCodes.cs" />
         <Compile Include="Core\Resource.cs" />
-        <Compile Include="Core\ResourcesManager.cs" />
         <Compile Include="Core\Time.cs" />
         <Compile Include="Math\Math.cs" />
         <Compile Include="Math\Random.cs" />
@@ -76,6 +75,8 @@
         <Compile Include="Rendering\Screen.cs" />
         <Compile Include="Rendering\Sprite.cs" />
         <Compile Include="Rendering\SpriteRenderer.cs" />
+        <Compile Include="Resources\AsepriteData.cs" />
+        <Compile Include="Resources\ResourcesManager.cs" />
         <Compile Include="Scene\Transformation.cs" />
         <Compile Include="UI\AlignmentType.cs" />
         <Compile Include="UI\ButtonTransitionInfo.cs" />

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -11,6 +10,15 @@ namespace Iron
     public class Animation : Resource
     {
         internal Animation(uint id) : base(id) { }
+
+        /// <summary>
+        /// Animation name
+        /// </summary>
+        public string Name
+        {
+            get => GetName_Internal(ID);
+            set => SetName_Internal(ID, value);
+        }
 
         /// <summary>
         /// Is animation looped
@@ -37,7 +45,7 @@ namespace Iron
         {
             uint animationID = FromSpriteSheet_Internal(sprite.ID, length);
             
-            return animationID == 0 ? null : new Animation(animationID);
+            return animationID == NULL_RESOURCE_ID ? null : new Animation(animationID);
         }
 
         /// <summary>
@@ -51,7 +59,12 @@ namespace Iron
         {
             uint animationID = FromSprites_Internal(sprites.Select(s => s?.ID ?? Resource.NULL_RESOURCE_ID).ToArray(), length);
             
-            return animationID == 0 ? null : new Animation(animationID);
+            return animationID == NULL_RESOURCE_ID ? null : new Animation(animationID);
+        }
+
+        public override string ToString()
+        {
+            return $"Animation {Name}";
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -59,6 +72,12 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint FromSprites_Internal(uint[] spritesIDs, float length);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetName_Internal(uint animationID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetName_Internal(uint animationID, string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool GetLoop_Internal(uint animationID);

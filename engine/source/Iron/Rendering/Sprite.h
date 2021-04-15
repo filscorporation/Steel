@@ -2,19 +2,20 @@
 
 #include <array>
 #include <cstdint>
+#include <string>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "../Core/ResourceID.h"
+#include "../Resources/ResourceID.h"
 
 struct Sprite
 {
 public:
     ResourceID ID;
     const char* Path;
-    unsigned int TextureID;
-    int Width;
-    int Height;
+    uint32_t TextureID;
+    uint32_t Width;
+    uint32_t Height;
     int PixelsPerUnit = 32;
     bool IsTransparent;
 
@@ -26,4 +27,6 @@ public:
     void GetTexCoord(int tileIndex, glm::vec2* texCoords) const;
     glm::vec3 GetRealWorldSize() const;
     int TilesCount() const;
+
+    std::string GetName() const;
 };

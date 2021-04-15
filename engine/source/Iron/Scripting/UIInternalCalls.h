@@ -4,8 +4,8 @@
 #include <glm/glm.hpp>
 
 #include "ScriptingCore.h"
-#include "../Core/ResourceID.h"
 #include "../EntityComponentSystem/Entity.h"
+#include "../Resources/ResourceID.h"
 #include "../UI/UIElements/UIText.h"
 #include "../UI/UIElements/UIButton.h"
 

@@ -78,6 +78,12 @@ ResourceID CoreInternalCalls::ResourcesManager_LoadImage(MonoString* path)
     return image == nullptr ? NULL_RESOURCE : image->ID;
 }
 
+EntityID CoreInternalCalls::ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll)
+{
+    auto data = Application::Instance->GetResourcesManager()->LoadAsepriteData(mono_string_to_utf8(path), loopAll);
+    return data == nullptr ? NULL_RESOURCE : data->ID;
+}
+
 ResourceID CoreInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
 {
     auto track = Application::Instance->GetResourcesManager()->LoadAudioTrack(mono_string_to_utf8(path));
@@ -128,10 +134,7 @@ ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, flo
 {
     auto sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     if (sprite == nullptr)
-    {
-        Log::LogError("Sprite does not exist: " + std::to_string(spriteID));
         return NULL_RESOURCE;
-    }
 
     auto animation = new Animation(sprite, length);
     Application::Instance->GetResourcesManager()->AddAnimation(animation);
@@ -160,22 +163,34 @@ float CoreInternalCalls::Animation_GetLength(ResourceID animationID)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
-    {
-        Log::LogError("Animation does not exist");
         return false;
-    }
 
     return animation->Length();
+}
+
+MonoString* CoreInternalCalls::Animation_GetName(ResourceID animationID)
+{
+    auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
+    if (animation == nullptr)
+        return nullptr;
+
+    return mono_string_new(mono_domain_get(), animation->Name.c_str());
+}
+
+void CoreInternalCalls::Animation_SetName(ResourceID animationID, MonoString* name)
+{
+    auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
+    if (animation == nullptr)
+        return;
+
+    animation->Name = mono_string_to_utf8(name);
 }
 
 bool CoreInternalCalls::Animation_GetLoop(ResourceID animationID)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
-    {
-        Log::LogError("Animation does not exist");
         return false;
-    }
 
     return animation->Loop;
 }
@@ -184,12 +199,50 @@ void CoreInternalCalls::Animation_SetLoop(ResourceID animationID, bool loop)
 {
     auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
     if (animation == nullptr)
-    {
-        Log::LogError("Animation does not exist");
         return;
-    }
 
     animation->Loop = loop;
+}
+
+MonoArray* CoreInternalCalls::AsepriteData_GetSprites(ResourceID resourceID)
+{
+    auto data = Application::Instance->GetResourcesManager()->GetAsepriteData(resourceID);
+    if (data == nullptr)
+        return nullptr;
+
+    std::vector<uint32_t> spritesIDs;
+    spritesIDs.reserve(data->Sprites.size());
+    for (auto sprite : data->Sprites)
+    {
+        spritesIDs.push_back(sprite->ID);
+    }
+
+    return ScriptingCore::ToMonoUInt32Array(spritesIDs);
+}
+
+MonoArray* CoreInternalCalls::AsepriteData_GetAnimations(ResourceID resourceID)
+{
+    auto data = Application::Instance->GetResourcesManager()->GetAsepriteData(resourceID);
+    if (data == nullptr)
+        return nullptr;
+
+    std::vector<uint32_t> animationsIDs;
+    animationsIDs.reserve(data->Animations.size());
+    for (auto animation : data->Animations)
+    {
+        animationsIDs.push_back(animation->ID);
+    }
+
+    return ScriptingCore::ToMonoUInt32Array(animationsIDs);
+}
+
+EntityID CoreInternalCalls::AsepriteData_CreateEntityFromAsepriteData(ResourceID resourceID)
+{
+    auto data = Application::Instance->GetResourcesManager()->GetAsepriteData(resourceID);
+    if (data == nullptr)
+        return NULL_ENTITY;
+
+    return Application::Instance->GetCurrentScene()->CreateEntity(*data);
 }
 
 float CoreInternalCalls::Time_GetDeltaTime()

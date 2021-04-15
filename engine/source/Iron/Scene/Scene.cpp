@@ -4,6 +4,8 @@
 #include "Transformation.h"
 #include "NameComponent.h"
 #include "Hierarchy.h"
+#include "../Rendering/SpriteRenderer.h"
+#include "../Animation/Animator.h"
 
 int Scene::EntitiesWasCreated = 0;
 
@@ -57,6 +59,21 @@ EntityID Scene::CreateEntity(const char* name, EntityID parent)
     entitiesRegistry->AddComponent<Transformation>(entity);
     entitiesRegistry->AddComponent<HierarchyNode>(entity);
     LinkChildToParent(entitiesRegistry, entity, parent);
+
+    return entity;
+}
+
+EntityID Scene::CreateEntity(AsepriteData& data)
+{
+    auto entity = CreateEntity(data.Name, NULL_ENTITY);
+    auto& sr = entitiesRegistry->AddComponent<SpriteRenderer>(entity);
+    if (!data.Sprites.empty())
+        sr.SetImage(data.Sprites[0]);
+    auto& an = entitiesRegistry->AddComponent<Animator>(entity);
+    for (auto& animation : data.Animations)
+    {
+        an.Animations.push_back(animation->ID);
+    }
 
     return entity;
 }

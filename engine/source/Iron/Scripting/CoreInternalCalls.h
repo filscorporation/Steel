@@ -5,7 +5,7 @@
 #include <glm/vec4.hpp>
 
 #include "ScriptingCore.h"
-#include "../Core/ResourceID.h"
+#include "../Resources/ResourceID.h"
 
 namespace CoreInternalCalls
 {
@@ -27,6 +27,7 @@ namespace CoreInternalCalls
 
     // Resources Manager
     ResourceID ResourcesManager_LoadImage(MonoString* path);
+    EntityID ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll);
     ResourceID ResourcesManager_LoadAudioTrack(MonoString* path);
     float AudioTrack_GetLength(ResourceID audioTrackID);
     void Sprite_SetAsSpriteSheet(ResourceID spriteID, int tileWidth, int tileHeight);
@@ -37,8 +38,13 @@ namespace CoreInternalCalls
     ResourceID Animation_FromSpriteSheet(ResourceID spriteID, float length);
     ResourceID Animation_FromSprites(MonoArray* spritesIDs, float length);
     float Animation_GetLength(ResourceID animationID);
+    MonoString* Animation_GetName(ResourceID animationID);
+    void Animation_SetName(ResourceID animationID, MonoString* name);
     bool Animation_GetLoop(ResourceID animationID);
     void Animation_SetLoop(ResourceID animationID, bool loop);
+    MonoArray* AsepriteData_GetSprites(ResourceID resourceID);
+    MonoArray* AsepriteData_GetAnimations(ResourceID resourceID);
+    EntityID AsepriteData_CreateEntityFromAsepriteData(ResourceID resourceID);
 
     // Time
     float Time_GetDeltaTime();

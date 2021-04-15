@@ -1,10 +1,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <GLAD/glad.h>
-
 #include "Font.h"
+
 #include "FontManager.h"
 #include "../Core/Log.h"
+#include "../Rendering/OpenGLAPI.h"
 
 #define CHARACTERS_START 32
 #define CHARACTERS_NUMBER 255
@@ -95,17 +95,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
         maxY = std::max(maxY, glyph->bitmap_top);
     }
 
-    GLuint textureID;
-    glActiveTexture(GL_TEXTURE0);
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+    uint32_t textureID = OpenGLAPI::BeginGenerateMonochromeTexture(width, height);
 
     uint32_t x = 0;
     for (int i = CHARACTERS_START; i < CHARACTERS_NUMBER; i++)
@@ -113,7 +103,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
         if (FT_Load_Char(face, i, FT_LOAD_RENDER))
             continue;
 
-        glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, glyph->bitmap.width, glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
+        OpenGLAPI::SetMonochromeTextureSubImage(glyph->bitmap.buffer, x, 0, glyph->bitmap.width, glyph->bitmap.rows);
 
         Character character =
         {
@@ -127,7 +117,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
 
         x += (glyph->bitmap.width + 1);
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    OpenGLAPI::EndGenerateTexture();
 
     atlas.TextureID = textureID;
     atlas.Size = glm::ivec2(width, height);
@@ -139,6 +129,6 @@ void Font::FreeSizeInner(uint32_t size)
 {
     auto& atlas = characters[size];
 
-    glDeleteTextures(1, &atlas.TextureID);
+    OpenGLAPI::DeleteTexture(atlas.TextureID);
     characters.erase(size);
 }

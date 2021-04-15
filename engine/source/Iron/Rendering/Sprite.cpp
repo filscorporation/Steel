@@ -40,3 +40,15 @@ int Sprite::TilesCount() const
 {
     return IsSpriteSheet ? Width / TileWidth * Height / TileHeight : 1;
 }
+
+std::string Sprite::GetName() const
+{
+    std::string path = std::string(Path);
+    auto pos = path.find_last_of('/');
+    if (pos == std::string::npos)
+        pos = path.find_last_of('\\');
+    if (pos == std::string::npos)
+        return std::to_string(ID);
+
+    return path.substr(pos + 1);
+}

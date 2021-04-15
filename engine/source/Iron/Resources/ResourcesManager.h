@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "AsepriteData.h"
 #include "ResourceID.h"
 #include "../Animation/Animation.h"
 #include "../Audio/AudioTrack.h"
@@ -18,8 +19,13 @@ public:
     const char* GetResourcesPath();
 
     Sprite* LoadImage(const char* filePath, bool engineResource = false);
+    void AddImage(Sprite* image);
     Sprite* GetImage(ResourceID imageID);
     void UnloadImage(ResourceID imageID);
+    static bool IsImageTransparent(const unsigned char* imageData, uint32_t width, uint32_t height);
+
+    AsepriteData* LoadAsepriteData(const char* filePath, bool loopAll);
+    AsepriteData* GetAsepriteData(ResourceID resourceID);
 
     AudioTrack* LoadAudioTrack(const char* filePath);
     AudioTrack* GetAudioTrack(ResourceID audioID);
@@ -34,12 +40,12 @@ public:
     Font* DefaultFont();
 
 private:
-    static bool IsImageTransparent(const unsigned char* imageData, int width, int height);
 
     std::vector<Sprite*> images;
     std::vector<AudioTrack*> audioTracks;
     std::vector<Animation*> animations;
     std::vector<Font*> fonts;
+    std::vector<AsepriteData*> asepriteDatas;
 
     Font* defaultFont;
 };

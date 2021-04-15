@@ -4,9 +4,9 @@
 #include <glm/vec2.hpp>
 #include <mono/jit/jit.h>
 
-#include "../Core/ResourceID.h"
 #include "../Physics/RigidBody.h"
 #include "../Rendering/Camera.h"
+#include "../Resources/ResourceID.h"
 
 namespace ComponentsInternalCalls
 {
@@ -39,6 +39,7 @@ namespace ComponentsInternalCalls
 
     // Animator
     void Animator_PlayAnimation(EntityID entityID, ResourceID animationID);
+    void Animator_PlayAnimation2(EntityID entityID, MonoString* animationName);
     void Animator_Play(EntityID entityID);
     void Animator_Pause(EntityID entityID);
     void Animator_Stop(EntityID entityID);

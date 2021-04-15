@@ -5,13 +5,11 @@
 #include <sstream>
 #include <iostream>
 
-#include <GLAD/glad.h>
-
 class Shader
 {
 public:
-    GLuint Program;
-    Shader(const GLchar* vertexCode, const GLchar* fragmentCode);
+    uint32_t Program;
+    Shader(const char* vertexCode, const char* fragmentCode);
     static Shader* FromFilePaths(const char* vertexPath, const char* fragmentPath);
     void Use();
 };

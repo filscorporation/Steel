@@ -4,6 +4,7 @@
 
 #include "../EntityComponentSystem/EntitiesRegistry.h"
 #include "../Rendering/Camera.h"
+#include "../Resources/AsepriteData.h"
 #include "../UI/UILayer.h"
 #include "HierarchySystem.h"
 #include "TransformationSystem.h"
@@ -21,6 +22,7 @@ public:
     void CreateMainCamera();
     EntityID CreateEntity();
     EntityID CreateEntity(const char* name, EntityID parent);
+    EntityID CreateEntity(AsepriteData& data);
     EntityID CreateEmptyEntity();
     void DestroyEntity(EntityID entity);
 

@@ -5,10 +5,11 @@
 
 void Animator::Init()
 {
-    if (Animations.empty())
+    if (Animations.empty() || currentAnimation == NULL_RESOURCE)
         return;
 
-    currentCurveFrame.resize(Animations[currentAnimation]->Curves.size());
+    auto current = Application::Instance->GetResourcesManager()->GetAnimation(currentAnimation);
+    currentCurveFrame.resize(current->Curves.size());
     fill(currentCurveFrame.begin(), currentCurveFrame.end(), 0);
     initialized = true;
 }
@@ -21,12 +22,29 @@ void Animator::Play()
     IsPlaying = true;
 }
 
-void Animator::Play(int animation)
+void Animator::Play(const std::string& animationName)
 {
-    if (animation == currentAnimation)
+    auto resources = Application::Instance->GetResourcesManager();
+    ResourceID playID = NULL_RESOURCE;
+    for (auto animationID : Animations)
+    {
+        auto animation = resources->GetAnimation(animationID);
+        if (animation == nullptr)
+            continue;
+        if (animation->Name == animationName)
+        {
+            playID = animationID;
+            break;
+        }
+    }
+
+    if (playID == NULL_RESOURCE)
+        return;
+
+    if (playID == currentAnimation)
         Play();
 
-    currentAnimation = animation;
+    currentAnimation = playID;
     Restart();
 }
 
@@ -46,6 +64,16 @@ void Animator::Restart()
 {
     Stop();
     Play();
+}
+
+void Animator::AddAndPlay(Animation* animation)
+{
+    if (std::find(Animations.begin(), Animations.end(), animation->ID) == Animations.end())
+    {
+        Animations.push_back(animation->ID);
+    }
+
+    Play(animation->Name);
 }
 
 void ApplyFrame(EntityID entity, Keyframe keyframe)
@@ -68,23 +96,25 @@ void Animator::OnUpdate()
     if (!IsPlaying)
         return;
 
-    if (Animations.empty() || Animations[currentAnimation] == nullptr)
+    if (Animations.empty() || currentAnimation == NULL_RESOURCE)
         return;
 
-    float animationTime = NormalizedTime * Animations[currentAnimation]->Length();
+    auto current = Application::Instance->GetResourcesManager()->GetAnimation(currentAnimation);
+
+    float animationTime = NormalizedTime * current->Length();
     animationTime += Time::DeltaTime() * Speed;
-    NormalizedTime = animationTime / Animations[currentAnimation]->Length();
+    NormalizedTime = animationTime / current->Length();
 
     for (uint32_t i = 0; i < currentCurveFrame.size(); ++i)
     {
         if (Speed > 0)
         {
-            if (currentCurveFrame[i] < Animations[currentAnimation]->Curves[i].Keyframes.size() - 1)
+            if (currentCurveFrame[i] < current->Curves[i].Keyframes.size() - 1)
             {
-                if (animationTime >= Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i] + 1].Time)
+                if (animationTime >= current->Curves[i].Keyframes[currentCurveFrame[i] + 1].Time)
                 {
                     currentCurveFrame[i]++;
-                    ApplyFrame(Owner, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
+                    ApplyFrame(Owner, current->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
         }
@@ -92,10 +122,10 @@ void Animator::OnUpdate()
         {
             if (currentCurveFrame[i] > 0)
             {
-                if (animationTime <= Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i] - 1].Time)
+                if (animationTime <= current->Curves[i].Keyframes[currentCurveFrame[i] - 1].Time)
                 {
                     currentCurveFrame[i]--;
-                    ApplyFrame(Owner, Animations[currentAnimation]->Curves[i].Keyframes[currentCurveFrame[i]]);
+                    ApplyFrame(Owner, current->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
         }
@@ -103,14 +133,14 @@ void Animator::OnUpdate()
 
     if (NormalizedTime < 0.0f && Speed < 0 || NormalizedTime > 1.0f && Speed > 0)
     {
-        if (Animations[currentAnimation]->Loop)
+        if (current->Loop)
         {
             // TODO: make normalized time show number of cycles for loop animations
             NormalizedTime = Speed < 0 ? NormalizedTime + 1.0f : NormalizedTime - 1.0f;
-            for (uint32_t i = 0; i < Animations[currentAnimation]->Curves.size(); ++i)
+            for (uint32_t i = 0; i < current->Curves.size(); ++i)
             {
-                currentCurveFrame[i] = Speed < 0 ? Animations[currentAnimation]->Curves[i].Keyframes.size() : 0;
-                ApplyFrame(Owner, Animations[currentAnimation]->Curves[i].Keyframes[0]);
+                currentCurveFrame[i] = Speed < 0 ? current->Curves[i].Keyframes.size() : 0;
+                ApplyFrame(Owner, current->Curves[i].Keyframes[0]);
             }
         }
         else

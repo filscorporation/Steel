@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "../Core/ResourceID.h"
+#include "../Resources/ResourceID.h"
 
 struct AudioTrack
 {

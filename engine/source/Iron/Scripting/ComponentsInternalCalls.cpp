@@ -157,10 +157,14 @@ void ComponentsInternalCalls::Animator_PlayAnimation(EntityID entityID, Resource
         return;
     }
 
-    // TODO: rework API
-    component.Animations.resize(1);
-    component.Animations[0] = animation;
-    component.Play(0);
+    component.AddAndPlay(animation);
+}
+
+void ComponentsInternalCalls::Animator_PlayAnimation2(EntityID entityID, MonoString* animationName)
+{
+    GET_COMPONENT_OR_RETURN(Animator, )
+
+    component.Play(mono_string_to_utf8(animationName));
 }
 
 void ComponentsInternalCalls::Animator_Play(EntityID entityID)

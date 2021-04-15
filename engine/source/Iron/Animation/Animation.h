@@ -24,11 +24,12 @@ struct Animation
     Animation();
     Animation(Sprite* sourceSprite, float animationLength);
     Animation(Sprite** sourceSprites, uint32_t sourceSpritesCount, float animationLength);
+    Animation(Sprite** sourceSprites, uint32_t sourceSpritesCount, std::vector<uint32_t>& framesDurations);
 
     float Length();
 
     ResourceID ID;
-    const char* Name;
+    std::string Name;
     bool Loop = false;
     std::vector<Curve> Curves;
 

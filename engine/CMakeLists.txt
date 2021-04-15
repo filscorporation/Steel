@@ -27,9 +27,13 @@ set(BOX2D_BUILD_TESTBED OFF)
 set(BOX2D_BUILD_EXAMPLES OFF)
 
 set(GLAD_FILES includes/glad/src/glad.c)
+set(ZLIB_FILES includes/zlib/zlib.h includes/zlib/adler32.c includes/zlib/compress.c includes/zlib/crc32.c includes/zlib/deflate.c
+        includes/zlib/gzclose.c includes/zlib/gzlib.c includes/zlib/gzread.c includes/zlib/gzwrite.c includes/zlib/inflate.c
+        includes/zlib/infback.c includes/zlib/inftrees.c includes/zlib/inffast.c includes/zlib/trees.c includes/zlib/uncompr.c includes/zlib/zutil.c)
+
 set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
-        ${GLAD_FILES}
+        ${GLAD_FILES} ${ZLIB_FILES}
         source/Iron/Rendering/Shader.h source/Iron/Rendering/Shader.cpp source/Iron/Core/Application.cpp
         source/Iron/Core/Application.h source/Iron/Core/Input.cpp source/Iron/Core/Input.h source/Iron/Core/KeyCodes.h
         source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/EntityComponentSystem/Component.cpp
@@ -38,7 +42,7 @@ set(SOURCE_FILES
         source/Iron/Scene/Transformation.cpp source/Iron/Scene/Transformation.h source/Iron/Core/Log.cpp
         source/Iron/Core/Log.h source/Iron/Rendering/Camera.cpp source/Iron/Rendering/Camera.h source/Iron/Core/Time.cpp
         source/Iron/Core/Time.h source/Iron/Rendering/Screen.cpp source/Iron/Rendering/Screen.h
-        source/Iron/Core/ResourcesManager.cpp source/Iron/Core/ResourcesManager.h source/Iron/Rendering/Renderer.cpp
+        source/Iron/Resources/ResourcesManager.cpp source/Iron/Resources/ResourcesManager.h source/Iron/Rendering/Renderer.cpp
         source/Iron/Rendering/Renderer.h source/Iron/Animation/Animator.cpp source/Iron/Animation/Animator.h
         source/Iron/Animation/Animation.cpp source/Iron/Animation/Animation.h source/Iron/Rendering/Sprite.cpp
         source/Iron/Rendering/Sprite.h source/Iron/Audio/AudioTrack.cpp source/Iron/Audio/AudioTrack.h
@@ -63,7 +67,7 @@ set(SOURCE_FILES
         source/Iron/Scripting/UIInternalCalls.cpp source/Iron/Scripting/UIInternalCalls.h
         source/Iron/EntityComponentSystem/EntitiesRegistry.h source/Iron/EntityComponentSystem/Entity.h
         source/Iron/Scene/NameComponent.cpp source/Iron/Scene/NameComponent.h source/Iron/Scene/SceneHelper.h
-        source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Core/ResourceID.h
+        source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Resources/ResourceID.h
         source/Iron/EntityComponentSystem/SparseDataSet.h source/Iron/EntityComponentSystem/ComponentSystem.h
         source/Iron/Physics/PhysicsSystem.cpp source/Iron/Physics/PhysicsSystem.h source/Iron/Audio/AudioSystem.cpp
         source/Iron/Audio/AudioSystem.h source/Iron/Physics/CircleCollider.cpp source/Iron/Physics/CircleCollider.h
@@ -77,7 +81,10 @@ set(SOURCE_FILES
         source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h source/Iron/Scene/HierarchySystem.cpp
         source/Iron/Scene/HierarchySystem.h source/Iron/Scene/TransformationSystem.cpp source/Iron/Scene/TransformationSystem.h
         source/Iron/UI/UISystem.cpp source/Iron/UI/UISystem.h source/Iron/Scripting/ScriptComponentSystem.cpp source/Iron/Scripting/ScriptComponentSystem.h
-        source/Iron/Debug/Debug.cpp source/Iron/Debug/Debug.h source/Iron/Debug/DebugInfoWindow.cpp source/Iron/Debug/DebugInfoWindow.h)
+        source/Iron/Debug/Debug.cpp source/Iron/Debug/Debug.h source/Iron/Debug/DebugInfoWindow.cpp source/Iron/Debug/DebugInfoWindow.h
+        source/Iron/Resources/PngLoader.cpp source/Iron/Resources/PngLoader.h source/Iron/Rendering/OpenGLAPI.cpp source/Iron/Rendering/OpenGLAPI.h
+        source/Iron/Resources/AsepriteLoader.cpp source/Iron/Resources/AsepriteLoader.h source/Iron/Resources/AsepriteData.h
+        source/Iron/Resources/FileLoader.cpp source/Iron/Resources/FileLoader.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -117,6 +124,9 @@ include_directories(includes)
 
 # glad
 include_directories(includes/glad/include)
+
+# zlib
+include_directories(includes/zlib)
 
 # glfw
 add_subdirectory(includes/glfw EXCLUDE_FROM_ALL)

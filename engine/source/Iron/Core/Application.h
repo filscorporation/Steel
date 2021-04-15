@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Scene/Scene.h"
-#include "ResourcesManager.h"
+#include "../Resources/ResourcesManager.h"
 
 namespace ApplicationStates
 {

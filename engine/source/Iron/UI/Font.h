@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
-#include "../Core/ResourceID.h"
+#include "../Resources/ResourceID.h"
 
 struct FontData;
 
