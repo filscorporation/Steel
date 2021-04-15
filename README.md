@@ -5,7 +5,8 @@ Iron is a 2D OpenSource C++ Engine with C# scripting support.
 ## Current features
 * Windows and Linux support
 * Fast 2D sprites batch rendering (using OpenGL)
-* Full 2D physics support (using Box2D)
+* Aseprite integration
+* 2D physics support (using Box2D)
 * Basic sounds (using OpenAL)
 * Full built-in ECS created from scratch
 * Simple sprites animation system
