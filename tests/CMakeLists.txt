@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(AutoTests VERSION 0.0.1)
+project(AutoTests VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 11)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
