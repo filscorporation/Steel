@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -66,6 +67,33 @@ namespace Iron
                 component.Entity = new Entity(componentEntityID);
                 yield return component;
             }
+        }
+
+        /// <summary>
+        /// Starts coroutine on the owner entity
+        /// </summary>
+        /// <param name="coroutine">Coroutine to run</param>
+        /// <returns>Coroutine object</returns>
+        public Coroutine StartCoroutine(IEnumerator coroutine)
+        {
+            return Entity.StartCoroutine(coroutine);
+        }
+        
+        /// <summary>
+        /// Stops coroutine
+        /// </summary>
+        /// <param name="coroutine">Coroutine object to stop</param>
+        public void StopCoroutine(Coroutine coroutine)
+        {
+            Entity.StopCoroutine(coroutine);
+        }
+        
+        /// <summary>
+        /// Stops all coroutines currently running on the owner entity
+        /// </summary>
+        public void StopAllCoroutines()
+        {
+            Entity.StopAllCoroutines();
         }
         
         [MethodImpl(MethodImplOptions.InternalCall)]

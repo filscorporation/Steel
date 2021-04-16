@@ -96,6 +96,9 @@ void Application::RunUpdate()
     for (int i = 0; i < scriptsSize; ++i)
         if (scripts[i].IsAlive()) scripts[i].OnUpdate();
 
+    // Update coroutines
+    ScriptingSystem::UpdateCoroutines();
+
     if (Time::FixedUpdate())
     {
         state = ApplicationStates::OnPhysicsUpdate;

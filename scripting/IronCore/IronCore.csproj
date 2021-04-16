@@ -45,6 +45,10 @@
         <Compile Include="Audio\AudioTrack.cs" />
         <Compile Include="Core\Application.cs" />
         <Compile Include="Core\ApplicationState.cs" />
+        <Compile Include="Core\Coroutines\Coroutine.cs" />
+        <Compile Include="Core\Coroutines\CoroutinesManager.cs" />
+        <Compile Include="Core\Coroutines\WaitForSeconds.cs" />
+        <Compile Include="Core\Coroutines\WaitWhile.cs" />
         <Compile Include="Core\Debug.cs" />
         <Compile Include="Core\Input.cs" />
         <Compile Include="Core\KeyCodes.cs" />

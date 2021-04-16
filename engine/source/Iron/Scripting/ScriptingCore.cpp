@@ -21,6 +21,7 @@
 
 EngineCallsMethods ScriptingCore::EngineCalls;
 EventManagerMethods ScriptingCore::EventManagerCalls;
+CoroutinesManagerMethods ScriptingCore::CoroutinesManagerCalls;
 CachedData* ScriptingCore::cachedAPITypes;
 std::vector<MonoClass*> ScriptingCore::cachedDataTypes;
 ScriptComponentSystem* ScriptingCore::scriptComponentSystem;
@@ -33,6 +34,7 @@ void ScriptingCore::Init(MonoImage* image)
 
     LoadEngineCallsMethods(image);
     LoadEventManagerMethods(image);
+    LoadCoroutinesManagerMethods(image);
     RegisterInternalCalls();
     CacheAPITypes(image);
     CacheDataTypes(image);
@@ -74,6 +76,13 @@ void ScriptingCore::LoadEventManagerMethods(MonoImage* image)
     MonoClass* klass = mono_class_from_name(image, "Iron", "EventManager");
 
     EventManagerCalls.callInvokeCallbacks = mono_class_get_method_from_name(klass, "InvokeCallbacks", 1);
+}
+
+void ScriptingCore::LoadCoroutinesManagerMethods(MonoImage* image)
+{
+    MonoClass* klass = mono_class_from_name(image, "Iron", "CoroutinesManager");
+
+    CoroutinesManagerCalls.callUpdate = mono_class_get_method_from_name(klass, "Update", 0);
 }
 
 void ScriptingCore::RegisterInternalCalls()
@@ -317,6 +326,18 @@ void ScriptingCore::CallEventMethod(EntityID ownerEntityID, MonoMethod* method)
     void* params[1];
     params[0] = &ownerEntityID;
     mono_runtime_invoke(method, nullptr, params, &exception);
+
+    if (exception != nullptr)
+    {
+        Log::LogError("Error calling method " + std::string(mono_method_full_name(method, true)));
+        mono_print_unhandled_exception(exception);
+    }
+}
+
+void ScriptingCore::CallMethod(MonoMethod* method)
+{
+    MonoObject* exception = nullptr;
+    mono_runtime_invoke(method, nullptr, nullptr, &exception);
 
     if (exception != nullptr)
     {

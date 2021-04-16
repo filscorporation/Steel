@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -205,6 +206,35 @@ namespace Iron
         /// </summary>
         /// <returns>True if component was destroyed</returns>
         public bool IsDestroyed() => IsDestroyed_Internal(ID);
+
+        /// <summary>
+        /// Starts coroutine on the current entity
+        /// </summary>
+        /// <param name="coroutine">Coroutine to run</param>
+        /// <returns>Coroutine object</returns>
+        public Coroutine StartCoroutine(IEnumerator coroutine)
+        {
+            return CoroutinesManager.AddCoroutine(ID, coroutine);
+        }
+        
+        /// <summary>
+        /// Stops coroutine
+        /// </summary>
+        /// <param name="coroutine">Coroutine object to stop</param>
+        public void StopCoroutine(Coroutine coroutine)
+        {
+            CoroutinesManager.StopCoroutine(coroutine);
+        }
+        
+        /// <summary>
+        /// Stops all coroutines currently running on this entity
+        /// </summary>
+        public void StopAllCoroutines()
+        {
+            CoroutinesManager.StopAllCoroutines(ID);
+        }
+        
+        internal static bool IsActiveByID(uint entityID) => GetIsActive_Internal(entityID);
 
         public static bool operator ==(Entity a, Entity b) => Equals(a, b);
         public static bool operator !=(Entity a, Entity b) => !Equals(a, b);

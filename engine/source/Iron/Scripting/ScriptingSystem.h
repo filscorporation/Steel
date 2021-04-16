@@ -11,6 +11,7 @@ public:
     static void Terminate();
 
     static void CallEntryPoint(); // TODO: temp solution for entry point before scene serialization
+    static void UpdateCoroutines();
     static bool IsInitialized();
 
 private:

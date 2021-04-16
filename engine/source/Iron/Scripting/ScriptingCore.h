@@ -57,6 +57,11 @@ struct EventManagerMethods
     MonoMethod* callInvokeCallbacks;
 };
 
+struct CoroutinesManagerMethods
+{
+    MonoMethod* callUpdate;
+};
+
 class ScriptingCore
 {
 public:
@@ -64,6 +69,7 @@ public:
     static void Terminate();
     static void LoadEngineCallsMethods(MonoImage* image);
     static void LoadEventManagerMethods(MonoImage* image);
+    static void LoadCoroutinesManagerMethods(MonoImage* image);
     static void RegisterInternalCalls();
     static void CacheAPITypes(MonoImage* image);
     static void CacheDataTypes(MonoImage* image);
@@ -76,6 +82,7 @@ public:
     static std::vector<EntityID> ComponentOwnersFromMonoClass(MonoClass* monoClass);
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);
     static void CallEventMethod(EntityID ownerEntityID, MonoMethod* method);
+    static void CallMethod(MonoMethod* method);
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method);
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method, EntityID param);
     static void FindAndCallEntryPoint(MonoImage* image);
@@ -86,6 +93,7 @@ public:
 
     static EngineCallsMethods EngineCalls;
     static EventManagerMethods EventManagerCalls;
+    static CoroutinesManagerMethods CoroutinesManagerCalls;
 
 private:
 

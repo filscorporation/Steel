@@ -131,6 +131,11 @@ void ScriptingSystem::CallEntryPoint()
     ScriptingCore::FindAndCallEntryPoint(customAssemblyImage);
 }
 
+void ScriptingSystem::UpdateCoroutines()
+{
+    ScriptingCore::CallMethod(ScriptingCore::CoroutinesManagerCalls.callUpdate);
+}
+
 bool ScriptingSystem::IsInitialized()
 {
     return isInitialized;
