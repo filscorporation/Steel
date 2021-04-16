@@ -22,11 +22,11 @@ public:
     float Speed = 1.0f;
     float NormalizedTime = 0.0f;
     bool IsPlaying = false;
-    std::vector<ResourceID> Animations;
+    std::vector<Animation*> Animations;
 
 private:
     bool initialized = false;
-    ResourceID currentAnimation = NULL_RESOURCE;
+    Animation* currentAnimation = nullptr;
     std::vector<uint32_t> currentCurveFrame;
 
     void Init();

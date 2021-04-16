@@ -147,14 +147,14 @@ ResourceID CoreInternalCalls::Animation_FromSprites(MonoArray* spritesIDs, float
     std::vector<ResourceID> ids;
     ScriptingCore::FromMonoUInt32Array(spritesIDs, ids);
 
-    auto sprites = new Sprite*[ids.size()];
-    for (int i = 0; i < ids.size(); ++i)
+    std::vector<Sprite*> sprites;
+    sprites.reserve(ids.size());
+    for (auto id : ids)
     {
-        sprites[i] = Application::Instance->GetResourcesManager()->GetImage(ids[i]);
+        sprites.push_back(Application::Instance->GetResourcesManager()->GetImage(id));
     }
-    auto animation = new Animation(sprites, ids.size(), length);
+    auto animation = new Animation(sprites, length);
     Application::Instance->GetResourcesManager()->AddAnimation(animation);
-    delete[] sprites;
 
     return animation->ID;
 }
@@ -166,6 +166,15 @@ float CoreInternalCalls::Animation_GetLength(ResourceID animationID)
         return false;
 
     return animation->Length();
+}
+
+void CoreInternalCalls::Animation_EndWithEmptyFrame(ResourceID animationID)
+{
+    auto animation = Application::Instance->GetResourcesManager()->GetAnimation(animationID);
+    if (animation == nullptr)
+        return;
+
+    animation->EndWithNull();
 }
 
 MonoString* CoreInternalCalls::Animation_GetName(ResourceID animationID)

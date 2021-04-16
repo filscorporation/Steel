@@ -79,6 +79,7 @@ void GetCelData(std::ifstream& file, uint32_t celType, char* imageData, uint32_t
             if (!file.read(compressedData, dataSize))
             {
                 Log::LogError("Could not read compressed image data");
+                delete[] compressedData;
                 return;
             }
 
@@ -169,7 +170,7 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
     image->TextureID = texture;
     image->Width = width;
     image->Height = height;
-    image->IsTransparent = ResourcesManager::IsImageTransparent(fullImageData, width, height);
+    image->IsTransparent = IsImageTransparent(fullImageData, width, height);
 
     Application::Instance->GetResourcesManager()->AddImage(image);
 
@@ -190,7 +191,10 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
     }
     uint32_t tagsCount = ConvertToInt(buffer, 2);
     if (tagsCount == 0)
-        return true;
+    {
+        Log::LogError("Tags count is 0");
+        return false;
+    }
 
     file.ignore(8); // Ignore unused bytes
 
@@ -210,15 +214,15 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
         }
         uint32_t to = ConvertToInt(buffer, 2);
 
-        auto sprites = new Sprite*[to - from + 1];
+        std::vector<Sprite*> sprites;
+        sprites.reserve(to - from + 1);
         std::vector<uint32_t> durations(to - from + 1);
         for (uint32_t j = from; j <= to; ++j)
         {
-            sprites[j - from] = inSprites[j];
+            sprites.push_back(inSprites[j]);
             durations[j - from] = inDurations[j];
         }
-        auto animation = new Animation(sprites, to - from + 1, durations);
-        delete[] sprites;
+        auto animation = new Animation(sprites, durations);
 
         file.ignore(13); // Ignore unimportant tag data
 
@@ -233,11 +237,11 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
             animation->Name = "Animation" + std::to_string(i + 1);
         else
         {
-            animation->Name.reserve(nameLength);
             auto name = new char[nameLength + 1];
             if (!file.read(name, nameLength))
             {
                 Log::LogError("Could not read tag name");
+                delete[] name;
                 return false;
             }
             name[nameLength] = '\0';
@@ -249,6 +253,8 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
         Application::Instance->GetResourcesManager()->AddAnimation(animation);
         outAnimations.push_back(animation);
     }
+
+    return true;
 }
 
 bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, AsepriteData& outData)
@@ -402,6 +408,16 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
         {
             return false;
         }
+    }
+    else if (outData.Sprites.size() > 1)
+    {
+        // If there is no tags but multiple sprites - create animation from all of them
+        auto animation = new Animation(outData.Sprites, framesDurations);
+
+        animation->Name = "Animation";
+        animation->Loop = loopAll;
+        Application::Instance->GetResourcesManager()->AddAnimation(animation);
+        outData.Animations.push_back(animation);
     }
 
     return true;

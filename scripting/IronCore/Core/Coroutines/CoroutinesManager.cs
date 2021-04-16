@@ -75,9 +75,10 @@ namespace Iron
 
         internal static void StopCoroutine(Coroutine coroutine)
         {
-            if (!coroutines.ContainsKey(coroutine.Owner))
+            if (coroutine.IsDestroyed || !coroutines.ContainsKey(coroutine.Owner))
                 return;
-            
+
+            coroutine.IsDestroyed = true;
             coroutines[coroutine.Owner].Remove(coroutine.Node);
             if (!coroutines[coroutine.Owner].Any())
                 coroutines.Remove(coroutine.Owner);
@@ -87,7 +88,9 @@ namespace Iron
         {
             if (!coroutines.ContainsKey(ownerID))
                 return;
-            
+
+            foreach (Coroutine coroutine in coroutines[ownerID])
+                coroutine.IsDestroyed = true;
             coroutines.Remove(ownerID);
         }
     }

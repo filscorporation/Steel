@@ -22,7 +22,6 @@ public:
     void AddImage(Sprite* image);
     Sprite* GetImage(ResourceID imageID);
     void UnloadImage(ResourceID imageID);
-    static bool IsImageTransparent(const unsigned char* imageData, uint32_t width, uint32_t height);
 
     AsepriteData* LoadAsepriteData(const char* filePath, bool loopAll);
     AsepriteData* GetAsepriteData(ResourceID resourceID);

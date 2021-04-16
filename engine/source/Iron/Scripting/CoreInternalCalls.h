@@ -38,6 +38,7 @@ namespace CoreInternalCalls
     ResourceID Animation_FromSpriteSheet(ResourceID spriteID, float length);
     ResourceID Animation_FromSprites(MonoArray* spritesIDs, float length);
     float Animation_GetLength(ResourceID animationID);
+    void Animation_EndWithEmptyFrame(ResourceID animationID);
     MonoString* Animation_GetName(ResourceID animationID);
     void Animation_SetName(ResourceID animationID, MonoString* name);
     bool Animation_GetLoop(ResourceID animationID);

@@ -23,12 +23,14 @@ struct Animation
 {
     Animation();
     Animation(Sprite* sourceSprite, float animationLength);
-    Animation(Sprite** sourceSprites, uint32_t sourceSpritesCount, float animationLength);
-    Animation(Sprite** sourceSprites, uint32_t sourceSpritesCount, std::vector<uint32_t>& framesDurations);
+    Animation(std::vector<Sprite*>& sourceSprites, float animationLength);
+    Animation(std::vector<Sprite*>& sourceSprites, std::vector<uint32_t>& framesDurations);
 
-    float Length();
+    void EndWithNull();
 
-    ResourceID ID;
+    float Length() const;
+
+    ResourceID ID = NULL_RESOURCE;
     std::string Name;
     bool Loop = false;
     std::vector<Curve> Curves;

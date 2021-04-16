@@ -16,7 +16,7 @@ Sprite* PngLoader::LoadImage(const char* filePath)
     image->Path = filePath;
     image->Width = (uint32_t)width;
     image->Height = (uint32_t)height;
-    image->IsTransparent = channels == 4 && ResourcesManager::IsImageTransparent(imageData, width, height);
+    image->IsTransparent = channels == 4 && IsImageTransparent(imageData, width, height);
 
     stbi_image_free(imageData);
 

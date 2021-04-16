@@ -72,7 +72,7 @@ EntityID Scene::CreateEntity(AsepriteData& data)
     auto& an = entitiesRegistry->AddComponent<Animator>(entity);
     for (auto& animation : data.Animations)
     {
-        an.Animations.push_back(animation->ID);
+        an.Animations.push_back(animation);
     }
 
     return entity;

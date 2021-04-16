@@ -35,6 +35,12 @@ namespace Iron
         public float Length => GetLength_Internal(ID);
 
         /// <summary>
+        /// Adds empty frame at the end of animation
+        /// </summary>
+        /// <remarks>This can be useful for explosion-like animations to not leave anything to render after played</remarks>
+        public void EndWithEmptyFrame() => EndWithEmptyFrame_Internal(ID);
+
+        /// <summary>
         /// Creates animation from sprite sheet
         /// </summary>
         /// <param name="sprite">Sprite that was set as sprite sheet</param>
@@ -87,5 +93,8 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float GetLength_Internal(uint animationID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float EndWithEmptyFrame_Internal(uint animationID);
     }
 }

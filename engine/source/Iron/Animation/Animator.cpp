@@ -5,11 +5,10 @@
 
 void Animator::Init()
 {
-    if (Animations.empty() || currentAnimation == NULL_RESOURCE)
+    if (Animations.empty() || currentAnimation == nullptr)
         return;
 
-    auto current = Application::Instance->GetResourcesManager()->GetAnimation(currentAnimation);
-    currentCurveFrame.resize(current->Curves.size());
+    currentCurveFrame.resize(currentAnimation->Curves.size());
     fill(currentCurveFrame.begin(), currentCurveFrame.end(), 0);
     initialized = true;
 }
@@ -24,27 +23,25 @@ void Animator::Play()
 
 void Animator::Play(const std::string& animationName)
 {
-    auto resources = Application::Instance->GetResourcesManager();
-    ResourceID playID = NULL_RESOURCE;
-    for (auto animationID : Animations)
+    Animation* play = nullptr;
+    for (auto animation : Animations)
     {
-        auto animation = resources->GetAnimation(animationID);
         if (animation == nullptr)
             continue;
         if (animation->Name == animationName)
         {
-            playID = animationID;
+            play = animation;
             break;
         }
     }
 
-    if (playID == NULL_RESOURCE)
+    if (play == nullptr)
         return;
 
-    if (playID == currentAnimation)
+    if (currentAnimation != nullptr && play->ID == currentAnimation->ID)
         Play();
 
-    currentAnimation = playID;
+    currentAnimation = play;
     Restart();
 }
 
@@ -68,12 +65,20 @@ void Animator::Restart()
 
 void Animator::AddAndPlay(Animation* animation)
 {
-    if (std::find(Animations.begin(), Animations.end(), animation->ID) == Animations.end())
+    bool exists = false;
+    for (auto an : Animations)
     {
-        Animations.push_back(animation->ID);
+        if (an->ID == animation->ID)
+        {
+            exists = true;
+            break;
+        }
     }
+    if (!exists)
+        Animations.push_back(animation);
 
-    Play(animation->Name);
+    currentAnimation = animation;
+    Restart();
 }
 
 void ApplyFrame(EntityID entity, Keyframe keyframe)
@@ -96,25 +101,23 @@ void Animator::OnUpdate()
     if (!IsPlaying)
         return;
 
-    if (Animations.empty() || currentAnimation == NULL_RESOURCE)
+    if (Animations.empty() || currentAnimation == nullptr)
         return;
 
-    auto current = Application::Instance->GetResourcesManager()->GetAnimation(currentAnimation);
-
-    float animationTime = NormalizedTime * current->Length();
+    float animationTime = NormalizedTime * currentAnimation->Length();
     animationTime += Time::DeltaTime() * Speed;
-    NormalizedTime = animationTime / current->Length();
+    NormalizedTime = animationTime / currentAnimation->Length();
 
     for (uint32_t i = 0; i < currentCurveFrame.size(); ++i)
     {
         if (Speed > 0)
         {
-            if (currentCurveFrame[i] < current->Curves[i].Keyframes.size() - 1)
+            if (currentCurveFrame[i] < currentAnimation->Curves[i].Keyframes.size() - 1)
             {
-                if (animationTime >= current->Curves[i].Keyframes[currentCurveFrame[i] + 1].Time)
+                if (animationTime >= currentAnimation->Curves[i].Keyframes[currentCurveFrame[i] + 1].Time)
                 {
                     currentCurveFrame[i]++;
-                    ApplyFrame(Owner, current->Curves[i].Keyframes[currentCurveFrame[i]]);
+                    ApplyFrame(Owner, currentAnimation->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
         }
@@ -122,10 +125,10 @@ void Animator::OnUpdate()
         {
             if (currentCurveFrame[i] > 0)
             {
-                if (animationTime <= current->Curves[i].Keyframes[currentCurveFrame[i] - 1].Time)
+                if (animationTime <= currentAnimation->Curves[i].Keyframes[currentCurveFrame[i] - 1].Time)
                 {
                     currentCurveFrame[i]--;
-                    ApplyFrame(Owner, current->Curves[i].Keyframes[currentCurveFrame[i]]);
+                    ApplyFrame(Owner, currentAnimation->Curves[i].Keyframes[currentCurveFrame[i]]);
                 }
             }
         }
@@ -133,18 +136,23 @@ void Animator::OnUpdate()
 
     if (NormalizedTime < 0.0f && Speed < 0 || NormalizedTime > 1.0f && Speed > 0)
     {
-        if (current->Loop)
+        if (currentAnimation->Loop)
         {
             // TODO: make normalized time show number of cycles for loop animations
             NormalizedTime = Speed < 0 ? NormalizedTime + 1.0f : NormalizedTime - 1.0f;
-            for (uint32_t i = 0; i < current->Curves.size(); ++i)
+            for (uint32_t i = 0; i < currentAnimation->Curves.size(); ++i)
             {
-                currentCurveFrame[i] = Speed < 0 ? current->Curves[i].Keyframes.size() : 0;
-                ApplyFrame(Owner, current->Curves[i].Keyframes[0]);
+                currentCurveFrame[i] = Speed < 0 ? currentAnimation->Curves[i].Keyframes.size() : 0;
+                ApplyFrame(Owner, currentAnimation->Curves[i].Keyframes[0]);
             }
         }
         else
         {
+            // Apply last frame in the end
+            for (auto& curve : currentAnimation->Curves)
+            {
+                ApplyFrame(Owner, curve.Keyframes[Speed < 0 ? 0 : curve.Keyframes.size() - 1]);
+            }
             Stop();
         }
     }

@@ -84,13 +84,18 @@ Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
     if (extension == "png")
     {
         image = PngLoader::LoadImage(fullPath.c_str());
+        if (image == nullptr)
+            return nullptr;
+
         AddImage(image);
     }
     else if (extension == "aseprite")
     {
         AsepriteData data;
-        AsepriteLoader::LoadAsepriteData(fullPath.c_str(), false, data);
-        if (data.Sprites.size() == 0)
+        if (!AsepriteLoader::LoadAsepriteData(fullPath.c_str(), false, data))
+            return nullptr;
+
+        if (data.Sprites.empty())
         {
             Log::LogError("Error loading image: no data in aseprite file");
             return nullptr;
@@ -141,21 +146,6 @@ void ResourcesManager::UnloadImage(ResourceID imageID)
     //images.erase(images.begin() + imageID); // TODO: remove
     images[imageID - 1] = nullptr;
     delete sprite;
-}
-
-bool ResourcesManager::IsImageTransparent(const unsigned char* imageData, uint32_t width, uint32_t height)
-{
-    for (int i = 0; i < width; ++i)
-    {
-        for (int j = 0; j < height; ++j)
-        {
-            auto alpha = imageData[(i * width + j) * 4 + 3];
-            if (alpha != 0 && alpha != 255)
-                return true;
-        }
-    }
-
-    return false;
 }
 
 AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loopAll)

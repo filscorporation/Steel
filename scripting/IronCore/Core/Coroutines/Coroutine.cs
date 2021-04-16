@@ -12,6 +12,8 @@ namespace Iron
         internal readonly uint Owner;
         internal readonly IEnumerator Enumerator;
         internal LinkedListNode<Coroutine> Node;
+
+        internal bool IsDestroyed = false;
         
         internal Coroutine(uint owner, IEnumerator enumerator)
         {

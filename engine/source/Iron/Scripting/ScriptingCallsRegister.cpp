@@ -62,6 +62,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Animation::GetLoop_Internal", (void*)CoreInternalCalls::Animation_GetLoop);
     mono_add_internal_call("Iron.Animation::SetLoop_Internal", (void*)CoreInternalCalls::Animation_SetLoop);
     mono_add_internal_call("Iron.Animation::GetLength_Internal", (void*)CoreInternalCalls::Animation_GetLength);
+    mono_add_internal_call("Iron.Animation::EndWithEmptyFrame_Internal", (void*)CoreInternalCalls::Animation_EndWithEmptyFrame);
     mono_add_internal_call("Iron.AsepriteData::GetSprites_Internal", (void*)CoreInternalCalls::AsepriteData_GetSprites);
     mono_add_internal_call("Iron.AsepriteData::GetAnimations_Internal", (void*)CoreInternalCalls::AsepriteData_GetAnimations);
     mono_add_internal_call("Iron.AsepriteData::CreateEntityFromAsepriteData_Internal", (void*)CoreInternalCalls::AsepriteData_CreateEntityFromAsepriteData);
