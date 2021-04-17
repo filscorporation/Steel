@@ -22,7 +22,7 @@ struct CharactersAtlas
     glm::ivec2 Size;
     uint32_t MinY;
     uint32_t MaxY;
-    std::unordered_map<wchar_t, Character> Characters;
+    std::unordered_map<char, Character> Characters;
 
     uint32_t RefCount = 0;
 };

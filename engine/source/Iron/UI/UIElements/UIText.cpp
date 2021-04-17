@@ -138,7 +138,7 @@ void UIText::Rebuild()
         // Create letter renderer for each letter and calculate its transformation
         for (uint32_t i = lettersCount; i < _text.size(); ++i)
         {
-            wchar_t& c = _text[i];
+            char& c = _text[i];
             auto& character = atlas.Characters[c];
 
             EntityID letterEntityID = entitiesRegistry->CreateNewEntity();
@@ -165,10 +165,10 @@ void UIText::Rebuild()
             letterRenderer.Vertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
 
             // Apply text rect transformation
-            letterRenderer.QuadCache.Vertices[0] = rectMatrix * letterRenderer.Vertices[0];
-            letterRenderer.QuadCache.Vertices[1] = rectMatrix * letterRenderer.Vertices[1];
-            letterRenderer.QuadCache.Vertices[2] = rectMatrix * letterRenderer.Vertices[2];
-            letterRenderer.QuadCache.Vertices[3] = rectMatrix * letterRenderer.Vertices[3];
+            letterRenderer.Cache.Vertices[0] = rectMatrix * letterRenderer.Vertices[0];
+            letterRenderer.Cache.Vertices[1] = rectMatrix * letterRenderer.Vertices[1];
+            letterRenderer.Cache.Vertices[2] = rectMatrix * letterRenderer.Vertices[2];
+            letterRenderer.Cache.Vertices[3] = rectMatrix * letterRenderer.Vertices[3];
 
             last = letterEntityID;
             cursorX += character.Advance;
@@ -205,19 +205,19 @@ void UIText::SetFont(Font* font)
     _dirtyText = true;
 }
 
-std::wstring UIText::GetText() const
+std::string UIText::GetText() const
 {
     return _text;
 }
 
-void UIText::SetText(const std::wstring& text)
+void UIText::SetText(const std::string& text)
 {
     if (_text == text)
         return;
 
     // Save how many letters changed (to not rebuild text when one last char changed)
     _lettersChangedCount = lettersCount;
-    for (int i = 0; i < std::min(text.size(), lettersCount); ++i)
+    for (int i = 0; i < std::min((uint32_t)text.size(), lettersCount); ++i)
     {
         if (text[i] == _text[i])
             _lettersChangedCount--;
@@ -340,7 +340,7 @@ void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const 
         auto& currentLetter = lettersAccessor.Get(currentLetterID);
         for (int j = 0; j < 4; ++j)
         {
-            currentLetter.QuadCache.Vertices[j] = transformationMatrix * currentLetter.Vertices[j];
+            currentLetter.Cache.Vertices[j] = transformationMatrix * currentLetter.Vertices[j];
         }
 
         currentLetterID = currentLetter.PreviousLetter;

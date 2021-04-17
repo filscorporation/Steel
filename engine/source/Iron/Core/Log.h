@@ -7,11 +7,8 @@ class Log
 public:
     static void LogInfo(const char* message);
     static void LogInfo(const std::string& message);
-    static void LogInfo(const std::wstring& message);
     static void LogWarning(const char* message);
     static void LogWarning(const std::string& message);
-    static void LogWarning(const std::wstring& message);
     static void LogError(const char* message);
     static void LogError(const std::string& message);
-    static void LogError(const std::wstring& message);
 };

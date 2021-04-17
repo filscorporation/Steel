@@ -29,10 +29,10 @@ public:
 
     Font* GetFont() const;
     void SetFont(Font* font);
-    std::wstring GetText() const;
+    std::string GetText() const;
     uint32_t GetTextSize() const;
     void SetTextSize(uint32_t size);
-    void SetText(const std::wstring& text);
+    void SetText(const std::string& text);
     const glm::vec4& GetColor() const;
     void SetColor(glm::vec4 color);
     bool GetIsTextAutoSize() const;
@@ -47,7 +47,7 @@ private:
     void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const;
 
     Font* _font = nullptr;
-    std::wstring _text;
+    std::string _text;
     uint32_t _textSize = 14;
     uint32_t _textSizeRef = 0;
     bool _isTextAutoSize = false;

@@ -203,14 +203,14 @@ MonoString* UIInternalCalls::UIText_GetText(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIText, nullptr)
 
-    return mono_string_new_utf16(mono_domain_get(), component.GetText().c_str(), component.GetText().size());
+    return mono_string_new(mono_domain_get(), component.GetText().c_str());
 }
 
 void UIInternalCalls::UIText_SetText(EntityID entityID, MonoString* text)
 {
     GET_COMPONENT_OR_RETURN(UIText, )
 
-    component.SetText(mono_string_to_utf16(text));
+    component.SetText(mono_string_to_utf8(text));
 }
 
 int UIInternalCalls::UIText_GetTextSize(EntityID entityID)

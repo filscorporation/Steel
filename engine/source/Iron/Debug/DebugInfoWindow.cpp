@@ -25,9 +25,9 @@ void DebugInfoWindow::Disable() const
 void DebugInfoWindow::UpdateInfo()
 {
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    registry->GetComponent<UIText>(fpsCounterEntity).SetText(std::to_wstring(GetFPS()));
-    registry->GetComponent<UIText>(drawCallsCounterEntity).SetText(std::to_wstring(Renderer::DrawCallsStats));
-    registry->GetComponent<UIText>(verticesCounterEntity).SetText(std::to_wstring(Renderer::VerticesStats));
+    registry->GetComponent<UIText>(fpsCounterEntity).SetText(std::to_string(GetFPS()));
+    registry->GetComponent<UIText>(drawCallsCounterEntity).SetText(std::to_string(Renderer::DrawCallsStats));
+    registry->GetComponent<UIText>(verticesCounterEntity).SetText(std::to_string(Renderer::VerticesStats));
 }
 
 void DebugInfoWindow::Create()
@@ -59,7 +59,7 @@ void DebugInfoWindow::Create()
         auto& fpsLabelText = registry->AddComponent<UIText>(fpsLabelEntity);
         fpsLabelText.SetTextSize(16);
         fpsLabelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        fpsLabelText.SetText(L"FPS");
+        fpsLabelText.SetText("FPS");
         auto& fpsLabelRT = registry->GetComponent<RectTransformation>(fpsLabelEntity);
         fpsLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         fpsLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -72,7 +72,7 @@ void DebugInfoWindow::Create()
         auto& fpsCounterText = registry->AddComponent<UIText>(fpsCounterEntity);
         fpsCounterText.SetTextSize(16);
         fpsCounterText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        fpsCounterText.SetText(L"0");
+        fpsCounterText.SetText("0");
         auto& fpsCounterRT = registry->GetComponent<RectTransformation>(fpsCounterEntity);
         fpsCounterRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         fpsCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -88,7 +88,7 @@ void DebugInfoWindow::Create()
         auto& drawCallsLabelText = registry->AddComponent<UIText>(drawCallsLabelEntity);
         drawCallsLabelText.SetTextSize(16);
         drawCallsLabelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        drawCallsLabelText.SetText(L"Draw calls");
+        drawCallsLabelText.SetText("Draw calls");
         auto& drawCallsLabelRT = registry->GetComponent<RectTransformation>(drawCallsLabelEntity);
         drawCallsLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         drawCallsLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -101,7 +101,7 @@ void DebugInfoWindow::Create()
         auto& drawCallsCounterText = registry->AddComponent<UIText>(drawCallsCounterEntity);
         drawCallsCounterText.SetTextSize(16);
         drawCallsCounterText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        drawCallsCounterText.SetText(L"0");
+        drawCallsCounterText.SetText("0");
         auto& drawCallsCounterRT = registry->GetComponent<RectTransformation>(drawCallsCounterEntity);
         drawCallsCounterRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         drawCallsCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -117,7 +117,7 @@ void DebugInfoWindow::Create()
         auto& verticesLabelText = registry->AddComponent<UIText>(verticesLabelEntity);
         verticesLabelText.SetTextSize(16);
         verticesLabelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        verticesLabelText.SetText(L"Vertices count");
+        verticesLabelText.SetText("Vertices count");
         auto& verticesLabelRT = registry->GetComponent<RectTransformation>(verticesLabelEntity);
         verticesLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         verticesLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -130,7 +130,7 @@ void DebugInfoWindow::Create()
         auto& verticesCounterText = registry->AddComponent<UIText>(verticesCounterEntity);
         verticesCounterText.SetTextSize(16);
         verticesCounterText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        verticesCounterText.SetText(L"0");
+        verticesCounterText.SetText("0");
         auto& verticesCounterRT = registry->GetComponent<RectTransformation>(verticesCounterEntity);
         verticesCounterRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         verticesCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -146,7 +146,7 @@ void DebugInfoWindow::Create()
         auto& labelText = registry->AddComponent<UIText>(labelEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetText(L"Wireframe mode");
+        labelText.SetText("Wireframe mode");
         auto& labelRT = registry->GetComponent<RectTransformation>(labelEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -170,7 +170,7 @@ void DebugInfoWindow::Create()
         auto& labelText = registry->AddComponent<UIText>(wireframeModeStatusEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetText(L"Disabled");
+        labelText.SetText("Disabled");
         labelText.SetTextAlignment(AlignmentTypes::CenterMiddle);
         auto& labelRT = registry->GetComponent<RectTransformation>(wireframeModeStatusEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
@@ -185,7 +185,7 @@ void DebugInfoWindow::Create()
         auto& labelText = registry->AddComponent<UIText>(labelEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetText(L"Free camera mode");
+        labelText.SetText("Free camera mode");
         auto& labelRT = registry->GetComponent<RectTransformation>(labelEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -209,7 +209,7 @@ void DebugInfoWindow::Create()
         auto& labelText = registry->AddComponent<UIText>(freeCameraModeStatusEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetText(L"Disabled");
+        labelText.SetText("Disabled");
         labelText.SetTextAlignment(AlignmentTypes::CenterMiddle);
         auto& labelRT = registry->GetComponent<RectTransformation>(freeCameraModeStatusEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
@@ -231,9 +231,9 @@ void DebugInfoWindow::ChangeWireframeMode()
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     Renderer::DrawWireframe = !Renderer::DrawWireframe;
     if (Renderer::DrawWireframe)
-        registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText(L"Enabled");
+        registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText("Enabled");
     else
-        registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText(L"Disabled");
+        registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText("Disabled");
 }
 
 void DebugInfoWindow::ChangeCameraMode()
@@ -241,7 +241,7 @@ void DebugInfoWindow::ChangeCameraMode()
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     Debug::FreeCameraMode = !Debug::FreeCameraMode;
     if (Debug::FreeCameraMode)
-        registry->GetComponent<UIText>(freeCameraModeStatusEntity).SetText(L"Enabled");
+        registry->GetComponent<UIText>(freeCameraModeStatusEntity).SetText("Enabled");
     else
-        registry->GetComponent<UIText>(freeCameraModeStatusEntity).SetText(L"Disabled");
+        registry->GetComponent<UIText>(freeCameraModeStatusEntity).SetText("Disabled");
 }

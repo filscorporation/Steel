@@ -18,8 +18,8 @@
 #ifdef __unix__
 #define DEBUG_MONO_LIB_PATH "/usr/lib/"
 #define DEBUG_MONO_ETC_PATH "/usr/lib/mono"
-#define DEBUG_API_DLL_PATH "../../../engine/IronCustom/bin/Debug/IronCore.dll"
-#define DEBUG_SCRIPTS_DLL_PATH "../../../engine/IronCustom/bin/Debug/IronCustom.dll"
+#define DEBUG_API_DLL_PATH "../../../scripting/IronCustom/bin/Debug/IronCore.dll"
+#define DEBUG_SCRIPTS_DLL_PATH "../../../scripting/IronCustom/bin/Debug/IronCustom.dll"
 #endif
 
 MonoDomain* domain;
@@ -133,7 +133,8 @@ void ScriptingSystem::CallEntryPoint()
 
 void ScriptingSystem::UpdateCoroutines()
 {
-    ScriptingCore::CallMethod(ScriptingCore::CoroutinesManagerCalls.callUpdate);
+    if (ScriptingSystem::IsInitialized())
+        ScriptingCore::CallMethod(ScriptingCore::CoroutinesManagerCalls.callUpdate);
 }
 
 bool ScriptingSystem::IsInitialized()

@@ -6,5 +6,5 @@ void UILetterRenderer::Render()
     if (!IsRendered)
         return;
 
-    Renderer::DrawQuadCached(QuadCache, Color, TextureID, TextureCoords);
+    Renderer::DrawQuadCached(Cache, Color, TextureID, TextureCoords);
 }
