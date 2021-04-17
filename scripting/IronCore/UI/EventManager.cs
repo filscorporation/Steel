@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 
 namespace Iron
 {
@@ -7,7 +7,7 @@ namespace Iron
     /// </summary>
     internal static class EventManager
     {
-        private static readonly Dictionary<uint, CallbackList> eventCallbacks = new Dictionary<uint, CallbackList>();
+        private static readonly ConcurrentDictionary<ulong, CallbackList> eventCallbacks = new ConcurrentDictionary<ulong, CallbackList>();
 
         internal static void RegisterCallbacks(uint entityID, CallbackList callbackList)
         {
@@ -28,7 +28,7 @@ namespace Iron
                 return;
             }
 
-            eventCallbacks.Remove(entityID);
+            eventCallbacks.TryRemove(entityID, out _);
         }
 
         private static void InvokeCallbacks(uint entityID)
