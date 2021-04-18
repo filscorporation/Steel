@@ -12,7 +12,7 @@ class SpriteRenderer : public Component
 public:
     explicit SpriteRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    void UpdateRenderer(Transformation& transformation, bool transformationDirty);
+    void UpdateRenderer(Transformation& transformation);
 
     void SetImage(Sprite* image);
     Sprite* GetImage();

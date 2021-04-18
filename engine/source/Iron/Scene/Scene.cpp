@@ -125,8 +125,8 @@ void Scene::UpdateGlobalTransformation()
             transformation.UpdateTransformation(transformationsAccessor, hierarchyNode);
 
             bool transformationDirty = transformation.DidTransformationChange();
-            if (srAccessor.Has(hierarchyNode.Owner))
-                srAccessor.Get(hierarchyNode.Owner).UpdateRenderer(transformation, transformationDirty);
+            if (transformationDirty && srAccessor.Has(hierarchyNode.Owner))
+                srAccessor.Get(hierarchyNode.Owner).UpdateRenderer(transformation);
         }
     }
 }

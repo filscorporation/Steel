@@ -3,15 +3,12 @@
 #include "QuadRenderer.h"
 #include "../Scene/SceneHelper.h"
 
-void SpriteRenderer::UpdateRenderer(Transformation& transformation, bool transformationDirty)
+void SpriteRenderer::UpdateRenderer(Transformation& transformation)
 {
     if (_image == nullptr)
         return;
 
-    if (!transformationDirty && !imageDirty)
-        return;
-
-    auto& qr = AddComponentS<QuadRenderer>(Owner);
+    auto& qr = GetComponentS<QuadRenderer>(Owner);
 
     glm::mat4 matrix = transformation.GetTransformationMatrixCached()
                        * glm::scale(glm::mat4(1.0f), _image->GetRealWorldSize());

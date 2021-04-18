@@ -2,12 +2,9 @@
 #include "../UIQuadRenderer.h"
 #include "../../Scene/SceneHelper.h"
 
-void UIImage::UpdateRenderer(RectTransformation& transformation, bool transformationDirty)
+void UIImage::UpdateRenderer(RectTransformation& transformation)
 {
     if (_image == nullptr)
-        return;
-
-    if (!transformationDirty)
         return;
 
     auto& qr = AddComponentS<UIQuadRenderer>(Owner);

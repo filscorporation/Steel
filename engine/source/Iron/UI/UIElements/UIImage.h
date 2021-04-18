@@ -8,7 +8,7 @@ class UIImage : public UIComponent
 public:
     explicit UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    void UpdateRenderer(RectTransformation& transformation, bool transformationDirty);
+    void UpdateRenderer(RectTransformation& transformation);
 
     void SetImage(Sprite* image);
     Sprite* GetImage();

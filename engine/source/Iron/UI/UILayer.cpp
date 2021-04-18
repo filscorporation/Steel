@@ -74,11 +74,12 @@ void UILayer::Draw()
             rt.UpdateTransformation(rtAccessor, hierarchyNode);
 
             bool transformationDirty = rt.DidTransformationChange();
-            if (imageAccessor.Has(hierarchyNode.Owner))
-                imageAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt, transformationDirty);
-            if (buttonAccessor.Has(hierarchyNode.Owner))
-                buttonAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt, transformationDirty);
+            if (transformationDirty && imageAccessor.Has(hierarchyNode.Owner))
+                imageAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt);
+            if (transformationDirty && buttonAccessor.Has(hierarchyNode.Owner))
+                buttonAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt);
             if (textAccessor.Has(hierarchyNode.Owner))
+                // Possible place for optimization - entering component event if transformation not dirty
                 textAccessor.Get(hierarchyNode.Owner).Rebuild(rt, transformationDirty);
         }
     }
