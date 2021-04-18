@@ -93,7 +93,7 @@ void ApplyFrame(EntityID entity, Keyframe keyframe)
             sr.SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
     }
 
-    sr.CurrentImageTileIndex = keyframe.TileIndex;
+    sr.SetTileIndex(keyframe.TileIndex);
 }
 
 void Animator::OnUpdate()

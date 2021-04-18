@@ -150,14 +150,15 @@ void Application::RunUpdate()
     // Sort hierarchy from parents to children and then apply transforms
     scene->SortByHierarchy();
     scene->UpdateGlobalTransformation();
+    scene->SortByDrawOrder();
+    Renderer::OnBeforeRender(scene->GetMainCamera());
+    scene->RefreshTransformation();
 
     Time::Update();
 
-    Renderer::OnBeforeRender(scene->GetMainCamera());
-
     state = ApplicationStates::OnRender;
-    // Draw sprites
-    Renderer::DrawScene();
+    // Draw scene (sprites)
+    scene->Draw();
     // Clear depth buffer before rendering UI
     Renderer::PrepareUIRender();
     // Draw UI on top

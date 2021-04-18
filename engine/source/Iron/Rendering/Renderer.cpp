@@ -1,10 +1,11 @@
+#include <GLAD/glad.h>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Renderer.h"
 #include "BuiltInShaders.h"
 #include "Screen.h"
 #include "SpriteRenderer.h"
 #include "../Core/Application.h"
-
-#include <glm/gtc/type_ptr.hpp>
 
 const int RENDER_CALL_DATA_SIZE = 10;
 const int MAX_RENDER_CALLS = 10000;
@@ -118,15 +119,6 @@ void Renderer::OnBeforeRender(Camera& camera)
     glm::mat4 viewProjection = camera.GetViewProjection();
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(viewProjection));
 
-    // Sort all objects by Z
-    struct
-    {
-        bool operator()(Transformation& a, Transformation& b) const
-        { return a.GetGlobalSortingOrderCached() > b.GetGlobalSortingOrderCached(); }
-    } ZComparer;
-    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->SortComponents<Transformation>(ZComparer);
-    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->ApplyOrder<Transformation, SpriteRenderer>();
-
     SetDrawMode(DrawModes::Normal);
 
     // Start first batch
@@ -139,23 +131,6 @@ void Renderer::OnBeforeRender(Camera& camera)
 void Renderer::OnAfterRender()
 {
     EndBatch();
-}
-
-void Renderer::DrawScene()
-{
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto spriteRenderers = entitiesRegistry->GetComponentIterator<SpriteRenderer>();
-    auto transformationsAccessor = entitiesRegistry->GetComponentAccessor<Transformation>();
-
-    // Opaque pass
-    for (int i = 0; i < spriteRenderers.Size(); ++i)
-        if (!spriteRenderers[i].IsTransparent())
-            spriteRenderers[i].OnRender(transformationsAccessor.Get(spriteRenderers[i].Owner));
-
-    // Transparent pass
-    for (int i = spriteRenderers.Size() - 1; i >=0; --i)
-        if (spriteRenderers[i].IsTransparent())
-            spriteRenderers[i].OnRender(transformationsAccessor.Get(spriteRenderers[i].Owner));
 }
 
 void Renderer::Clear(glm::vec3 color)
@@ -174,51 +149,16 @@ void Renderer::PrepareUIRender()
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, const glm::vec4& color, GLuint textureID)
-{
-    Renderer::DrawQuad(quadCacheResult, transformation, color, textureID, defaultTextureCoords);
-}
-
-void Renderer::DrawQuad(QuadCache& quadCacheResult, const glm::mat4& transformation, const glm::vec4& color, GLuint textureID, glm::vec2 textureCoords[4])
+void Renderer::DrawQuad(glm::vec3 vertices[4], glm::vec2 textureCoords[4], const glm::vec4& color, uint32_t textureID)
 {
     int textureIDIndex = FindTextureSlot(textureID);
 
     int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
     for (int i = 0; i < 4; ++i)
     {
-        quadCacheResult.Vertices[i] = transformation * defaultVertexPositions[i];
-
-        vertexBufferData[offset++] = quadCacheResult.Vertices[i][0];
-        vertexBufferData[offset++] = quadCacheResult.Vertices[i][1];
-        vertexBufferData[offset++] = quadCacheResult.Vertices[i][2];
-        vertexBufferData[offset++] = color[0];
-        vertexBufferData[offset++] = color[1];
-        vertexBufferData[offset++] = color[2];
-        vertexBufferData[offset++] = color[3];
-        vertexBufferData[offset++] = textureCoords[i][0];
-        vertexBufferData[offset++] = textureCoords[i][1];
-        vertexBufferData[offset++] = (GLfloat)textureIDIndex;
-    }
-
-    renderCallsCount++;
-    VerticesStats += 4;
-}
-
-void Renderer::DrawQuadCached(const QuadCache& quadCache, const glm::vec4& color, GLuint textureID)
-{
-    Renderer::DrawQuadCached(quadCache, color, textureID, defaultTextureCoords);
-}
-
-void Renderer::DrawQuadCached(const QuadCache& quadCache, const glm::vec4& color, GLuint textureID, glm::vec2 textureCoords[4])
-{
-    int textureIDIndex = FindTextureSlot(textureID);
-
-    int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
-    for (int i = 0; i < 4; ++i)
-    {
-        vertexBufferData[offset++] = quadCache.Vertices[i][0];
-        vertexBufferData[offset++] = quadCache.Vertices[i][1];
-        vertexBufferData[offset++] = quadCache.Vertices[i][2];
+        vertexBufferData[offset++] = vertices[i][0];
+        vertexBufferData[offset++] = vertices[i][1];
+        vertexBufferData[offset++] = vertices[i][2];
         vertexBufferData[offset++] = color[0];
         vertexBufferData[offset++] = color[1];
         vertexBufferData[offset++] = color[2];
@@ -319,7 +259,7 @@ void Renderer::DrawBatchedData()
     glDeleteVertexArrays(1, &vertexArrayID);
 }
 
-int Renderer::FindTextureSlot(GLuint textureID)
+int Renderer::FindTextureSlot(uint32_t textureID)
 {
     if (renderCallsCount >= MAX_RENDER_CALLS)
     {

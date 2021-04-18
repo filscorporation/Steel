@@ -1,10 +1,9 @@
-#include <algorithm>
-
 #include "Scene.h"
 #include "Transformation.h"
 #include "NameComponent.h"
 #include "Hierarchy.h"
 #include "../Rendering/SpriteRenderer.h"
+#include "../Rendering/QuadRenderer.h"
 #include "../Animation/Animator.h"
 
 int Scene::EntitiesWasCreated = 0;
@@ -108,17 +107,61 @@ void Scene::SortByHierarchy()
         bool operator()(const HierarchyNode& a, const HierarchyNode& b) const { return a.HierarchyDepth < b.HierarchyDepth; }
     } DepthComparer;
     entitiesRegistry->SortComponents<HierarchyNode>(DepthComparer);
+    entitiesRegistry->ApplyOrder<HierarchyNode, Transformation>();
+    entitiesRegistry->ApplyOrder<HierarchyNode, RectTransformation>();
 }
 
 void Scene::UpdateGlobalTransformation()
 {
     auto hierarchyNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
     auto transformationsAccessor = entitiesRegistry->GetComponentAccessor<Transformation>();
+    // Components to apply changed transformation
+    auto srAccessor = entitiesRegistry->GetComponentAccessor<SpriteRenderer>();
     for (auto& hierarchyNode : hierarchyNodes)
     {
         if (transformationsAccessor.Has(hierarchyNode.Owner))
-            transformationsAccessor.Get(hierarchyNode.Owner).UpdateTransformation(transformationsAccessor, hierarchyNode);
+        {
+            auto& transformation = transformationsAccessor.Get(hierarchyNode.Owner);
+            transformation.UpdateTransformation(transformationsAccessor, hierarchyNode);
+
+            bool transformationDirty = transformation.DidTransformationChange();
+            if (srAccessor.Has(hierarchyNode.Owner))
+                srAccessor.Get(hierarchyNode.Owner).UpdateRenderer(transformation, transformationDirty);
+        }
     }
+}
+
+void Scene::RefreshTransformation()
+{
+    auto transformations = entitiesRegistry->GetComponentIterator<Transformation>();
+    for (auto& transformation : transformations)
+        transformation.SetTransformationChanged(false);
+}
+
+void Scene::SortByDrawOrder()
+{
+    // Sort all objects by Z
+    struct
+    {
+        bool operator()(QuadRenderer& a, QuadRenderer& b) const
+        { return a.SortingOrder > b.SortingOrder; }
+    } ZComparer;
+    entitiesRegistry->SortComponents<QuadRenderer>(ZComparer);
+}
+
+void Scene::Draw()
+{
+    auto quadRenderers = entitiesRegistry->GetComponentIterator<QuadRenderer>();
+
+    // Opaque pass
+    for (int i = 0; i < quadRenderers.Size(); ++i)
+        if (quadRenderers[i].Queue == RenderingQueue::Opaque)
+            quadRenderers[i].Render();
+
+    // Transparent pass
+    for (int i = quadRenderers.Size() - 1; i >=0; --i)
+        if (quadRenderers[i].Queue == RenderingQueue::Transparent)
+            quadRenderers[i].Render();
 }
 
 void Scene::CleanDestroyedEntities()

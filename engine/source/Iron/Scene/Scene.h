@@ -28,6 +28,9 @@ public:
 
     void SortByHierarchy();
     void UpdateGlobalTransformation();
+    void RefreshTransformation();
+    void SortByDrawOrder();
+    void Draw();
     void CleanDestroyedEntities();
     void CleanAllEntities();
 

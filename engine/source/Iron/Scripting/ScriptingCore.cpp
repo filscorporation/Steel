@@ -12,7 +12,6 @@
 #include "../Rendering/Camera.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../UI/RectTransformation.h"
-#include "../UI/UIRenderer.h"
 #include "../UI/UIElements/UIImage.h"
 #include "../UI/UIElements/UIButton.h"
 #include "../UI/UIElements/UIText.h"
@@ -105,7 +104,6 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(AudioSource, API_CLASS(AudioSource))
     CACHE_CLASS(Animator, API_CLASS(Animator))
     CACHE_CLASS(RectTransformation, API_CLASS(RectTransformation))
-    CACHE_CLASS(UIRenderer, API_CLASS(UIRenderer))
     CACHE_CLASS(UIImage, API_CLASS(UIImage))
     CACHE_CLASS(UIButton, API_CLASS(UIButton))
     CACHE_CLASS(UIText, API_CLASS(UIText))
@@ -161,8 +159,6 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return AddComponentS<AudioSource>(entity);
     if (monoClass == CACHED_CLASS(Animator))
         return AddComponentS<Animator>(entity);
-    if (monoClass == CACHED_CLASS(UIRenderer))
-        return AddComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
         return AddComponentS<UIImage>(entity);
     if (monoClass == CACHED_CLASS(UIButton))
@@ -203,8 +199,6 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass *monoCl
         return HasComponentS<Animator>(entity);
     if (monoClass == CACHED_CLASS(RectTransformation))
         return HasComponentS<RectTransformation>(entity);
-    if (monoClass == CACHED_CLASS(UIRenderer))
-        return HasComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
         return HasComponentS<UIImage>(entity);
     if (monoClass == CACHED_CLASS(UIButton))
@@ -241,8 +235,6 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *mon
         return RemoveComponentS<AudioSource>(entity);
     if (monoClass == CACHED_CLASS(Animator))
         return RemoveComponentS<Animator>(entity);
-    if (monoClass == CACHED_CLASS(UIRenderer))
-        return RemoveComponentS<UIRenderer>(entity);
     if (monoClass == CACHED_CLASS(UIImage))
         return RemoveComponentS<UIImage>(entity);
     if (monoClass == CACHED_CLASS(UIButton))
@@ -281,8 +273,6 @@ std::vector<EntityID> ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* mon
         RETURN_COMPONENT_OWNERS(AudioSource)
     if (monoClass == CACHED_CLASS(Animator))
         RETURN_COMPONENT_OWNERS(Animator)
-    if (monoClass == CACHED_CLASS(UIRenderer))
-        RETURN_COMPONENT_OWNERS(UIRenderer)
     if (monoClass == CACHED_CLASS(UIImage))
         RETURN_COMPONENT_OWNERS(UIImage)
     if (monoClass == CACHED_CLASS(UIButton))

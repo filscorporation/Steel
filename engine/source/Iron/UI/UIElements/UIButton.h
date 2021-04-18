@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../UIComponent.h"
-#include "../UIRenderer.h"
 #include "../UIEvent.h"
 #include "UIImage.h"
 #include "../../Rendering/Sprite.h"

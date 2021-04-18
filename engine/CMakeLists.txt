@@ -62,8 +62,8 @@ set(SOURCE_FILES
         source/Iron/Rendering/BuiltInShaders.h source/Iron/Physics/Physics.cpp source/Iron/Physics/Physics.h
         source/Iron/Physics/PhysicsContactListener.cpp source/Iron/Physics/PhysicsContactListener.h
         source/Iron/Physics/Collision.h source/Iron/UI/RectTransformation.cpp source/Iron/UI/RectTransformation.h
-        source/Iron/UI/UIComponent.cpp source/Iron/UI/UIComponent.h source/Iron/UI/UIRenderer.cpp
-        source/Iron/UI/UIRenderer.h source/Iron/UI/UIElements/UIImage.cpp source/Iron/UI/UIElements/UIImage.h
+        source/Iron/UI/UIComponent.cpp source/Iron/UI/UIComponent.h
+        source/Iron/UI/UIElements/UIImage.cpp source/Iron/UI/UIElements/UIImage.h
         source/Iron/Scripting/UIInternalCalls.cpp source/Iron/Scripting/UIInternalCalls.h
         source/Iron/EntityComponentSystem/EntitiesRegistry.h source/Iron/EntityComponentSystem/Entity.h
         source/Iron/Scene/NameComponent.cpp source/Iron/Scene/NameComponent.h source/Iron/Scene/SceneHelper.h
@@ -76,15 +76,16 @@ set(SOURCE_FILES
         source/Iron/UI/UIEventHandler.cpp source/Iron/UI/UIEventHandler.h source/Iron/UI/UIEvent.h source/Iron/Core/ButtonStates.h
         source/Iron/UI/UIElements/UIButton.cpp source/Iron/UI/UIElements/UIButton.h source/Iron/UI/UIElements/UIText.cpp source/Iron/UI/UIElements/UIText.h
         source/Iron/UI/UIElements/UITextLetter.cpp source/Iron/UI/UIElements/UITextLetter.h source/Iron/UI/Font.cpp source/Iron/UI/Font.h
-        source/Iron/UI/FontManager.cpp source/Iron/UI/FontManager.h source/Iron/UI/UILetterRenderer.cpp
-        source/Iron/UI/UILetterRenderer.h source/Iron/EntityComponentSystem/SparseSet.h source/Iron/Math/Math.h
+        source/Iron/UI/FontManager.cpp source/Iron/UI/FontManager.h
+        source/Iron/EntityComponentSystem/SparseSet.h source/Iron/Math/Math.h
         source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h source/Iron/Scene/HierarchySystem.cpp
         source/Iron/Scene/HierarchySystem.h source/Iron/Scene/TransformationSystem.cpp source/Iron/Scene/TransformationSystem.h
         source/Iron/UI/UISystem.cpp source/Iron/UI/UISystem.h source/Iron/Scripting/ScriptComponentSystem.cpp source/Iron/Scripting/ScriptComponentSystem.h
         source/Iron/Debug/Debug.cpp source/Iron/Debug/Debug.h source/Iron/Debug/DebugInfoWindow.cpp source/Iron/Debug/DebugInfoWindow.h
         source/Iron/Resources/PngLoader.cpp source/Iron/Resources/PngLoader.h source/Iron/Rendering/OpenGLAPI.cpp source/Iron/Rendering/OpenGLAPI.h
         source/Iron/Resources/AsepriteLoader.cpp source/Iron/Resources/AsepriteLoader.h source/Iron/Resources/AsepriteData.h
-        source/Iron/Resources/FileLoader.cpp source/Iron/Resources/FileLoader.h)
+        source/Iron/Resources/FileLoader.cpp source/Iron/Resources/FileLoader.h source/Iron/Rendering/QuadRenderer.cpp source/Iron/Rendering/QuadRenderer.h
+        source/Iron/UI/UIQuadRenderer.cpp source/Iron/UI/UIQuadRenderer.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

@@ -11,24 +11,20 @@ namespace Iron
 
         internal static void RegisterCallbacks(uint entityID, CallbackList callbackList)
         {
-            if (eventCallbacks.ContainsKey(entityID))
+            if (!eventCallbacks.TryAdd(entityID, callbackList))
             {
                 Log.LogError("Trying to register multiple callback lists for one entity");
                 return;
             }
-
-            eventCallbacks[entityID] = callbackList;
         }
 
         internal static void DeregisterCallbacks(uint entityID)
         {
-            if (!eventCallbacks.ContainsKey(entityID))
+            if (!eventCallbacks.TryRemove(entityID, out _))
             {
                 Log.LogError("Trying to deregister non existing callback list");
                 return;
             }
-
-            eventCallbacks.TryRemove(entityID, out _);
         }
 
         private static void InvokeCallbacks(uint entityID)

@@ -15,9 +15,7 @@ void UISystem::OnComponentAdded(EntityID entityID, UIText& component)
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIText& component)
 {
-    component.ForeachLetterDelete(ComponentSystem<UIText>::Registry, component.lettersCount);
-    component.lastLetterID = NULL_ENTITY;
-    component.lettersCount = 0;
+    component.ForeachLetterDelete(ComponentSystem<UIText>::Registry, component.letters.size());
 }
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIText& component)
@@ -38,7 +36,6 @@ void UISystem::OnComponentAdded(EntityID entityID, UIImage& component)
         return;
     }
 
-    TryAddUIRenderer(ComponentSystem<UIImage>::Registry, entityID);
     TryAddEventHandler(ComponentSystem<UIImage>::Registry, entityID);
 }
 
@@ -58,7 +55,6 @@ void UISystem::OnComponentAdded(EntityID entityID, UIButton& component)
         ComponentSystem<UIButton>::Registry->RemoveComponent<UIButton>(entityID);
         return;
     }
-    TryAddUIRenderer(ComponentSystem<UIButton>::Registry, entityID);
     TryAddEventHandler(ComponentSystem<UIButton>::Registry, entityID);
 
     auto& eh = ComponentSystem<UIButton>::Registry->GetComponent<UIEventHandler>(entityID);
@@ -101,19 +97,6 @@ bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, Entit
     }
 
     return true;
-}
-
-void UISystem::TryAddUIRenderer(EntitiesRegistry* entitiesRegistry, EntityID entityID)
-{
-    if (entitiesRegistry->HasComponent<UIRenderer>(entityID))
-    {
-        Log::LogWarning("Entity " + std::to_string(entityID) + " already has UIRenderer component attached, "
-                                                                    "this may lead to conflicts. Keep one UIComponent per object");
-    }
-    else
-    {
-        entitiesRegistry->AddComponent<UIRenderer>(entityID);
-    }
 }
 
 void UISystem::TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID entityID)

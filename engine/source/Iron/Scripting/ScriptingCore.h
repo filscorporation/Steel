@@ -23,7 +23,6 @@ struct CachedData
     MonoClass* classAudioSource;
     MonoClass* classAnimator;
     MonoClass* classRectTransformation;
-    MonoClass* classUIRenderer;
     MonoClass* classUIImage;
     MonoClass* classUIButton;
     MonoClass* classUIText;

@@ -1,22 +1,19 @@
-#include "UIText.h"
-#include "../UIRenderer.h"
-#include "../../Core/Application.h"
-#include "../../Scene/SceneHelper.h"
+#include <vector>
 
-void UIText::Rebuild()
+#include "UIText.h"
+#include "../../Core/Application.h"
+#include "../UIQuadRenderer.h"
+
+void UIText::Rebuild(RectTransformation& rectTransformation, bool transformationDirty)
 {
-    auto& rectTransformation = GetComponentS<RectTransformation>(Owner);
-    bool dirtyTransform = rectTransformation.DidTransformationChange();
-    if (!_dirtyText && !_dirtyTextColor && !dirtyTransform)
+    if (!_dirtyText && !_dirtyTextColor && !transformationDirty)
         return;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
     if (_font == nullptr || _text.empty())
     {
-        ForeachLetterDelete(entitiesRegistry, lettersCount);
-        lastLetterID = NULL_ENTITY;
-        lettersCount = 0;
+        ForeachLetterDelete(entitiesRegistry, letters.size());
         _dirtyText = false;
         _dirtyTextColor = false;
         rectTransformation.SetTransformationChanged(false);
@@ -33,7 +30,7 @@ void UIText::Rebuild()
     if (std::abs(newSize.x  -_lastRectSize.x) > 0.001f || std::abs(newSize.y  -_lastRectSize.y) > 0.001f)
     {
         // If text rect changed in size, completely rebuild
-        _lettersChangedCount = lettersCount;
+        _lettersChangedCount = letters.size();
         _dirtyText = true;
         _lastRectSize = newSize;
     }
@@ -45,17 +42,16 @@ void UIText::Rebuild()
            || _textAlignment == AlignmentTypes::CenterLeft
            || _textAlignment == AlignmentTypes::BottomLeft))
         {
-            _lettersChangedCount = lettersCount;
+            _lettersChangedCount = letters.size();
         }
 
         // Remove letters that changed
-        lastLetterID = ForeachLetterDelete(entitiesRegistry, _lettersChangedCount);
-        lettersCount -= _lettersChangedCount;
+        ForeachLetterDelete(entitiesRegistry, _lettersChangedCount);
 
-        if (lettersCount == 0)
+        if (letters.empty())
         {
             // If all letter changed, we don't need to change transformation and color, as new one will be created
-            dirtyTransform = false;
+            transformationDirty = false;
             _dirtyTextColor = false;
         }
 
@@ -80,9 +76,7 @@ void UIText::Rebuild()
         if ((float)(atlas.MaxY - atlas.MinY) > rectSize.y)
         {
             // Text height is bigger than rect, text can't be drawn
-            ForeachLetterDelete(entitiesRegistry, lettersCount);
-            lastLetterID = NULL_ENTITY;
-            lettersCount = 0;
+            ForeachLetterDelete(entitiesRegistry, letters.size());
             _dirtyText = false;
             _dirtyTextColor = false;
             rectTransformation.SetTransformationChanged(false);
@@ -132,23 +126,30 @@ void UIText::Rebuild()
         }
 
         // Move cursor to first changed letter
-        EntityID last = lastLetterID;
-        for (uint32_t i = 0; i < lettersCount; ++i)
+        for (uint32_t i = 0; i < letters.size(); ++i)
             cursorX += atlas.Characters[_text[i]].Advance;
         // Create letter renderer for each letter and calculate its transformation
-        for (uint32_t i = lettersCount; i < _text.size(); ++i)
+        letters.reserve(_text.size());
+        for (uint32_t i = letters.size(); i < _text.size(); ++i)
         {
             char& c = _text[i];
             auto& character = atlas.Characters[c];
 
-            EntityID letterEntityID = entitiesRegistry->CreateNewEntity();
-            auto& letterRenderer = entitiesRegistry->AddComponent<UILetterRenderer>(letterEntityID);
-
             // If letter doesn't fit into rect, it will be hidden
-            letterRenderer.IsRendered = cursorX >= 0 && (float)cursorX + character.Advance <= rectSize.x;
-            letterRenderer.PreviousLetter = last;
+            bool isRendered = cursorX >= 0 && (float)cursorX + character.Advance <= rectSize.x;
+            if (!isRendered)
+            {
+                letters.push_back(NULL_ENTITY);
+                cursorX += character.Advance;
+                continue;
+            }
+
+            EntityID letterEntityID = entitiesRegistry->CreateNewEntity();
+            auto& letterRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(letterEntityID);
+
             letterRenderer.Color = _color;
             letterRenderer.TextureID = atlas.TextureID;
+            letterRenderer.Queue = RenderingQueue::Text;
             letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
             letterRenderer.TextureCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);
             letterRenderer.TextureCoords[2] = glm::vec2(character.BottomLeft.x, character.BottomLeft.y);
@@ -159,23 +160,19 @@ void UIText::Rebuild()
             float y = originY + (character.Bearing.y - character.Size.y * 0.5f) / rectSize.y - 0.5f;
             float hw = 0.5f * (float)character.Size.x / rectSize.x;
             float hh = 0.5f * (float)character.Size.y / rectSize.y;
-            letterRenderer.Vertices[0] = glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
-            letterRenderer.Vertices[1] = glm::vec4(x + hw, y - hh, 0.0f, 1.0f);
-            letterRenderer.Vertices[2] = glm::vec4(x - hw, y + hh, 0.0f, 1.0f);
-            letterRenderer.Vertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
+            letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
+            letterRenderer.DefaultVertices[1] = glm::vec4(x + hw, y - hh, 0.0f, 1.0f);
+            letterRenderer.DefaultVertices[2] = glm::vec4(x - hw, y + hh, 0.0f, 1.0f);
+            letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
 
             // Apply text rect transformation
-            letterRenderer.Cache.Vertices[0] = rectMatrix * letterRenderer.Vertices[0];
-            letterRenderer.Cache.Vertices[1] = rectMatrix * letterRenderer.Vertices[1];
-            letterRenderer.Cache.Vertices[2] = rectMatrix * letterRenderer.Vertices[2];
-            letterRenderer.Cache.Vertices[3] = rectMatrix * letterRenderer.Vertices[3];
+            for (int j = 0; j < 4; ++j)
+                letterRenderer.Vertices[j] = rectMatrix * letterRenderer.DefaultVertices[j];
 
-            last = letterEntityID;
+            letters.push_back(letterEntityID);
             cursorX += character.Advance;
         }
 
-        lastLetterID = last;
-        lettersCount = _text.size();
         _dirtyText = false;
     }
 
@@ -185,7 +182,7 @@ void UIText::Rebuild()
         _dirtyTextColor = false;
     }
 
-    if (dirtyTransform)
+    if (transformationDirty)
     {
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
         ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix);
@@ -216,8 +213,8 @@ void UIText::SetText(const std::string& text)
         return;
 
     // Save how many letters changed (to not rebuild text when one last char changed)
-    _lettersChangedCount = lettersCount;
-    for (int i = 0; i < std::min((uint32_t)text.size(), lettersCount); ++i)
+    _lettersChangedCount = letters.size();
+    for (int i = 0; i < std::min(text.size(), letters.size()); ++i)
     {
         if (text[i] == _text[i])
             _lettersChangedCount--;
@@ -239,7 +236,7 @@ void UIText::SetTextSize(uint32_t size)
     if (_textSize == size || size < 1)
         return;
 
-    _lettersChangedCount = lettersCount;
+    _lettersChangedCount = letters.size();
     _textSize = size;
     _dirtyText = true;
 }
@@ -282,67 +279,47 @@ void UIText::SetTextAlignment(AlignmentTypes::AlignmentType alignmentType)
     if (_textAlignment == alignmentType)
         return;
 
-    _lettersChangedCount = lettersCount;
+    _lettersChangedCount = letters.size();
     _textAlignment = alignmentType;
     _dirtyText = true;
 }
 
 void UIText::ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const
 {
-    EntityID currentLetterID = lastLetterID;
-    for (uint32_t i = 0; i < lettersCount; ++i)
+    for (auto& letterID : letters)
     {
-        auto& currentLetter = registry->GetComponent<UILetterRenderer>(currentLetterID);
-        currentLetter.Color = color;
-
-        currentLetterID = currentLetter.PreviousLetter;
+        registry->GetComponent<UIQuadRenderer>(letterID).Color = color;
     }
 }
 
-EntityID UIText::ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count) const
+void UIText::ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count)
 {
-    EntityID currentLetterID = lastLetterID;
-    auto lettersAccessor = registry->GetComponentAccessor<UILetterRenderer>();
-    for (uint32_t i = 0; i < count; ++i)
+    for (uint32_t i = letters.size() - count; i < letters.size(); ++i)
     {
-        if (!lettersAccessor.Has(currentLetterID))
-            return NULL_ENTITY;
-
-        auto& currentLetter = lettersAccessor.Get(currentLetterID);
-        currentLetterID = currentLetter.PreviousLetter;
-
-        if (registry->EntityExists(currentLetter.Owner))
-            registry->DeleteEntity(currentLetter.Owner);
+        if (letters[i] == NULL_ENTITY) continue;
+        if (registry->EntityExists(letters[i]))
+            registry->DeleteEntity(letters[i]);
     }
-
-    return currentLetterID;
+    letters.resize(letters.size() - count);
 }
 
 void UIText::ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const
 {
-    EntityID currentLetterID = lastLetterID;
-    auto lettersAccessor = registry->GetComponentAccessor<UILetterRenderer>();
-    for (uint32_t i = 0; i < lettersCount; ++i)
+    for (auto& letterID : letters)
     {
-        auto& currentLetter = active ? lettersAccessor.GetInactive(currentLetterID) : lettersAccessor.Get(currentLetterID);
-        currentLetterID = currentLetter.PreviousLetter;
-
-        registry->EntitySetActive(currentLetter.Owner, active, false);
+        if (letterID == NULL_ENTITY) continue;
+        registry->EntitySetActive(letterID, active, false);
     }
 }
 
 void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const
 {
-    EntityID currentLetterID = lastLetterID;
-    auto lettersAccessor = registry->GetComponentAccessor<UILetterRenderer>();
-    for (uint32_t i = 0; i < lettersCount; ++i)
+    auto lettersAccessor = registry->GetComponentAccessor<UIQuadRenderer>();
+    for (auto& letterID : letters)
     {
-        auto& currentLetter = lettersAccessor.Get(currentLetterID);
+        if (letterID == NULL_ENTITY) continue;
+        auto& renderer = lettersAccessor.Get(letterID);
         for (int j = 0; j < 4; ++j)
-        {
-            currentLetter.Cache.Vertices[j] = transformationMatrix * currentLetter.Vertices[j];
-        }
-
-        currentLetterID = currentLetter.PreviousLetter;
+            renderer.Vertices[j] = transformationMatrix * renderer.DefaultVertices[j];
     }
 }

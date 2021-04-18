@@ -1,7 +1,6 @@
 #include "UILayer.h"
-#include "UIRenderer.h"
 #include "UIEventHandler.h"
-#include "UILetterRenderer.h"
+#include "UIQuadRenderer.h"
 #include "UIElements/UIText.h"
 #include "../Rendering/Renderer.h"
 #include "../Scene/Hierarchy.h"
@@ -63,62 +62,75 @@ void UILayer::Draw()
     // Update rect transformations if needed
     auto hierarchyNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
     auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
+    // Components to apply changed transformation
+    auto imageAccessor = entitiesRegistry->GetComponentAccessor<UIImage>();
+    auto buttonAccessor = entitiesRegistry->GetComponentAccessor<UIButton>();
+    auto textAccessor = entitiesRegistry->GetComponentAccessor<UIText>();
     for (auto& hierarchyNode : hierarchyNodes)
     {
         if (rtAccessor.Has(hierarchyNode.Owner))
-            rtAccessor.Get(hierarchyNode.Owner).UpdateTransformation(rtAccessor, hierarchyNode);
+        {
+            auto& rt = rtAccessor.Get(hierarchyNode.Owner);
+            rt.UpdateTransformation(rtAccessor, hierarchyNode);
+
+            bool transformationDirty = rt.DidTransformationChange();
+            if (imageAccessor.Has(hierarchyNode.Owner))
+                imageAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt, transformationDirty);
+            if (buttonAccessor.Has(hierarchyNode.Owner))
+                buttonAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt, transformationDirty);
+            if (textAccessor.Has(hierarchyNode.Owner))
+                textAccessor.Get(hierarchyNode.Owner).Rebuild(rt, transformationDirty);
+        }
     }
 
-    // Rebuild text
-    auto texts = entitiesRegistry->GetComponentIterator<UIText>();
-    for (auto& text : texts)
-    {
-        text.Rebuild();
-    }
-    // After rebuilding text we need to condense letters list to not wait for the next frame
-    entitiesRegistry->ClearRemoved<UILetterRenderer>();
+    // Refresh rect transformation
+    auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
+    for (auto& rt : rectTransformations)
+        rt.SetTransformationChanged(false);
+
+    // After rebuilding text we need to condense renderers list to not wait for the next frame
+    entitiesRegistry->ClearRemoved<UIQuadRenderer>();
 
     // Sort all UI objects by SortingOrder
     struct
     {
-        bool operator()(RectTransformation& a, RectTransformation& b) const
-        { return a.GetGlobalSortingOrderCached() < b.GetGlobalSortingOrderCached(); }
+        bool operator()(UIQuadRenderer& a, UIQuadRenderer& b) const
+        { return a.SortingOrder < b.SortingOrder; }
     } SOComparer;
-    entitiesRegistry->SortComponents<RectTransformation>(SOComparer);
-    entitiesRegistry->ApplyOrder<RectTransformation, UIRenderer>();
+    entitiesRegistry->SortComponents<UIQuadRenderer>(SOComparer);
 
     // Draw
-    auto uiRenderers = entitiesRegistry->GetComponentIterator<UIRenderer>();
-    auto textRenderers = entitiesRegistry->GetComponentIterator<UILetterRenderer>();
+    auto uiRenderers = entitiesRegistry->GetComponentIterator<UIQuadRenderer>();
 
     Renderer::SetDrawMode(DrawModes::Normal);
     // Opaque pass
     for (int i = 0; i < uiRenderers.Size(); ++i)
-        if (!uiRenderers[i].IsTransparent)
-            uiRenderers[i].Render(rtAccessor.Get(uiRenderers[i].Owner));
+        if (uiRenderers[i].Queue == RenderingQueue::Opaque)
+            uiRenderers[i].Render();
     Renderer::EndBatch();
 
     Renderer::StartBatch();
     Renderer::SetDrawMode(DrawModes::Text);
     // Text letters
-    for (int i = 0; i < textRenderers.Size(); ++i)
-        textRenderers[i].Render();
+    for (int i = 0; i < uiRenderers.Size(); ++i)
+        if (uiRenderers[i].Queue == RenderingQueue::Text)
+            uiRenderers[i].Render();
     Renderer::EndBatch();
 
     Renderer::StartBatch();
     Renderer::SetDrawMode(DrawModes::Normal);
     // Transparent pass
     for (int i = uiRenderers.Size() - 1; i >= 0; --i)
-        if (uiRenderers[i].IsTransparent)
-            uiRenderers[i].Render(rtAccessor.Get(uiRenderers[i].Owner));
+        if (uiRenderers[i].Queue == RenderingQueue::Transparent)
+            uiRenderers[i].Render();
 }
 
 void UILayer::PollEvent(UIEvent& uiEvent)
 {
     auto entitiesRegistry = _scene->GetEntitiesRegistry();
-    entitiesRegistry->ApplyOrder<RectTransformation, UIEventHandler>();
     auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
     auto uiEventHandlers = entitiesRegistry->GetComponentIterator<UIEventHandler>();
+    entitiesRegistry->ApplyOrderCustomOwner<UIQuadRenderer, UIEventHandler>();
 
     int size = uiEventHandlers.Size();
     for (int i = 0; i < size; ++i)

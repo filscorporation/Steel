@@ -2,7 +2,6 @@
 
 #include "../Font.h"
 #include "../UIComponent.h"
-#include "../UILetterRenderer.h"
 
 namespace AlignmentTypes
 {
@@ -25,7 +24,7 @@ class UIText : public UIComponent
 public:
     explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 
-    void Rebuild();
+    void Rebuild(RectTransformation& transformation, bool transformationDirty);
 
     Font* GetFont() const;
     void SetFont(Font* font);
@@ -42,7 +41,7 @@ public:
 
 private:
     void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
-    EntityID ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count) const;
+    void ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count);
     void ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const;
     void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const;
 
@@ -59,8 +58,7 @@ private:
     bool _dirtyTextColor = false;
     glm::vec2 _lastRectSize = glm::vec2(0.0f, 0.0f);
 
-    EntityID lastLetterID = NULL_ENTITY;
-    uint32_t lettersCount = 0;
+    std::vector<EntityID> letters;
 
     friend class UISystem;
 };

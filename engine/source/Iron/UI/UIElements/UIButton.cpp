@@ -1,4 +1,5 @@
 #include "UIButton.h"
+#include "../UIQuadRenderer.h"
 #include "../UIEventHandler.h"
 #include "../../Core/Time.h"
 #include "../../Math/Math.h"
@@ -10,7 +11,7 @@ bool UIButton::Update()
 {
     transitionProgress += Time::DeltaTime();
     float t = transitionProgress / _transitionsInfo.TransitionDuration;
-    auto& uii = GetComponentS<UIRenderer>(Owner);
+    auto& uii = GetComponentS<UIQuadRenderer>(Owner);
     switch (_transitionsInfo.TransitionType)
     {
         case ButtonTransitionTypes::ColorShift:
