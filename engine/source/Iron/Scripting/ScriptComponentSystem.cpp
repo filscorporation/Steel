@@ -8,6 +8,7 @@ void ScriptComponentSystem::OnComponentAdded(EntityID entityID, ScriptComponent&
 
 void ScriptComponentSystem::OnComponentRemoved(EntityID entityID, ScriptComponent& component)
 {
+    component.OnDestroy();
     ScriptingCore::FreeScriptHandle(component.GetScriptPointer());
 }
 

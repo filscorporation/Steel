@@ -52,6 +52,7 @@ void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
     EngineCalls.freeScriptHandle = mono_class_get_method_from_name(klass, "FreeScriptHandle", 1);
 
     EngineCalls.callOnCreate = mono_class_get_method_from_name(klass, "ComponentOnCreate", 1);
+    EngineCalls.callOnDestroy = mono_class_get_method_from_name(klass, "ComponentOnDestroy", 1);
     EngineCalls.callOnUpdate = mono_class_get_method_from_name(klass, "ComponentOnUpdate", 1);
     EngineCalls.callOnLateUpdate = mono_class_get_method_from_name(klass, "ComponentOnLateUpdate", 1);
     EngineCalls.callOnFixedUpdate = mono_class_get_method_from_name(klass, "ComponentOnFixedUpdate", 1);
@@ -75,6 +76,7 @@ void ScriptingCore::LoadEventManagerMethods(MonoImage* image)
     MonoClass* klass = mono_class_from_name(image, "Iron", "EventManager");
 
     EventManagerCalls.callInvokeCallbacks = mono_class_get_method_from_name(klass, "InvokeCallbacks", 1);
+    EventManagerCalls.callDeregisterCallbacks = mono_class_get_method_from_name(klass, "DeregisterCallbacks", 1);
 }
 
 void ScriptingCore::LoadCoroutinesManagerMethods(MonoImage* image)

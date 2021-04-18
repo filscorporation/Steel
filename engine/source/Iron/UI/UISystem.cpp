@@ -1,6 +1,7 @@
 #include "UISystem.h"
-#include "../Core/Application.h"
 #include "UIEventHandler.h"
+#include "../Core/Application.h"
+#include "../Scripting/ScriptingCore.h"
 
 void UISystem::OnComponentAdded(EntityID entityID, UIText& component)
 {
@@ -78,6 +79,7 @@ void UISystem::OnComponentRemoved(EntityID entityID, UIButton& component)
         component.isInTransition = false;
         Application::Instance->GetCurrentScene()->GetUILayer()->RemoveButtonFromUpdateQueue(entityID);
     }
+    ScriptingCore::CallEventMethod(entityID, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
 }
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIButton& component)

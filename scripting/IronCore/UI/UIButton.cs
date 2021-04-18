@@ -7,15 +7,6 @@ namespace Iron
     /// </summary>
     public class UIButton : UIComponent
     {
-        ~UIButton()
-        {
-            if (OnClick != null)
-            {
-                OnClick.IsActive = false;
-                EventManager.DeregisterCallbacks(Entity.ID);
-            }
-        }
-
         /// <summary>
         /// Callback to call when button gets clicked by mouse buttons
         /// </summary>

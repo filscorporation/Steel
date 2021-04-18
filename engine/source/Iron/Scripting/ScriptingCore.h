@@ -33,6 +33,7 @@ struct EngineCallsMethods
     MonoMethod* freeScriptHandle;
 
     MonoMethod* callOnCreate;
+    MonoMethod* callOnDestroy;
     MonoMethod* callOnUpdate;
     MonoMethod* callOnLateUpdate;
     MonoMethod* callOnFixedUpdate;
@@ -54,6 +55,7 @@ struct EngineCallsMethods
 struct EventManagerMethods
 {
     MonoMethod* callInvokeCallbacks;
+    MonoMethod* callDeregisterCallbacks;
 };
 
 struct CoroutinesManagerMethods

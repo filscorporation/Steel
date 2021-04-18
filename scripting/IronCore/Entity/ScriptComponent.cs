@@ -12,6 +12,11 @@
         public virtual void OnCreate() { }
         
         /// <summary>
+        /// Called before component is removed from entity
+        /// </summary>
+        public virtual void OnDestroy() { }
+        
+        /// <summary>
         /// Called once per frame
         /// </summary>
         public virtual void OnUpdate() { }

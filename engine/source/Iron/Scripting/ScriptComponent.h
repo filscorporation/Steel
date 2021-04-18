@@ -20,6 +20,7 @@ public:
 
     void OnUpdate();
     void OnCreate();
+    void OnDestroy();
     void OnFixedUpdate();
     void OnLateUpdate();
     void OnEnabled();

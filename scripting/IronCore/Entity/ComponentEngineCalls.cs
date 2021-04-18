@@ -18,6 +18,11 @@ namespace Iron
             ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnCreate();
         }
         
+        private static void ComponentOnDestroy(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnDestroy();
+        }
+        
         private static void ComponentOnUpdate(IntPtr componentPtr)
         {
             ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnUpdate();

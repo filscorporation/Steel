@@ -19,6 +19,11 @@ void ScriptComponent::OnCreate()
     ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCreate);
 }
 
+void ScriptComponent::OnDestroy()
+{
+    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnDestroy);
+}
+
 void ScriptComponent::OnUpdate()
 {
     ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnUpdate);

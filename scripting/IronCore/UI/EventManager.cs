@@ -20,11 +20,7 @@ namespace Iron
 
         internal static void DeregisterCallbacks(uint entityID)
         {
-            if (!eventCallbacks.TryRemove(entityID, out _))
-            {
-                Log.LogError("Trying to deregister non existing callback list");
-                return;
-            }
+            eventCallbacks.TryRemove(entityID, out _);
         }
 
         private static void InvokeCallbacks(uint entityID)
