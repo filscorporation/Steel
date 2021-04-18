@@ -1,10 +1,10 @@
-#include <GLAD/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Renderer.h"
 #include "BuiltInShaders.h"
 #include "Screen.h"
 #include "SpriteRenderer.h"
+#include "OpenGLAPI.h"
 #include "../Core/Application.h"
 
 const int RENDER_CALL_DATA_SIZE = 10;
@@ -15,72 +15,57 @@ Shader* shader;
 
 int renderCallsCount;
 int texturesCount;
-glm::vec4 defaultVertexPositions[4];
-glm::vec2 defaultTextureCoords[4];
-GLfloat* vertexBufferData;
-GLuint textureIDs[MAX_TEXTURE_SLOTS];
-GLuint indexBufferID, vertexDataBufferID;
-GLuint viewProjectionUniform;
-GLuint drawModeUniform;
+float* vertexBufferData;
+uint32_t textureIDs[MAX_TEXTURE_SLOTS];
+uint32_t indexBufferID, vertexDataBufferID;
+int viewProjectionUniform;
+int drawModeUniform;
 
 DrawModes::DrawMode Renderer::currentDrawMode = DrawModes::Normal;
 bool Renderer::DrawWireframe = false;
 int Renderer::DrawCallsStats = 0;
 int Renderer::VerticesStats = 0;
 
+using namespace OpenGLAPI;
+
 void Renderer::Init()
 {
     Log::LogInfo("Begin renderer init");
 
-    if(!gladLoadGL())
+    if(!OpenGLAPI::Init())
     {
         Log::LogError("Error loading OpenGL");
         return;
     }
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    EnableDepthTest();
+    EnableBlend();
 
     // Create shader and initialize it's texture slots variable
     shader = new Shader(BuiltInShaders::VertexShader, BuiltInShaders::FragmentShader);
     shader->Use();
-    GLint textureSlots[MAX_TEXTURE_SLOTS];
-    for (GLint i = 0; i < MAX_TEXTURE_SLOTS; i++)
+    int textureSlots[MAX_TEXTURE_SLOTS];
+    for (int i = 0; i < MAX_TEXTURE_SLOTS; i++)
         textureSlots[i] = i;
-    glUniform1iv(glGetUniformLocation(shader->Program, "images"), MAX_TEXTURE_SLOTS, textureSlots);
+    SetUniformIntegers(GetUniformLocation(shader->Program, "images"), MAX_TEXTURE_SLOTS, textureSlots);
 
     Log::LogInfo("Shader created");
 
     // Camera transformation uniform
-    viewProjectionUniform = glGetUniformLocation(shader->Program, "view_projection");
+    viewProjectionUniform = GetUniformLocation(shader->Program, "view_projection");
     // Draw mode
-    drawModeUniform = glGetUniformLocation(shader->Program, "draw_mode");
+    drawModeUniform = GetUniformLocation(shader->Program, "draw_mode");
 
     Log::LogInfo("Uniforms saved");
 
-    // Generate default vertex positions
-    defaultVertexPositions[0] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
-    defaultVertexPositions[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
-    defaultVertexPositions[2] = glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
-    defaultVertexPositions[3] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
-
-    // Generate default texture coords
-    defaultTextureCoords[0] = glm::vec2(1.0f, 0.0f);
-    defaultTextureCoords[1] = glm::vec2(1.0f, 1.0f);
-    defaultTextureCoords[2] = glm::vec2(0.0f, 0.0f);
-    defaultTextureCoords[3] = glm::vec2(0.0f, 1.0f);
-
     // Reserve space for all vertex data
-    vertexBufferData = new GLfloat[MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4];
-    glGenBuffers(1, &vertexDataBufferID);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4, nullptr, GL_DYNAMIC_DRAW);
+    vertexBufferData = new float[MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4];
+    vertexDataBufferID = GenerateVetexBuffer(MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4, nullptr, Dynamic);
 
     Log::LogInfo("Vertices data generated");
 
     // Generate all vertex indices
-    auto indexes = new GLuint[MAX_RENDER_CALLS * 6];
+    auto indexes = new uint32_t[MAX_RENDER_CALLS * 6];
     int indexOffset = 0;
     for (int i = 0; i < MAX_RENDER_CALLS * 6; i += 6)
     {
@@ -94,9 +79,7 @@ void Renderer::Init()
 
         indexOffset += 4;
     }
-    glGenBuffers(1, &indexBufferID);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * MAX_RENDER_CALLS * 6, indexes, GL_STATIC_DRAW);
+    indexBufferID = GenerateIndexBuffer(MAX_RENDER_CALLS * 6, indexes, Static);
     delete[] indexes;
 
     Log::LogInfo("Indexes generated");
@@ -106,8 +89,8 @@ void Renderer::Init()
 
 void Renderer::Terminate()
 {
-    glDeleteBuffers(1, &indexBufferID);
-    glDeleteBuffers(1, &vertexDataBufferID);
+    DeleteBuffer(indexBufferID);
+    DeleteBuffer(vertexDataBufferID);
 
     delete[] vertexBufferData;
     delete shader;
@@ -117,7 +100,7 @@ void Renderer::OnBeforeRender(Camera& camera)
 {
     // Set camera transformation
     glm::mat4 viewProjection = camera.GetViewProjection();
-    glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(viewProjection));
+    SetUniformMatrix4Float(viewProjectionUniform, glm::value_ptr(viewProjection));
 
     SetDrawMode(DrawModes::Normal);
 
@@ -135,8 +118,9 @@ void Renderer::OnAfterRender()
 
 void Renderer::Clear(glm::vec3 color)
 {
-    glClearColor(color.r, color.g, color.b, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    SetClearColor(color.r, color.g, color.b, 1.0f);
+    ClearColor();
+    ClearDepth();
 }
 
 void Renderer::PrepareUIRender()
@@ -145,8 +129,8 @@ void Renderer::PrepareUIRender()
     StartBatch();
 
     glm::mat4 uiViewProjection = Screen::GetUIViewProjection();
-    glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(uiViewProjection));
-    glClear(GL_DEPTH_BUFFER_BIT);
+    SetUniformMatrix4Float(viewProjectionUniform, glm::value_ptr(uiViewProjection));
+    ClearDepth();
 }
 
 void Renderer::DrawQuad(glm::vec3 vertices[4], glm::vec2 textureCoords[4], const glm::vec4& color, uint32_t textureID)
@@ -165,7 +149,7 @@ void Renderer::DrawQuad(glm::vec3 vertices[4], glm::vec2 textureCoords[4], const
         vertexBufferData[offset++] = color[3];
         vertexBufferData[offset++] = textureCoords[i][0];
         vertexBufferData[offset++] = textureCoords[i][1];
-        vertexBufferData[offset++] = (GLfloat)textureIDIndex;
+        vertexBufferData[offset++] = (float)textureIDIndex;
     }
 
     renderCallsCount++;
@@ -178,7 +162,7 @@ void Renderer::SetDrawMode(DrawModes::DrawMode drawMode)
         return;
 
     currentDrawMode = drawMode;
-    glUniform1i(drawModeUniform, (GLint)currentDrawMode);
+    SetUniformInteger(drawModeUniform, (int)currentDrawMode);
 }
 
 void Renderer::StartBatch()
@@ -201,13 +185,13 @@ void Renderer::EndBatch()
         auto drawModeBackup = currentDrawMode;
         SetDrawMode(DrawModes::Wireframe);
 
-        glDisable(GL_DEPTH_TEST);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        DisableDepthTest();
+        SetPolygonMode(Line);
 
         DrawBatchedData();
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glEnable(GL_DEPTH_TEST);
+        SetPolygonMode(Fill);
+        EnableDepthTest();
 
         SetDrawMode(drawModeBackup);
     }
@@ -216,47 +200,38 @@ void Renderer::EndBatch()
 void Renderer::DrawBatchedData()
 {
     // Generate vertex array
-    GLuint vertexArrayID;
-    glGenVertexArrays(1, &vertexArrayID);
-    glBindVertexArray(vertexArrayID);
+    uint32_t vertexArrayID = GenerateVetexArray();
+    BindVetexArray(vertexArrayID);
 
     // Set vertices data
-    glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferID);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * renderCallsCount * RENDER_CALL_DATA_SIZE * 4, vertexBufferData);
+    BindVetexBuffer(vertexDataBufferID);
+    SetVetexBufferSubData(renderCallsCount * RENDER_CALL_DATA_SIZE * 4, vertexBufferData);
 
     // Bind indexes buffer and define attributes
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+    BindIndexBuffer(indexBufferID);
 
     // Vertex positions
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * RENDER_CALL_DATA_SIZE, (GLvoid*)nullptr);
-    glEnableVertexAttribArray(0);
+    EnableVertexFloatAttribute(0, 3, RENDER_CALL_DATA_SIZE, 0);
     // Vertex color
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * RENDER_CALL_DATA_SIZE, (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
+    EnableVertexFloatAttribute(1, 4, RENDER_CALL_DATA_SIZE, 3);
     // Texture coords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * RENDER_CALL_DATA_SIZE, (GLvoid*)(7 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
+    EnableVertexFloatAttribute(2, 2, RENDER_CALL_DATA_SIZE, 7);
     // Texture ID
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * RENDER_CALL_DATA_SIZE, (GLvoid*)(9 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(3);
+    EnableVertexFloatAttribute(3, 1, RENDER_CALL_DATA_SIZE, 9);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    UnbindVetexBuffer();
 
     // Bind textures
     for (int i = 0; i < texturesCount; ++i)
-    {
-        GLenum activeTexture = GL_TEXTURE0 + i;
-        glActiveTexture(activeTexture);
-        glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
-    }
+        BindTexture(textureIDs[i], i);
 
     // Draw
-    glDrawElements(GL_TRIANGLES, renderCallsCount * 6, GL_UNSIGNED_INT, nullptr);
+    DrawTriangles(renderCallsCount * 6);
 
-    glBindVertexArray(0);
+    UnbindVetexArray();
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDeleteVertexArrays(1, &vertexArrayID);
+    UnbindTexture();
+    DeleteVetexArray(vertexArrayID);
 }
 
 int Renderer::FindTextureSlot(uint32_t textureID)

@@ -1,5 +1,4 @@
 #include "PngLoader.h"
-#include "ResourcesManager.h"
 #include "../Rendering/OpenGLAPI.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -9,7 +8,7 @@ Sprite* PngLoader::LoadImage(const char* filePath)
 {
     int width, height, channels;
     unsigned char* imageData = stbi_load(filePath, &width, &height, &channels, 4);
-    uint32_t texture = OpenGLAPI::GenerateTexture(imageData, width, height);
+    uint32_t texture = OpenGLAPI::GenerateTexture(imageData, width, height, OpenGLAPI::Nearest);
 
     auto image = new Sprite();
     image->TextureID = texture;

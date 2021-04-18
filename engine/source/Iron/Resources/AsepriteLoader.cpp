@@ -164,7 +164,7 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
     chunkSizeLeft = 0;
 
     Fill(fullImageData, width, height, (unsigned char*)imageData, celWidth, celHeight, celX, celY);
-    uint32_t texture = OpenGLAPI::GenerateTexture(fullImageData, width, height);
+    uint32_t texture = OpenGLAPI::GenerateTexture(fullImageData, width, height, OpenGLAPI::Nearest);
 
     auto image = new Sprite();
     image->TextureID = texture;

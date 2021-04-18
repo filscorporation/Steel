@@ -375,7 +375,7 @@ Font* ResourcesManager::GetFont(ResourceID fontID)
     return fonts[fontID - 1];
 }
 
-Font *ResourcesManager::DefaultFont()
+Font* ResourcesManager::DefaultFont()
 {
     return defaultFont;
 }

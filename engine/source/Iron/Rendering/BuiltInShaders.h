@@ -4,7 +4,7 @@
 
 namespace BuiltInShaders
 {
-    const GLchar* VertexShader =
+    const char* VertexShader =
 "#version 330 core\n"
 "\n"
 "layout (location = 0) in vec3  position;\n"
@@ -26,7 +26,7 @@ namespace BuiltInShaders
 "    texID = texIDAtr;\n"
 "}";
 
-    const GLchar* FragmentShader =
+    const char* FragmentShader =
 "#version 330 core\n"
 "\n"
 "in vec4 vertexColor;\n"
