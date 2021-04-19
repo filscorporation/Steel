@@ -89,7 +89,7 @@ namespace Iron
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
         /// <returns>Attached component or already existing one</returns>
-        /// <remarks>Components excluding scripts should be unique for the entity</remarks>
+        /// <remarks>Components should be unique for the entity</remarks>
         public T AddComponent<T>() where T : Component, new()
         {
             T component;
@@ -102,7 +102,9 @@ namespace Iron
                 if (!AddScriptComponent_Internal(ID, typeof(T), scriptPointer))
                 {
                     GCHandle.FromIntPtr(scriptPointer).Free();
-                    return null;
+                    
+                    // TODO: can be done in one call
+                    return (T)GCHandle.FromIntPtr(GetScriptComponent_Internal(ID, typeof(T))).Target;
                 }
 
                 return component;
@@ -124,7 +126,9 @@ namespace Iron
         /// <returns>True if there is component of requested type attached</returns>
         public bool HasComponent<T>() where T : Component, new()
         {
-            return HasComponent_Internal(ID, typeof(T));
+            return typeof(T).IsSubclassOf(typeof(ScriptComponent))
+                ? HasScriptComponent_Internal(ID, typeof(T))
+                : HasComponent_Internal(ID, typeof(T));
         }
         
         /// <summary>
@@ -168,7 +172,7 @@ namespace Iron
             return RemoveComponent_Internal(ID, typeof(T));
         }
 
-        internal static T GetComponentByEntityID<T>(uint entityID) where T : Component, new()
+        internal static T GetInternalComponentByEntityID<T>(uint entityID) where T : Component, new()
         {
             if (!HasComponent_Internal(entityID, typeof(T)))
                 return null;
@@ -286,6 +290,9 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool HasComponent_Internal(uint entityID, Type type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool HasScriptComponent_Internal(uint entityID, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern IntPtr GetScriptComponent_Internal(uint entityID, Type type);

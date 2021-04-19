@@ -1,22 +1,21 @@
 #pragma once
 
+#include <vector>
 #include "../EntityComponentSystem/Component.h"
 #include "../Physics/Collision.h"
+#include "ScriptingCore.h"
 
 struct Collision;
-
-using ScriptPointer = intptr_t;
 
 class ScriptComponent : public Component
 {
 public:
-    explicit ScriptComponent(EntityID ownerEntityID) : Component(ownerEntityID)
-    {
-        _scriptPointer = 0;
-    }
+    explicit ScriptComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    void Init(const char* fullName, ScriptPointer scriptPointer);
-    ScriptPointer GetScriptPointer() const;
+    void AddScript(ScriptPointer scriptPointer, ScriptTypeInfo* typeInfo);
+    bool HasScriptType(ScriptTypeInfo* typeInfo);
+    ScriptPointer GetScriptPointer(ScriptTypeInfo* typeInfo);
+    void RemoveScript(ScriptTypeInfo* typeInfo);
 
     void OnUpdate();
     void OnCreate();
@@ -36,10 +35,26 @@ public:
     void OnMouseJustPressed();
     void OnMouseJustReleased();
 
-private:
-    ScriptPointer _scriptPointer;
-    const char* _fullName;
+    struct ScriptData
+    {
+        ScriptPointer ScriptPointer;
+        ScriptTypeInfo* TypeInfo;
+    };
+    std::vector<ScriptData> Scripts;
+    ScriptEventTypes::ScriptEventType ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
 
+private:
     bool hasCollision = false;
     Collision collisionStay;
 };
+
+#define CALL_IF_MASK(m_method) \
+{ \
+    if (!(ScriptsMask & ScriptEventTypes::m_method)) \
+        return; \
+    for (auto script : Scripts) \
+    { \
+        if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
+            ScriptingCore::CallMethod(script.ScriptPointer, ScriptingCore::EngineCalls.call##m_method); \
+    } \
+}

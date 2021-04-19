@@ -101,7 +101,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             case AlignmentTypes::BottomLeft:
             case AlignmentTypes::BottomMiddle:
             case AlignmentTypes::BottomRight:
-                originY = (float)(-atlas.MinY) / rectSize.y;
+                originY = (float)(-(int)atlas.MinY) / rectSize.y;
                 break;
         }
 
@@ -116,12 +116,12 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             case AlignmentTypes::TopMiddle:
             case AlignmentTypes::CenterMiddle:
             case AlignmentTypes::BottomMiddle:
-                cursorX = std::floor(rectSize.x * 0.5f - (float)fullTextWidth * 0.5f);
+                cursorX = (uint32_t)std::floor(rectSize.x * 0.5f - (float)fullTextWidth * 0.5f);
                 break;
             case AlignmentTypes::TopRight:
             case AlignmentTypes::CenterRight:
             case AlignmentTypes::BottomRight:
-                cursorX = std::floor(rectSize.x - (float)fullTextWidth);
+                cursorX = (uint32_t)std::floor(rectSize.x - (float)fullTextWidth);
                 break;
         }
 
@@ -214,7 +214,7 @@ void UIText::SetText(const std::string& text)
 
     // Save how many letters changed (to not rebuild text when one last char changed)
     _lettersChangedCount = letters.size();
-    for (int i = 0; i < std::min(text.size(), letters.size()); ++i)
+    for (uint32_t i = 0; i < std::min(text.size(), letters.size()); ++i)
     {
         if (text[i] == _text[i])
             _lettersChangedCount--;

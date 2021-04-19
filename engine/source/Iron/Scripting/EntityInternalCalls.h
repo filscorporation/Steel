@@ -14,6 +14,7 @@ namespace EntityInternalCalls
     bool Entity_AddComponent(EntityID id, void* type);
     bool Entity_AddScriptComponent(EntityID id, void* type, ScriptPointer scriptPointer);
     bool Entity_HasComponent(EntityID id, void* type);
+    bool Entity_HasScriptComponent(EntityID id, void* type);
     ScriptPointer Entity_GetScriptComponent(EntityID id, void* type);
     bool Entity_RemoveComponent(EntityID id, void* type);
     ScriptPointer Entity_RemoveScriptComponent(EntityID id, void* type);
@@ -28,5 +29,5 @@ namespace EntityInternalCalls
     void Entity_SetName(EntityID id, MonoString* name);
 
     MonoArray* Component_FindAllOfType(void* type);
-    MonoArray* Component_FindAllScriptsOfType(EntityID id, void* type);
+    MonoArray* Component_FindAllScriptsOfType(void* type);
 }

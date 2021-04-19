@@ -11,7 +11,7 @@ namespace Iron
         /// Camera in the scene, that is set as main
         /// </summary>
         // TODO: not optimal
-        public static Camera Main => Entity.GetComponentByEntityID<Camera>(GetEntityWithMainCamera_Internal());
+        public static Camera Main => Entity.GetInternalComponentByEntityID<Camera>(GetEntityWithMainCamera_Internal());
 
         /// <summary>
         /// Viewport width in world coordinates

@@ -7,8 +7,6 @@
 
 #include "../EntityComponentSystem/Component.h"
 #include "../EntityComponentSystem/EntitiesRegistry.h"
-#include "ScriptComponent.h"
-#include "ScriptComponentSystem.h"
 
 struct CachedData
 {
@@ -63,6 +61,48 @@ struct CoroutinesManagerMethods
     MonoMethod* callUpdate;
 };
 
+namespace ScriptEventTypes
+{
+    enum ScriptEventType
+    {
+        OnUpdate            = 1 << 0,
+        OnCreate            = 1 << 1,
+        OnDestroy           = 1 << 2,
+        OnFixedUpdate       = 1 << 3,
+        OnLateUpdate        = 1 << 4,
+        OnEnabled           = 1 << 5,
+        OnDisabled          = 1 << 6,
+        OnCollisionEnter    = 1 << 7,
+        OnCollisionExit     = 1 << 8,
+        OnMouseOver         = 1 << 9,
+        OnMouseEnter        = 1 << 10,
+        OnMouseExit         = 1 << 11,
+        OnMousePressed      = 1 << 12,
+        OnMouseJustPressed  = 1 << 13,
+        OnMouseJustReleased = 1 << 14,
+    };
+
+    inline ScriptEventType operator|(ScriptEventType a, ScriptEventType b)
+    {
+        return static_cast<ScriptEventType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+    }
+
+    inline ScriptEventType operator&(ScriptEventType a, ScriptEventType b)
+    {
+        return static_cast<ScriptEventType>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
+    }
+}
+
+struct ScriptTypeInfo
+{
+    ScriptEventTypes::ScriptEventType Mask;
+    // Here will be placed some info about fields for serialization
+};
+
+using ScriptPointer = intptr_t;
+
+class ScriptComponentSystem;
+
 class ScriptingCore
 {
 public:
@@ -77,10 +117,27 @@ public:
 
     static void FreeScriptHandle(ScriptPointer scriptPointer);
 
+    static Component& AddComponentFromType(EntityID entity, void* type, bool& success);
     static Component& AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success);
+    static bool HasComponentFromType(EntityID entity, void* type, bool& success);
     static bool HasComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
-    static bool RemoveComponentFromMonoClass(EntityID entity, MonoClass *monoClass);
-    static std::vector<EntityID> ComponentOwnersFromMonoClass(MonoClass* monoClass);
+    static bool RemoveComponentFromType(EntityID entity, void* type, bool& success);
+    static bool RemoveComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
+    static bool ComponentOwnersFromType(void* type, std::vector<EntityID>& result);
+    static bool ComponentOwnersFromMonoClass(MonoClass* monoClass, std::vector<EntityID>& result);
+
+    static bool AddScriptComponentFromType(EntityID entity, ScriptPointer scriptPointer, void* type);
+    static bool AddScriptComponentFromMonoClass(EntityID entity, ScriptPointer scriptPointer, MonoClass* monoClass);
+    static bool HasScriptComponentFromType(EntityID entity, void* type);
+    static bool HasScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
+    static ScriptPointer GetScriptComponentFromType(EntityID entity, void* type, bool& success);
+    static ScriptPointer GetScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success);
+    static bool RemoveScriptComponentFromType(EntityID entity, void* type);
+    static bool RemoveScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
+    static bool ScriptComponentPointersFromType(void* type, std::vector<ScriptPointer>& result);
+    static void ScriptComponentPointersFromMonoClass(MonoClass* monoClass, std::vector<ScriptPointer>& result);
+    static ScriptEventTypes::ScriptEventType ScriptGetEventMask(MonoClass* monoClass);
+
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);
     static void CallEventMethod(EntityID ownerEntityID, MonoMethod* method);
     static void CallMethod(MonoMethod* method);
@@ -102,6 +159,7 @@ private:
 
     static CachedData* cachedAPITypes;
     static std::vector<MonoClass*> cachedDataTypes;
+    static std::unordered_map<MonoClass*, ScriptTypeInfo*> scriptsInfo;
 };
 
 template<typename T>
@@ -123,7 +181,6 @@ MonoArray* ScriptingCore::ToMonoDataTypeArray(const std::vector<T>& inArray, int
 
 #define RETURN_COMPONENT_OWNERS(m_class) \
 { \
-    std::vector<EntityID> result; \
     auto components = entitiesRegistry->GetComponentIterator<m_class>(); \
     int size = components.Size(); \
     result.reserve(size); \
@@ -132,5 +189,5 @@ MonoArray* ScriptingCore::ToMonoDataTypeArray(const std::vector<T>& inArray, int
         if (components[i].IsAlive()) \
             result.push_back(components[i].Owner); \
     } \
-    return result; \
+    return true; \
 }
