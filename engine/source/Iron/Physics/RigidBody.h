@@ -1,6 +1,9 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "../EntityComponentSystem/Component.h"
+#include "Collision.h"
 
 namespace RigidBodyTypes
 {
@@ -31,6 +34,8 @@ public:
 
     void GetPhysicsTransformation();
     void UpdatePhysicsTransformation();
+
+    std::unordered_map<EntityID, Collision> ActiveContacts;
 
 private:
     RigidBodyInfo* info = nullptr;

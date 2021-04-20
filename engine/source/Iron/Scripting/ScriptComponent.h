@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "../EntityComponentSystem/Component.h"
 #include "../Physics/Collision.h"
 #include "ScriptingCore.h"
@@ -26,6 +27,7 @@ public:
     void OnDisabled();
 
     void OnCollisionEnter(Collision collision);
+    void OnCollisionStay(Collision collision);
     void OnCollisionExit(Collision collision);
 
     void OnMouseOver();
@@ -42,10 +44,6 @@ public:
     };
     std::vector<ScriptData> Scripts;
     ScriptEventTypes::ScriptEventType ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
-
-private:
-    bool hasCollision = false;
-    Collision collisionStay;
 };
 
 #define CALL_IF_MASK(m_method) \
@@ -56,5 +54,16 @@ private:
     { \
         if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
             ScriptingCore::CallMethod(script.ScriptPointer, ScriptingCore::EngineCalls.call##m_method); \
+    } \
+}
+
+#define CALL_IF_MASK_PARAM(m_method, m_param) \
+{ \
+    if (!(ScriptsMask & ScriptEventTypes::m_method)) \
+        return; \
+    for (auto script : Scripts) \
+    { \
+        if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
+            ScriptingCore::CallMethod(script.ScriptPointer, ScriptingCore::EngineCalls.call##m_method, m_param); \
     } \
 }

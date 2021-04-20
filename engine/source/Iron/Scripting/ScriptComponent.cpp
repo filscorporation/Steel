@@ -80,11 +80,6 @@ void ScriptComponent::OnLateUpdate()
 
 void ScriptComponent::OnFixedUpdate()
 {
-    // TODO: solve situations when collision exit will not be called (rigid body destroyed)
-    //if (hasCollision)
-    //    ScriptingCore::CallMethod(_scriptPointer, ScriptingCore::EngineCalls.callOnCollisionStay, collisionStay.OtherEntity);
-    // TODO: move OnCollisionStay logic to collision listener or somewhere else
-
     CALL_IF_MASK(OnFixedUpdate)
 }
 
@@ -98,20 +93,19 @@ void ScriptComponent::OnDisabled()
     CALL_IF_MASK(OnDisabled)
 }
 
-
 void ScriptComponent::OnCollisionEnter(Collision collision)
 {
-    hasCollision = true;
-    collisionStay = collision;
+    CALL_IF_MASK_PARAM(OnCollisionEnter, collision.OtherEntity)
+}
 
-    CALL_IF_MASK(OnCollisionEnter)
+void ScriptComponent::OnCollisionStay(Collision collision)
+{
+    CALL_IF_MASK_PARAM(OnCollisionStay, collision.OtherEntity)
 }
 
 void ScriptComponent::OnCollisionExit(Collision collision)
 {
-    hasCollision = false;
-
-    CALL_IF_MASK(OnCollisionExit)
+    CALL_IF_MASK_PARAM(OnCollisionExit, collision.OtherEntity)
 }
 
 void ScriptComponent::OnMouseOver()

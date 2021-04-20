@@ -102,18 +102,14 @@ void Application::RunUpdate()
     if (Time::FixedUpdate())
     {
         state = ApplicationStates::OnPhysicsUpdate;
+        for (int i = 0; i < scriptsSize; ++i)
+            if (scripts[i].IsAlive()) scripts[i].OnFixedUpdate();
+
         // Apply transformations to physics objects and then simulate
         Physics::UpdatePhysicsTransformations();
         Physics::Simulate(Time::FixedDeltaTime());
-
-        auto rigidBodies = scene->GetEntitiesRegistry()->GetComponentIterator<RigidBody>();
-        int rigidBodiesSize = rigidBodies.Size();
-        for (int i = 0; i < rigidBodiesSize; ++i)
-            if (rigidBodies[i].IsAlive())
-                rigidBodies[i].GetPhysicsTransformation();
-
-        for (int i = 0; i < scriptsSize; ++i)
-            if (scripts[i].IsAlive()) scripts[i].OnFixedUpdate();
+        Physics::GetPhysicsTransformations();
+        Physics::SendEvents();
     }
 
     state = ApplicationStates::OnLateUpdate;

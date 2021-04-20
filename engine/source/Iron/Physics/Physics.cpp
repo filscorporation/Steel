@@ -62,6 +62,33 @@ void Physics::Simulate(float deltaTime)
     PhysicsCore::Simulate(deltaTime);
 }
 
+void Physics::GetPhysicsTransformations()
+{
+    auto rigidBodies = Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->GetComponentIterator<RigidBody>();
+    int rigidBodiesSize = rigidBodies.Size();
+    for (int i = 0; i < rigidBodiesSize; ++i)
+        if (rigidBodies[i].IsAlive())
+            rigidBodies[i].GetPhysicsTransformation();
+}
+
+void Physics::SendEvents()
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto rigidBodies = entitiesRegistry->GetComponentIterator<RigidBody>();
+    auto scriptsAccessor = entitiesRegistry->GetComponentAccessor<ScriptComponent>();
+    int rigidBodiesSize = rigidBodies.Size();
+    for (int i = 0; i < rigidBodiesSize; ++i)
+    {
+        if (rigidBodies[i].IsAlive() && scriptsAccessor.Has(rigidBodies[i].Owner))
+        {
+            for (auto contact : rigidBodies[i].ActiveContacts)
+            {
+                scriptsAccessor.Get(rigidBodies[i].Owner).OnCollisionStay(contact.second);
+            }
+        }
+    }
+}
+
 std::vector<EntityID> Physics::PointCast(glm::vec2 center)
 {
     return PhysicsCore::PointCast(center);

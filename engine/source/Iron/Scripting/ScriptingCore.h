@@ -73,13 +73,14 @@ namespace ScriptEventTypes
         OnEnabled           = 1 << 5,
         OnDisabled          = 1 << 6,
         OnCollisionEnter    = 1 << 7,
-        OnCollisionExit     = 1 << 8,
-        OnMouseOver         = 1 << 9,
-        OnMouseEnter        = 1 << 10,
-        OnMouseExit         = 1 << 11,
-        OnMousePressed      = 1 << 12,
-        OnMouseJustPressed  = 1 << 13,
-        OnMouseJustReleased = 1 << 14,
+        OnCollisionStay     = 1 << 8,
+        OnCollisionExit     = 1 << 9,
+        OnMouseOver         = 1 << 10,
+        OnMouseEnter        = 1 << 11,
+        OnMouseExit         = 1 << 12,
+        OnMousePressed      = 1 << 13,
+        OnMouseJustPressed  = 1 << 14,
+        OnMouseJustReleased = 1 << 15,
     };
 
     inline ScriptEventType operator|(ScriptEventType a, ScriptEventType b)

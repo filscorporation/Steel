@@ -5,6 +5,7 @@
 
 #include "../EntityComponentSystem/Entity.h"
 #include "PhysicsSystem.h"
+#include "Collision.h"
 
 struct RayCastHit
 {
@@ -20,6 +21,8 @@ public:
     static void Terminate();
     static void UpdatePhysicsTransformations();
     static void Simulate(float deltaTime);
+    static void GetPhysicsTransformations();
+    static void SendEvents();
 
     static std::vector<EntityID> PointCast(glm::vec2 center);
     static std::vector<EntityID> AABBCast(glm::vec2 center, glm::vec2 size);
