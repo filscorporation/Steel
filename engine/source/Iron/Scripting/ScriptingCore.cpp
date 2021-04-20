@@ -1,5 +1,3 @@
-#include <mono/metadata/debug-helpers.h>
-
 #include "ScriptingCore.h"
 #include "ScriptingCallsRegister.h"
 #include "ScriptComponentSystem.h"
@@ -25,6 +23,8 @@ CoroutinesManagerMethods ScriptingCore::CoroutinesManagerCalls;
 CachedData* ScriptingCore::cachedAPITypes;
 std::vector<MonoClass*> ScriptingCore::cachedDataTypes;
 std::unordered_map<MonoClass*, ScriptTypeInfo*> ScriptingCore::scriptsInfo;
+std::unordered_map<ScriptEventTypes::ScriptEventType, MonoMethodDesc*> ScriptingCore::eventMethodsDescriptions;
+MonoClass* ScriptingCore::baseScriptClass = nullptr;
 ScriptComponentSystem* ScriptingCore::scriptComponentSystem;
 Component nullComponent = Component(NULL_ENTITY);
 
@@ -34,6 +34,7 @@ void ScriptingCore::Init(MonoImage* image)
     scriptComponentSystem = new ScriptComponentSystem();
     registry->RegisterSystem<ScriptComponent>(scriptComponentSystem);
 
+    LoadEventMethodsDescriptions(image);
     LoadEngineCallsMethods(image);
     LoadEventManagerMethods(image);
     LoadCoroutinesManagerMethods(image);
@@ -44,10 +45,34 @@ void ScriptingCore::Init(MonoImage* image)
 
 void ScriptingCore::Terminate()
 {
+    for (auto desc : eventMethodsDescriptions)
+        mono_method_desc_free(desc.second);
     for (auto info : scriptsInfo)
         delete info.second;
     delete cachedAPITypes;
     delete scriptComponentSystem;
+}
+
+void ScriptingCore::LoadEventMethodsDescriptions(MonoImage* image)
+{
+    baseScriptClass = mono_class_from_name(image, "Iron", "ScriptComponent");
+
+    eventMethodsDescriptions[ScriptEventTypes::OnUpdate] = mono_method_desc_new("*:OnUpdate ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnCreate] = mono_method_desc_new("*:OnCreate ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnDestroy] = mono_method_desc_new("*:OnDestroy ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnFixedUpdate] = mono_method_desc_new("*:OnFixedUpdate ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnLateUpdate] = mono_method_desc_new("*:OnLateUpdate ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnEnabled] = mono_method_desc_new("*:OnEnabled ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnDisabled] = mono_method_desc_new("*:OnDisabled ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnCollisionEnter] = mono_method_desc_new("*:OnCollisionEnter (Iron.Collision)", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnCollisionStay] = mono_method_desc_new("*:OnCollisionStay (Iron.Collision)", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnCollisionExit] = mono_method_desc_new("*:OnCollisionExit (Iron.Collision)", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseOver] = mono_method_desc_new("*:OnMouseOver ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseEnter] = mono_method_desc_new("*:OnMouseEnter ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseExit] = mono_method_desc_new("*:OnMouseExit ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMousePressed] = mono_method_desc_new("*:OnMousePressed ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseJustPressed] = mono_method_desc_new("*:OnMouseJustPressed ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseJustReleased] = mono_method_desc_new("*:OnMouseJustReleased ()", true);
 }
 
 void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
@@ -563,17 +588,7 @@ bool ScriptingCore::AddScriptComponentFromType(EntityID entity, ScriptPointer sc
 
 bool ScriptingCore::AddScriptComponentFromMonoClass(EntityID entity, ScriptPointer scriptPointer, MonoClass* monoClass)
 {
-    ScriptTypeInfo* typeInfo;
-    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
-    {
-        typeInfo = new ScriptTypeInfo();
-        typeInfo->Mask = ScriptGetEventMask(monoClass);
-        scriptsInfo[monoClass] = typeInfo;
-    }
-    else
-    {
-        typeInfo = scriptsInfo[monoClass];
-    }
+    ScriptTypeInfo* typeInfo = ScriptParseRecursive(monoClass);
 
     auto& scriptComponent = AddComponentS<ScriptComponent>(entity);
     if (scriptComponent.HasScriptType(typeInfo))
@@ -757,7 +772,27 @@ void ScriptingCore::ScriptComponentPointersFromMonoClass(MonoClass* monoClass, s
     }
 }
 
-ScriptEventTypes::ScriptEventType ScriptingCore::ScriptGetEventMask(MonoClass* monoClass)
+ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
 {
-    return (ScriptEventTypes::ScriptEventType)0xFFFFFFFF; // TODO: calculate mask
+    if (scriptsInfo.find(monoClass) != scriptsInfo.end())
+        return scriptsInfo[monoClass];
+
+    auto mask = (ScriptEventTypes::ScriptEventType)0;
+
+    MonoClass* parentClass = mono_class_get_parent(monoClass);
+    if (parentClass != nullptr && parentClass != baseScriptClass)
+        mask = mask | ScriptParseRecursive(parentClass)->Mask;
+
+    for (auto desc : eventMethodsDescriptions)
+    {
+        auto method = mono_method_desc_search_in_class(desc.second, monoClass);
+        if (method != nullptr)
+            mask = mask | desc.first;
+    }
+
+    auto typeInfo = new ScriptTypeInfo();
+    typeInfo->Mask = mask;
+    scriptsInfo[monoClass] = typeInfo;
+
+    return typeInfo;
 }

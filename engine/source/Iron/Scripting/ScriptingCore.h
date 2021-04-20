@@ -3,6 +3,7 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
 #include <unordered_map>
 
 #include "../EntityComponentSystem/Component.h"
@@ -109,6 +110,7 @@ class ScriptingCore
 public:
     static void Init(MonoImage* image);
     static void Terminate();
+    static void LoadEventMethodsDescriptions(MonoImage* image);
     static void LoadEngineCallsMethods(MonoImage* image);
     static void LoadEventManagerMethods(MonoImage* image);
     static void LoadCoroutinesManagerMethods(MonoImage* image);
@@ -137,7 +139,7 @@ public:
     static bool RemoveScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
     static bool ScriptComponentPointersFromType(void* type, std::vector<ScriptPointer>& result);
     static void ScriptComponentPointersFromMonoClass(MonoClass* monoClass, std::vector<ScriptPointer>& result);
-    static ScriptEventTypes::ScriptEventType ScriptGetEventMask(MonoClass* monoClass);
+    static ScriptTypeInfo* ScriptParseRecursive(MonoClass* monoClass);
 
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);
     static void CallEventMethod(EntityID ownerEntityID, MonoMethod* method);
@@ -155,12 +157,13 @@ public:
     static CoroutinesManagerMethods CoroutinesManagerCalls;
 
 private:
-
     static ScriptComponentSystem* scriptComponentSystem;
 
     static CachedData* cachedAPITypes;
     static std::vector<MonoClass*> cachedDataTypes;
     static std::unordered_map<MonoClass*, ScriptTypeInfo*> scriptsInfo;
+    static std::unordered_map<ScriptEventTypes::ScriptEventType, MonoMethodDesc*> eventMethodsDescriptions;
+    static MonoClass* baseScriptClass;
 };
 
 template<typename T>
