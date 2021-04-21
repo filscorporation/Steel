@@ -6,6 +6,8 @@
 #include <mono/metadata/debug-helpers.h>
 #include <unordered_map>
 
+#include "ScriptingCommon.h"
+#include "ScriptComponentSystem.h"
 #include "../EntityComponentSystem/Component.h"
 #include "../EntityComponentSystem/EntitiesRegistry.h"
 
@@ -62,49 +64,6 @@ struct CoroutinesManagerMethods
     MonoMethod* callUpdate;
 };
 
-namespace ScriptEventTypes
-{
-    enum ScriptEventType
-    {
-        OnUpdate            = 1 << 0,
-        OnCreate            = 1 << 1,
-        OnDestroy           = 1 << 2,
-        OnFixedUpdate       = 1 << 3,
-        OnLateUpdate        = 1 << 4,
-        OnEnabled           = 1 << 5,
-        OnDisabled          = 1 << 6,
-        OnCollisionEnter    = 1 << 7,
-        OnCollisionStay     = 1 << 8,
-        OnCollisionExit     = 1 << 9,
-        OnMouseOver         = 1 << 10,
-        OnMouseEnter        = 1 << 11,
-        OnMouseExit         = 1 << 12,
-        OnMousePressed      = 1 << 13,
-        OnMouseJustPressed  = 1 << 14,
-        OnMouseJustReleased = 1 << 15,
-    };
-
-    inline ScriptEventType operator|(ScriptEventType a, ScriptEventType b)
-    {
-        return static_cast<ScriptEventType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
-    }
-
-    inline ScriptEventType operator&(ScriptEventType a, ScriptEventType b)
-    {
-        return static_cast<ScriptEventType>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
-    }
-}
-
-struct ScriptTypeInfo
-{
-    ScriptEventTypes::ScriptEventType Mask;
-    // Here will be placed some info about fields for serialization
-};
-
-using ScriptPointer = intptr_t;
-
-class ScriptComponentSystem;
-
 class ScriptingCore
 {
 public:
@@ -125,12 +84,12 @@ public:
     static bool HasComponentFromType(EntityID entity, void* type, bool& success);
     static bool HasComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
     static bool RemoveComponentFromType(EntityID entity, void* type, bool& success);
-    static bool RemoveComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
+    static bool RemoveComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success);
     static bool ComponentOwnersFromType(void* type, std::vector<EntityID>& result);
     static bool ComponentOwnersFromMonoClass(MonoClass* monoClass, std::vector<EntityID>& result);
 
-    static bool AddScriptComponentFromType(EntityID entity, ScriptPointer scriptPointer, void* type);
-    static bool AddScriptComponentFromMonoClass(EntityID entity, ScriptPointer scriptPointer, MonoClass* monoClass);
+    static bool AddScriptComponentFromType(EntityID entity, void* type, ScriptPointer scriptPointer);
+    static bool AddScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass, ScriptPointer scriptPointer);
     static bool HasScriptComponentFromType(EntityID entity, void* type);
     static bool HasScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
     static ScriptPointer GetScriptComponentFromType(EntityID entity, void* type, bool& success);
@@ -139,6 +98,7 @@ public:
     static bool RemoveScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass);
     static bool ScriptComponentPointersFromType(void* type, std::vector<ScriptPointer>& result);
     static void ScriptComponentPointersFromMonoClass(MonoClass* monoClass, std::vector<ScriptPointer>& result);
+    static MonoClass* TypeToMonoClass(void* type);
     static ScriptTypeInfo* ScriptParseRecursive(MonoClass* monoClass);
 
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);

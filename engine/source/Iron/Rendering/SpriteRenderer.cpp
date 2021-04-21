@@ -21,13 +21,14 @@ void SpriteRenderer::UpdateRenderer(Transformation& transformation)
 
 void SpriteRenderer::SetImage(Sprite* image)
 {
+    bool wasNull = _image == nullptr;
     _image = image;
-    _isTransparent = _image != nullptr && _image->IsTransparent;
 
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (_image == nullptr)
     {
-        registry->RemoveComponent<QuadRenderer>(Owner);
+        if (!wasNull)
+            registry->RemoveComponent<QuadRenderer>(Owner);
     }
     else
     {
@@ -86,9 +87,4 @@ glm::vec2 SpriteRenderer::GetWorldSize()
         return glm::vec2(0, 0);
 
     return GetComponentS<Transformation>(Owner).GetScale() * _image->GetRealWorldSize();
-}
-
-bool SpriteRenderer::IsTransparent() const
-{
-    return _isTransparent;
 }

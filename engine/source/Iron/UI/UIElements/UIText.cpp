@@ -288,6 +288,7 @@ void UIText::ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 colo
 {
     for (auto& letterID : letters)
     {
+        if (letterID == NULL_ENTITY) continue;
         registry->GetComponent<UIQuadRenderer>(letterID).Color = color;
     }
 }

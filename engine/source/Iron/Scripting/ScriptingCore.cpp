@@ -168,30 +168,11 @@ void ScriptingCore::FreeScriptHandle(ScriptPointer scriptPointer)
 
 Component& ScriptingCore::AddComponentFromType(EntityID entity, void* type, bool& success)
 {
-    success = false;
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type for entity ID " + std::to_string(entity));
-        return nullComponent;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
+    MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
         return nullComponent;
-    }
 
-    auto& component = ScriptingCore::AddComponentFromMonoClass(entity, monoClass, success);
-    if (!success)
-    {
-        Log::LogError("Error adding component " + std::string(mono_type_get_name(monoType)));
-        return nullComponent;
-    }
-
-    success = true;
-    return nullComponent;
+    return ScriptingCore::AddComponentFromMonoClass(entity, monoClass, success);
 }
 
 Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
@@ -236,26 +217,15 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
 
 bool ScriptingCore::HasComponentFromType(EntityID entity, void* type, bool& success)
 {
-    success = false;
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type for entity ID " + std::to_string(entity));
-        return false;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
+    MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
         return false;
-    }
 
     success = true;
     return ScriptingCore::HasComponentFromMonoClass(entity, monoClass);
 }
 
-bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass *monoClass)
+bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass* monoClass)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     
@@ -297,28 +267,17 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass *monoCl
 
 bool ScriptingCore::RemoveComponentFromType(EntityID entity, void* type, bool& success)
 {
-    success = false;
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type for entity ID " + std::to_string(entity));
-        return false;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
+    MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
         return false;
-    }
 
-    success = true;
-    return ScriptingCore::RemoveComponentFromMonoClass(entity, monoClass);
+    return ScriptingCore::RemoveComponentFromMonoClass(entity, monoClass, success);
 }
 
-bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *monoClass)
+bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    success = true;
     
     if (monoClass == CACHED_CLASS(NameComponent))
         return entitiesRegistry->RemoveComponent<NameComponent>(entity);
@@ -351,24 +310,15 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass *mon
 
     Log::LogError("Could not find cached class");
 
+    success = false;
     return false;
 }
 
 bool ScriptingCore::ComponentOwnersFromType(void* type, std::vector<EntityID>& result)
 {
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type for find");
-        return false;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
+    MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
         return false;
-    }
 
     ScriptingCore::ComponentOwnersFromMonoClass(monoClass, result);
     return true;
@@ -410,6 +360,204 @@ bool ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* monoClass, std::vect
     Log::LogError("Could not find cached class");
 
     return false;
+}
+
+bool ScriptingCore::AddScriptComponentFromType(EntityID entity, void* type, ScriptPointer scriptPointer)
+{
+    MonoClass* monoClass = TypeToMonoClass(type);
+    if (monoClass == nullptr)
+        return false;
+
+    return AddScriptComponentFromMonoClass(entity, monoClass, scriptPointer);
+}
+
+bool ScriptingCore::AddScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass, ScriptPointer scriptPointer)
+{
+    ScriptTypeInfo* typeInfo = ScriptParseRecursive(monoClass);
+
+    auto& scriptComponent = AddComponentS<ScriptComponent>(entity);
+    if (scriptComponent.HasScriptType(typeInfo))
+        // We can support multiple script instances of the same type later if needed, for now return false
+        return false;
+
+    scriptComponent.AddScript(scriptPointer, typeInfo);
+
+    return true;
+}
+
+bool ScriptingCore::HasScriptComponentFromType(EntityID entity, void* type)
+{
+    MonoClass* monoClass = TypeToMonoClass(type);
+    if (monoClass == nullptr)
+        return false;
+
+    return HasScriptComponentFromMonoClass(entity, monoClass);
+}
+
+bool ScriptingCore::HasScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass)
+{
+    ScriptTypeInfo* typeInfo;
+    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
+    {
+        return false;
+    }
+    else
+    {
+        typeInfo = scriptsInfo[monoClass];
+    }
+
+    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
+        return false;
+
+    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
+
+    return scriptComponent.HasScriptType(typeInfo);
+}
+
+ScriptPointer ScriptingCore::GetScriptComponentFromType(EntityID entity, void* type, bool& success)
+{
+    MonoClass* monoClass = TypeToMonoClass(type);
+    if (monoClass == nullptr)
+        return 0;
+
+    return GetScriptComponentFromMonoClass(entity, monoClass, success);
+}
+
+ScriptPointer ScriptingCore::GetScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
+{
+    success = false;
+    ScriptTypeInfo* typeInfo;
+    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
+    {
+        return 0;
+    }
+    else
+    {
+        typeInfo = scriptsInfo[monoClass];
+    }
+
+    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
+        return 0;
+
+    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
+
+    if (!scriptComponent.HasScriptType(typeInfo))
+        return 0;
+
+    success = true;
+    return scriptComponent.GetScriptPointer(typeInfo);
+}
+
+bool ScriptingCore::RemoveScriptComponentFromType(EntityID entity, void* type)
+{
+    MonoClass* monoClass = TypeToMonoClass(type);
+    if (monoClass == nullptr)
+        return false;
+
+    return RemoveScriptComponentFromMonoClass(entity, monoClass);
+}
+
+bool ScriptingCore::RemoveScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass)
+{
+    ScriptTypeInfo* typeInfo;
+    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
+    {
+        return false;
+    }
+    else
+    {
+        typeInfo = scriptsInfo[monoClass];
+    }
+
+    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
+        return false;
+
+    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
+    if (!scriptComponent.HasScriptType(typeInfo))
+        return false;
+
+    scriptComponent.RemoveScript(typeInfo);
+    if (scriptComponent.Scripts.empty())
+        entitiesRegistry->RemoveComponent<ScriptComponent>(entity);
+
+    return true;
+}
+
+bool ScriptingCore::ScriptComponentPointersFromType(void* type, std::vector<ScriptPointer>& result)
+{
+    MonoClass* monoClass = TypeToMonoClass(type);
+    if (monoClass == nullptr)
+        return false;
+
+    ScriptComponentPointersFromMonoClass(monoClass, result);
+
+    return true;
+}
+
+void ScriptingCore::ScriptComponentPointersFromMonoClass(MonoClass* monoClass, std::vector<ScriptPointer>& result)
+{
+    ScriptTypeInfo* typeInfo;
+    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
+        return;
+    typeInfo = scriptsInfo[monoClass];
+
+    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto iterator = entitiesRegistry->GetComponentIterator<ScriptComponent>();
+    for (auto& script : iterator)
+    {
+        if (script.HasScriptType(typeInfo))
+            result.push_back(script.GetScriptPointer(typeInfo));
+    }
+}
+
+MonoClass* ScriptingCore::TypeToMonoClass(void* type)
+{
+    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
+    if (monoType == nullptr)
+    {
+        Log::LogError("Error getting mono type");
+        return nullptr;
+    }
+
+    MonoClass* monoClass = mono_class_from_mono_type(monoType);
+    if (monoClass == nullptr)
+    {
+        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
+        return nullptr;
+    }
+
+    return monoClass;
+}
+
+ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
+{
+    if (scriptsInfo.find(monoClass) != scriptsInfo.end())
+        return scriptsInfo[monoClass];
+
+    auto mask = (ScriptEventTypes::ScriptEventType)0;
+
+    MonoClass* parentClass = mono_class_get_parent(monoClass);
+    if (parentClass != nullptr && parentClass != baseScriptClass)
+        mask = mask | ScriptParseRecursive(parentClass)->Mask;
+
+    for (auto desc : eventMethodsDescriptions)
+    {
+        auto method = mono_method_desc_search_in_class(desc.second, monoClass);
+        if (method != nullptr)
+            mask = mask | desc.first;
+    }
+
+    auto typeInfo = new ScriptTypeInfo();
+    typeInfo->Mask = mask;
+    scriptsInfo[monoClass] = typeInfo;
+
+    return typeInfo;
 }
 
 MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
@@ -565,234 +713,4 @@ void ScriptingCore::FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t
     {
         outArray.push_back(mono_array_get(inArray, uint32_t, i));
     }
-}
-
-bool ScriptingCore::AddScriptComponentFromType(EntityID entity, ScriptPointer scriptPointer, void* type)
-{
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type");
-        return false;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
-    if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return false;
-    }
-
-    return AddScriptComponentFromMonoClass(entity, scriptPointer, monoClass);
-}
-
-bool ScriptingCore::AddScriptComponentFromMonoClass(EntityID entity, ScriptPointer scriptPointer, MonoClass* monoClass)
-{
-    ScriptTypeInfo* typeInfo = ScriptParseRecursive(monoClass);
-
-    auto& scriptComponent = AddComponentS<ScriptComponent>(entity);
-    if (scriptComponent.HasScriptType(typeInfo))
-        // We can support multiple script instances of same type later if neede, for now return false
-        return false;
-
-    scriptComponent.AddScript(scriptPointer, typeInfo);
-
-    return true;
-}
-
-bool ScriptingCore::HasScriptComponentFromType(EntityID entity, void* type)
-{
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type");
-        return false;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
-    if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return false;
-    }
-
-    return HasScriptComponentFromMonoClass(entity, monoClass);
-}
-
-bool ScriptingCore::HasScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass)
-{
-    ScriptTypeInfo* typeInfo;
-    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
-    {
-        return false;
-    }
-    else
-    {
-        typeInfo = scriptsInfo[monoClass];
-    }
-
-    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
-        return false;
-
-    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
-
-    return scriptComponent.HasScriptType(typeInfo);
-}
-
-ScriptPointer ScriptingCore::GetScriptComponentFromType(EntityID entity, void* type, bool& success)
-{
-    success = false;
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type");
-        return 0;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
-    if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return 0;
-    }
-
-    return GetScriptComponentFromMonoClass(entity, monoClass, success);
-}
-
-ScriptPointer ScriptingCore::GetScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
-{
-    success = false;
-    ScriptTypeInfo* typeInfo;
-    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
-    {
-        return 0;
-    }
-    else
-    {
-        typeInfo = scriptsInfo[monoClass];
-    }
-
-    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
-        return 0;
-
-    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
-
-    if (!scriptComponent.HasScriptType(typeInfo))
-        return 0;
-
-    success = true;
-    return scriptComponent.GetScriptPointer(typeInfo);
-}
-
-bool ScriptingCore::RemoveScriptComponentFromType(EntityID entity, void* type)
-{
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type");
-        return false;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
-    if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return false;
-    }
-
-    return RemoveScriptComponentFromMonoClass(entity, monoClass);
-}
-
-bool ScriptingCore::RemoveScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass)
-{
-    ScriptTypeInfo* typeInfo;
-    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
-    {
-        return false;
-    }
-    else
-    {
-        typeInfo = scriptsInfo[monoClass];
-    }
-
-    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
-        return false;
-
-    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
-    if (!scriptComponent.HasScriptType(typeInfo))
-        return false;
-
-    scriptComponent.RemoveScript(typeInfo);
-    if (scriptComponent.Scripts.empty())
-        entitiesRegistry->RemoveComponent<ScriptComponent>(entity);
-
-    return true;
-}
-
-bool ScriptingCore::ScriptComponentPointersFromType(void* type, std::vector<ScriptPointer>& result)
-{
-    MonoType* monoType = mono_reflection_type_get_type((MonoReflectionType*)type);
-    if (monoType == nullptr)
-    {
-        Log::LogError("Error getting mono type");
-        return false;
-    }
-
-    MonoClass* monoClass = mono_class_from_mono_type(monoType);
-    if (monoClass == nullptr)
-    {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
-        return false;
-    }
-
-    ScriptComponentPointersFromMonoClass(monoClass, result);
-
-    return true;
-}
-
-void ScriptingCore::ScriptComponentPointersFromMonoClass(MonoClass* monoClass, std::vector<ScriptPointer>& result)
-{
-    ScriptTypeInfo* typeInfo;
-    if (scriptsInfo.find(monoClass) == scriptsInfo.end())
-        return;
-    typeInfo = scriptsInfo[monoClass];
-
-    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto iterator = entitiesRegistry->GetComponentIterator<ScriptComponent>();
-    for (auto& script : iterator)
-    {
-        if (script.HasScriptType(typeInfo))
-            result.push_back(script.GetScriptPointer(typeInfo));
-    }
-}
-
-ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
-{
-    if (scriptsInfo.find(monoClass) != scriptsInfo.end())
-        return scriptsInfo[monoClass];
-
-    auto mask = (ScriptEventTypes::ScriptEventType)0;
-
-    MonoClass* parentClass = mono_class_get_parent(monoClass);
-    if (parentClass != nullptr && parentClass != baseScriptClass)
-        mask = mask | ScriptParseRecursive(parentClass)->Mask;
-
-    for (auto desc : eventMethodsDescriptions)
-    {
-        auto method = mono_method_desc_search_in_class(desc.second, monoClass);
-        if (method != nullptr)
-            mask = mask | desc.first;
-    }
-
-    auto typeInfo = new ScriptTypeInfo();
-    typeInfo->Mask = mask;
-    scriptsInfo[monoClass] = typeInfo;
-
-    return typeInfo;
 }

@@ -4,6 +4,8 @@
 #include "BoxCollider.h"
 #include "CircleCollider.h"
 
+#define SHAPE_EPS 0.00001f
+
 struct RigidBody::RigidBodyInfo
 {
     b2Body* Body;

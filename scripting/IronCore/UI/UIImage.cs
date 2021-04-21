@@ -13,7 +13,7 @@ namespace Iron
         public Sprite Sprite
         {
             get => new Sprite(GetSprite_Internal(Entity.ID));
-            set => SetSprite_Internal(Entity.ID, value?.ID ?? 0);
+            set => SetSprite_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

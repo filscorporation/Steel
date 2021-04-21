@@ -7,7 +7,7 @@ void Sprite::SetAsSpriteSheet(int tileWidth, int tileHeight)
     TileHeight = tileHeight;
 }
 
-void Sprite::GetTexCoord(int tileIndex, glm::vec2* texCoords) const
+void Sprite::GetTexCoord(uint32_t tileIndex, glm::vec2* texCoords) const
 {
     if (!IsSpriteSheet)
     {

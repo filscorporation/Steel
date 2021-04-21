@@ -2,9 +2,9 @@
 
 #include <vector>
 
+#include "ScriptingCommon.h"
 #include "../EntityComponentSystem/Component.h"
 #include "../Physics/Collision.h"
-#include "ScriptingCore.h"
 
 struct Collision;
 

@@ -45,7 +45,13 @@ bool EntityInternalCalls::Entity_AddComponent(EntityID id, void* type)
 
 bool EntityInternalCalls::Entity_AddScriptComponent(EntityID id, void* type, ScriptPointer scriptPointer)
 {
-    return ScriptingCore::AddScriptComponentFromType(id, scriptPointer, type);
+    if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
+    {
+        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        return false;
+    }
+
+    return ScriptingCore::AddScriptComponentFromType(id, type, scriptPointer);
 }
 
 bool EntityInternalCalls::Entity_HasComponent(EntityID id, void* type)
@@ -66,11 +72,23 @@ bool EntityInternalCalls::Entity_HasComponent(EntityID id, void* type)
 
 bool EntityInternalCalls::Entity_HasScriptComponent(EntityID id, void* type)
 {
+    if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
+    {
+        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        return false;
+    }
+
     return ScriptingCore::HasScriptComponentFromType(id, type);
 }
 
 ScriptPointer EntityInternalCalls::Entity_GetScriptComponent(EntityID id, void* type)
 {
+    if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
+    {
+        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        return false;
+    }
+
     bool success = false;
     return ScriptingCore::GetScriptComponentFromType(id, type, success);
 }
@@ -91,8 +109,14 @@ bool EntityInternalCalls::Entity_RemoveComponent(EntityID id, void* type)
     return result;
 }
 
-ScriptPointer EntityInternalCalls::Entity_RemoveScriptComponent(EntityID id, void* type)
+bool EntityInternalCalls::Entity_RemoveScriptComponent(EntityID id, void* type)
 {
+    if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
+    {
+        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        return false;
+    }
+
     return ScriptingCore::RemoveScriptComponentFromType(id, type);
 }
 

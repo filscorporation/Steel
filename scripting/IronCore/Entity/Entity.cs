@@ -163,13 +163,9 @@ namespace Iron
         /// <remarks>You should not remove <see cref="Transformation"/> and <see cref="RectTransformation"/> components</remarks>
         public bool RemoveComponent<T>() where T : Component
         {
-            if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
-            {
-                IntPtr scriptPointer = RemoveScriptComponent_Internal(ID, typeof(T));
-                return scriptPointer != IntPtr.Zero;
-            }
-
-            return RemoveComponent_Internal(ID, typeof(T));
+            return typeof(T).IsSubclassOf(typeof(ScriptComponent))
+                ? RemoveScriptComponent_Internal(ID, typeof(T))
+                : RemoveComponent_Internal(ID, typeof(T));
         }
 
         internal static T GetInternalComponentByEntityID<T>(uint entityID) where T : Component, new()
@@ -301,7 +297,7 @@ namespace Iron
         private static extern bool RemoveComponent_Internal(uint entityID, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern IntPtr RemoveScriptComponent_Internal(uint entityID, Type type);
+        private static extern bool RemoveScriptComponent_Internal(uint entityID, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string GetName_Internal(uint entityID);

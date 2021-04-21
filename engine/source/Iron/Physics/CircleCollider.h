@@ -11,7 +11,7 @@ public:
     explicit CircleCollider(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
     void SetSizeAutomatically();
-    float GetRadius();
+    float GetRadius() const;
     void SetRadius(float radius);
 
 private:

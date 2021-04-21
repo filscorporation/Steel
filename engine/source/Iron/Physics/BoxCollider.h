@@ -11,7 +11,7 @@ public:
     explicit BoxCollider(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
     void SetSizeAutomatically();
-    glm::vec2 GetSize();
+    glm::vec2 GetSize() const;
     void SetSize(glm::vec2 size);
 
 private:

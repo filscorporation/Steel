@@ -7,7 +7,7 @@ void UIImage::UpdateRenderer(RectTransformation& transformation)
     if (_image == nullptr)
         return;
 
-    auto& qr = AddComponentS<UIQuadRenderer>(Owner);
+    auto& qr = GetComponentS<UIQuadRenderer>(Owner);
 
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     for (int i = 0; i < 4; ++i)
@@ -23,7 +23,8 @@ void UIImage::SetImage(Sprite* image)
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (_image == nullptr)
     {
-        registry->RemoveComponent<UIQuadRenderer>(Owner);
+        if (!wasNull)
+            registry->RemoveComponent<UIQuadRenderer>(Owner);
     }
     else
     {

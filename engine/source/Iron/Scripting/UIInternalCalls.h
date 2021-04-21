@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 
-#include "ScriptingCore.h"
 #include "../EntityComponentSystem/Entity.h"
 #include "../Resources/ResourceID.h"
 #include "../UI/UIElements/UIText.h"

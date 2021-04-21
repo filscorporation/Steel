@@ -17,7 +17,7 @@ namespace EntityInternalCalls
     bool Entity_HasScriptComponent(EntityID id, void* type);
     ScriptPointer Entity_GetScriptComponent(EntityID id, void* type);
     bool Entity_RemoveComponent(EntityID id, void* type);
-    ScriptPointer Entity_RemoveScriptComponent(EntityID id, void* type);
+    bool Entity_RemoveScriptComponent(EntityID id, void* type);
 
     bool Entity_GetIsActive(EntityID entityID);
     bool Entity_GetIsActiveSelf(EntityID entityID);

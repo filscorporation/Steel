@@ -1,4 +1,5 @@
 #include "ScriptComponent.h"
+#include "ScriptingCore.h"
 
 bool ScriptComponent::HasScriptType(ScriptTypeInfo* typeInfo)
 {

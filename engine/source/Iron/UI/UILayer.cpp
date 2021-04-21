@@ -79,7 +79,7 @@ void UILayer::Draw()
             if (transformationDirty && buttonAccessor.Has(hierarchyNode.Owner))
                 buttonAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt);
             if (textAccessor.Has(hierarchyNode.Owner))
-                // Possible place for optimization - entering component event if transformation not dirty
+                // Possible place for optimization - entering component even if transformation not dirty
                 textAccessor.Get(hierarchyNode.Owner).Rebuild(rt, transformationDirty);
         }
     }

@@ -29,7 +29,7 @@ namespace Iron
         /// Play audio track
         /// </summary>
         /// <param name="audioTrack">Track to play</param>
-        public void Play(AudioTrack audioTrack) => Play_Internal(Entity.ID, audioTrack?.ID ?? 0);
+        public void Play(AudioTrack audioTrack) => Play_Internal(Entity.ID, audioTrack?.ID ?? Resource.NULL_RESOURCE_ID);
 
         /// <summary>
         /// Stops playing audio track

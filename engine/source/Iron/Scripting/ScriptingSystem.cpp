@@ -28,7 +28,7 @@ MonoImage* customAssemblyImage;
 
 bool ScriptingSystem::isInitialized = false;
 
-inline bool FileExists (const char* fileName)
+inline bool FileExists(const char* fileName)
 {
     if (FILE *file = fopen(fileName, "r"))
     {

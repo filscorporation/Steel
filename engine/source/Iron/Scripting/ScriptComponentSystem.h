@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../EntityComponentSystem/ComponentSystem.h"
+#include "ScriptingCommon.h"
 #include "ScriptComponent.h"
 
 class ScriptComponentSystem : public ComponentSystem<ScriptComponent>

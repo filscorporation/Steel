@@ -16,18 +16,25 @@ void CircleCollider::SetSizeAutomatically()
     }
     else
         size = GetComponentS<Transformation>(Owner).GetScale();
-    info->CircleShape->m_p = b2Vec2(0.0f, 0.0f);
-    _radius = (size.x > size.y ? size.x : size.y) * 0.5f;
-    info->CircleShape->m_radius = _radius;
+
+    if (std::abs(size.x) > SHAPE_EPS && std::abs(size.y) > SHAPE_EPS)
+    {
+        info->CircleShape->m_p = b2Vec2(0.0f, 0.0f);
+        _radius = (size.x > size.y ? size.x : size.y) * 0.5f;
+        info->CircleShape->m_radius = _radius;
+    }
 }
 
-float CircleCollider::GetRadius()
+float CircleCollider::GetRadius() const
 {
     return _radius;
 }
 
 void CircleCollider::SetRadius(float radius)
 {
-    _radius = radius;
-    info->CircleShape->m_radius = _radius;
+    if (std::abs(_radius) > SHAPE_EPS)
+    {
+        _radius = radius;
+        info->CircleShape->m_radius = _radius;
+    }
 }
