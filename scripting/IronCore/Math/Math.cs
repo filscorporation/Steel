@@ -69,6 +69,23 @@
         }
 
         /// <summary>
+        /// Clamps value between min and max
+        /// </summary>
+        public static float Clamp(float a, float min, float max)
+        {
+            if (max <= min) return min;
+            return a <= min ? min : a >= max ? max : a;
+        }
+
+        /// <summary>
+        /// Clamps value between 0 and 1
+        /// </summary>
+        public static float Clamp01(float a)
+        {
+            return a <= 0 ? 0 : a >= 1 ? 1 : a;
+        }
+
+        /// <summary>
         /// Cosine of angle in radians
         /// </summary>
         public static float Cos(float angle)
@@ -106,6 +123,22 @@
         public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
         {
             return new Vector3(Lerp(a.X, b.X, t), Lerp(a.Y, b.Y, t), Lerp(a.Z, b.Z, t));
+        }
+
+        /// <summary>
+        /// Minimum value between a and b
+        /// </summary>
+        public static float Min(float a, float b)
+        {
+            return a <= b ? a : b;
+        }
+
+        /// <summary>
+        /// Maximum value between a and b
+        /// </summary>
+        public static float Max(float a, float b)
+        {
+            return a <= b ? b : a;
         }
         
         /// <summary>

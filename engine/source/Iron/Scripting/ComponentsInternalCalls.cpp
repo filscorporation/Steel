@@ -288,6 +288,20 @@ void ComponentsInternalCalls::Camera_ScreenToWorldPoint(EntityID entityID, glm::
     worldPoint->y = result.y;
 }
 
+RigidBodyTypes::RigidBodyType ComponentsInternalCalls::RigidBody_GetRigidBodyType(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, (RigidBodyTypes::RigidBodyType)0)
+
+    return component.GetType();
+}
+
+void ComponentsInternalCalls::RigidBody_SetRigidBodyType(EntityID entityID, RigidBodyTypes::RigidBodyType type)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetType(type);
+}
+
 float ComponentsInternalCalls::RigidBody_GetMass(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(RigidBody, 0.0f)
@@ -302,18 +316,173 @@ void ComponentsInternalCalls::RigidBody_SetMass(EntityID entityID, float mass)
     component.SetMass(mass);
 }
 
-RigidBodyTypes::RigidBodyType ComponentsInternalCalls::RigidBody_GetRigidBodyType(EntityID entityID)
-{
-    GET_COMPONENT_OR_RETURN(RigidBody, (RigidBodyTypes::RigidBodyType)0)
-
-    return component.GetType();
-}
-
-void ComponentsInternalCalls::RigidBody_SetRigidBodyType(EntityID entityID, RigidBodyTypes::RigidBodyType type)
+void ComponentsInternalCalls::RigidBody_GetVelocity(EntityID entityID, glm::vec2* velocity)
 {
     GET_COMPONENT_OR_RETURN(RigidBody, )
 
-    component.SetType(type);
+    velocity->x = component.GetVelocity().x;
+    velocity->y = component.GetVelocity().y;
+}
+
+void ComponentsInternalCalls::RigidBody_SetVelocity(EntityID entityID, glm::vec2* velocity)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetVelocity(glm::vec2(velocity->x, velocity->y));
+}
+
+float ComponentsInternalCalls::RigidBody_GetAngularVelocity(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, 0.0f)
+
+    return component.GetAngularVelocity();
+}
+
+void ComponentsInternalCalls::RigidBody_SetAngularVelocity(EntityID entityID, float velocity)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetAngularVelocity(velocity);
+}
+
+float ComponentsInternalCalls::RigidBody_GetGravityScale(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, 0.0f)
+
+    return component.GetGravityScale();
+}
+
+void ComponentsInternalCalls::RigidBody_SetGravityScale(EntityID entityID, float gravityScale)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetGravityScale(gravityScale);
+}
+
+float ComponentsInternalCalls::RigidBody_GetFriction(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, 0.0f)
+
+    return component.GetFriction();
+}
+
+void ComponentsInternalCalls::RigidBody_SetFriction(EntityID entityID, float friction)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetFriction(friction);
+}
+
+float ComponentsInternalCalls::RigidBody_GetRestitution(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, 0.0f)
+
+    return component.GetRestitution();
+}
+
+void ComponentsInternalCalls::RigidBody_SetRestitution(EntityID entityID, float restitution)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetRestitution(restitution);
+}
+
+float ComponentsInternalCalls::RigidBody_GetLinearDamping(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, 0.0f)
+
+    return component.GetLinearDamping();
+}
+
+void ComponentsInternalCalls::RigidBody_SetLinearDamping(EntityID entityID, float damping)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetLinearDamping(damping);
+}
+
+float ComponentsInternalCalls::RigidBody_GetAngularDamping(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, 0.0f)
+
+    return component.GetAngularDamping();
+}
+
+void ComponentsInternalCalls::RigidBody_SetAngularDamping(EntityID entityID, float damping)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetAngularDamping(damping);
+}
+
+bool ComponentsInternalCalls::RigidBody_GetFixedRotation(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, false)
+
+    return component.GetIsFixedRotation();
+}
+
+void ComponentsInternalCalls::RigidBody_SetFixedRotation(EntityID entityID, float isFixed)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetIsFixedRotation(isFixed);
+}
+
+bool ComponentsInternalCalls::RigidBody_GetUseContinuousCollisionDetection(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, false)
+
+    return component.GetUseContinuousCollisionDetection();
+}
+
+void ComponentsInternalCalls::RigidBody_SetUseContinuousCollisionDetection(EntityID entityID, bool useCCD)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.SetUseContinuousCollisionDetection(useCCD);
+}
+
+void ComponentsInternalCalls::RigidBody_ApplyForce(EntityID entityID, glm::vec2* force)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.ApplyForce(*force);
+}
+
+void ComponentsInternalCalls::RigidBody_ApplyForce2(EntityID entityID, glm::vec2* force, glm::vec2* point)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.ApplyForce(*force, *point);
+}
+
+void ComponentsInternalCalls::RigidBody_ApplyTorque(EntityID entityID, float torque)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.ApplyTorque(torque);
+}
+
+void ComponentsInternalCalls::RigidBody_ApplyLinearImpulse(EntityID entityID, glm::vec2* impulse)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.ApplyLinearImpulse(*impulse);
+}
+
+void ComponentsInternalCalls::RigidBody_ApplyLinearImpulse2(EntityID entityID, glm::vec2* impulse, glm::vec2* point)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.ApplyLinearImpulse(*impulse, *point);
+}
+
+void ComponentsInternalCalls::RigidBody_ApplyAngularImpulse(EntityID entityID, float impulse)
+{
+    GET_COMPONENT_OR_RETURN(RigidBody, )
+
+    component.ApplyAngularImpulse(impulse);
 }
 
 void ComponentsInternalCalls::BoxCollider_GetSize(EntityID entityID, glm::vec2* size)

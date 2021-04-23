@@ -131,10 +131,35 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Camera::WorldToScreenPoint_Internal", (void*)ComponentsInternalCalls::Camera_WorldToScreenPoint);
     mono_add_internal_call("Iron.Camera::ScreenToWorldPoint_Internal", (void*)ComponentsInternalCalls::Camera_ScreenToWorldPoint);
 
-    mono_add_internal_call("Iron.RigidBody::GetMass_Internal", (void*)ComponentsInternalCalls::RigidBody_GetMass);
-    mono_add_internal_call("Iron.RigidBody::SetMass_Internal", (void*)ComponentsInternalCalls::RigidBody_SetMass);
     mono_add_internal_call("Iron.RigidBody::GetRigidBodyType_Internal", (void*)ComponentsInternalCalls::RigidBody_GetRigidBodyType);
     mono_add_internal_call("Iron.RigidBody::SetRigidBodyType_Internal", (void*)ComponentsInternalCalls::RigidBody_SetRigidBodyType);
+    mono_add_internal_call("Iron.RigidBody::GetMass_Internal", (void*)ComponentsInternalCalls::RigidBody_GetMass);
+    mono_add_internal_call("Iron.RigidBody::SetMass_Internal", (void*)ComponentsInternalCalls::RigidBody_SetMass);
+    mono_add_internal_call("Iron.RigidBody::GetVelocity_Internal", (void*)ComponentsInternalCalls::RigidBody_GetVelocity);
+    mono_add_internal_call("Iron.RigidBody::SetVelocity_Internal", (void*)ComponentsInternalCalls::RigidBody_SetVelocity);
+    mono_add_internal_call("Iron.RigidBody::GetAngularVelocity_Internal", (void*)ComponentsInternalCalls::RigidBody_GetAngularVelocity);
+    mono_add_internal_call("Iron.RigidBody::SetAngularVelocity_Internal", (void*)ComponentsInternalCalls::RigidBody_SetAngularVelocity);
+    mono_add_internal_call("Iron.RigidBody::GetGravityScale_Internal", (void*)ComponentsInternalCalls::RigidBody_GetGravityScale);
+    mono_add_internal_call("Iron.RigidBody::SetGravityScale_Internal", (void*)ComponentsInternalCalls::RigidBody_SetGravityScale);
+    mono_add_internal_call("Iron.RigidBody::GetFriction_Internal", (void*)ComponentsInternalCalls::RigidBody_GetFriction);
+    mono_add_internal_call("Iron.RigidBody::SetFriction_Internal", (void*)ComponentsInternalCalls::RigidBody_SetFriction);
+    mono_add_internal_call("Iron.RigidBody::GetRestitution_Internal", (void*)ComponentsInternalCalls::RigidBody_GetRestitution);
+    mono_add_internal_call("Iron.RigidBody::SetRestitution_Internal", (void*)ComponentsInternalCalls::RigidBody_SetRestitution);
+    mono_add_internal_call("Iron.RigidBody::GetLinearDamping_Internal", (void*)ComponentsInternalCalls::RigidBody_GetLinearDamping);
+    mono_add_internal_call("Iron.RigidBody::SetLinearDamping_Internal", (void*)ComponentsInternalCalls::RigidBody_SetLinearDamping);
+    mono_add_internal_call("Iron.RigidBody::GetAngularDamping_Internal", (void*)ComponentsInternalCalls::RigidBody_GetAngularDamping);
+    mono_add_internal_call("Iron.RigidBody::SetAngularDamping_Internal", (void*)ComponentsInternalCalls::RigidBody_SetAngularDamping);
+    mono_add_internal_call("Iron.RigidBody::GetFixedRotation_Internal", (void*)ComponentsInternalCalls::RigidBody_GetFixedRotation);
+    mono_add_internal_call("Iron.RigidBody::SetFixedRotation_Internal", (void*)ComponentsInternalCalls::RigidBody_SetFixedRotation);
+    mono_add_internal_call("Iron.RigidBody::GetUseContinuousCollisionDetection_Internal", (void*)ComponentsInternalCalls::RigidBody_GetUseContinuousCollisionDetection);
+    mono_add_internal_call("Iron.RigidBody::SetUseContinuousCollisionDetection_Internal", (void*)ComponentsInternalCalls::RigidBody_SetUseContinuousCollisionDetection);
+    mono_add_internal_call("Iron.RigidBody::ApplyForce_Internal", (void*)ComponentsInternalCalls::RigidBody_ApplyForce);
+    mono_add_internal_call("Iron.RigidBody::ApplyForce_Internal2", (void*)ComponentsInternalCalls::RigidBody_ApplyForce2);
+    mono_add_internal_call("Iron.RigidBody::ApplyTorque_Internal", (void*)ComponentsInternalCalls::RigidBody_ApplyTorque);
+    mono_add_internal_call("Iron.RigidBody::ApplyLinearImpulse_Internal", (void*)ComponentsInternalCalls::RigidBody_ApplyLinearImpulse);
+    mono_add_internal_call("Iron.RigidBody::ApplyLinearImpulse_Internal2", (void*)ComponentsInternalCalls::RigidBody_ApplyLinearImpulse2);
+    mono_add_internal_call("Iron.RigidBody::ApplyAngularImpulse_Internal", (void*)ComponentsInternalCalls::RigidBody_ApplyAngularImpulse);
+
     mono_add_internal_call("Iron.BoxCollider::GetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_GetSize);
     mono_add_internal_call("Iron.BoxCollider::SetSize_Internal", (void*)ComponentsInternalCalls::BoxCollider_SetSize);
     mono_add_internal_call("Iron.CircleCollider::GetRadius_Internal", (void*)ComponentsInternalCalls::CircleCollider_GetRadius);

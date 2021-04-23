@@ -214,7 +214,7 @@ void UIText::SetText(const std::string& text)
 
     // Save how many letters changed (to not rebuild text when one last char changed)
     _lettersChangedCount = letters.size();
-    for (uint32_t i = 0; i < std::min(text.size(), letters.size()); ++i)
+    for (uint32_t i = _lettersChangedCount; i < std::min(text.size(), letters.size()); ++i)
     {
         if (text[i] == _text[i])
             _lettersChangedCount--;

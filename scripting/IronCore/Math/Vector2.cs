@@ -46,6 +46,22 @@
         {
             return new Vector2(X, y);
         }
+
+        /// <summary>
+        /// Vectors length (magnitude)
+        /// </summary>
+        public float Magnitude()
+        {
+            return Math.Sqrt(X * X + Y * Y);
+        }
+
+        /// <summary>
+        /// Normalized vector (with magnitude 1)
+        /// </summary>
+        public Vector2 Normalize()
+        {
+            return this / Magnitude();
+        }
         
         public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.X + b.X, a.Y + b.Y);
         public static Vector2 operator -(Vector2 a, Vector2 b) => new Vector2(a.X - b.X, a.Y - b.Y);

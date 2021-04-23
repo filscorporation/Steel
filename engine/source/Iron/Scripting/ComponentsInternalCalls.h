@@ -61,10 +61,35 @@ namespace ComponentsInternalCalls
     void Camera_ScreenToWorldPoint(EntityID entityID, glm::vec2* screenPoint, glm::vec2* worldPoint);
 
     // Physics
-    float RigidBody_GetMass(EntityID entityID);
-    void RigidBody_SetMass(EntityID entityID, float mass);
     RigidBodyTypes::RigidBodyType RigidBody_GetRigidBodyType(EntityID entityID);
     void RigidBody_SetRigidBodyType(EntityID entityID, RigidBodyTypes::RigidBodyType type);
+    float RigidBody_GetMass(EntityID entityID);
+    void RigidBody_SetMass(EntityID entityID, float mass);
+    void RigidBody_GetVelocity(EntityID entityID, glm::vec2* velocity);
+    void RigidBody_SetVelocity(EntityID entityID, glm::vec2* velocity);
+    float RigidBody_GetAngularVelocity(EntityID entityID);
+    void RigidBody_SetAngularVelocity(EntityID entityID, float velocity);
+    float RigidBody_GetGravityScale(EntityID entityID);
+    void RigidBody_SetGravityScale(EntityID entityID, float gravityScale);
+    float RigidBody_GetFriction(EntityID entityID);
+    void RigidBody_SetFriction(EntityID entityID, float friction);
+    float RigidBody_GetRestitution(EntityID entityID);
+    void RigidBody_SetRestitution(EntityID entityID, float restitution);
+    float RigidBody_GetLinearDamping(EntityID entityID);
+    void RigidBody_SetLinearDamping(EntityID entityID, float damping);
+    float RigidBody_GetAngularDamping(EntityID entityID);
+    void RigidBody_SetAngularDamping(EntityID entityID, float damping);
+    bool RigidBody_GetFixedRotation(EntityID entityID);
+    void RigidBody_SetFixedRotation(EntityID entityID, float isFixed);
+    bool RigidBody_GetUseContinuousCollisionDetection(EntityID entityID);
+    void RigidBody_SetUseContinuousCollisionDetection(EntityID entityID, bool useCCD);
+    void RigidBody_ApplyForce(EntityID entityID, glm::vec2* force);
+    void RigidBody_ApplyForce2(EntityID entityID, glm::vec2* force, glm::vec2* point);
+    void RigidBody_ApplyTorque(EntityID entityID, float torque);
+    void RigidBody_ApplyLinearImpulse(EntityID entityID, glm::vec2* impulse);
+    void RigidBody_ApplyLinearImpulse2(EntityID entityID, glm::vec2* impulse, glm::vec2* point);
+    void RigidBody_ApplyAngularImpulse(EntityID entityID, float impulse);
+
     void BoxCollider_GetSize(EntityID entityID, glm::vec2* size);
     void BoxCollider_SetSize(EntityID entityID, glm::vec2* size);
     float CircleCollider_GetRadius(EntityID entityID);

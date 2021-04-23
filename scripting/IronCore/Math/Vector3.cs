@@ -67,6 +67,22 @@
         {
             return new Vector3(X, Y, z);
         }
+
+        /// <summary>
+        /// Vectors length (magnitude)
+        /// </summary>
+        public float Magnitude()
+        {
+            return Math.Sqrt(X * X + Y * Y + Z * Z);
+        }
+
+        /// <summary>
+        /// Normalized vector (with magnitude 1)
+        /// </summary>
+        public Vector3 Normalize()
+        {
+            return this / Magnitude();
+        }
         
         public static Vector3 operator +(Vector3 a, Vector3 b) => new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
         public static Vector3 operator -(Vector3 a, Vector3 b) => new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
