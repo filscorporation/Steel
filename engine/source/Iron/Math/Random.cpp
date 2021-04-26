@@ -1,10 +1,11 @@
+#include <iostream>
 #include "Random.h"
 
 std::mt19937 Random::randomEngine;
 
 void Random::Init()
 {
-    randomEngine.seed(std::random_device()());
+    randomEngine.seed(std::random_device{}());
 }
 
 uint64_t Random::NextUint()

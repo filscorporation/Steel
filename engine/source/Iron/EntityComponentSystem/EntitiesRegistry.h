@@ -286,7 +286,7 @@ public:
 
     void EntitySetActive(EntityID entityID, bool active, bool self)
     {
-        if (!EntityExists(entityID))
+        if (isCleared || !EntityExists(entityID))
             return;
 
         auto id = EntityIDGetID(entityID);

@@ -15,6 +15,7 @@
 #include "../Audio/AudioListener.h"
 #include "../Animation/Animator.h"
 #include "../Debug/Debug.h"
+#include "../Math/Random.h"
 #include "../Physics/Physics.h"
 #include "../Rendering/Renderer.h"
 #include "../Scripting/ScriptingSystem.h"
@@ -37,6 +38,7 @@ void Application::Init(ApplicationSettings settings)
 {
     Log::LogInfo("Running in " + GetRuntimePath());
 
+    Random::Init();
     Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen);
 
     resources = new ResourcesManager();

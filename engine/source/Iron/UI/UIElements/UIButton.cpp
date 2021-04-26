@@ -9,7 +9,7 @@
 
 bool UIButton::Update()
 {
-    transitionProgress += Time::DeltaTime();
+    transitionProgress += Time::UnscaledDeltaTime();
     float t = transitionProgress / _transitionsInfo.TransitionDuration;
     auto& uii = GetComponentS<UIQuadRenderer>(Owner);
     switch (_transitionsInfo.TransitionType)

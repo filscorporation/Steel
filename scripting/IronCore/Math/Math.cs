@@ -69,6 +69,14 @@
         }
 
         /// <summary>
+        /// Returns the smallest integral value greater than or equal to the specified number
+        /// </summary>
+        public static float Ceiling(float a)
+        {
+            return (float)System.Math.Ceiling(a);
+        }
+
+        /// <summary>
         /// Clamps value between min and max
         /// </summary>
         public static float Clamp(float a, float min, float max)
@@ -99,6 +107,14 @@
         public static float InverseLerp(float a, float b, float v)
         {
             return (v - a) / (b - a);
+        }
+
+        /// <summary>
+        /// Returns the largest integral value less than or equal to the specified number
+        /// </summary>
+        public static float Floor(float a)
+        {
+            return (float)System.Math.Floor(a);
         }
         
         /// <summary>
@@ -147,6 +163,14 @@
         public static float Pow(float a, float p)
         {
             return (float)System.Math.Pow(a, p);
+        }
+
+        /// <summary>
+        /// Returns closest integer number
+        /// </summary>
+        public static float Round(float a)
+        {
+            return (float)System.Math.Round(a);
         }
 
         /// <summary>

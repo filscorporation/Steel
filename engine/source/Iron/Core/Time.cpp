@@ -15,6 +15,11 @@ float Time::DeltaTime()
     return deltaTime * TimeScale;
 }
 
+float Time::UnscaledDeltaTime()
+{
+    return deltaTime;
+}
+
 uint64_t Time::FrameCount()
 {
     return frameCount;
@@ -22,7 +27,7 @@ uint64_t Time::FrameCount()
 
 float Time::FixedDeltaTime()
 {
-    return fixedUpdateDeltaTime;
+    return fixedUpdateDeltaTime * TimeScale;
 }
 
 void Time::Update()

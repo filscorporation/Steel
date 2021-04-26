@@ -238,7 +238,7 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
         if (std::abs(_anchorMin[i] - _anchorMax[i]) < TRANSFORM_EPS)
         {
             _realPosition[i] = parentPosition[i] + parentSize[i] * (_anchorMin[i] - 0.5f) + _anchoredPosition[i] + (_pivot[i] - 0.5f) * _size[i];
-            _realSize = _size;
+            _realSize[i] = _size[i];
         }
         else
         {

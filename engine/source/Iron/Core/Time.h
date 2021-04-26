@@ -6,6 +6,7 @@ class Time
 {
 public:
     static float DeltaTime();
+    static float UnscaledDeltaTime();
     static uint64_t FrameCount();
     static float FixedDeltaTime();
     // TODO: apply to sound
