@@ -5,6 +5,7 @@
 #include "../Core/Log.h"
 #include "../Core/Application.h"
 #include "../Scene/SceneHelper.h"
+#include "../UI/UIEventHandler.h"
 #include "../UI/UIElements/UIButton.h"
 #include "../UI/UIElements/UIText.h"
 
@@ -12,8 +13,9 @@ void UIInternalCalls::RectTransformation_GetAnchorMin(EntityID entityID, glm::ve
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    anchor->x = component.GetAnchorMin().x;
-    anchor->y = component.GetAnchorMin().y;
+    glm::vec2 result = component.GetAnchorMin();
+    anchor->x = result.x;
+    anchor->y = result.y;
 }
 
 void UIInternalCalls::RectTransformation_SetAnchorMin(EntityID entityID, glm::vec2* anchor)
@@ -27,8 +29,9 @@ void UIInternalCalls::RectTransformation_GetAnchorMax(EntityID entityID, glm::ve
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    anchor->x = component.GetAnchorMax().x;
-    anchor->y = component.GetAnchorMax().y;
+    glm::vec2 result = component.GetAnchorMax();
+    anchor->x = result.x;
+    anchor->y = result.y;
 }
 
 void UIInternalCalls::RectTransformation_SetAnchorMax(EntityID entityID, glm::vec2* anchor)
@@ -42,8 +45,9 @@ void UIInternalCalls::RectTransformation_GetAnchoredPosition(EntityID entityID, 
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    position->x = component.GetAnchoredPosition().x;
-    position->y = component.GetAnchoredPosition().y;
+    glm::vec2 result = component.GetAnchoredPosition();
+    position->x = result.x;
+    position->y = result.y;
 }
 
 void UIInternalCalls::RectTransformation_SetAnchoredPosition(EntityID entityID, glm::vec2* position)
@@ -57,8 +61,9 @@ void UIInternalCalls::RectTransformation_GetOffsetMin(EntityID entityID, glm::ve
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    offset->x = component.GetOffsetMin().x;
-    offset->y = component.GetOffsetMin().y;
+    glm::vec2 result = component.GetOffsetMin();
+    offset->x = result.x;
+    offset->y = result.y;
 }
 
 void UIInternalCalls::RectTransformation_SetOffsetMin(EntityID entityID, glm::vec2* offset)
@@ -72,8 +77,9 @@ void UIInternalCalls::RectTransformation_GetOffsetMax(EntityID entityID, glm::ve
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    offset->x = component.GetOffsetMax().x;
-    offset->y = component.GetOffsetMax().y;
+    glm::vec2 result = component.GetOffsetMin();
+    offset->x = result.x;
+    offset->y = result.y;
 }
 
 void UIInternalCalls::RectTransformation_SetOffsetMax(EntityID entityID, glm::vec2* offset)
@@ -87,8 +93,9 @@ void UIInternalCalls::RectTransformation_GetPivot(EntityID entityID, glm::vec2* 
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    pivot->x = component.GetPivot().x;
-    pivot->y = component.GetPivot().y;
+    glm::vec2 result = component.GetOffsetMin();
+    pivot->x = result.x;
+    pivot->y = result.y;
 }
 
 void UIInternalCalls::RectTransformation_SetPivot(EntityID entityID, glm::vec2* pivot)
@@ -102,8 +109,9 @@ void UIInternalCalls::RectTransformation_GetSize(EntityID entityID, glm::vec2* s
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    size->x = component.GetSize().x;
-    size->y = component.GetSize().y;
+    glm::vec2 result = component.GetOffsetMin();
+    size->x = result.x;
+    size->y = result.y;
 }
 
 void UIInternalCalls::RectTransformation_SetSize(EntityID entityID, glm::vec2* size)
@@ -154,6 +162,20 @@ void UIInternalCalls::UIImage_SetSprite(EntityID entityID, ResourceID spriteID)
     GET_COMPONENT_OR_RETURN(UIImage, )
 
     component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
+}
+
+bool UIInternalCalls::UIImage_GetConsumeEvents(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIEventHandler, 0)
+
+    return !component.IsTransparent;
+}
+
+void UIInternalCalls::UIImage_SetConsumeEvents(EntityID entityID, bool consume)
+{
+    GET_COMPONENT_OR_RETURN(UIEventHandler, )
+
+    component.IsTransparent = !consume;
 }
 
 ResourceID UIInternalCalls::UIButton_GetSprite(EntityID entityID)

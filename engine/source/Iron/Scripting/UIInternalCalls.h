@@ -33,6 +33,8 @@ namespace UIInternalCalls
     // UI image
     ResourceID UIImage_GetSprite(EntityID entityID);
     void UIImage_SetSprite(EntityID entityID, ResourceID spriteID);
+    bool UIImage_GetConsumeEvents(EntityID entityID);
+    void UIImage_SetConsumeEvents(EntityID entityID, bool consume);
 
     // UI button
     ResourceID UIButton_GetSprite(EntityID entityID);

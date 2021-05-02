@@ -166,6 +166,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
     if (extension != "aseprite")
     {
         Log::LogError("Error loading aseprite file: ." + extension + " files not supported");
+        return nullptr;
     }
 
     if (!AsepriteLoader::LoadAsepriteData(fullPath.c_str(), loopAll, *data))

@@ -19,7 +19,7 @@ namespace Iron
         /// Returns random integer
         /// </summary>
         /// <param name="min">Minimum inclusive</param>
-        /// <param name="max">Maximum exclusive</param>
+        /// <param name="max">Maximum inclusive</param>
         /// <returns>Random integer between min and max</returns>
         public static int NextInt(int min, int max) => NextInt_Internal(min, max);
 

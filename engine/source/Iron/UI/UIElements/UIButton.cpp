@@ -15,6 +15,7 @@ bool UIButton::Update()
     switch (_transitionsInfo.TransitionType)
     {
         case ButtonTransitionTypes::ColorShift:
+            _color = Math::Lerp(uii.Color, targetTransitionData.ToColor(), t);
             uii.Color = Math::Lerp(uii.Color, targetTransitionData.ToColor(), t);
             break;
         case ButtonTransitionTypes::SpriteChange:

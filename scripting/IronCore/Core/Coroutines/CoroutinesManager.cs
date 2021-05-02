@@ -28,6 +28,7 @@ namespace Iron
                     // it's just useful tool to delay some actions
                     if (!Entity.IsActiveByID(currentNode.Value.Owner) || !Process(currentNode.Value, deltaTime))
                     {
+                        currentNode.Value.IsDestroyed = true;
                         pair.Value.Remove(currentNode);
                         if (!pair.Value.Any())
                             toRemove.AddLast(pair.Key);

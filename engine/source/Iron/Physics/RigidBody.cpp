@@ -17,7 +17,7 @@ void RigidBody::SetDynamic()
     groundBodyDef.userData.pointer = (uintptr_t)Owner;
 
     info->Body = PhysicsCore::GetWorld()->CreateBody(&groundBodyDef);
-    _mass = info->Body->GetMass();
+    SetMassInner();
     _type = RigidBodyTypes::Dynamic;
 
     SetAutoFixture();
@@ -33,7 +33,7 @@ void RigidBody::SetStatic()
     groundBodyDef.userData.pointer = (uintptr_t)Owner;
 
     info->Body = PhysicsCore::GetWorld()->CreateBody(&groundBodyDef);
-    _mass = info->Body->GetMass();
+    SetMassInner();
     _type = RigidBodyTypes::Static;
 
     SetAutoFixture();
@@ -49,7 +49,7 @@ void RigidBody::SetKinematic()
     groundBodyDef.userData.pointer = (uintptr_t)Owner;
 
     info->Body = PhysicsCore::GetWorld()->CreateBody(&groundBodyDef);
-    _mass = info->Body->GetMass();
+    SetMassInner();
     _type = RigidBodyTypes::Kinematic;
 
     SetAutoFixture();
@@ -89,7 +89,7 @@ void RigidBody::SetAutoFixture()
         auto& bc = GetComponentS<BoxCollider>(Owner);
         b2FixtureDef fixtureDef;
         fixtureDef.shape = bc.info->BoxShape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = 1;
         fixtureDef.friction = _friction;
         fixtureDef.restitution = _restitution;
         info->Body->CreateFixture(&fixtureDef);
@@ -99,11 +99,13 @@ void RigidBody::SetAutoFixture()
         auto& cc = GetComponentS<CircleCollider>(Owner);
         b2FixtureDef fixtureDef;
         fixtureDef.shape = cc.info->CircleShape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = 1;
         fixtureDef.friction = _friction;
         fixtureDef.restitution = _restitution;
         info->Body->CreateFixture(&fixtureDef);
     }
+
+    SetMassInner();
 }
 
 float RigidBody::GetMass() const
@@ -114,9 +116,16 @@ float RigidBody::GetMass() const
 void RigidBody::SetMass(float mass)
 {
     _mass = mass;
+    if (_type != RigidBodyTypes::None)
+        SetMassInner();
+}
+
+void RigidBody::SetMassInner()
+{
     b2MassData massData;
     massData.mass = _mass;
     info->Body->SetMassData(&massData);
+    info->Body->ResetMassData();
     info->Body->SetAwake(true);
 }
 

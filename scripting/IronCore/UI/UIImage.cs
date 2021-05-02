@@ -16,10 +16,25 @@ namespace Iron
             set => SetSprite_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
         }
 
+        /// <summary>
+        /// Should this element consume UI events
+        /// </summary>
+        public bool ConsumeEvents
+        {
+            get => GetConsumeEvents_Internal(Entity.ID);
+            set => SetConsumeEvents_Internal(Entity.ID, value);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetSprite_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetSprite_Internal(uint entityID, uint spriteID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool GetConsumeEvents_Internal(uint entityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetConsumeEvents_Internal(uint entityID, bool consume);
     }
 }

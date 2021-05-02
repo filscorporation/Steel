@@ -93,10 +93,16 @@ void ScriptingCallsRegister::RegisterInternalCalls()
 
     mono_add_internal_call("Iron.Transformation::GetPosition_Internal", (void*)ComponentsInternalCalls::Transformation_GetPosition);
     mono_add_internal_call("Iron.Transformation::SetPosition_Internal", (void*)ComponentsInternalCalls::Transformation_SetPosition);
+    mono_add_internal_call("Iron.Transformation::GetLocalPosition_Internal", (void*)ComponentsInternalCalls::Transformation_GetLocalPosition);
+    mono_add_internal_call("Iron.Transformation::SetLocalPosition_Internal", (void*)ComponentsInternalCalls::Transformation_SetLocalPosition);
     mono_add_internal_call("Iron.Transformation::GetRotation_Internal", (void*)ComponentsInternalCalls::Transformation_GetRotation);
     mono_add_internal_call("Iron.Transformation::SetRotation_Internal", (void*)ComponentsInternalCalls::Transformation_SetRotation);
+    mono_add_internal_call("Iron.Transformation::GetLocalRotation_Internal", (void*)ComponentsInternalCalls::Transformation_GetLocalRotation);
+    mono_add_internal_call("Iron.Transformation::SetLocalRotation_Internal", (void*)ComponentsInternalCalls::Transformation_SetLocalRotation);
     mono_add_internal_call("Iron.Transformation::GetScale_Internal", (void*)ComponentsInternalCalls::Transformation_GetScale);
     mono_add_internal_call("Iron.Transformation::SetScale_Internal", (void*)ComponentsInternalCalls::Transformation_SetScale);
+    mono_add_internal_call("Iron.Transformation::GetLocalScale_Internal", (void*)ComponentsInternalCalls::Transformation_GetLocalScale);
+    mono_add_internal_call("Iron.Transformation::SetLocalScale_Internal", (void*)ComponentsInternalCalls::Transformation_SetLocalScale);
 
     mono_add_internal_call("Iron.AudioListener::GetVolume_Internal", (void*)ComponentsInternalCalls::AudioListener_GetVolume);
     mono_add_internal_call("Iron.AudioListener::SetVolume_Internal", (void*)ComponentsInternalCalls::AudioListener_SetVolume);
@@ -186,6 +192,8 @@ void ScriptingCallsRegister::RegisterInternalCalls()
 
     mono_add_internal_call("Iron.UIImage::GetSprite_Internal", (void*)UIInternalCalls::UIImage_GetSprite);
     mono_add_internal_call("Iron.UIImage::SetSprite_Internal", (void*)UIInternalCalls::UIImage_SetSprite);
+    mono_add_internal_call("Iron.UIImage::GetConsumeEvents_Internal", (void*)UIInternalCalls::UIImage_GetConsumeEvents);
+    mono_add_internal_call("Iron.UIImage::SetConsumeEvents_Internal", (void*)UIInternalCalls::UIImage_SetConsumeEvents);
 
     mono_add_internal_call("Iron.UIButton::GetSprite_Internal", (void*)UIInternalCalls::UIButton_GetSprite);
     mono_add_internal_call("Iron.UIButton::SetSprite_Internal", (void*)UIInternalCalls::UIButton_SetSprite);

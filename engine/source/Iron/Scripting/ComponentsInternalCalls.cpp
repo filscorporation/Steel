@@ -28,6 +28,20 @@ void ComponentsInternalCalls::Transformation_SetPosition(EntityID entityID, glm:
     component.SetPosition(position);
 }
 
+glm::vec3 ComponentsInternalCalls::Transformation_GetLocalPosition(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(Transformation, glm::vec3(0.0f))
+
+    return component.GetLocalPosition();
+}
+
+void ComponentsInternalCalls::Transformation_SetLocalPosition(EntityID entityID, glm::vec3 position)
+{
+    GET_COMPONENT_OR_RETURN(Transformation, )
+
+    component.SetLocalPosition(position);
+}
+
 glm::vec3 ComponentsInternalCalls::Transformation_GetRotation(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(Transformation, glm::vec3(0.0f))
@@ -42,6 +56,20 @@ void ComponentsInternalCalls::Transformation_SetRotation(EntityID entityID, glm:
     component.SetRotation(rotation);
 }
 
+glm::vec3 ComponentsInternalCalls::Transformation_GetLocalRotation(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(Transformation, glm::vec3(0.0f))
+
+    return component.GetLocalRotation();
+}
+
+void ComponentsInternalCalls::Transformation_SetLocalRotation(EntityID entityID, glm::vec3 rotation)
+{
+    GET_COMPONENT_OR_RETURN(Transformation, )
+
+    component.SetLocalRotation(rotation);
+}
+
 glm::vec3 ComponentsInternalCalls::Transformation_GetScale(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(Transformation, glm::vec3(0.0f))
@@ -54,6 +82,20 @@ void ComponentsInternalCalls::Transformation_SetScale(EntityID entityID, glm::ve
     GET_COMPONENT_OR_RETURN(Transformation, )
 
     component.SetScale(scale);
+}
+
+glm::vec3 ComponentsInternalCalls::Transformation_GetLocalScale(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(Transformation, glm::vec3(0.0f))
+
+    return component.GetLocalScale();
+}
+
+void ComponentsInternalCalls::Transformation_SetLocalScale(EntityID entityID, glm::vec3 scale)
+{
+    GET_COMPONENT_OR_RETURN(Transformation, )
+
+    component.SetLocalScale(scale);
 }
 
 EntityID ComponentsInternalCalls::HierarchyNode_GetParent(EntityID entityID)
@@ -320,8 +362,9 @@ void ComponentsInternalCalls::RigidBody_GetVelocity(EntityID entityID, glm::vec2
 {
     GET_COMPONENT_OR_RETURN(RigidBody, )
 
-    velocity->x = component.GetVelocity().x;
-    velocity->y = component.GetVelocity().y;
+    glm::vec2 result = component.GetVelocity();
+    velocity->x = result.x;
+    velocity->y = result.y;
 }
 
 void ComponentsInternalCalls::RigidBody_SetVelocity(EntityID entityID, glm::vec2* velocity)

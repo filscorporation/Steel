@@ -32,6 +32,7 @@ public:
 
     float GetMass() const;
     void SetMass(float mass);
+    void SetMassInner();
     glm::vec2 GetVelocity() const;
     void SetVelocity(glm::vec2 velocity);
     float GetAngularVelocity() const;

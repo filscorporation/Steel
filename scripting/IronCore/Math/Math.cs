@@ -86,6 +86,15 @@
         }
 
         /// <summary>
+        /// Clamps value between min and max
+        /// </summary>
+        public static int Clamp(int a, int min, int max)
+        {
+            if (max <= min) return min;
+            return a <= min ? min : a >= max ? max : a;
+        }
+
+        /// <summary>
         /// Clamps value between 0 and 1
         /// </summary>
         public static float Clamp01(float a)
@@ -150,9 +159,25 @@
         }
 
         /// <summary>
+        /// Minimum value between a and b
+        /// </summary>
+        public static int Min(int a, int b)
+        {
+            return a <= b ? a : b;
+        }
+
+        /// <summary>
         /// Maximum value between a and b
         /// </summary>
         public static float Max(float a, float b)
+        {
+            return a <= b ? b : a;
+        }
+
+        /// <summary>
+        /// Maximum value between a and b
+        /// </summary>
+        public static int Max(int a, int b)
         {
             return a <= b ? b : a;
         }

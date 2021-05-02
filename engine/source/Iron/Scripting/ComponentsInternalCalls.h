@@ -13,10 +13,16 @@ namespace ComponentsInternalCalls
     // Transformation
     glm::vec3 Transformation_GetPosition(EntityID entityID);
     void Transformation_SetPosition(EntityID entityID, glm::vec3 position);
+    glm::vec3 Transformation_GetLocalPosition(EntityID entityID);
+    void Transformation_SetLocalPosition(EntityID entityID, glm::vec3 position);
     glm::vec3 Transformation_GetRotation(EntityID entityID);
     void Transformation_SetRotation(EntityID entityID, glm::vec3 rotation);
+    glm::vec3 Transformation_GetLocalRotation(EntityID entityID);
+    void Transformation_SetLocalRotation(EntityID entityID, glm::vec3 rotation);
     glm::vec3 Transformation_GetScale(EntityID entityID);
     void Transformation_SetScale(EntityID entityID, glm::vec3 scale);
+    glm::vec3 Transformation_GetLocalScale(EntityID entityID);
+    void Transformation_SetLocalScale(EntityID entityID, glm::vec3 scale);
 
     // Hierarchy Node
     EntityID HierarchyNode_GetParent(EntityID entityID);
