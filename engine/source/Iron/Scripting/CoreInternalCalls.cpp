@@ -130,6 +130,26 @@ void CoreInternalCalls::Sprite_SetPixelsPerUnit(ResourceID spriteID, int pixelsP
         image->PixelsPerUnit = pixelsPerUnit;
 }
 
+void CoreInternalCalls::Sprite_GetPivot(EntityID spriteID, glm::vec2* pivot)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    if (image != nullptr)
+    {
+        pivot->x = image->Pivot.x;
+        pivot->y = image->Pivot.y;
+    }
+}
+
+void CoreInternalCalls::Sprite_SetPivot(EntityID spriteID, glm::vec2* pivot)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    if (image != nullptr)
+    {
+        image->Pivot.x = pivot->x;
+        image->Pivot.y = pivot->y;
+    }
+}
+
 ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, float length)
 {
     auto sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);

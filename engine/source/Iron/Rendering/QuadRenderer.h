@@ -29,4 +29,6 @@ public:
     RenderingQueue::RenderingQueue Queue = RenderingQueue::Opaque;
 
     void Render();
+    void SetDefaultQuad();
+    void SetDefaultQuad(glm::vec2 pivot);
 };

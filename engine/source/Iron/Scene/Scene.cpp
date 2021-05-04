@@ -135,7 +135,7 @@ void Scene::RefreshTransformation()
 {
     auto transformations = entitiesRegistry->GetComponentIterator<Transformation>();
     for (auto& transformation : transformations)
-        transformation.SetTransformationChanged(false);
+        transformation.RefreshTransformation();
 }
 
 void Scene::SortByDrawOrder()

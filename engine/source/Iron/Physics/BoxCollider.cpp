@@ -12,6 +12,7 @@ void BoxCollider::SetSizeAutomatically()
     if (HasComponentS<SpriteRenderer>(Owner))
     {
         auto& sr = GetComponentS<SpriteRenderer>(Owner);
+        // We can in theory use sprite's pivot as offset, but that seems unnecessary for the most cases
         size = sr.GetWorldSize();
     }
     else

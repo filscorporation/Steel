@@ -208,11 +208,10 @@ void Transformation::UpdateTransformation(ComponentAccessor<Transformation>& tra
                 glm::translate(glm::mat4(1.0f), _localPosition)
                 * glm::toMat4(glm::quat(_localRotation))
                 * glm::scale(glm::mat4(1.0f), _localScale);
-        _position = _localPosition;
 
         auto& parentMatrix = parentTransformation.GetTransformationMatrixCached();
         _transformationMatrix = parentMatrix * _transformationMatrix;
-        _position = parentMatrix * glm::vec4(_position, 1.0f);
+        _position = parentMatrix * glm::vec4(_localPosition, 1.0f);
     }
 }
 
@@ -269,4 +268,9 @@ bool Transformation::DidTransformationChange() const
 void Transformation::SetTransformationChanged(bool changed)
 {
     transformationChanged = changed;
+}
+
+void Transformation::RefreshTransformation()
+{
+    transformationChanged = false;
 }

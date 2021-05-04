@@ -21,6 +21,7 @@ void UIImage::SetImage(Sprite* image)
     _image = image;
 
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto rt = registry->GetComponent<RectTransformation>(Owner);
     if (_image == nullptr)
     {
         if (!wasNull)
@@ -40,10 +41,7 @@ void UIImage::SetImage(Sprite* image)
             qr.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
             qr.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
         }
-        qr.DefaultVertices[0] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
-        qr.DefaultVertices[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
-        qr.DefaultVertices[2] = glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
-        qr.DefaultVertices[3] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
+        qr.SetDefaultQuad();
         qr.Color = _color;
         qr.TextureID = _image->TextureID;
         qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
@@ -51,13 +49,13 @@ void UIImage::SetImage(Sprite* image)
     }
 
     if (_image == nullptr)
-        registry->GetComponent<RectTransformation>(Owner).SetSize(glm::vec2(0.0f, 0.0f));
+        rt.SetSize(glm::vec2(0.0f, 0.0f));
     else if (wasNull)
     {
         glm::vec2 size;
         size.x = _image->IsSpriteSheet ? _image->TileWidth : _image->Width;
         size.y = _image->IsSpriteSheet ? _image->TileHeight : _image->Height;
-        registry->GetComponent<RectTransformation>(Owner).SetSize(size);
+        rt.SetSize(size);
     }
 }
 

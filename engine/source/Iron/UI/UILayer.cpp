@@ -84,11 +84,6 @@ void UILayer::Draw()
         }
     }
 
-    // Refresh rect transformation
-    auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
-    for (auto& rt : rectTransformations)
-        rt.SetTransformationChanged(false);
-
     // After rebuilding text we need to condense renderers list to not wait for the next frame
     entitiesRegistry->ClearRemoved<UIQuadRenderer>();
 
@@ -124,6 +119,11 @@ void UILayer::Draw()
     for (int i = uiRenderers.Size() - 1; i >= 0; --i)
         if (uiRenderers[i].Queue == RenderingQueue::Transparent)
             uiRenderers[i].Render();
+
+    // Refresh rect transformation
+    auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
+    for (auto& rt : rectTransformations)
+        rt.RefreshTransformation();
 }
 
 void UILayer::PollEvent(UIEvent& uiEvent)

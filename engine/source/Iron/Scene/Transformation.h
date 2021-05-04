@@ -38,6 +38,7 @@ public:
     // Did anything in transformation change in this frame
     bool DidTransformationChange() const;
     void SetTransformationChanged(bool changed);
+    void RefreshTransformation();
 
 private:
     glm::mat4 _transformationMatrix = glm::mat4(1.0f);

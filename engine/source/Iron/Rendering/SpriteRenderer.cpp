@@ -44,10 +44,7 @@ void SpriteRenderer::SetImage(Sprite* image)
             qr.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
             qr.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
         }
-        qr.DefaultVertices[0] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
-        qr.DefaultVertices[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
-        qr.DefaultVertices[2] = glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
-        qr.DefaultVertices[3] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
+        qr.SetDefaultQuad(_image->Pivot);
         qr.Color = _color;
         qr.TextureID = _image->TextureID;
         qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;

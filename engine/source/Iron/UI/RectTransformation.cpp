@@ -190,8 +190,9 @@ void RectTransformation::SetLocalRotation(const glm::vec3& rotation)
     SetTransformationChanged(true);
 }
 
-bool RectTransformation::Contains(const glm::vec2 &point) const
+bool RectTransformation::Contains(const glm::vec2& point) const
 {
+    // TODO: does not use rotation
     return point.x > _realPosition.x - _realSize.x * 0.5f
         && point.x < _realPosition.x + _realSize.x * 0.5f
         && point.y > _realPosition.y - _realSize.y * 0.5f
@@ -237,7 +238,7 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
     {
         if (std::abs(_anchorMin[i] - _anchorMax[i]) < TRANSFORM_EPS)
         {
-            _realPosition[i] = parentPosition[i] + parentSize[i] * (_anchorMin[i] - 0.5f) + _anchoredPosition[i] + (_pivot[i] - 0.5f) * _size[i];
+            _realPosition[i] = parentPosition[i] + parentSize[i] * (_anchorMin[i] - 0.5f) + _size[i] * (0.5f - _pivot[i]) + _anchoredPosition[i];
             _realSize[i] = _size[i];
         }
         else
@@ -304,4 +305,9 @@ bool RectTransformation::DidTransformationChange() const
 void RectTransformation::SetTransformationChanged(bool changed)
 {
     transformationChanged = changed;
+}
+
+void RectTransformation::RefreshTransformation()
+{
+    transformationChanged = false;
 }

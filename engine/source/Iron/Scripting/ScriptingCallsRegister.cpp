@@ -55,6 +55,8 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Sprite::GetHeight_Internal", (void*)CoreInternalCalls::Sprite_GetHeight);
     mono_add_internal_call("Iron.Sprite::GetPixelsPerUnit_Internal", (void*)CoreInternalCalls::Sprite_GetPixelsPerUnit);
     mono_add_internal_call("Iron.Sprite::SetPixelsPerUnit_Internal", (void*)CoreInternalCalls::Sprite_SetPixelsPerUnit);
+    mono_add_internal_call("Iron.Sprite::GetPivot_Internal", (void*)CoreInternalCalls::Sprite_GetPivot);
+    mono_add_internal_call("Iron.Sprite::SetPivot_Internal", (void*)CoreInternalCalls::Sprite_SetPivot);
     mono_add_internal_call("Iron.Animation::FromSpriteSheet_Internal", (void*)CoreInternalCalls::Animation_FromSpriteSheet);
     mono_add_internal_call("Iron.Animation::FromSprites_Internal", (void*)CoreInternalCalls::Animation_FromSprites);
     mono_add_internal_call("Iron.Animation::GetName_Internal", (void*)CoreInternalCalls::Animation_GetName);

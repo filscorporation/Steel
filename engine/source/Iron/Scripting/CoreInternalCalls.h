@@ -35,6 +35,8 @@ namespace CoreInternalCalls
     int Sprite_GetHeight(ResourceID spriteID);
     int Sprite_GetPixelsPerUnit(ResourceID spriteID);
     void Sprite_SetPixelsPerUnit(ResourceID spriteID, int pixelsPerUnit);
+    void Sprite_GetPivot(EntityID spriteID, glm::vec2* pivot);
+    void Sprite_SetPivot(EntityID spriteID, glm::vec2* pivot);
     ResourceID Animation_FromSpriteSheet(ResourceID spriteID, float length);
     ResourceID Animation_FromSprites(MonoArray* spritesIDs, float length);
     float Animation_GetLength(ResourceID animationID);

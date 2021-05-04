@@ -77,7 +77,7 @@ void UIInternalCalls::RectTransformation_GetOffsetMax(EntityID entityID, glm::ve
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    glm::vec2 result = component.GetOffsetMin();
+    glm::vec2 result = component.GetOffsetMax();
     offset->x = result.x;
     offset->y = result.y;
 }
@@ -93,7 +93,7 @@ void UIInternalCalls::RectTransformation_GetPivot(EntityID entityID, glm::vec2* 
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    glm::vec2 result = component.GetOffsetMin();
+    glm::vec2 result = component.GetPivot();
     pivot->x = result.x;
     pivot->y = result.y;
 }
@@ -109,7 +109,7 @@ void UIInternalCalls::RectTransformation_GetSize(EntityID entityID, glm::vec2* s
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, )
 
-    glm::vec2 result = component.GetOffsetMin();
+    glm::vec2 result = component.GetSize();
     size->x = result.x;
     size->y = result.y;
 }

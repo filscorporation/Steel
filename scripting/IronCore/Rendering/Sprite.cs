@@ -27,6 +27,19 @@ namespace Iron
             get => GetPixelsPerUnit_Internal(ID);
             set => SetPixelsPerUnit_Internal(ID, value);
         }
+        
+        /// <summary>
+        /// Sprite center of rotation
+        /// </summary>
+        public Vector2 Pivot
+        {
+            get
+            {
+                GetPivot_Internal(ID, out Vector2 pivot);
+                return pivot;
+            }
+            set => SetPivot_Internal(ID, ref value);
+        }
 
         /// <summary>
         /// Sets sprite as sprite sheet, cuts it to multiple sprites
@@ -39,9 +52,6 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAsSpriteSheet_Internal(uint spriteID, int tileWidth, int tileHeight);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int GetWidth_Internal(uint spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -52,5 +62,14 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetPixelsPerUnit_Internal(uint spriteID, int pixelsPerUnit);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Vector2 GetPivot_Internal(uint entityID, out Vector2 pivot);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetPivot_Internal(uint entityID, ref Vector2 pivot);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAsSpriteSheet_Internal(uint spriteID, int tileWidth, int tileHeight);
     }
 }
