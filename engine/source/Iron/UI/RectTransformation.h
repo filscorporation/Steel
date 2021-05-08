@@ -48,6 +48,7 @@ public:
     // Did anything in transformation change in this frame
     bool DidTransformationChange() const;
     void SetTransformationChanged(bool changed);
+    bool DidSizeChange() const;
     void RefreshTransformation();
 
 private:
@@ -68,4 +69,5 @@ private:
     glm::vec2 _realPosition = { 0.0f, 0.0f };
 
     bool transformationChanged = true;
+    bool sizeChanged = true;
 };

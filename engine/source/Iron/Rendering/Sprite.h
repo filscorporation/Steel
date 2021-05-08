@@ -24,8 +24,17 @@ public:
     int TileWidth;
     int TileHeight;
 
+    bool IsSliced = false;
+    int SliceTopOffset = 0;
+    int SliceBottomOffset = 0;
+    int SliceLeftOffset = 0;
+    int SliceRightOffset = 0;
+
     // TODO: add some kind of apply method to for the pivot and ppu fields
+    void SetAsNormal();
     void SetAsSpriteSheet(int tileWidth, int tileHeight);
+    void SetAsSliced(int offset);
+    void SetAsSliced(int topOffset, int bottomOffset, int leftOffset, int rightOffset);
     void GetTexCoord(uint32_t tileIndex, glm::vec2* texCoords) const;
     glm::vec3 GetRealWorldSize() const;
     int TilesCount() const;

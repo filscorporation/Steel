@@ -41,13 +41,19 @@ void UISystem::OnComponentAdded(EntityID entityID, UIImage& component)
 }
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIImage& component)
-{ }
+{
+    ClearRenderers(component);
+}
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIImage& component)
-{ }
+{
+    RenderersSetActive(component, true);
+}
 
 void UISystem::OnEntityDisabled(EntityID entityID, UIImage& component)
-{ }
+{
+    RenderersSetActive(component, false);
+}
 
 void UISystem::OnComponentAdded(EntityID entityID, UIButton& component)
 {
@@ -80,13 +86,19 @@ void UISystem::OnComponentRemoved(EntityID entityID, UIButton& component)
         Application::Instance->GetCurrentScene()->GetUILayer()->RemoveButtonFromUpdateQueue(entityID);
     }
     ScriptingCore::CallEventMethod(entityID, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
+
+    ClearRenderers(component);
 }
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIButton& component)
-{ }
+{
+    RenderersSetActive(component, true);
+}
 
 void UISystem::OnEntityDisabled(EntityID entityID, UIButton& component)
-{ }
+{
+    RenderersSetActive(component, false);
+}
 
 bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID)
 {
@@ -112,4 +124,17 @@ void UISystem::TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID e
     {
         entitiesRegistry->AddComponent<UIEventHandler>(entityID);
     }
+}
+
+void UISystem::ClearRenderers(UIImage& image)
+{
+    for (auto qrID : image._renderers)
+        ComponentSystem<UIButton>::Registry->DeleteEntity(qrID);
+    image._renderers.clear();
+}
+
+void UISystem::RenderersSetActive(const UIImage& image, bool active)
+{
+    for (auto qrID : image._renderers)
+        ComponentSystem<UIButton>::Registry->EntitySetActive(qrID, active, false);
 }

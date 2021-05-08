@@ -25,6 +25,9 @@ public:
     void RemoveButtonFromUpdateQueue(EntityID buttonID);
 
     bool IsPointerOverUI();
+    static UILayer* Current();
+
+    int PixelsPerUnit = 32;
 
 private:
     Scene* _scene;

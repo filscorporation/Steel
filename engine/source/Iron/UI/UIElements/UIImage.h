@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../UIComponent.h"
+#include "../UIQuadRenderer.h"
 #include "../../Rendering/Sprite.h"
 
 class UIImage : public UIComponent
@@ -18,4 +19,7 @@ protected:
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
     uint32_t currentImageTileIndex = 0;
+    std::vector<EntityID> _renderers;
+
+    friend class UISystem;
 };

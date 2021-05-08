@@ -15,9 +15,9 @@ std::int32_t FileLoader::ConvertToInt(char* buffer, std::size_t len)
 
 bool FileLoader::IsImageTransparent(const unsigned char* imageData, uint32_t width, uint32_t height)
 {
-    for (int i = 0; i < width; ++i)
+    for (uint32_t i = 0; i < width; ++i)
     {
-        for (int j = 0; j < height; ++j)
+        for (uint32_t j = 0; j < height; ++j)
         {
             auto alpha = imageData[(i * width + j) * 4 + 3];
             if (alpha != 0 && alpha != 255)

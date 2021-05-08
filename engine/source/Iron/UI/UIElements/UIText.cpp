@@ -26,13 +26,11 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         return;
     }
 
-    auto newSize = rectTransformation.GetRealSizeCached();
-    if (std::abs(newSize.x  -_lastRectSize.x) > 0.001f || std::abs(newSize.y  -_lastRectSize.y) > 0.001f)
+    if (rectTransformation.DidSizeChange())
     {
         // If text rect changed in size, completely rebuild
         _lettersChangedCount = letters.size();
         _dirtyText = true;
-        _lastRectSize = newSize;
     }
 
     if (_dirtyText)

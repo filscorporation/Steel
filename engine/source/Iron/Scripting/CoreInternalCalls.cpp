@@ -98,11 +98,32 @@ float CoreInternalCalls::AudioTrack_GetLength(ResourceID audioTrackID)
     return 0;
 }
 
+void CoreInternalCalls::Sprite_SetAsNormal(ResourceID spriteID)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    if (image != nullptr)
+        image->SetAsNormal();
+}
+
 void CoreInternalCalls::Sprite_SetAsSpriteSheet(ResourceID spriteID, int tileWidth, int tileHeight)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     if (image != nullptr)
         image->SetAsSpriteSheet(tileWidth, tileHeight);
+}
+
+void CoreInternalCalls::Sprite_SetAs9Sliced(ResourceID spriteID, int offset)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    if (image != nullptr)
+        image->SetAsSliced(offset);
+}
+
+void CoreInternalCalls::Sprite_SetAs9Sliced2(ResourceID spriteID, int offsetTop, int offsetBottom, int offsetLeft, int offsetRight)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    if (image != nullptr)
+        image->SetAsSliced(offsetTop, offsetBottom, offsetLeft, offsetRight);
 }
 
 int CoreInternalCalls::Sprite_GetWidth(ResourceID spriteID)

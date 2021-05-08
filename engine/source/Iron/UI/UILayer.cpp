@@ -2,6 +2,7 @@
 #include "UIEventHandler.h"
 #include "UIQuadRenderer.h"
 #include "UIElements/UIText.h"
+#include "../Core/Application.h"
 #include "../Rendering/Renderer.h"
 #include "../Scene/Hierarchy.h"
 #include "../Scene/NameComponent.h"
@@ -131,7 +132,8 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     auto entitiesRegistry = _scene->GetEntitiesRegistry();
     auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
     auto uiEventHandlers = entitiesRegistry->GetComponentIterator<UIEventHandler>();
-    entitiesRegistry->ApplyOrderCustomOwner<UIQuadRenderer, UIEventHandler>();
+    // TODO: return handlers sorting after rework
+    //entitiesRegistry->ApplyOrderCustomOwner<UIQuadRenderer, UIEventHandler>();
 
     int size = uiEventHandlers.Size();
     for (int i = 0; i < size; ++i)
@@ -158,4 +160,9 @@ void UILayer::RemoveButtonFromUpdateQueue(EntityID buttonID)
 bool UILayer::IsPointerOverUI()
 {
     return _isPointerOverUI;
+}
+
+UILayer* UILayer::Current()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer();
 }

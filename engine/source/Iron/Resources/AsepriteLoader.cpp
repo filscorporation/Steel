@@ -52,9 +52,12 @@ void Fill(unsigned char* target, uint32_t targetWidth, uint32_t targetHeight,
     {
         for (uint32_t j = 0; j < sourceHeight; ++j)
         {
-            for (int k = 0; k < 4; ++k)
+            if (i + sourceX >= 0 && i + sourceX < targetWidth && j + sourceY >=0 && j  + sourceY < targetHeight)
             {
-                target[((j + sourceY) * targetWidth + (i + sourceX)) * 4 + k] = source[(j * sourceWidth + i) * 4 + k];
+                for (int k = 0; k < 4; ++k)
+                {
+                    target[((j + sourceY) * targetWidth + (i + sourceX)) * 4 + k] = source[(j * sourceWidth + i) * 4 + k];
+                }
             }
         }
     }
@@ -198,7 +201,7 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
 
     file.ignore(8); // Ignore unused bytes
 
-    for (int i = 0; i < tagsCount; ++i)
+    for (uint32_t i = 0; i < tagsCount; ++i)
     {
         if (!file.read(buffer, 2))
         {
@@ -315,7 +318,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
     std::vector<uint32_t> framesDurations;
     framesDurations.reserve(framesCount);
 
-    for (int i = 0; i < framesCount; ++i)
+    for (uint32_t i = 0; i < framesCount; ++i)
     {
         file.ignore(6); // Ignore frame size and magic number
 
@@ -347,7 +350,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
         if (!tagsChunkFound)
             bytesBeforeTags += 16;
 
-        for (int j = 0; j < chunksCount; ++j)
+        for (uint32_t j = 0; j < chunksCount; ++j)
         {
             if (!file.read(buffer, 4))
             {
@@ -364,6 +367,12 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
             }
             uint32_t chunkType = ConvertToInt(buffer, 2);
             chunkSizeLeft -= 2;
+
+            if (chunkSizeLeft == 0)
+            {
+                Log::LogError("Chunk data is empty");
+                return false;
+            }
 
             switch (chunkType)
             {

@@ -1,18 +1,49 @@
 #include "UIImage.h"
 #include "../UIQuadRenderer.h"
 #include "../../Scene/SceneHelper.h"
+#include "../../Rendering/Screen.h"
 
 void UIImage::UpdateRenderer(RectTransformation& transformation)
 {
     if (_image == nullptr)
         return;
 
-    auto& qr = GetComponentS<UIQuadRenderer>(Owner);
-
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
-    for (int i = 0; i < 4; ++i)
-        qr.Vertices[i] = matrix * qr.DefaultVertices[i];
-    qr.SortingOrder = transformation.GetGlobalSortingOrderCached();
+
+    if (_image->IsSliced)
+    {
+        float k = (float)_image->PixelsPerUnit / (float)UILayer::Current()->PixelsPerUnit;
+        float xvs[4] = { 0.0f, (float)_image->SliceLeftOffset * k / transformation.GetSize().x,
+                         1.0f - (float)_image->SliceRightOffset * k / transformation.GetSize().x, 1.0f };
+        float yvs[4] = { 0.0f, (float)_image->SliceBottomOffset * k / transformation.GetSize().y,
+                         1.0f - (float)_image->SliceTopOffset * k / transformation.GetSize().y, 1.0f };
+
+        for (int n = 0; n < _renderers.size(); ++n)
+        {
+            auto& qr = registry->GetComponent<UIQuadRenderer>(_renderers[n]);
+
+            if (transformation.DidSizeChange())
+            {
+                int i = n % 3, j = n / 3;
+                qr.DefaultVertices[0] = glm::vec4(xvs[i + 1] - 0.5f, yvs[j] - 0.5f, 0.0f, 1.0f);
+                qr.DefaultVertices[1] = glm::vec4(xvs[i + 1] - 0.5f, yvs[j + 1] - 0.5f, 0.0f, 1.0f);
+                qr.DefaultVertices[2] = glm::vec4(xvs[i] - 0.5f, yvs[j] - 0.5f, 0.0f, 1.0f);
+                qr.DefaultVertices[3] = glm::vec4(xvs[i] - 0.5f, yvs[j + 1] - 0.5f, 0.0f, 1.0f);
+            }
+
+            for (int m = 0; m < 4; ++m)
+                qr.Vertices[m] = matrix * qr.DefaultVertices[m];
+            qr.SortingOrder = transformation.GetGlobalSortingOrderCached();
+        }
+    }
+    else
+    {
+        auto& qr = registry->GetComponent<UIQuadRenderer>(Owner);
+        for (int i = 0; i < 4; ++i)
+            qr.Vertices[i] = matrix * qr.DefaultVertices[i];
+        qr.SortingOrder = transformation.GetGlobalSortingOrderCached();
+    }
 }
 
 void UIImage::SetImage(Sprite* image)
@@ -25,27 +56,79 @@ void UIImage::SetImage(Sprite* image)
     if (_image == nullptr)
     {
         if (!wasNull)
+        {
+            for (auto renderer : _renderers)
+                registry->DeleteEntity(renderer);
+            _renderers.clear();
             registry->RemoveComponent<UIQuadRenderer>(Owner);
+        }
     }
     else
     {
-        auto& qr = registry->AddComponent<UIQuadRenderer>(Owner);
-        if (_image->IsSpriteSheet)
+        if (image->IsSliced)
         {
-            _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
+            if (_renderers.empty())
+            {
+                _renderers.resize(9);
+                for (int i = 0; i < 9; ++i)
+                    _renderers[i] = registry->CreateNewEntity();
+            }
+
+            float xtc[4] = { 0.0f, (float)_image->SliceLeftOffset / (float)_image->Width,
+                             1.0f - (float)_image->SliceRightOffset / (float)_image->Width, 1.0f };
+            float ytc[4] = { 0.0f, (float)_image->SliceBottomOffset / (float)_image->Height,
+                             1.0f - (float)_image->SliceTopOffset / (float)_image->Height, 1.0f };
+
+            float k = (float)_image->PixelsPerUnit / (float)UILayer::Current()->PixelsPerUnit;
+            float xvs[4] = { 0.0f, (float)_image->SliceLeftOffset * k / (float)Screen::GetWidth(),
+                             1.0f - (float)_image->SliceRightOffset * k / (float)Screen::GetWidth(), 1.0f };
+            float yvs[4] = { 0.0f, (float)_image->SliceBottomOffset * k / (float)Screen::GetHeight(),
+                             1.0f - (float)_image->SliceTopOffset * k / (float)Screen::GetHeight(), 1.0f };
+
+            for (int j = 0; j < 3; ++j)
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    auto& qr = registry->AddComponent<UIQuadRenderer>(_renderers[j * 3 + i]);
+                    qr.CustomOwner = Owner;
+                    qr.TextureID = _image->TextureID;
+                    qr.Color = _color;
+                    qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
+                    qr.TextureCoords[0] = glm::vec2(xtc[i + 1], ytc[j]);
+                    qr.TextureCoords[1] = glm::vec2(xtc[i + 1], ytc[j + 1]);
+                    qr.TextureCoords[2] = glm::vec2(xtc[i], ytc[j]);
+                    qr.TextureCoords[3] = glm::vec2(xtc[i], ytc[j + 1]);
+                    qr.DefaultVertices[0] = glm::vec4(xvs[i + 1] - 0.5f, yvs[j] - 0.5f, 0.0f, 1.0f);
+                    qr.DefaultVertices[1] = glm::vec4(xvs[i + 1] - 0.5f, yvs[j + 1] - 0.5f, 0.0f, 1.0f);
+                    qr.DefaultVertices[2] = glm::vec4(xvs[i] - 0.5f, yvs[j] - 0.5f, 0.0f, 1.0f);
+                    qr.DefaultVertices[3] = glm::vec4(xvs[i] - 0.5f, yvs[j + 1] - 0.5f, 0.0f, 1.0f);
+                }
+            }
         }
         else
         {
-            qr.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
-            qr.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
-            qr.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
-            qr.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
+            for (auto renderer : _renderers)
+                registry->DeleteEntity(renderer);
+            _renderers.clear();
+
+            auto& qr = registry->AddComponent<UIQuadRenderer>(Owner);
+            if (_image->IsSpriteSheet)
+            {
+                _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
+            }
+            else
+            {
+                qr.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
+                qr.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
+                qr.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
+                qr.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
+            }
+            qr.SetDefaultQuad();
+            qr.Color = _color;
+            qr.TextureID = _image->TextureID;
+            qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
+            qr.CustomOwner = Owner;
         }
-        qr.SetDefaultQuad();
-        qr.Color = _color;
-        qr.TextureID = _image->TextureID;
-        qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
-        qr.CustomOwner = Owner;
     }
 
     if (_image == nullptr)

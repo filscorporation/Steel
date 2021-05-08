@@ -50,7 +50,10 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.ResourcesManager::LoadAsepriteData_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAsepriteData);
     mono_add_internal_call("Iron.ResourcesManager::LoadAudioTrack_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAudioTrack);
     mono_add_internal_call("Iron.AudioTrack::GetLength_Internal", (void*)CoreInternalCalls::AudioTrack_GetLength);
+    mono_add_internal_call("Iron.Sprite::SetAsNormal_Internal", (void*)CoreInternalCalls::Sprite_SetAsNormal);
     mono_add_internal_call("Iron.Sprite::SetAsSpriteSheet_Internal", (void*)CoreInternalCalls::Sprite_SetAsSpriteSheet);
+    mono_add_internal_call("Iron.Sprite::SetAs9Sliced_Internal", (void*)CoreInternalCalls::Sprite_SetAs9Sliced);
+    mono_add_internal_call("Iron.Sprite::SetAs9Sliced_Internal2", (void*)CoreInternalCalls::Sprite_SetAs9Sliced2);
     mono_add_internal_call("Iron.Sprite::GetWidth_Internal", (void*)CoreInternalCalls::Sprite_GetWidth);
     mono_add_internal_call("Iron.Sprite::GetHeight_Internal", (void*)CoreInternalCalls::Sprite_GetHeight);
     mono_add_internal_call("Iron.Sprite::GetPixelsPerUnit_Internal", (void*)CoreInternalCalls::Sprite_GetPixelsPerUnit);

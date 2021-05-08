@@ -30,7 +30,10 @@ namespace CoreInternalCalls
     EntityID ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll);
     ResourceID ResourcesManager_LoadAudioTrack(MonoString* path);
     float AudioTrack_GetLength(ResourceID audioTrackID);
+    void Sprite_SetAsNormal(ResourceID spriteID);
     void Sprite_SetAsSpriteSheet(ResourceID spriteID, int tileWidth, int tileHeight);
+    void Sprite_SetAs9Sliced(ResourceID spriteID, int offset);
+    void Sprite_SetAs9Sliced2(ResourceID spriteID, int offsetTop, int offsetBottom, int offsetLeft, int offsetRight);
     int Sprite_GetWidth(ResourceID spriteID);
     int Sprite_GetHeight(ResourceID spriteID);
     int Sprite_GetPixelsPerUnit(ResourceID spriteID);

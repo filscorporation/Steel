@@ -117,6 +117,7 @@ void RectTransformation::SetSize(const glm::vec2& size)
     _size = glm::vec2(std::max(size.x, 0.0f), std::max(size.y, 0.0f));
 
     SetTransformationChanged(true);
+    sizeChanged = true;
 }
 
 glm::vec2 RectTransformation::GetPivot() const
@@ -307,7 +308,13 @@ void RectTransformation::SetTransformationChanged(bool changed)
     transformationChanged = changed;
 }
 
+bool RectTransformation::DidSizeChange() const
+{
+    return sizeChanged;
+}
+
 void RectTransformation::RefreshTransformation()
 {
     transformationChanged = false;
+    sizeChanged = false;
 }

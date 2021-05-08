@@ -9,6 +9,9 @@
 
 bool UIButton::Update()
 {
+    if (_image->IsSliced)
+        return false; // TODO: !
+
     transitionProgress += Time::UnscaledDeltaTime();
     float t = transitionProgress / _transitionsInfo.TransitionDuration;
     auto& uii = GetComponentS<UIQuadRenderer>(Owner);

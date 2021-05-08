@@ -1,10 +1,40 @@
 #include "Sprite.h"
 
+void Sprite::SetAsNormal()
+{
+    IsSliced = false;
+    IsSpriteSheet = false;
+}
+
 void Sprite::SetAsSpriteSheet(int tileWidth, int tileHeight)
 {
+    IsSliced = false;
+
     IsSpriteSheet = true;
     TileWidth = tileWidth;
     TileHeight = tileHeight;
+}
+
+void Sprite::SetAsSliced(int offset)
+{
+    IsSpriteSheet = false;
+
+    IsSliced = true;
+    SliceTopOffset = offset;
+    SliceBottomOffset = offset;
+    SliceLeftOffset = offset;
+    SliceRightOffset = offset;
+}
+
+void Sprite::SetAsSliced(int topOffset, int bottomOffset, int leftOffset, int rightOffset)
+{
+    IsSpriteSheet = false;
+
+    IsSliced = true;
+    SliceTopOffset = topOffset;
+    SliceBottomOffset = bottomOffset;
+    SliceLeftOffset = leftOffset;
+    SliceRightOffset = rightOffset;
 }
 
 void Sprite::GetTexCoord(uint32_t tileIndex, glm::vec2* texCoords) const
