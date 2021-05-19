@@ -15,6 +15,7 @@ public:
 
     // UI element defined parameters
     bool IsTransparent = false;
+    float SortingOrder = 0;
     UIEventTypes::UIEventType EventsMask = (UIEventTypes::UIEventType)0;
     EventCallbackFunction EventCallback = nullptr;
 

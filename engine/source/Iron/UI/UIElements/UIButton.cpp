@@ -7,33 +7,22 @@
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
 
-bool UIButton::Update()
+bool UIButton::UpdateTransition()
 {
-    if (_image->IsSliced)
-        return false; // TODO: !
-
     transitionProgress += Time::UnscaledDeltaTime();
-    float t = transitionProgress / _transitionsInfo.TransitionDuration;
-    auto& uii = GetComponentS<UIQuadRenderer>(Owner);
-    switch (_transitionsInfo.TransitionType)
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    if (_image->IsSliced)
     {
-        case ButtonTransitionTypes::ColorShift:
-            _color = Math::Lerp(uii.Color, targetTransitionData.ToColor(), t);
-            uii.Color = Math::Lerp(uii.Color, targetTransitionData.ToColor(), t);
-            break;
-        case ButtonTransitionTypes::SpriteChange:
-            SetImage(Application::Instance->GetResourcesManager()->GetImage(targetTransitionData.Value));
-            isInTransition = false;
-            transitionProgress = 0.0f;
-            break;
-        case ButtonTransitionTypes::SpriteTileChange:
-            _image->GetTexCoord(targetTransitionData.Value, uii.TextureCoords);
-            isInTransition = false;
-            transitionProgress = 0.0f;
-            break;
-        case ButtonTransitionTypes::Animation:
-            // TODO: not supported yet
-            break;
+        for (uint32_t _renderer : _renderers)
+        {
+            auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
+            UpdateTransitionForRenderer(qr);
+        }
+    }
+    else
+    {
+        UpdateTransitionForRenderer(entitiesRegistry->GetComponent<UIQuadRenderer>(Owner));
     }
 
     if (transitionProgress > _transitionsInfo.TransitionDuration)
@@ -47,6 +36,12 @@ bool UIButton::Update()
 
 void UIButton::SetTransitionsInfo(ButtonTransitionsInfo info)
 {
+    if (info.TransitionType == ButtonTransitionTypes::SpriteTileChange && _image->IsSliced)
+    {
+        Log::LogWarning("Tile change transition type is not supported for sliced images");
+        return;
+    }
+
     _transitionsInfo = info;
 }
 
@@ -119,4 +114,29 @@ void UIButton::PlayTransition(ButtonTransitionData data)
     targetTransitionData = data;
     isInTransition = true;
     transitionProgress = 0.0f;
+}
+
+void UIButton::UpdateTransitionForRenderer(UIQuadRenderer& renderer)
+{
+    float t = transitionProgress / _transitionsInfo.TransitionDuration;
+    switch (_transitionsInfo.TransitionType)
+    {
+        case ButtonTransitionTypes::ColorShift:
+            _color = Math::Lerp(renderer.Color, targetTransitionData.ToColor(), t);
+            renderer.Color = Math::Lerp(renderer.Color, targetTransitionData.ToColor(), t);
+            break;
+        case ButtonTransitionTypes::SpriteChange:
+            SetImage(Application::Instance->GetResourcesManager()->GetImage(targetTransitionData.Value));
+            isInTransition = false;
+            transitionProgress = 0.0f;
+            break;
+        case ButtonTransitionTypes::SpriteTileChange:
+            _image->GetTexCoord(targetTransitionData.Value, renderer.TextureCoords);
+            isInTransition = false;
+            transitionProgress = 0.0f;
+            break;
+        case ButtonTransitionTypes::Animation:
+            // TODO: not supported yet
+            break;
+    }
 }

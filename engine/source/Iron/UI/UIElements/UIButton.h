@@ -50,7 +50,7 @@ class UIButton : public UIImage
 public:
     explicit UIButton(EntityID ownerEntityID) : UIImage(ownerEntityID) { };
 
-    bool Update();
+    bool UpdateTransition();
 
     void SetTransitionsInfo(ButtonTransitionsInfo info);
     ButtonTransitionsInfo GetTransitionsInfo() const;
@@ -64,6 +64,7 @@ private:
     static void HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void PlayTransition(ButtonTransitionData data);
+    void UpdateTransitionForRenderer(UIQuadRenderer& renderer);
 
     bool _interactable = true;
     ButtonTransitionsInfo _transitionsInfo {};

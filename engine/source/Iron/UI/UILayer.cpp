@@ -50,7 +50,7 @@ void UILayer::Update()
     for (int i = _buttonsToUpdate.Size() - 1; i >= 0; --i)
     {
         auto& button = entitiesRegistry->GetComponent<UIButton>(entitiesRegistry->EntityActual(_buttonsToUpdate[i]));
-        if (!button.Update())
+        if (!button.UpdateTransition())
             _buttonsToUpdate.Remove(_buttonsToUpdate[i]);
     }
 }
@@ -132,8 +132,13 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     auto entitiesRegistry = _scene->GetEntitiesRegistry();
     auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
     auto uiEventHandlers = entitiesRegistry->GetComponentIterator<UIEventHandler>();
-    // TODO: return handlers sorting after rework
-    //entitiesRegistry->ApplyOrderCustomOwner<UIQuadRenderer, UIEventHandler>();
+    // Sort event handlers by sorting order
+    struct
+    {
+        bool operator()(UIEventHandler& a, UIEventHandler& b) const
+        { return a.SortingOrder < b.SortingOrder; }
+    } SOComparer;
+    entitiesRegistry->SortComponents<UIEventHandler>(SOComparer);
 
     int size = uiEventHandlers.Size();
     for (int i = 0; i < size; ++i)

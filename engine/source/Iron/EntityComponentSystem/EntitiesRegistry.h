@@ -462,32 +462,6 @@ public:
         }
     }
 
-    template<class SourceT, class TargetT>
-    void ApplyOrderCustomOwner()
-    {
-        auto sourceTypeID = TYPE_ID(SourceT);
-        auto targetTypeID = TYPE_ID(TargetT);
-
-        if (componentsMap.find(sourceTypeID) == componentsMap.end() || componentsMap.find(targetTypeID) == componentsMap.end())
-            return;
-
-        auto sourcePool = (ComponentsPoolWrapper<SourceT>*)componentsMap[sourceTypeID];
-        auto targetPool = (ComponentsPoolWrapper<TargetT>*)componentsMap[targetTypeID];
-        if (sourcePool->Storage.Size() <= 0 || targetPool->Storage.Size() <= 0)
-            return;
-
-        int currentID = 0;
-        for (uint32_t i = 0; i < sourcePool->Storage.size; ++i)
-        {
-            EntityID id = EntityIDGetID(sourcePool->Storage.data[i].CustomOwner);
-            if (targetPool->Storage.Has(id))
-            {
-                targetPool->Storage.Swap(targetPool->Storage.sparse[id], currentID);
-                currentID++;
-            }
-        }
-    }
-
     template<class T>
     T& AddComponent(EntityID entityID)
     {

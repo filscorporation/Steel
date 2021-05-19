@@ -52,7 +52,7 @@ void Fill(unsigned char* target, uint32_t targetWidth, uint32_t targetHeight,
     {
         for (uint32_t j = 0; j < sourceHeight; ++j)
         {
-            if (i + sourceX >= 0 && i + sourceX < targetWidth && j + sourceY >=0 && j  + sourceY < targetHeight)
+            if (i + sourceX >= 0 && i + sourceX < targetWidth && j + sourceY >=0 && j + sourceY < targetHeight)
             {
                 for (int k = 0; k < 4; ++k)
                 {

@@ -1,5 +1,6 @@
 #include "UIImage.h"
 #include "../UIQuadRenderer.h"
+#include "../UIEventHandler.h"
 #include "../../Scene/SceneHelper.h"
 #include "../../Rendering/Screen.h"
 
@@ -10,6 +11,7 @@ void UIImage::UpdateRenderer(RectTransformation& transformation)
 
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
+    float sortingOrder = transformation.GetGlobalSortingOrderCached();
 
     if (_image->IsSliced)
     {
@@ -34,7 +36,7 @@ void UIImage::UpdateRenderer(RectTransformation& transformation)
 
             for (int m = 0; m < 4; ++m)
                 qr.Vertices[m] = matrix * qr.DefaultVertices[m];
-            qr.SortingOrder = transformation.GetGlobalSortingOrderCached();
+            qr.SortingOrder = sortingOrder;
         }
     }
     else
@@ -42,8 +44,11 @@ void UIImage::UpdateRenderer(RectTransformation& transformation)
         auto& qr = registry->GetComponent<UIQuadRenderer>(Owner);
         for (int i = 0; i < 4; ++i)
             qr.Vertices[i] = matrix * qr.DefaultVertices[i];
-        qr.SortingOrder = transformation.GetGlobalSortingOrderCached();
+        qr.SortingOrder = sortingOrder;
     }
+
+    if (registry->HasComponent<UIEventHandler>(Owner))
+        registry->GetComponent<UIEventHandler>(Owner).SortingOrder = sortingOrder;
 }
 
 void UIImage::SetImage(Sprite* image)
