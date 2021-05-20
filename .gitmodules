@@ -19,3 +19,6 @@
 [submodule "tests/includes/googletest"]
 	path = tests/includes/googletest
 	url = https://github.com/google/googletest.git
+[submodule "engine/includes/spdlog"]
+	path = engine/includes/spdlog
+	url = https://github.com/gabime/spdlog.git

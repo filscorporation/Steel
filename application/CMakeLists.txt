@@ -20,6 +20,9 @@ add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
 # glm
 include_directories(../engine/includes/glm)
 
+# spdlog
+include_directories(../engine/includes/spdlog/include)
+
 # iron
 add_subdirectory(../engine ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} EXCLUDE_FROM_ALL)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Iron)

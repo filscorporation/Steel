@@ -45,20 +45,20 @@ MonoImage* LoadAssembly(const char* fileName)
 {
     if (!FileExists(fileName))
     {
-        Log::LogError("Error loading assembly, file does not exist: " + std::string(fileName));
+        Log::LogError("Error loading assembly, file does not exist: {0}", fileName);
         return nullptr;
     }
 
     MonoAssembly* assembly = mono_domain_assembly_open(domain, fileName);
     if (assembly == nullptr)
     {
-        Log::LogError("Error loading assembly " + std::string(fileName));
+        Log::LogError("Error loading assembly {0}", fileName);
         return nullptr;
     }
     MonoImage* assemblyImage = mono_assembly_get_image(assembly);
     if (assemblyImage == nullptr)
     {
-        Log::LogError("Error creating image for assembly " + std::string(fileName));
+        Log::LogError("Error creating image for assembly {0}", fileName);
         return nullptr;
     }
 
@@ -67,7 +67,7 @@ MonoImage* LoadAssembly(const char* fileName)
 
 void ScriptingSystem::Init()
 {
-    Log::LogInfo("Scripting system init");
+    Log::LogDebug("Scripting system init");
 
     mono_config_parse(nullptr);
 #ifdef DISTRIBUTE_BUILD
@@ -102,7 +102,7 @@ void ScriptingSystem::Init()
 
     isInitialized = true;
 
-    Log::LogInfo("Scripting system initialized");
+    Log::LogDebug("Scripting system initialized");
 }
 
 void ScriptingSystem::Terminate()

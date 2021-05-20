@@ -187,7 +187,7 @@ public:
         }
 
         if (pool->System != nullptr)
-            Log::LogWarning("Replacing component system: " + std::string(typeID.name()));
+            Log::LogWarning("Replacing component system: {0}", typeID.name());
 
         pool->System = system;
         system->Registry = this;

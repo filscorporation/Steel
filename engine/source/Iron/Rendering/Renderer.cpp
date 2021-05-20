@@ -30,7 +30,7 @@ using namespace OpenGLAPI;
 
 void Renderer::Init()
 {
-    Log::LogInfo("Begin renderer init");
+    Log::LogDebug("Begin renderer init");
 
     if(!OpenGLAPI::Init())
     {
@@ -49,20 +49,20 @@ void Renderer::Init()
         textureSlots[i] = i;
     SetUniformIntegers(GetUniformLocation(shader->Program, "images"), MAX_TEXTURE_SLOTS, textureSlots);
 
-    Log::LogInfo("Shader created");
+    Log::LogDebug("Shader created");
 
     // Camera transformation uniform
     viewProjectionUniform = GetUniformLocation(shader->Program, "view_projection");
     // Draw mode
     drawModeUniform = GetUniformLocation(shader->Program, "draw_mode");
 
-    Log::LogInfo("Uniforms saved");
+    Log::LogDebug("Uniforms saved");
 
     // Reserve space for all vertex data
     vertexBufferData = new float[MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4];
     vertexDataBufferID = GenerateVetexBuffer(MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4, nullptr, Dynamic);
 
-    Log::LogInfo("Vertices data generated");
+    Log::LogDebug("Vertices data generated");
 
     // Generate all vertex indices
     auto indexes = new uint32_t[MAX_RENDER_CALLS * 6];
@@ -82,9 +82,9 @@ void Renderer::Init()
     indexBufferID = GenerateIndexBuffer(MAX_RENDER_CALLS * 6, indexes, Static);
     delete[] indexes;
 
-    Log::LogInfo("Indexes generated");
+    Log::LogDebug("Indexes generated");
 
-    Log::LogInfo("Renderer initialized");
+    Log::LogDebug("Renderer initialized");
 }
 
 void Renderer::Terminate()

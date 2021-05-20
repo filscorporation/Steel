@@ -75,7 +75,7 @@ Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
     std::ifstream infile(fullPath);
     if (!infile.good())
     {
-        Log::LogError("Error loading image: file " + fullPath + " does not exist");
+        Log::LogError("Error loading image: file {0} does not exist", fullPath);
         return nullptr;
     }
 
@@ -107,11 +107,11 @@ Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
     }
     else
     {
-        Log::LogError("Error loading image: ." + extension + " files not supported");
+        Log::LogError("Error loading image: .{0} files not supported", extension);
         return nullptr;
     }
 
-    Log::LogInfo("Sprite loaded: " + fullPath + ", " + std::to_string(image->ID));
+    Log::LogDebug("Sprite loaded: {0}, {1}", fullPath, image->ID);
 
     return image;
 }
@@ -129,7 +129,7 @@ Sprite* ResourcesManager::GetImage(ResourceID imageID)
 
     if (imageID - 1 > images.size() || images[imageID - 1] == nullptr)
     {
-        Log::LogError("Sprite does not exist: " + std::to_string(imageID));
+        Log::LogError("Sprite does not exist: {0}", imageID);
         return nullptr;
     }
 
@@ -158,14 +158,14 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
     std::ifstream infile(fullPath);
     if (!infile.good())
     {
-        Log::LogError("Error loading aseprite file: file " + fullPath + " does not exist");
+        Log::LogError("Error loading aseprite file: file {0} does not exist", fullPath);
         return nullptr;
     }
 
     std::string extension = fullPath.substr(fullPath.find_last_of('.') + 1);
     if (extension != "aseprite")
     {
-        Log::LogError("Error loading aseprite file: ." + extension + " files not supported");
+        Log::LogError("Error loading aseprite file: .{0} files not supported", extension);
         return nullptr;
     }
 
@@ -178,7 +178,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
     data->ID = asepriteDatas.size() + 1;
     asepriteDatas.push_back(data);
 
-    Log::LogInfo("Aseprite file loaded: " + fullPath + ", " + std::to_string(data->ID));
+    Log::LogDebug("Aseprite file loaded: {0}, {1}", fullPath, data->ID);
 
     return data;
 }
@@ -190,7 +190,7 @@ AsepriteData* ResourcesManager::GetAsepriteData(ResourceID resourceID)
 
     if (resourceID - 1 > asepriteDatas.size() || asepriteDatas[resourceID - 1] == nullptr)
     {
-        Log::LogError("Aseprite data does not exist: " + std::to_string(resourceID));
+        Log::LogError("Aseprite data does not exist: {0}", resourceID);
         return nullptr;
     }
 
@@ -263,7 +263,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
     audioTrack->BufferID = audioBuffer;
     audioTracks.push_back(audioTrack);
 
-    Log::LogInfo("Audio track loaded: " + std::string(fullPath) + ", " + std::to_string(audioTrack->ID));
+    Log::LogDebug("Audio track loaded: {0}, {1}", fullPath, audioTrack->ID);
 
     return audioTrack;
 }
@@ -357,7 +357,7 @@ Font* ResourcesManager::LoadFont(const char* fontPath, bool engineResource)
     font->ID = fonts.size() + 1;
     fonts.push_back(font);
 
-    Log::LogInfo("Font loaded: " + std::string(fullPath) + ", " + std::to_string(font->ID));
+    Log::LogDebug("Font loaded: {0}, {1}", fullPath, font->ID);
 
     return font;
 }

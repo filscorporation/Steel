@@ -174,7 +174,7 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen)
 
     UpdateUIViewProjection();
 
-    Log::LogInfo("Initialized screen with size " + std::to_string(_width) + ":" + std::to_string(_height));
+    Log::LogDebug("Initialized screen with size {0}:{1}", _width, _height);
 
     Input::Init(_window);
 }

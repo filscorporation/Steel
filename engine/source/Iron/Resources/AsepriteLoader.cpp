@@ -90,14 +90,14 @@ void GetCelData(std::ifstream& file, uint32_t celType, char* imageData, uint32_t
             delete[] compressedData;
             if (err < 0)
             {
-                Log::LogError("Error decompressing cel data: " + std::to_string(err));
+                Log::LogError("Error decompressing cel data: {0}", err);
                 return;
             }
 
             break;
         }
         default:
-            Log::LogError("Aseprite unknown cel chunk type: " + std::to_string(celType));
+            Log::LogError("Aseprite unknown cel chunk type: {0}", celType);
             break;
     }
 }
@@ -269,7 +269,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
     std::ifstream file(filePath, std::ios::binary);
     if (!file.is_open())
     {
-        Log::LogError("Could not open " + std::string(filePath));
+        Log::LogError("Could not open {0}", filePath);
         return false;
     }
 

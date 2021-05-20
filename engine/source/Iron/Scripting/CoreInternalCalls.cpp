@@ -350,6 +350,11 @@ void CoreInternalCalls::Screen_SetColor(glm::vec4 color)
     Screen::SetColor(color);
 }
 
+void CoreInternalCalls::Log_LogDebug(MonoString* message)
+{
+    Log::LogDebug(mono_string_to_utf8(message));
+}
+
 void CoreInternalCalls::Log_LogInfo(MonoString* message)
 {
     Log::LogInfo(mono_string_to_utf8(message));

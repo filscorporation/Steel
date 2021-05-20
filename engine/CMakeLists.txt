@@ -11,7 +11,7 @@ else()
     add_compile_definitions(RELEASE_BUILD)
 endif()
 
-# For distribute builds
+# for distribute builds
 #add_compile_definitions(DISTRIBUTE_BUILD)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -155,13 +155,18 @@ endif ()
 add_subdirectory(includes/box2d EXCLUDE_FROM_ALL)
 target_link_libraries(Iron PRIVATE box2d)
 
-#mono
+# mono
 include_directories(includes/mono/include)
 target_link_libraries(Iron PRIVATE ${MONO_NAME})
 
-#freetype
+# freetype
 add_subdirectory(includes/freetype2 EXCLUDE_FROM_ALL)
 include_directories(includes/freetype2/include)
 target_link_libraries(Iron PRIVATE freetype)
+
+# spdlog
+add_subdirectory(includes/spdlog EXCLUDE_FROM_ALL)
+include_directories(includes/spdlog/include)
+target_link_libraries(Iron PRIVATE spdlog)
 
 target_compile_definitions(Iron PRIVATE)

@@ -74,7 +74,7 @@ void AudioCore::Init(EntityID listenerEntity)
     SetListenerOrientation(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
     SetListenerVolume(1.0f);
 
-    Log::LogInfo("Audio system initialized");
+    Log::LogDebug("Audio system initialized");
 }
 
 void AudioCore::Terminate()
@@ -181,7 +181,7 @@ void AudioCore::DeleteSource(uint32_t sourceID)
     alDeleteSources(1, (ALuint*)&sourceID);
     if (CheckForErrors())
     {
-        Log::LogError("Error deleting source " + std::to_string(sourceID));
+        Log::LogError("Error deleting source {0}", sourceID);
     }
 }
 
@@ -193,7 +193,7 @@ void AudioCore::SetSourcePosition(uint32_t sourceID, glm::vec3 position)
     alSource3f(sourceID, AL_POSITION, (ALfloat)position.x, (ALfloat)position.y, (ALfloat)position.z);
     if (CheckForErrors())
     {
-        Log::LogError("Error setting source position " + std::to_string(sourceID));
+        Log::LogError("Error setting source position {0}", sourceID);
     }
 }
 
@@ -205,7 +205,7 @@ void AudioCore::SetSourceIsLoop(uint32_t sourceID, bool isLoop)
     alSourcei(sourceID, AL_LOOPING, isLoop ? AL_TRUE : AL_FALSE);
     if (CheckForErrors())
     {
-        Log::LogError("Error setting source is loop " + std::to_string(sourceID));
+        Log::LogError("Error setting source is loop {0}", sourceID);
     }
 }
 
@@ -217,7 +217,7 @@ void AudioCore::SetSourceVolume(uint32_t sourceID, float volume)
     alSourcef(sourceID, AL_GAIN, (ALfloat)volume);
     if (CheckForErrors())
     {
-        Log::LogError("Error setting source volume " + std::to_string(sourceID));
+        Log::LogError("Error setting source volume {0}", sourceID);
     }
 }
 
@@ -230,7 +230,7 @@ void AudioCore::SetSourceBuffer(uint32_t sourceID, int bufferID)
     alSourcei(sourceID, AL_BUFFER, (ALint)bufferID);
     if (CheckForErrors())
     {
-        Log::LogError("Error setting source buffer " + std::to_string(sourceID));
+        Log::LogError("Error setting source buffer {0}", sourceID);
     }
 }
 
@@ -242,7 +242,7 @@ void AudioCore::PlaySource(uint32_t sourceID)
     alSourcePlay((ALuint)sourceID);
     if (CheckForErrors())
     {
-        Log::LogError("Error playing from source " + std::to_string(sourceID));
+        Log::LogError("Error playing from source {0}", sourceID);
     }
 }
 
@@ -254,6 +254,6 @@ void AudioCore::StopSource(uint32_t sourceID)
     alSourceStop((ALuint)sourceID);
     if (CheckForErrors())
     {
-        Log::LogError("Error stopping source " + std::to_string(sourceID));
+        Log::LogError("Error stopping source {0}", sourceID);
     }
 }

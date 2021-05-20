@@ -528,7 +528,7 @@ MonoClass* ScriptingCore::TypeToMonoClass(void* type)
     MonoClass* monoClass = mono_class_from_mono_type(monoType);
     if (monoClass == nullptr)
     {
-        Log::LogError("Error converting mono type to mono class: " + std::string(mono_type_get_name(monoType)));
+        Log::LogError("Error converting mono type to mono class: {0}", mono_type_get_name(monoType));
         return nullptr;
     }
 
@@ -565,14 +565,14 @@ MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
     MonoMethodDesc* description = mono_method_desc_new(methodName, NULL);
     if (!description)
     {
-        Log::LogError("Unable to get method description " + std::string(methodName));
+        Log::LogError("Unable to get method description {0}", methodName);
         return nullptr;
     }
 
     MonoMethod* method = mono_method_desc_search_in_image(description, image);
     if (!method)
     {
-        Log::LogError("Unable to load method from image " + std::string(methodName));
+        Log::LogError("Unable to load method from image {0}", methodName);
         return nullptr;
     }
 
@@ -594,7 +594,7 @@ void ScriptingCore::CallEventMethod(EntityID ownerEntityID, MonoMethod* method)
 
     if (exception != nullptr)
     {
-        Log::LogError("Error calling method " + std::string(mono_method_full_name(method, true)));
+        Log::LogError("Error calling method {0}", mono_method_full_name(method, true));
         mono_print_unhandled_exception(exception);
     }
 }
@@ -606,7 +606,7 @@ void ScriptingCore::CallMethod(MonoMethod* method)
 
     if (exception != nullptr)
     {
-        Log::LogError("Error calling method " + std::string(mono_method_full_name(method, true)));
+        Log::LogError("Error calling method {0}", mono_method_full_name(method, true));
         mono_print_unhandled_exception(exception);
     }
 }
@@ -626,7 +626,7 @@ void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod* method)
 
     if (exception != nullptr)
     {
-        Log::LogError("Error calling method " + std::string(mono_method_full_name(method, true)));
+        Log::LogError("Error calling method {0}", mono_method_full_name(method, true));
         mono_print_unhandled_exception(exception);
     }
 }
@@ -647,14 +647,14 @@ void ScriptingCore::CallMethod(ScriptPointer scriptPointer, MonoMethod* method, 
 
     if (exception != nullptr)
     {
-        Log::LogError("Error calling method " + std::string(mono_method_full_name(method, true)));
+        Log::LogError("Error calling method {0}", mono_method_full_name(method, true));
         mono_print_unhandled_exception(exception);
     }
 }
 
 void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
 {
-    Log::LogInfo("FindAndCallEntryPoint");
+    Log::LogDebug("FindAndCallEntryPoint");
 
     MonoClass* klass = mono_class_from_name(image, "IronCustom", "GameManager");
     if (klass == nullptr)

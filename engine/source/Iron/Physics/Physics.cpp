@@ -18,7 +18,7 @@ void Physics::Init()
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<BoxCollider>(physicsSystem);
     Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<CircleCollider>(physicsSystem);
 
-    Log::LogInfo("Physics initialized");
+    Log::LogDebug("Physics initialized");
 }
 
 void Physics::Terminate()

@@ -31,7 +31,7 @@ bool EntityInternalCalls::Entity_AddComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
-        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        Log::LogError("Error getting entity by ID {0}", id);
         return false;
     }
 
@@ -47,7 +47,7 @@ bool EntityInternalCalls::Entity_AddScriptComponent(EntityID id, void* type, Scr
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
-        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        Log::LogError("Error getting entity by ID {0}", id);
         return false;
     }
 
@@ -58,14 +58,14 @@ bool EntityInternalCalls::Entity_HasComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
-        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        Log::LogError("Error getting entity by ID {0}", id);
         return false;
     }
 
     bool success = false;
     bool result = ScriptingCore::HasComponentFromType(id, type, success);
     if (!success)
-        Log::LogError("Error getting component for entity " + std::to_string(id));
+        Log::LogError("Error getting component for entity {0}", id);
 
     return result;
 }
@@ -74,7 +74,7 @@ bool EntityInternalCalls::Entity_HasScriptComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
-        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        Log::LogError("Error getting entity by ID {0}", id);
         return false;
     }
 
@@ -85,7 +85,7 @@ ScriptPointer EntityInternalCalls::Entity_GetScriptComponent(EntityID id, void* 
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
-        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        Log::LogError("Error getting entity by ID {0}", id);
         return false;
     }
 
@@ -97,7 +97,7 @@ bool EntityInternalCalls::Entity_RemoveComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
-        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        Log::LogError("Error getting entity by ID {0}", id);
         return false;
     }
 
@@ -113,7 +113,7 @@ bool EntityInternalCalls::Entity_RemoveScriptComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
-        Log::LogError("Error getting entity by ID " + std::to_string(id));
+        Log::LogError("Error getting entity by ID {0}", id);
         return false;
     }
 

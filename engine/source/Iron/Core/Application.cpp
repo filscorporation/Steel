@@ -36,7 +36,8 @@ Application::Application(ApplicationSettings settings)
 
 void Application::Init(ApplicationSettings settings)
 {
-    Log::LogInfo("Running in " + GetRuntimePath());
+    Log::Init();
+    Log::LogDebug("Running in {0}", GetRuntimePath());
 
     Random::Init();
     Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen);
@@ -54,12 +55,12 @@ void Application::Init(ApplicationSettings settings)
 
     Debug::Init();
 
-    Log::LogInfo("Application initialized");
+    Log::LogDebug("Application initialized");
 }
 
 void Application::Run()
 {
-    Log::LogInfo("Running application");
+    Log::LogDebug("Running application");
 
     isRunning = true;
 
@@ -175,7 +176,7 @@ void Application::RunUpdate()
 
 void Application::Terminate()
 {
-    Log::LogInfo("Entities was created " + std::to_string(Scene::EntitiesWasCreated));
+    Log::LogDebug("Entities was created: {0}", Scene::EntitiesWasCreated);
 
     Debug::Terminate();
 

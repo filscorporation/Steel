@@ -117,8 +117,8 @@ void UISystem::TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID e
 {
     if (entitiesRegistry->HasComponent<UIEventHandler>(entityID))
     {
-        Log::LogWarning("Entity " + std::to_string(entityID) + " already has UIEventHandler component attached, "
-                                                                    "this may lead to conflicts. Keep one UIEventHandler per object");
+        Log::LogWarning("Entity {0} already has UIEventHandler component attached, "
+                         "this may lead to conflicts. Keep one UIEventHandler per object", entityID);
     }
     else
     {

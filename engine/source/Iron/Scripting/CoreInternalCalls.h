@@ -68,6 +68,7 @@ namespace CoreInternalCalls
     void Screen_SetColor(glm::vec4 color);
 
     // Log
+    void Log_LogDebug(MonoString* message);
     void Log_LogInfo(MonoString* message);
     void Log_LogWarning(MonoString* message);
     void Log_LogError(MonoString* message);
