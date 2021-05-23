@@ -29,7 +29,7 @@ public:
     static bool IsInCallback();
 
 private:
-    static void Init(int width, int height, glm::vec3 color, bool fullscreen);
+    static void Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer);
     static void Apply();
 
     static void UpdateUIViewProjection();
@@ -38,6 +38,7 @@ private:
     static int _xPosition, _yPosition;
     static glm::vec3 _color;
     static bool _fullscreen;
+    static bool _doubleBuffer;
     static bool isInResizeCallback;
     static glm::mat4 _viewProjection;
 

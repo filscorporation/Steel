@@ -18,6 +18,7 @@ int Screen::_xPosition, Screen::_yPosition;
 glm::vec3 Screen::_color;
 glm::mat4 Screen::_viewProjection = glm::mat4(1.0f);
 bool Screen::_fullscreen;
+bool Screen::_doubleBuffer = true;
 bool Screen::isInResizeCallback = false;
 
 // TODO: currently window will not update if you held it still
@@ -140,9 +141,10 @@ void Screen::UpdateUIViewProjection()
     _viewProjection = projection;
 }
 
-void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen)
+void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer)
 {
     _fullscreen = fullscreen;
+    _doubleBuffer = doubleBuffer;
     _color = color;
 
     if (!glfwInit())
@@ -150,6 +152,7 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen)
         Log::LogError("Error initializing GLFW");
     }
 
+    glfwWindowHint(GLFW_DOUBLEBUFFER, _doubleBuffer);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -198,6 +201,7 @@ void PositionCallback(GLFWwindow* window, int cx, int cy)
     {
         needToUpdateViewport = true;
         Screen::EnterCallback();
+        Input::ReleaseAllEvents();
         Application::Instance->RunUpdate();
         Screen::ExitCallback();
     }
@@ -221,6 +225,7 @@ void Screen::UpdateSize()
         }
         glViewport(0, 0, tempWidth, tempHeight);
 
+        Input::ReleaseAllEvents();
         UpdateUIViewProjection();
         Application::Instance->GetCurrentScene()->GetMainCamera().UpdateSize();
     }
@@ -228,7 +233,10 @@ void Screen::UpdateSize()
 
 void Screen::SwapBuffers()
 {
-    glfwSwapBuffers(_window);
+    if (_doubleBuffer)
+        glfwSwapBuffers(_window);
+    else
+        glFlush();
 
     screenSizeDirty = false;
 }

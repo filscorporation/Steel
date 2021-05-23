@@ -7,6 +7,7 @@
 #include "../Scripting/ScriptComponent.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
+#include "Log.h"
 
 ButtonStates::ButtonState pressedKeys[MAX_KEY_CODE + 1];
 ButtonStates::ButtonState pressedMouse[MAX_MOUSE_CODE + 1];
@@ -186,6 +187,22 @@ void Input::PollEvents()
     }
 
     glfwPollEvents();
+}
+
+void Input::ReleaseAllEvents()
+{
+    // This fixes glfw bug, when there is no realse event if you move or resize window
+    for (auto& key : pressedKeys)
+    {
+        if (key == ButtonStates::JustPressed || key == ButtonStates::IsHeld)
+            key = ButtonStates::JustReleased;
+    }
+
+    for (auto& mouse : pressedMouse)
+    {
+        if (mouse == ButtonStates::JustPressed || mouse == ButtonStates::IsHeld)
+            mouse = ButtonStates::JustReleased;
+    }
 }
 
 void Input::SendMouseCallbacks()

@@ -24,6 +24,7 @@ public:
 
     static UIEvent GetUIEvent();
     static void PollEvents();
+    static void ReleaseAllEvents();
     static void SendMouseCallbacks();
 
 private:

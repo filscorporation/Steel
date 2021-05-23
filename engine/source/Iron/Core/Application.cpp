@@ -40,7 +40,7 @@ void Application::Init(ApplicationSettings settings)
     Log::LogDebug("Running in {0}", GetRuntimePath());
 
     Random::Init();
-    Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen);
+    Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer);
 
     resources = new ResourcesManager();
     scene = new Scene();
