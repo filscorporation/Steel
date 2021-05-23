@@ -1,5 +1,4 @@
 #include "TestsSetUp.h"
-#include "Iron/EntityComponentSystem/SparseDataSet.h"
 #include "common/TestComponent1.h"
 
 TEST(SparseDataSetTest, Initialization)

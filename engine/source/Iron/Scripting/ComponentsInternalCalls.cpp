@@ -4,6 +4,7 @@
 #include "../Audio/AudioSource.h"
 #include "../Audio/AudioListener.h"
 #include "../Core/Application.h"
+#include "../Core/Log.h"
 #include "../Physics/BoxCollider.h"
 #include "../Physics/CircleCollider.h"
 #include "../Rendering/SpriteRenderer.h"

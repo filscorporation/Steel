@@ -1,6 +1,7 @@
 #include "UISystem.h"
 #include "UIEventHandler.h"
 #include "../Core/Application.h"
+#include "../Core/Log.h"
 #include "../Scripting/ScriptingCore.h"
 
 void UISystem::OnComponentAdded(EntityID entityID, UIText& component)

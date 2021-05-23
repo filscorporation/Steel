@@ -1,6 +1,4 @@
 #include "TestsSetUp.h"
-
-#include "Iron.h"
 #include "Iron/Scene/Hierarchy.h"
 
 TEST(HierarchyTest, Creation)

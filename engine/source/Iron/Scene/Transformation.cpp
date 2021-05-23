@@ -1,5 +1,6 @@
 #include "Transformation.h"
 #include "SceneHelper.h"
+#include "../Core/Log.h"
 #include "../UI/RectTransformation.h"
 
 #define TRANSFORM_EPS 0.000001f

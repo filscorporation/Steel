@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Iron.h"
+#include "Iron/EntityComponentSystem/Component.h"
 
 class TestComponent2 : public Component
 {

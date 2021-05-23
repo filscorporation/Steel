@@ -6,6 +6,7 @@
 #include "SpriteRenderer.h"
 #include "OpenGLAPI.h"
 #include "../Core/Application.h"
+#include "../Core/Log.h"
 
 const int RENDER_CALL_DATA_SIZE = 10;
 const int MAX_RENDER_CALLS = 10000;

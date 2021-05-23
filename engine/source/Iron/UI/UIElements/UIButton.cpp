@@ -1,6 +1,7 @@
 #include "UIButton.h"
 #include "../UIQuadRenderer.h"
 #include "../UIEventHandler.h"
+#include "../../Core/Log.h"
 #include "../../Core/Time.h"
 #include "../../Math/Math.h"
 #include "../../Scene/SceneHelper.h"

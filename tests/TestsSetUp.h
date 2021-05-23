@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Iron.h>
+#include "Iron/Core/Application.h"
+
 #include <gtest/gtest.h>
 
 class TestApplication : public ::testing::Environment

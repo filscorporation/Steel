@@ -1,5 +1,6 @@
 #include "Hierarchy.h"
 #include "Transformation.h"
+#include "../Core/Log.h"
 
 void UpdateChildrenDepthAndSetDirty(EntitiesRegistry* registry, HierarchyNode& parentNode)
 {

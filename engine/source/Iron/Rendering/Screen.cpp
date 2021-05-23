@@ -2,8 +2,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Screen.h"
-#include "../Core/Input.h"
 #include "../Core/Application.h"
+#include "../Core/Input.h"
+#include "../Core/Log.h"
 
 #define UI_MIN_DISTANCE -100.0f
 #define UI_MAX_DISTANCE 100.0f

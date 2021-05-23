@@ -4,6 +4,7 @@
 #include "PhysicsCore.h"
 #include "BoxCollider.h"
 #include "PhysicsInfo.h"
+#include "../Core/Log.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 

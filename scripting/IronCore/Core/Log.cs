@@ -8,6 +8,15 @@ namespace Iron
     public static class Log
     {
         /// <summary>
+        /// Log debug message
+        /// </summary>
+        /// <param name="message">Message</param>
+        public static void LogDebug(string message)
+        {
+            LogDebug_Internal(message);
+        }
+        
+        /// <summary>
         /// Log info message
         /// </summary>
         /// <param name="message">Message</param>
@@ -33,6 +42,9 @@ namespace Iron
         {
             LogError_Internal(message);
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void LogDebug_Internal(string message);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void LogInfo_Internal(string message);

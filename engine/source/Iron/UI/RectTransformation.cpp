@@ -1,6 +1,7 @@
 #include "RectTransformation.h"
 #include "../Rendering/Screen.h"
 #include "../Core/Application.h"
+#include "../Core/Log.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 

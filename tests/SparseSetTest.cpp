@@ -1,5 +1,4 @@
 #include "TestsSetUp.h"
-#include "Iron/EntityComponentSystem/SparseSet.h"
 
 TEST(SparseSetTest, Initialization)
 {

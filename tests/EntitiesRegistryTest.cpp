@@ -1,6 +1,4 @@
 #include "TestsSetUp.h"
-
-#include "Iron.h"
 #include "common/TestComponent1.h"
 #include "common/TestComponent2.h"
 #include "common/TestComponent1System.h"

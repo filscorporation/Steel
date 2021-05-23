@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "../Core/Log.h"
 #include "Entity.h"
 
 template <typename T>
@@ -34,9 +33,10 @@ public:
         return sparse.size() > id && dense.size() > (s_id = sparse[id]) && dense[s_id] == id;
     }
 
-    T& Add(EntityID id, EntityID param)
+    template<typename... Args>
+    T& Add(EntityID id, Args... args)
     {
-        data.emplace_back(param);
+        data.emplace_back(std::forward<Args>(args)...);
         dense.emplace_back(id);
         if (sparse.size() < id + 1)
             sparse.resize(id + 1);
