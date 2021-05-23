@@ -18,14 +18,8 @@ private:
     int GetFPS();
     float lastFPS = 0.0f;
 
-    static void ChangeWireframeMode();
-    static void ChangeCameraMode();
-
     EntityID debugWindowEntity;
     EntityID fpsCounterEntity;
     EntityID drawCallsCounterEntity;
     EntityID verticesCounterEntity;
-    // TODO: static until solution for buttons callbacks
-    static EntityID wireframeModeStatusEntity;
-    static EntityID freeCameraModeStatusEntity;
 };

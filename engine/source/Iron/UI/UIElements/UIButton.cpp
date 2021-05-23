@@ -91,7 +91,7 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& ui
     {
         PlayTransition(_transitionsInfo.Clicked);
         if (Callback != nullptr)
-            Callback();
+            Callback(Owner);
         if (ScriptingSystem::IsInitialized())
             ScriptingCore::CallEventMethod(Owner, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
     }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "../UIComponent.h"
 #include "../UIEvent.h"
 #include "UIImage.h"
@@ -43,7 +45,7 @@ struct ButtonTransitionsInfo
     ButtonTransitionData Disabled;
 };
 
-typedef void(*ButtonCallback)();
+typedef std::function<void(EntityID)> ButtonCallback;
 
 class UIButton : public UIImage
 {

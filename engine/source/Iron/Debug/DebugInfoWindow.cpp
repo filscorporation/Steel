@@ -3,9 +3,6 @@
 #include "../Rendering/Renderer.h"
 #include "Debug.h"
 
-EntityID DebugInfoWindow::wireframeModeStatusEntity = NULL_ENTITY;
-EntityID DebugInfoWindow::freeCameraModeStatusEntity = NULL_ENTITY;
-
 DebugInfoWindow::DebugInfoWindow()
 {
     Create();
@@ -158,7 +155,6 @@ void DebugInfoWindow::Create()
         auto buttonEntity = scene->GetUILayer()->CreateUIElement("Wireframe Mode button", debugWindowEntity);
         auto& button = registry->AddComponent<UIButton>(buttonEntity);
         button.SetImage(buttonSprite);
-        button.Callback = ChangeWireframeMode;
         auto& buttonRT = registry->GetComponent<RectTransformation>(buttonEntity);
         buttonRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -166,7 +162,7 @@ void DebugInfoWindow::Create()
         buttonRT.SetAnchoredPosition(glm::vec2(-40 - 2, -y - 20 * 0.5f));
         buttonRT.SetSortingOrder(-1);
 
-        wireframeModeStatusEntity = scene->GetUILayer()->CreateUIElement("Wireframe Mode status", buttonEntity);
+        EntityID wireframeModeStatusEntity = scene->GetUILayer()->CreateUIElement("Wireframe Mode status", buttonEntity);
         auto& labelText = registry->AddComponent<UIText>(wireframeModeStatusEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -176,6 +172,16 @@ void DebugInfoWindow::Create()
         labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         labelRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         labelRT.SetSortingOrder(-1);
+
+        button.Callback = [wireframeModeStatusEntity](EntityID entityID)
+        {
+            auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+            Renderer::DrawWireframe = !Renderer::DrawWireframe;
+            if (Renderer::DrawWireframe)
+                registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText("Enabled");
+            else
+                registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText("Disabled");
+        };
     }
 
     y += 20;
@@ -197,7 +203,6 @@ void DebugInfoWindow::Create()
         auto buttonEntity = scene->GetUILayer()->CreateUIElement("Free Camera Mode button", debugWindowEntity);
         auto& button = registry->AddComponent<UIButton>(buttonEntity);
         button.SetImage(buttonSprite);
-        button.Callback = ChangeCameraMode;
         auto& buttonRT = registry->GetComponent<RectTransformation>(buttonEntity);
         buttonRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -205,7 +210,7 @@ void DebugInfoWindow::Create()
         buttonRT.SetAnchoredPosition(glm::vec2(-40 - 2, -y - 20 * 0.5f));
         buttonRT.SetSortingOrder(-1);
 
-        freeCameraModeStatusEntity = scene->GetUILayer()->CreateUIElement("Free Camera Mode status", buttonEntity);
+        EntityID freeCameraModeStatusEntity = scene->GetUILayer()->CreateUIElement("Free Camera Mode status", buttonEntity);
         auto& labelText = registry->AddComponent<UIText>(freeCameraModeStatusEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -215,6 +220,16 @@ void DebugInfoWindow::Create()
         labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         labelRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         labelRT.SetSortingOrder(-1);
+
+        button.Callback = [freeCameraModeStatusEntity](EntityID entityID)
+        {
+            auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+            Debug::FreeCameraMode = !Debug::FreeCameraMode;
+            if (Debug::FreeCameraMode)
+                registry->GetComponent<UIText>(freeCameraModeStatusEntity).SetText("Enabled");
+            else
+                registry->GetComponent<UIText>(freeCameraModeStatusEntity).SetText("Disabled");
+        };
     }
 }
 
@@ -224,24 +239,4 @@ int DebugInfoWindow::GetFPS()
     float currentFPS = Time::DeltaTime() == 0.0f ? 0.0f : 1.0f / Time::DeltaTime();
     lastFPS = (lastFPS * smoothing) + (currentFPS * (1.0f - smoothing));
     return (int)lastFPS;
-}
-
-void DebugInfoWindow::ChangeWireframeMode()
-{
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    Renderer::DrawWireframe = !Renderer::DrawWireframe;
-    if (Renderer::DrawWireframe)
-        registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText("Enabled");
-    else
-        registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText("Disabled");
-}
-
-void DebugInfoWindow::ChangeCameraMode()
-{
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    Debug::FreeCameraMode = !Debug::FreeCameraMode;
-    if (Debug::FreeCameraMode)
-        registry->GetComponent<UIText>(freeCameraModeStatusEntity).SetText("Enabled");
-    else
-        registry->GetComponent<UIText>(freeCameraModeStatusEntity).SetText("Disabled");
 }
