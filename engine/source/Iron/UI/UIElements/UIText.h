@@ -19,6 +19,16 @@ namespace AlignmentTypes
     };
 }
 
+namespace OverflowModes
+{
+    enum OverflowMode
+    {
+        Overflow,
+        WrapByLetters,
+        WrapByWords,
+    };
+}
+
 class UIText : public UIComponent
 {
 public:
@@ -31,6 +41,8 @@ public:
     std::string GetText() const;
     uint32_t GetTextSize() const;
     void SetTextSize(uint32_t size);
+    float GetLineSpacing() const;
+    void SetLineSpacing(float spacing);
     void SetText(const std::string& text);
     const glm::vec4& GetColor() const;
     void SetColor(glm::vec4 color);
@@ -38,6 +50,8 @@ public:
     void SetIsTextAutoSize(bool isAutoSize);
     AlignmentTypes::AlignmentType GetTextAlignment() const;
     void SetTextAlignment(AlignmentTypes::AlignmentType alignmentType);
+    OverflowModes::OverflowMode GetOverflowMode() const;
+    void SetOverflowMode(OverflowModes::OverflowMode overflowMode);
 
 private:
     void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
@@ -45,15 +59,24 @@ private:
     void ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const;
     void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const;
 
+    void GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<uint32_t>& linesSize, std::vector<uint32_t>& lettersCount);
+    static bool IsNewLine(char c);
+    static bool IsSpace(char c);
+    int OriginX(float rectWidth, uint32_t lineWidth);
+    int OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeight);
+
     Font* _font = nullptr;
     std::string _text;
     uint32_t _textSize = 14;
     uint32_t _textSizeRef = 0;
+    float _lineSpacing = 1.0f;
     bool _isTextAutoSize = false;
     AlignmentTypes::AlignmentType _textAlignment = AlignmentTypes::CenterLeft;
+    OverflowModes::OverflowMode _overflowMode = OverflowModes::Overflow;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
     uint32_t _lettersChangedCount = 0;
+    uint32_t _lastLinesCount = 1;
     bool _dirtyText = false;
     bool _dirtyTextColor = false;
 

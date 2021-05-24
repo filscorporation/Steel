@@ -88,6 +88,7 @@
         <Compile Include="UI\CallbackList.cs" />
         <Compile Include="UI\CallbackWrapper.cs" />
         <Compile Include="UI\EventManager.cs" />
+        <Compile Include="UI\OverflowMode.cs" />
         <Compile Include="UI\RectTransformation.cs" />
         <Compile Include="UI\UI.cs" />
         <Compile Include="UI\UIButton.cs" />

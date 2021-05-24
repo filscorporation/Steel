@@ -19,12 +19,17 @@ struct Character
 struct CharactersAtlas
 {
     unsigned int TextureID;
-    glm::ivec2 Size;
+    glm::ivec2 CanvasSize;
     uint32_t MinY;
     uint32_t MaxY;
     std::unordered_map<char, Character> Characters;
 
     uint32_t RefCount = 0;
+
+    uint32_t LineHeight() const
+    {
+        return MaxY - MinY;
+    }
 };
 
 class Font

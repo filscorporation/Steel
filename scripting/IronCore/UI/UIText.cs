@@ -27,6 +27,15 @@ namespace Iron
         }
         
         /// <summary>
+        /// Space between lines of text relative to font size
+        /// </summary>
+        public float LineSpacing
+        {
+            get => GetLineSpacing_Internal(Entity.ID);
+            set => SetLineSpacing_Internal(Entity.ID, value);
+        }
+        
+        /// <summary>
         /// Text color
         /// </summary>
         public Color Color
@@ -52,6 +61,15 @@ namespace Iron
             get => GetTextAlignment_Internal(Entity.ID);
             set => SetTextAlignment_Internal(Entity.ID, value);
         }
+        
+        /// <summary>
+        /// How text should act when the line doesn't fit in the rect
+        /// </summary>
+        public OverflowMode TextOverflowMode
+        {
+            get => GetTextOverflowMode_Internal(Entity.ID);
+            set => SetTextOverflowMode_Internal(Entity.ID, value);
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string GetText_Internal(uint entityID);
@@ -64,6 +82,12 @@ namespace Iron
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetTextSize_Internal(uint entityID, int textSize);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float GetLineSpacing_Internal(uint entityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetLineSpacing_Internal(uint entityID, float spacing);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Color GetColor_Internal(uint entityID);
@@ -82,5 +106,11 @@ namespace Iron
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetTextAlignment_Internal(uint entityID, AlignmentType alignmentType);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern OverflowMode GetTextOverflowMode_Internal(uint entityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetTextOverflowMode_Internal(uint entityID, OverflowMode overflowMode);
     }
 }

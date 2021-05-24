@@ -49,12 +49,16 @@ namespace UIInternalCalls
     void UIText_SetText(EntityID entityID, MonoString* text);
     int UIText_GetTextSize(EntityID entityID);
     void UIText_SetTextSize(EntityID entityID, int textSize);
+    float UIText_GetLineSpacing(EntityID entityID);
+    void UIText_SetLineSpacing(EntityID entityID, float spacing);
     glm::vec4 UIText_GetColor(EntityID entityID);
     void UIText_SetColor(EntityID entityID, glm::vec4 color);
     bool UIButton_GetIsTextAutoSize(EntityID entityID);
     void UIButton_SetIsTextAutoSize(EntityID entityID, bool isAutoSize);
-    bool UIButton_GetTextAlignment(EntityID entityID);
+    AlignmentTypes::AlignmentType UIButton_GetTextAlignment(EntityID entityID);
     void UIButton_SetTextAlignment(EntityID entityID, AlignmentTypes::AlignmentType alignmentType);
+    OverflowModes::OverflowMode UIButton_GetTextOverflowMode(EntityID entityID);
+    void UIButton_SetTextOverflowMode(EntityID entityID, OverflowModes::OverflowMode overflowMode);
 
     // UI
     EntityID UI_CreateUIElement();

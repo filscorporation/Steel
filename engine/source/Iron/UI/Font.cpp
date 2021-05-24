@@ -120,7 +120,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
     OpenGLAPI::EndGenerateTexture();
 
     atlas.TextureID = textureID;
-    atlas.Size = glm::ivec2(width, height);
+    atlas.CanvasSize = glm::ivec2(width, height);
     atlas.MinY = minY;
     atlas.MaxY = maxY;
 }

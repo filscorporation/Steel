@@ -212,12 +212,16 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UIText::SetText_Internal", (void*)UIInternalCalls::UIText_SetText);
     mono_add_internal_call("Iron.UIText::GetTextSize_Internal", (void*)UIInternalCalls::UIText_GetTextSize);
     mono_add_internal_call("Iron.UIText::SetTextSize_Internal", (void*)UIInternalCalls::UIText_SetTextSize);
+    mono_add_internal_call("Iron.UIText::GetLineSpacing_Internal", (void*)UIInternalCalls::UIText_GetLineSpacing);
+    mono_add_internal_call("Iron.UIText::SetLineSpacing_Internal", (void*)UIInternalCalls::UIText_SetLineSpacing);
     mono_add_internal_call("Iron.UIText::GetColor_Internal", (void*)UIInternalCalls::UIText_GetColor);
     mono_add_internal_call("Iron.UIText::SetColor_Internal", (void*)UIInternalCalls::UIText_SetColor);
     mono_add_internal_call("Iron.UIText::GetIsTextAutoSize_Internal", (void*)UIInternalCalls::UIButton_GetIsTextAutoSize);
     mono_add_internal_call("Iron.UIText::SetIsTextAutoSize_Internal", (void*)UIInternalCalls::UIButton_SetIsTextAutoSize);
     mono_add_internal_call("Iron.UIText::GetTextAlignment_Internal", (void*)UIInternalCalls::UIButton_GetTextAlignment);
     mono_add_internal_call("Iron.UIText::SetTextAlignment_Internal", (void*)UIInternalCalls::UIButton_SetTextAlignment);
+    mono_add_internal_call("Iron.UIText::GetTextOverflowMode_Internal", (void*)UIInternalCalls::UIButton_GetTextOverflowMode);
+    mono_add_internal_call("Iron.UIText::SetTextOverflowMode_Internal", (void*)UIInternalCalls::UIButton_SetTextOverflowMode);
 
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);

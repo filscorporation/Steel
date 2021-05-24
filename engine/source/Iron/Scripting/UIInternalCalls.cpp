@@ -249,6 +249,20 @@ void UIInternalCalls::UIText_SetTextSize(EntityID entityID, int textSize)
     component.SetTextSize(textSize);
 }
 
+float UIInternalCalls::UIText_GetLineSpacing(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIText, 0.0f)
+
+    return component.GetLineSpacing();
+}
+
+void UIInternalCalls::UIText_SetLineSpacing(EntityID entityID, float spacing)
+{
+    GET_COMPONENT_OR_RETURN(UIText, )
+
+    component.SetLineSpacing(spacing);
+}
+
 glm::vec4 UIInternalCalls::UIText_GetColor(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIText, glm::vec4(0.0f))
@@ -277,9 +291,9 @@ void UIInternalCalls::UIButton_SetIsTextAutoSize(EntityID entityID, bool isAutoS
     component.SetIsTextAutoSize(isAutoSize);
 }
 
-bool UIInternalCalls::UIButton_GetTextAlignment(EntityID entityID)
+AlignmentTypes::AlignmentType UIInternalCalls::UIButton_GetTextAlignment(EntityID entityID)
 {
-    GET_COMPONENT_OR_RETURN(UIText, 0)
+    GET_COMPONENT_OR_RETURN(UIText, AlignmentTypes::CenterLeft)
 
     return component.GetTextAlignment();
 }
@@ -289,6 +303,20 @@ void UIInternalCalls::UIButton_SetTextAlignment(EntityID entityID, AlignmentType
     GET_COMPONENT_OR_RETURN(UIText, )
 
     component.SetTextAlignment(alignmentType);
+}
+
+OverflowModes::OverflowMode UIInternalCalls::UIButton_GetTextOverflowMode(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIText, OverflowModes::Overflow)
+
+    return component.GetOverflowMode();
+}
+
+void UIInternalCalls::UIButton_SetTextOverflowMode(EntityID entityID, OverflowModes::OverflowMode overflowMode)
+{
+    GET_COMPONENT_OR_RETURN(UIText, )
+
+    component.SetOverflowMode(overflowMode);
 }
 
 EntityID UIInternalCalls::UI_CreateUIElement()

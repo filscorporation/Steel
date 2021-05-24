@@ -2,6 +2,7 @@
 
 #include "UIText.h"
 #include "../../Core/Application.h"
+#include "../../Core/Log.h"
 #include "../UIQuadRenderer.h"
 
 void UIText::Rebuild(RectTransformation& rectTransformation, bool transformationDirty)
@@ -64,14 +65,13 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         // We will try to fit text into the rect
 
         // Calculate text metrics
-        int fullTextWidth = 0;
-        for (auto c : _text)
-        {
-            auto& character = atlas.Characters[c];
-            fullTextWidth += character.Advance;
-        }
+        std::vector<uint32_t> linesSize;
+        std::vector<uint32_t> lettersCount;
+        GetLinesSize(atlas, rectSize.x, linesSize, lettersCount);
+        uint32_t spacing = std::floor((float)atlas.LineHeight() * _lineSpacing);
+        uint32_t textHeight = atlas.LineHeight() + (linesSize.size() - 1) * spacing;
 
-        if ((float)(atlas.MaxY - atlas.MinY) > rectSize.y)
+        if (linesSize.empty() || (float)atlas.LineHeight() > rectSize.y)
         {
             // Text height is bigger than rect, text can't be drawn
             ForeachLetterDelete(entitiesRegistry, letters.size());
@@ -83,62 +83,39 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         }
 
         // Calculate alignment variables
-        float originY = 0;
-        switch (_textAlignment)
-        {
-            case AlignmentTypes::TopLeft:
-            case AlignmentTypes::TopMiddle:
-            case AlignmentTypes::TopRight:
-                originY = (rectSize.y - atlas.MaxY) / rectSize.y;
-                break;
-            case AlignmentTypes::CenterLeft:
-            case AlignmentTypes::CenterMiddle:
-            case AlignmentTypes::CenterRight:
-                originY = 0.5f - (float)(atlas.MaxY + atlas.MinY) * 0.5f / rectSize.y;
-                break;
-            case AlignmentTypes::BottomLeft:
-            case AlignmentTypes::BottomMiddle:
-            case AlignmentTypes::BottomRight:
-                originY = (float)(-(int)atlas.MinY) / rectSize.y;
-                break;
-        }
-
-        uint32_t cursorX = 0;
-        switch (_textAlignment)
-        {
-            case AlignmentTypes::TopLeft:
-            case AlignmentTypes::CenterLeft:
-            case AlignmentTypes::BottomLeft:
-                cursorX = 0;
-                break;
-            case AlignmentTypes::TopMiddle:
-            case AlignmentTypes::CenterMiddle:
-            case AlignmentTypes::BottomMiddle:
-                cursorX = (uint32_t)std::floor(rectSize.x * 0.5f - (float)fullTextWidth * 0.5f);
-                break;
-            case AlignmentTypes::TopRight:
-            case AlignmentTypes::CenterRight:
-            case AlignmentTypes::BottomRight:
-                cursorX = (uint32_t)std::floor(rectSize.x - (float)fullTextWidth);
-                break;
-        }
+        int cursorX = OriginX(rectSize.x, linesSize[0]);
+        int cursorY = OriginY(atlas, rectSize.y, textHeight);
 
         // Move cursor to first changed letter
-        for (uint32_t i = 0; i < letters.size(); ++i)
-            cursorX += atlas.Characters[_text[i]].Advance;
+        // TODO: rework rebuilding optimization for multiline text
+        //for (uint32_t i = 0; i < letters.size(); ++i)
+        //    cursorX += atlas.Characters[_text[i]].Advance;
+
         // Create letter renderer for each letter and calculate its transformation
         letters.reserve(_text.size());
+        uint32_t currentLine = 0, lettersInLine = 0;
         for (uint32_t i = letters.size(); i < _text.size(); ++i)
         {
+            if (lettersInLine >= lettersCount[currentLine])
+            {
+                currentLine++;
+                lettersInLine = 0;
+                cursorX = OriginX(rectSize.x, linesSize[currentLine]);
+                cursorY -= (int)spacing;
+                i--;
+                continue;
+            }
+
             char& c = _text[i];
             auto& character = atlas.Characters[c];
 
             // If letter doesn't fit into rect, it will be hidden
-            bool isRendered = cursorX >= 0 && (float)cursorX + character.Advance <= rectSize.x;
+            bool isRendered = cursorX >= 0 && (float)cursorX + (float)character.Advance <= rectSize.x;
             if (!isRendered)
             {
                 letters.push_back(NULL_ENTITY);
-                cursorX += character.Advance;
+                lettersInLine++;
+                cursorX += (int)character.Advance;
                 continue;
             }
 
@@ -154,8 +131,8 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             letterRenderer.TextureCoords[3] = glm::vec2(character.BottomLeft.x, character.TopRight.y);
 
             // Calculate letter rect
-            float x = ((float)cursorX + character.Bearing.x + character.Size.x * 0.5f) / rectSize.x - 0.5f;
-            float y = originY + (character.Bearing.y - character.Size.y * 0.5f) / rectSize.y - 0.5f;
+            float x = ((float)cursorX + (float)character.Bearing.x + (float)character.Size.x * 0.5f) / rectSize.x - 0.5f;
+            float y = ((float)cursorY + (float)character.Bearing.y - (float)character.Size.y * 0.5f) / rectSize.y - 0.5f;
             float hw = 0.5f * (float)character.Size.x / rectSize.x;
             float hh = 0.5f * (float)character.Size.y / rectSize.y;
             letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
@@ -168,7 +145,8 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
                 letterRenderer.Vertices[j] = rectMatrix * letterRenderer.DefaultVertices[j];
 
             letters.push_back(letterEntityID);
-            cursorX += character.Advance;
+            lettersInLine++;
+            cursorX += (int)character.Advance;
         }
 
         _dirtyText = false;
@@ -211,14 +189,15 @@ void UIText::SetText(const std::string& text)
         return;
 
     // Save how many letters changed (to not rebuild text when one last char changed)
+    // TODO: rework rebuilding optimization for multiline text
     _lettersChangedCount = letters.size();
-    for (uint32_t i = _lettersChangedCount; i < std::min(text.size(), letters.size()); ++i)
-    {
-        if (text[i] == _text[i])
-            _lettersChangedCount--;
-        else
-            break;
-    }
+    //for (uint32_t i = _lettersChangedCount; i < std::min(text.size(), letters.size()); ++i)
+    //{
+    //    if (text[i] == _text[i])
+    //        _lettersChangedCount--;
+    //    else
+    //        break;
+    //}
 
     _text = text;
     _dirtyText = true;
@@ -236,6 +215,21 @@ void UIText::SetTextSize(uint32_t size)
 
     _lettersChangedCount = letters.size();
     _textSize = size;
+    _dirtyText = true;
+}
+
+float UIText::GetLineSpacing() const
+{
+    return _lineSpacing;
+}
+
+void UIText::SetLineSpacing(float spacing)
+{
+    if (_lineSpacing == spacing || spacing < 0.0f)
+        return;
+
+    _lettersChangedCount = letters.size();
+    _lineSpacing = spacing;
     _dirtyText = true;
 }
 
@@ -282,6 +276,21 @@ void UIText::SetTextAlignment(AlignmentTypes::AlignmentType alignmentType)
     _dirtyText = true;
 }
 
+OverflowModes::OverflowMode UIText::GetOverflowMode() const
+{
+    return _overflowMode;
+}
+
+void UIText::SetOverflowMode(OverflowModes::OverflowMode overflowMode)
+{
+    if (_overflowMode == overflowMode)
+        return;
+
+    _lettersChangedCount = letters.size();
+    _overflowMode = overflowMode;
+    _dirtyText = true;
+}
+
 void UIText::ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const
 {
     for (auto& letterID : letters)
@@ -320,5 +329,122 @@ void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const 
         auto& renderer = lettersAccessor.Get(letterID);
         for (int j = 0; j < 4; ++j)
             renderer.Vertices[j] = transformationMatrix * renderer.DefaultVertices[j];
+    }
+}
+
+bool UIText::IsNewLine(char c)
+{
+    return c == '\n';
+}
+
+bool UIText::IsSpace(char c)
+{
+    return c == ' ';
+}
+
+void UIText::GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<uint32_t>& linesSize, std::vector<uint32_t>& lettersCount)
+{
+    int line = 0;
+    linesSize.push_back(0);
+    lettersCount.push_back(0);
+    int lastSpace = -1;
+    uint32_t wordSize = 0;
+
+    for (int i = 0; i < _text.size(); ++i)
+    {
+        if (IsNewLine(_text[i]))
+        {
+            lastSpace = -1;
+            linesSize.push_back(0);
+            lettersCount[line]++;
+            lettersCount.push_back(0);
+            line++;
+            continue;
+        }
+        auto& character = atlas.Characters[_text[i]];
+        switch (_overflowMode)
+        {
+            case OverflowModes::Overflow:
+                break;
+            case OverflowModes::WrapByLetters:
+                if (linesSize[line] + character.Advance > maxWidth)
+                {
+                    lastSpace = -1;
+                    wordSize = 0;
+                    linesSize.push_back(0);
+                    lettersCount.push_back(0);
+                    line++;
+                    i--;
+                    continue;
+                }
+                break;
+            case OverflowModes::WrapByWords:
+                if (linesSize[line] + character.Advance > maxWidth)
+                {
+                    if (!IsSpace(_text[i]) && lastSpace != -1)
+                    {
+                        i -= (int)(lettersCount[line] - lastSpace);
+                        linesSize[line] -= wordSize;
+                        lettersCount[line] = lastSpace;
+                    }
+                    lastSpace = -1;
+                    wordSize = 0;
+                    linesSize.push_back(0);
+                    lettersCount.push_back(0);
+                    line++;
+                    i--; // TODO: next line will start with space
+                    continue;
+                }
+                break;
+        }
+        linesSize[line] += character.Advance;
+        lettersCount[line]++;
+        if (IsSpace(_text[i]))
+        {
+            lastSpace = lettersCount[line] - 1;
+            wordSize = 0;
+        }
+        else
+        {
+            wordSize += character.Advance;
+        }
+    }
+}
+
+int UIText::OriginX(float rectWidth, uint32_t lineWidth)
+{
+    switch (_textAlignment)
+    {
+        case AlignmentTypes::TopLeft:
+        case AlignmentTypes::CenterLeft:
+        case AlignmentTypes::BottomLeft:
+            return 0;
+        case AlignmentTypes::TopMiddle:
+        case AlignmentTypes::CenterMiddle:
+        case AlignmentTypes::BottomMiddle:
+            return (int)std::floor((rectWidth - (float)lineWidth) * 0.5f);
+        case AlignmentTypes::TopRight:
+        case AlignmentTypes::CenterRight:
+        case AlignmentTypes::BottomRight:
+            return (int)std::floor(rectWidth - (float)lineWidth);
+    }
+}
+
+int UIText::OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeight)
+{
+    switch (_textAlignment)
+    {
+        case AlignmentTypes::TopLeft:
+        case AlignmentTypes::TopMiddle:
+        case AlignmentTypes::TopRight:
+            return (int)std::floor(rectHeight - (float)atlas.MaxY);
+        case AlignmentTypes::CenterLeft:
+        case AlignmentTypes::CenterMiddle:
+        case AlignmentTypes::CenterRight:
+            return (int)std::floor((rectHeight + (float)textHeight) * 0.5f) - (int)atlas.MaxY;
+        case AlignmentTypes::BottomLeft:
+        case AlignmentTypes::BottomMiddle:
+        case AlignmentTypes::BottomRight:
+            return (int)textHeight - (int)atlas.MaxY;
     }
 }
