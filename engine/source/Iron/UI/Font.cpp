@@ -80,7 +80,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
 
     auto& glyph = face->glyph;
     uint32_t width = 0, height = 0;
-    int minY = 0, maxY = 0;
+    int minY = 0, maxY = 0, maxX = 0;
 
     for (int i = CHARACTERS_START; i < CHARACTERS_NUMBER; i++)
     {
@@ -93,6 +93,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
         height = std::max(height, glyph->bitmap.rows);
         minY = std::min(minY, glyph->bitmap_top - (int)glyph->bitmap.rows);
         maxY = std::max(maxY, glyph->bitmap_top);
+        maxX = (int)std::max((uint32_t)maxX, static_cast<uint32_t>(glyph->advance.x >> 6));
     }
 
     uint32_t textureID = OpenGLAPI::BeginGenerateMonochromeTexture(width, height);
@@ -123,6 +124,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
     atlas.CanvasSize = glm::ivec2(width, height);
     atlas.MinY = minY;
     atlas.MaxY = maxY;
+    atlas.MaxX = maxX;
 }
 
 void Font::FreeSizeInner(uint32_t size)

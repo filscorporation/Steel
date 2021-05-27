@@ -17,7 +17,6 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         ForeachLetterDelete(entitiesRegistry, letters.size());
         _dirtyText = false;
         _dirtyTextColor = false;
-        rectTransformation.SetTransformationChanged(false);
         if (_textSizeRef != 0)
         {
             _font->FreeSize(_textSizeRef);
@@ -63,24 +62,28 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
 
         // We will try to fit text into the rect
+        bool valid = (float)atlas.LineHeight() <= rectSize.y && (float)atlas.MaxX <= rectSize.x;
 
         // Calculate text metrics
         std::vector<uint32_t> linesSize;
         std::vector<uint32_t> lettersCount;
-        GetLinesSize(atlas, rectSize.x, linesSize, lettersCount);
-        uint32_t spacing = std::floor((float)atlas.LineHeight() * _lineSpacing);
-        uint32_t textHeight = atlas.LineHeight() + (linesSize.size() - 1) * spacing;
-
-        if (linesSize.empty() || (float)atlas.LineHeight() > rectSize.y)
+        if (valid)
         {
-            // Text height is bigger than rect, text can't be drawn
+            GetLinesSize(atlas, rectSize.x, linesSize, lettersCount);
+            valid = !linesSize.empty();
+        }
+
+        if (!valid)
+        {
+            // Text is not valid, it can't be drawn
             ForeachLetterDelete(entitiesRegistry, letters.size());
             _dirtyText = false;
             _dirtyTextColor = false;
-            rectTransformation.SetTransformationChanged(false);
 
             return;
         }
+        uint32_t spacing = std::floor((float)atlas.LineHeight() * _lineSpacing);
+        uint32_t textHeight = atlas.LineHeight() + (linesSize.size() - 1) * spacing;
 
         // Calculate alignment variables
         int cursorX = OriginX(rectSize.x, linesSize[0]);
@@ -110,7 +113,8 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             auto& character = atlas.Characters[c];
 
             // If letter doesn't fit into rect, it will be hidden
-            bool isRendered = cursorX >= 0 && (float)cursorX + (float)character.Advance <= rectSize.x;
+            bool isRendered = cursorX >= 0 && (float)cursorX + (float)character.Advance <= rectSize.x
+                && cursorY >= -atlas.MinY && (float)cursorY + (float)atlas.MaxY <= rectSize.y;
             if (!isRendered)
             {
                 letters.push_back(NULL_ENTITY);
@@ -162,7 +166,6 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
     {
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
         ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix);
-        rectTransformation.SetTransformationChanged(false);
     }
 }
 
@@ -381,18 +384,24 @@ void UIText::GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<ui
             case OverflowModes::WrapByWords:
                 if (linesSize[line] + character.Advance > maxWidth)
                 {
-                    if (!IsSpace(_text[i]) && lastSpace != -1)
+                    if (lettersCount[line] != 0 && !IsSpace(_text[i]) && lastSpace != -1)
                     {
-                        i -= (int)(lettersCount[line] - lastSpace);
+                        i -= (int)(lettersCount[line] - lastSpace - 1);
                         linesSize[line] -= wordSize;
-                        lettersCount[line] = lastSpace;
+                        lettersCount[line] = lastSpace + 1;
+                    }
+                    if (IsSpace(_text[i]))
+                    {
+                        // Skip space at the start of the next line
+                        i++;
+                        lettersCount[line]++;
                     }
                     lastSpace = -1;
                     wordSize = 0;
                     linesSize.push_back(0);
                     lettersCount.push_back(0);
                     line++;
-                    i--; // TODO: next line will start with space
+                    i--;
                     continue;
                 }
                 break;

@@ -20,8 +20,9 @@ struct CharactersAtlas
 {
     unsigned int TextureID;
     glm::ivec2 CanvasSize;
-    uint32_t MinY;
+    int MinY;
     uint32_t MaxY;
+    uint32_t MaxX;
     std::unordered_map<char, Character> Characters;
 
     uint32_t RefCount = 0;

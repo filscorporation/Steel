@@ -129,7 +129,7 @@ namespace Iron
         private static extern void SetAnchorMax_Internal(uint entityID, ref Vector2 anchor);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 GetAnchoredPosition_Internal(uint entityID, out Vector2 position);
+        private static extern void GetAnchoredPosition_Internal(uint entityID, out Vector2 position);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetAnchoredPosition_Internal(uint entityID, ref Vector2 position);
