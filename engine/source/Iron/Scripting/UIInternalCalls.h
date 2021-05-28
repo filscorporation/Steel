@@ -33,12 +33,14 @@ namespace UIInternalCalls
     // UI image
     ResourceID UIImage_GetSprite(EntityID entityID);
     void UIImage_SetSprite(EntityID entityID, ResourceID spriteID);
+    glm::vec4 UIImage_GetColor(EntityID entityID);
+    void UIImage_SetColor(EntityID entityID, glm::vec4 color);
     bool UIImage_GetConsumeEvents(EntityID entityID);
     void UIImage_SetConsumeEvents(EntityID entityID, bool consume);
 
     // UI button
-    ResourceID UIButton_GetSprite(EntityID entityID);
-    void UIButton_SetSprite(EntityID entityID, ResourceID spriteID);
+    EntityID UIButton_GetTargetImage(EntityID entityID);
+    void UIButton_SetTargetImage(EntityID entityID, EntityID targetID);
     bool UIButton_GetInteractable(EntityID entityID);
     void UIButton_SetInteractable(EntityID entityID, bool interactable);
     ButtonTransitionsInfo UIButton_GetTransition(EntityID entityID);

@@ -198,11 +198,13 @@ void ScriptingCallsRegister::RegisterInternalCalls()
 
     mono_add_internal_call("Iron.UIImage::GetSprite_Internal", (void*)UIInternalCalls::UIImage_GetSprite);
     mono_add_internal_call("Iron.UIImage::SetSprite_Internal", (void*)UIInternalCalls::UIImage_SetSprite);
+    mono_add_internal_call("Iron.UIImage::GetColor_Internal", (void*)UIInternalCalls::UIImage_GetColor);
+    mono_add_internal_call("Iron.UIImage::SetColor_Internal", (void*)UIInternalCalls::UIImage_SetColor);
     mono_add_internal_call("Iron.UIImage::GetConsumeEvents_Internal", (void*)UIInternalCalls::UIImage_GetConsumeEvents);
     mono_add_internal_call("Iron.UIImage::SetConsumeEvents_Internal", (void*)UIInternalCalls::UIImage_SetConsumeEvents);
 
-    mono_add_internal_call("Iron.UIButton::GetSprite_Internal", (void*)UIInternalCalls::UIButton_GetSprite);
-    mono_add_internal_call("Iron.UIButton::SetSprite_Internal", (void*)UIInternalCalls::UIButton_SetSprite);
+    mono_add_internal_call("Iron.UIButton::GetTargetImage_Internal", (void*)UIInternalCalls::UIButton_GetTargetImage);
+    mono_add_internal_call("Iron.UIButton::SetTargetImage_Internal", (void*)UIInternalCalls::UIButton_SetTargetImage);
     mono_add_internal_call("Iron.UIButton::GetInteractable_Internal", (void*)UIInternalCalls::UIButton_GetInteractable);
     mono_add_internal_call("Iron.UIButton::SetInteractable_Internal", (void*)UIInternalCalls::UIButton_SetInteractable);
     mono_add_internal_call("Iron.UIButton::GetTransition_Internal", (void*)UIInternalCalls::UIButton_GetTransition);

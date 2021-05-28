@@ -47,16 +47,18 @@ struct ButtonTransitionsInfo
 
 typedef std::function<void(EntityID)> ButtonCallback;
 
-class UIButton : public UIImage
+class UIButton : public UIComponent
 {
 public:
-    explicit UIButton(EntityID ownerEntityID) : UIImage(ownerEntityID) { };
+    explicit UIButton(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
     bool UpdateTransition();
 
     void SetTransitionsInfo(ButtonTransitionsInfo info);
     ButtonTransitionsInfo GetTransitionsInfo() const;
 
+    void SetTargetImage(EntityID targetID);
+    EntityID GetTargetImage() const;
     void SetInteractable(bool interactable);
     bool GetInteractable() const;
 
@@ -66,13 +68,15 @@ private:
     static void HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void PlayTransition(ButtonTransitionData data);
-    void UpdateTransitionForRenderer(UIQuadRenderer& renderer);
 
+    EntityID _targetImage = NULL_ENTITY;
     bool _interactable = true;
     ButtonTransitionsInfo _transitionsInfo {};
 
     bool isHovered = false;
     bool isInTransition = false;
+    bool startingDataInitialized = false;
+    ButtonTransitionData startingTransitionData;
     ButtonTransitionData targetTransitionData;
     float transitionProgress = 0.0f;
 

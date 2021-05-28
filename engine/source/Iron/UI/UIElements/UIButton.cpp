@@ -11,19 +11,41 @@
 bool UIButton::UpdateTransition()
 {
     transitionProgress += Time::UnscaledDeltaTime();
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    bool needInit = !startingDataInitialized;
+    startingDataInitialized = true;
 
-    if (_image->IsSliced)
+    if (_targetImage == NULL_ENTITY)
+        return false;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (!entitiesRegistry->EntityExists(_targetImage) || !entitiesRegistry->HasComponent<UIImage>(_targetImage))
     {
-        for (uint32_t _renderer : _renderers)
-        {
-            auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
-            UpdateTransitionForRenderer(qr);
-        }
+        _targetImage = NULL_ENTITY;
+        return false;
     }
-    else
+    auto& image = entitiesRegistry->GetComponent<UIImage>(_targetImage);
+
+    float t = transitionProgress / _transitionsInfo.TransitionDuration;
+    switch (_transitionsInfo.TransitionType)
     {
-        UpdateTransitionForRenderer(entitiesRegistry->GetComponent<UIQuadRenderer>(Owner));
+        case ButtonTransitionTypes::ColorShift:
+            if (needInit)
+                startingTransitionData.FromColor(image.GetColor());
+            image.SetColor(Math::Lerp(startingTransitionData.ToColor(), targetTransitionData.ToColor(), t));
+            break;
+        case ButtonTransitionTypes::SpriteChange:
+            image.SetImage(Application::Instance->GetResourcesManager()->GetImage(targetTransitionData.Value));
+            isInTransition = false;
+            transitionProgress = 0.0f;
+            break;
+        case ButtonTransitionTypes::SpriteTileChange:
+            image.SetImageTileIndex(targetTransitionData.Value);
+            isInTransition = false;
+            transitionProgress = 0.0f;
+            break;
+        case ButtonTransitionTypes::Animation:
+            // TODO: not supported yet
+            break;
     }
 
     if (transitionProgress > _transitionsInfo.TransitionDuration)
@@ -37,18 +59,22 @@ bool UIButton::UpdateTransition()
 
 void UIButton::SetTransitionsInfo(ButtonTransitionsInfo info)
 {
-    if (info.TransitionType == ButtonTransitionTypes::SpriteTileChange && _image->IsSliced)
-    {
-        Log::LogWarning("Tile change transition type is not supported for sliced images");
-        return;
-    }
-
     _transitionsInfo = info;
 }
 
 ButtonTransitionsInfo UIButton::GetTransitionsInfo() const
 {
     return _transitionsInfo;
+}
+
+void UIButton::SetTargetImage(EntityID targetID)
+{
+    _targetImage = targetID;
+}
+
+EntityID UIButton::GetTargetImage() const
+{
+    return _targetImage;
 }
 
 void UIButton::SetInteractable(bool interactable)
@@ -112,32 +138,8 @@ void UIButton::PlayTransition(ButtonTransitionData data)
         Application::Instance->GetCurrentScene()->GetUILayer()->AddButtonToUpdateQueue(Owner);
     }
 
+    startingDataInitialized = false;
     targetTransitionData = data;
     isInTransition = true;
     transitionProgress = 0.0f;
-}
-
-void UIButton::UpdateTransitionForRenderer(UIQuadRenderer& renderer)
-{
-    float t = transitionProgress / _transitionsInfo.TransitionDuration;
-    switch (_transitionsInfo.TransitionType)
-    {
-        case ButtonTransitionTypes::ColorShift:
-            _color = Math::Lerp(renderer.Color, targetTransitionData.ToColor(), t);
-            renderer.Color = Math::Lerp(renderer.Color, targetTransitionData.ToColor(), t);
-            break;
-        case ButtonTransitionTypes::SpriteChange:
-            SetImage(Application::Instance->GetResourcesManager()->GetImage(targetTransitionData.Value));
-            isInTransition = false;
-            transitionProgress = 0.0f;
-            break;
-        case ButtonTransitionTypes::SpriteTileChange:
-            _image->GetTexCoord(targetTransitionData.Value, renderer.TextureCoords);
-            isInTransition = false;
-            transitionProgress = 0.0f;
-            break;
-        case ButtonTransitionTypes::Animation:
-            // TODO: not supported yet
-            break;
-    }
 }

@@ -25,12 +25,22 @@ namespace Iron
         private CallbackList onClick;
 
         /// <summary>
-        /// Sprite to render
+        /// Image, affected by button transitions
         /// </summary>
-        public Sprite Sprite
+        public UIImage TargetImage
         {
-            get => new Sprite(GetSprite_Internal(Entity.ID));
-            set => SetSprite_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
+            get
+            {
+                uint targetID = GetTargetImage_Internal(Entity.ID);
+                if (targetID == Entity.NULL_ENTITY_ID)
+                    return null;
+                
+                UIImage image = new UIImage();
+                image.Entity = new Entity(targetID);
+                
+                return image;
+            }
+            set => SetTargetImage_Internal(Entity.ID, value?.Entity.ID ?? Entity.NULL_ENTITY_ID);
         }
 
         /// <summary>
@@ -52,10 +62,10 @@ namespace Iron
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint GetSprite_Internal(uint entityID);
+        private static extern uint GetTargetImage_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetSprite_Internal(uint entityID, uint spriteID);
+        private static extern void SetTargetImage_Internal(uint entityID, uint targetID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool GetInteractable_Internal(uint entityID);

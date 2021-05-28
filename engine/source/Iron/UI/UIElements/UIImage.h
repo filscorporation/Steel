@@ -13,6 +13,10 @@ public:
 
     void SetImage(Sprite* image);
     Sprite* GetImage();
+    void SetColor(glm::vec4 color);
+    glm::vec4 GetColor();
+    void SetImageTileIndex(uint32_t index);
+    uint32_t GetImageTileIndex();
 
 protected:
     Sprite* _image;

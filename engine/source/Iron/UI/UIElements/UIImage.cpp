@@ -1,6 +1,7 @@
 #include "UIImage.h"
 #include "../UIQuadRenderer.h"
 #include "../UIEventHandler.h"
+#include "../../Core/Log.h"
 #include "../../Scene/SceneHelper.h"
 #include "../../Rendering/Screen.h"
 
@@ -150,4 +151,62 @@ void UIImage::SetImage(Sprite* image)
 Sprite* UIImage::GetImage()
 {
     return _image;
+}
+
+void UIImage::SetColor(glm::vec4 color)
+{
+    _color = color;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_image->IsSliced)
+    {
+        for (uint32_t _renderer : _renderers)
+        {
+            entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer).Color = _color;
+        }
+    }
+    else
+    {
+        entitiesRegistry->GetComponent<UIQuadRenderer>(Owner).Color = _color;
+    }
+}
+
+glm::vec4 UIImage::GetColor()
+{
+    return _color;
+}
+
+void UIImage::SetImageTileIndex(uint32_t index)
+{
+    if (_image->IsSliced)
+    {
+        // TODO: make it work for sliced
+        Log::LogWarning("Setting tile index for sliced image is not supported yet");
+        return;
+    }
+
+    if (index == currentImageTileIndex)
+        return;
+    currentImageTileIndex = index;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    if (_image->IsSliced)
+    {
+        for (uint32_t _renderer : _renderers)
+        {
+            auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
+            _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
+        }
+    }
+    else
+    {
+        auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(Owner);
+        _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
+    }
+}
+
+uint32_t UIImage::GetImageTileIndex()
+{
+    return currentImageTileIndex;
 }

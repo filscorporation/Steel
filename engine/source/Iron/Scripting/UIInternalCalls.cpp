@@ -164,6 +164,20 @@ void UIInternalCalls::UIImage_SetSprite(EntityID entityID, ResourceID spriteID)
     component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
 }
 
+glm::vec4 UIInternalCalls::UIImage_GetColor(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIImage, glm::vec4(0.0f))
+
+    return component.GetColor();
+}
+
+void UIInternalCalls::UIImage_SetColor(EntityID entityID, glm::vec4 color)
+{
+    GET_COMPONENT_OR_RETURN(UIImage, )
+
+    component.SetColor(color);
+}
+
 bool UIInternalCalls::UIImage_GetConsumeEvents(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIEventHandler, 0)
@@ -178,19 +192,18 @@ void UIInternalCalls::UIImage_SetConsumeEvents(EntityID entityID, bool consume)
     component.IsTransparent = !consume;
 }
 
-ResourceID UIInternalCalls::UIButton_GetSprite(EntityID entityID)
+ResourceID UIInternalCalls::UIButton_GetTargetImage(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIButton, 0)
-    auto image = component.GetImage();
 
-    return image == nullptr ? 0 : image->ID;
+    return component.GetTargetImage();
 }
 
-void UIInternalCalls::UIButton_SetSprite(EntityID entityID, ResourceID spriteID)
+void UIInternalCalls::UIButton_SetTargetImage(EntityID entityID, EntityID targetID)
 {
     GET_COMPONENT_OR_RETURN(UIButton, )
 
-    component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
+    component.SetTargetImage(targetID);
 }
 
 bool UIInternalCalls::UIButton_GetInteractable(EntityID entityID)

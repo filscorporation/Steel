@@ -154,7 +154,7 @@ void DebugInfoWindow::Create()
     {
         auto buttonEntity = scene->GetUILayer()->CreateUIElement("Wireframe Mode button", debugWindowEntity);
         auto& button = registry->AddComponent<UIButton>(buttonEntity);
-        button.SetImage(buttonSprite);
+        registry->GetComponent<UIImage>(buttonEntity).SetImage(buttonSprite);
         auto& buttonRT = registry->GetComponent<RectTransformation>(buttonEntity);
         buttonRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -202,7 +202,7 @@ void DebugInfoWindow::Create()
     {
         auto buttonEntity = scene->GetUILayer()->CreateUIElement("Free Camera Mode button", debugWindowEntity);
         auto& button = registry->AddComponent<UIButton>(buttonEntity);
-        button.SetImage(buttonSprite);
+        registry->GetComponent<UIImage>(buttonEntity).SetImage(buttonSprite);
         auto& buttonRT = registry->GetComponent<RectTransformation>(buttonEntity);
         buttonRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));

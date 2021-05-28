@@ -12,8 +12,21 @@ namespace Iron
         /// </summary>
         public Sprite Sprite
         {
-            get => new Sprite(GetSprite_Internal(Entity.ID));
+            get
+            {
+                uint spriteID = GetSprite_Internal(Entity.ID);
+                return spriteID == Resource.NULL_RESOURCE_ID ? null : new Sprite(spriteID);
+            }
             set => SetSprite_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
+        }
+        
+        /// <summary>
+        /// Color
+        /// </summary>
+        public Color Color
+        {
+            get => GetColor_Internal(Entity.ID);
+            set => SetColor_Internal(Entity.ID, value);
         }
 
         /// <summary>
@@ -30,6 +43,12 @@ namespace Iron
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetSprite_Internal(uint entityID, uint spriteID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Color GetColor_Internal(uint entityID);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColor_Internal(uint entityID, Color color);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool GetConsumeEvents_Internal(uint entityID);

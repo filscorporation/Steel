@@ -77,8 +77,6 @@ void UILayer::Draw()
             bool transformationDirty = rt.DidTransformationChange();
             if (transformationDirty && imageAccessor.Has(hierarchyNode.Owner))
                 imageAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt);
-            if (transformationDirty && buttonAccessor.Has(hierarchyNode.Owner))
-                buttonAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt);
             if (textAccessor.Has(hierarchyNode.Owner))
                 // Possible place for optimization - entering component even if transformation not dirty
                 textAccessor.Get(hierarchyNode.Owner).Rebuild(rt, transformationDirty);
