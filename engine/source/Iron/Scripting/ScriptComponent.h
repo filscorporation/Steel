@@ -39,7 +39,7 @@ public:
 
     struct ScriptData
     {
-        ScriptPointer ScriptPointer;
+        ScriptPointer Pointer;
         ScriptTypeInfo* TypeInfo;
     };
     std::vector<ScriptData> Scripts;
@@ -53,7 +53,7 @@ public:
     for (auto script : Scripts) \
     { \
         if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
-            ScriptingCore::CallMethod(script.ScriptPointer, ScriptingCore::EngineCalls.call##m_method); \
+            ScriptingCore::CallMethod(script.Pointer, ScriptingCore::EngineCalls.call##m_method); \
     } \
 }
 
@@ -64,6 +64,6 @@ public:
     for (auto script : Scripts) \
     { \
         if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
-            ScriptingCore::CallMethod(script.ScriptPointer, ScriptingCore::EngineCalls.call##m_method, m_param); \
+            ScriptingCore::CallMethod(script.Pointer, ScriptingCore::EngineCalls.call##m_method, m_param); \
     } \
 }

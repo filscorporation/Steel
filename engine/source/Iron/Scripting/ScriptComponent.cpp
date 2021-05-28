@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #include "ScriptComponent.h"
 #include "ScriptingCore.h"
 
@@ -32,8 +34,8 @@ void ScriptComponent::RemoveScript(ScriptTypeInfo* typeInfo)
         {
             found = true;
             if (Scripts[i].TypeInfo->Mask & ScriptEventTypes::OnDestroy)
-                ScriptingCore::CallMethod(Scripts[i].ScriptPointer, ScriptingCore::EngineCalls.callOnDestroy);
-            ScriptingCore::FreeScriptHandle(Scripts[i].ScriptPointer);
+                ScriptingCore::CallMethod(Scripts[i].Pointer, ScriptingCore::EngineCalls.callOnDestroy);
+            ScriptingCore::FreeScriptHandle(Scripts[i].Pointer);
             break;
         }
     }
@@ -53,7 +55,7 @@ ScriptPointer ScriptComponent::GetScriptPointer(ScriptTypeInfo* typeInfo)
     for (auto script : Scripts)
     {
         if (script.TypeInfo == typeInfo)
-            return script.ScriptPointer;
+            return script.Pointer;
     }
 
     return 0;

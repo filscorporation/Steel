@@ -10,7 +10,7 @@ void ScriptComponentSystem::OnComponentRemoved(EntityID entityID, ScriptComponen
 {
     component.OnDestroy();
     for (auto script : component.Scripts)
-        ScriptingCore::FreeScriptHandle(script.ScriptPointer);
+        ScriptingCore::FreeScriptHandle(script.Pointer);
 }
 
 void ScriptComponentSystem::OnEntityEnabled(EntityID entityID, ScriptComponent& component)
