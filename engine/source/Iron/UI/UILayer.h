@@ -3,7 +3,6 @@
 #include "../EntityComponentSystem/SparseSet.h"
 #include "../Scene/Scene.h"
 #include "UIEvent.h"
-#include "UIElements/UIButton.h"
 #include "UISystem.h"
 
 class Scene;
@@ -14,6 +13,7 @@ public:
     explicit UILayer(Scene* scene);
     ~UILayer();
 
+    void LoadDefaultResources();
     void Update();
     void Draw();
     void PollEvent(UIEvent& uiEvent);
@@ -32,6 +32,8 @@ public:
     EntityID CreateUIButton(Sprite* sprite, const char* name, EntityID parent);
     EntityID CreateUIText();
     EntityID CreateUIText(const char* text, const char* name, EntityID parent);
+    EntityID CreateUIInputField();
+    EntityID CreateUIInputField(const char* name, EntityID parent);
 
     int PixelsPerUnit = 32;
 
@@ -42,4 +44,6 @@ private:
     SparseSet _buttonsToUpdate;
 
     UISystem* uiSystem;
+
+    Sprite* defaultInputFieldSprite = nullptr;
 };

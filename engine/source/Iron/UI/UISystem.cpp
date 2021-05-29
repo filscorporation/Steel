@@ -4,32 +4,6 @@
 #include "../Core/Log.h"
 #include "../Scripting/ScriptingCore.h"
 
-void UISystem::OnComponentAdded(EntityID entityID, UIText& component)
-{
-    if (!CheckRectTransformation(ComponentSystem<UIText>::Registry, entityID))
-    {
-        ComponentSystem<UIText>::Registry->RemoveComponent<UIText>(entityID);
-        return;
-    }
-
-    component._font = Application::Instance->GetResourcesManager()->DefaultFont();
-}
-
-void UISystem::OnComponentRemoved(EntityID entityID, UIText& component)
-{
-    component.ForeachLetterDelete(ComponentSystem<UIText>::Registry, component.letters.size());
-}
-
-void UISystem::OnEntityEnabled(EntityID entityID, UIText& component)
-{
-    component.ForeachLetterSetActive(ComponentSystem<UIText>::Registry, true);
-}
-
-void UISystem::OnEntityDisabled(EntityID entityID, UIText& component)
-{
-    component.ForeachLetterSetActive(ComponentSystem<UIText>::Registry, false);
-}
-
 void UISystem::OnComponentAdded(EntityID entityID, UIImage& component)
 {
     if (!CheckRectTransformation(ComponentSystem<UIImage>::Registry, entityID))
@@ -83,6 +57,55 @@ void UISystem::OnEntityEnabled(EntityID entityID, UIButton& component)
 { }
 
 void UISystem::OnEntityDisabled(EntityID entityID, UIButton& component)
+{ }
+
+void UISystem::OnComponentAdded(EntityID entityID, UIText& component)
+{
+    if (!CheckRectTransformation(ComponentSystem<UIText>::Registry, entityID))
+    {
+        ComponentSystem<UIText>::Registry->RemoveComponent<UIText>(entityID);
+        return;
+    }
+
+    component._font = Application::Instance->GetResourcesManager()->DefaultFont();
+}
+
+void UISystem::OnComponentRemoved(EntityID entityID, UIText& component)
+{
+    component.ForeachLetterDelete(ComponentSystem<UIText>::Registry, component.letters.size());
+}
+
+void UISystem::OnEntityEnabled(EntityID entityID, UIText& component)
+{
+    component.ForeachLetterSetActive(ComponentSystem<UIText>::Registry, true);
+}
+
+void UISystem::OnEntityDisabled(EntityID entityID, UIText& component)
+{
+    component.ForeachLetterSetActive(ComponentSystem<UIText>::Registry, false);
+}
+
+void UISystem::OnComponentAdded(EntityID entityID, UIInputField& component)
+{
+    if (!CheckRectTransformation(ComponentSystem<UIInputField>::Registry, entityID))
+    {
+        ComponentSystem<UIInputField>::Registry->RemoveComponent<UIInputField>(entityID);
+        return;
+    }
+
+    TryAddEventHandler(ComponentSystem<UIInputField>::Registry, entityID);
+
+    auto& eventHandler = ComponentSystem<UIInputField>::Registry->GetComponent<UIEventHandler>(entityID);
+    component.Init(eventHandler);
+}
+
+void UISystem::OnComponentRemoved(EntityID entityID, UIInputField& component)
+{ }
+
+void UISystem::OnEntityEnabled(EntityID entityID, UIInputField& component)
+{ }
+
+void UISystem::OnEntityDisabled(EntityID entityID, UIInputField& component)
 { }
 
 bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID)

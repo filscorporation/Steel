@@ -52,6 +52,7 @@ void Application::Init(ApplicationSettings settings)
     Physics::Init();
 
     resources->LoadDefaultFont();
+    scene->LoadDefaultResources();
 
     Debug::Init();
 

@@ -225,6 +225,11 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UIText::GetTextOverflowMode_Internal", (void*)UIInternalCalls::UIButton_GetTextOverflowMode);
     mono_add_internal_call("Iron.UIText::SetTextOverflowMode_Internal", (void*)UIInternalCalls::UIButton_SetTextOverflowMode);
 
+    mono_add_internal_call("Iron.UIInputField::GetTargetText_Internal", (void*)UIInternalCalls::UIInputField_GetTargetText);
+    mono_add_internal_call("Iron.UIInputField::SetTargetText_Internal", (void*)UIInternalCalls::UIInputField_SetTargetText);
+    mono_add_internal_call("Iron.UIInputField::GetTargetImage_Internal", (void*)UIInternalCalls::UIInputField_GetTargetImage);
+    mono_add_internal_call("Iron.UIInputField::SetTargetImage_Internal", (void*)UIInternalCalls::UIInputField_SetTargetImage);
+
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal3", (void*)UIInternalCalls::UI_CreateUIElement3);
@@ -234,5 +239,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UI::CreateUIButton_Internal2", (void*)UIInternalCalls::UI_CreateUIButton2);
     mono_add_internal_call("Iron.UI::CreateUIText_Internal", (void*)UIInternalCalls::UI_CreateUIText);
     mono_add_internal_call("Iron.UI::CreateUIText_Internal2", (void*)UIInternalCalls::UI_CreateUIText2);
+    mono_add_internal_call("Iron.UI::CreateUIInputField_Internal", (void*)UIInternalCalls::UI_CreateUIInputField);
+    mono_add_internal_call("Iron.UI::CreateUIInputField_Internal2", (void*)UIInternalCalls::UI_CreateUIInputField2);
     mono_add_internal_call("Iron.UI::IsPointerOverUI_Internal", (void*)UIInternalCalls::UI_IsPointerOverUI);
 }

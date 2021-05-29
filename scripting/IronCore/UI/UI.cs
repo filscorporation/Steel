@@ -117,6 +117,34 @@ namespace Iron
 
             return uiText;
         }
+        
+        /// <summary>
+        /// Creates new UI input field in layout
+        /// </summary>
+        /// <returns>Created input field</returns>
+        public static UIInputField CreateUIInputField()
+        {
+            Entity entity = new Entity(CreateUIInputField_Internal());
+            UIInputField field = new UIInputField();
+            field.Entity = entity;
+
+            return field;
+        }
+        
+        /// <summary>
+        /// Creates new UI input field in layout
+        /// </summary>
+        /// <param name="name">Entity name</param>
+        /// <param name="parent">Entity's parent in the hierarchy</param>
+        /// <returns>Created input field</returns>
+        public static UIInputField CreateUIInputField(string name, Entity parent)
+        {
+            Entity entity = new Entity(CreateUIInputField_Internal2(name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            UIInputField field = new UIInputField();
+            field.Entity = entity;
+
+            return field;
+        }
 
         /// <summary>
         /// Is there any UI object under mouse cursor
@@ -149,6 +177,12 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUIText_Internal2(string text, string name, uint parentEntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUIInputField_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUIInputField_Internal2(string name, uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool IsPointerOverUI_Internal();

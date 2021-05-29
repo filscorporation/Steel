@@ -30,6 +30,7 @@ public:
 private:
     static void Init(GLFWwindow* window);
 
+    static bool IsAnyKeyPressed();
     static bool IsAnyMouseButtonPressed();
     static bool IsAnyMouseButtonJustPressed();
     static bool IsAnyMouseButtonJustReleased();

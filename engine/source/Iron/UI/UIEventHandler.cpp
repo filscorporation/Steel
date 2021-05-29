@@ -121,6 +121,14 @@ void UIEventHandler::HandleEvent(const RectTransformation& rectTransformation, U
             eventType = eventType | UIEventTypes::MouseJustReleasedAnywhere;
         }
     }
+    if (EventsMask & UIEventTypes::KeyInput && uiEvent.AnyKey)
+    {
+        eventType = eventType | UIEventTypes::KeyInput;
+    }
+    if (EventsMask & UIEventTypes::TextInput && !uiEvent.InputString.empty())
+    {
+        eventType = eventType | UIEventTypes::TextInput;
+    }
 
     if (eventType != 0)
         EventCallback(Owner, eventType, uiEvent);

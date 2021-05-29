@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm/vec2.hpp"
+#include <string>
 
 #include "../Core/ButtonStates.h"
 
@@ -22,7 +23,8 @@ namespace UIEventTypes
         MouseDrag                   = 1 << 11,
         MouseDragEnd                = 1 << 12,
         ScrollDelta                 = 1 << 13,
-        Input                       = 1 << 14,
+        KeyInput                    = 1 << 14,
+        TextInput                   = 1 << 15,
     };
 
     inline UIEventType operator|(UIEventType a, UIEventType b)
@@ -44,4 +46,6 @@ struct UIEvent
     glm::vec2 ScrollDelta;
     ButtonStates::ButtonState LeftMouseButtonState;
     ButtonStates::ButtonState RightMouseButtonState;
+    bool AnyKey = false;
+    std::string InputString;
 };

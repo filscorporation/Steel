@@ -62,6 +62,12 @@ namespace UIInternalCalls
     OverflowModes::OverflowMode UIButton_GetTextOverflowMode(EntityID entityID);
     void UIButton_SetTextOverflowMode(EntityID entityID, OverflowModes::OverflowMode overflowMode);
 
+    // UI input field
+    EntityID UIInputField_GetTargetText(EntityID entityID);
+    void UIInputField_SetTargetText(EntityID entityID, EntityID targetID);
+    EntityID UIInputField_GetTargetImage(EntityID entityID);
+    void UIInputField_SetTargetImage(EntityID entityID, EntityID targetID);
+
     // UI
     EntityID UI_CreateUIElement();
     EntityID UI_CreateUIElement2(MonoString* name);
@@ -72,5 +78,7 @@ namespace UIInternalCalls
     EntityID UI_CreateUIButton2(ResourceID spriteID, MonoString* name, EntityID parentEntityID);
     EntityID UI_CreateUIText();
     EntityID UI_CreateUIText2(MonoString* text, MonoString* name, EntityID parentEntityID);
+    EntityID UI_CreateUIInputField();
+    EntityID UI_CreateUIInputField2(MonoString* name, EntityID parentEntityID);
     bool UI_IsPointerOverUI();
 }

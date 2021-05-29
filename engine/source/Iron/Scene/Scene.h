@@ -20,6 +20,7 @@ public:
     Scene();
     ~Scene();
     void CreateMainCamera();
+    void LoadDefaultResources();
     EntityID CreateEntity();
     EntityID CreateEntity(const char* name, EntityID parent);
     EntityID CreateEntity(AsepriteData& data);

@@ -35,6 +35,11 @@ void Scene::CreateMainCamera()
     mainCamera.SetHeight(3.0f);
 }
 
+void Scene::LoadDefaultResources()
+{
+    uiLayer->LoadDefaultResources();
+}
+
 EntitiesRegistry* Scene::GetEntitiesRegistry()
 {
     return entitiesRegistry;

@@ -1,4 +1,6 @@
 #include "UILayer.h"
+#include "UIElements/UIButton.h"
+#include "UIElements/UIInputField.h"
 #include "../Core/Application.h"
 #include "../Rendering/Renderer.h"
 #include "../Scene/Hierarchy.h"
@@ -11,6 +13,7 @@ UILayer::UILayer(Scene* scene)
     _scene->GetEntitiesRegistry()->RegisterSystem<UIText>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIImage>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIButton>(uiSystem);
+    _scene->GetEntitiesRegistry()->RegisterSystem<UIInputField>(uiSystem);
 }
 
 UILayer::~UILayer()
@@ -18,7 +21,14 @@ UILayer::~UILayer()
     _scene->GetEntitiesRegistry()->RemoveSystem<UIText>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIImage>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIButton>();
+    _scene->GetEntitiesRegistry()->RemoveSystem<UIInputField>();
     delete uiSystem;
+}
+
+void UILayer::LoadDefaultResources()
+{
+    defaultInputFieldSprite = Application::Instance->GetResourcesManager()->LoadImage("debug_button.png", true);
+    defaultInputFieldSprite->SetAsSliced(6);
 }
 
 void UILayer::Update()
@@ -45,7 +55,6 @@ void UILayer::Draw()
     auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
     // Components to apply changed transformation
     auto imageAccessor = entitiesRegistry->GetComponentAccessor<UIImage>();
-    auto buttonAccessor = entitiesRegistry->GetComponentAccessor<UIButton>();
     auto textAccessor = entitiesRegistry->GetComponentAccessor<UIText>();
     for (auto& hierarchyNode : hierarchyNodes)
     {
@@ -213,6 +222,29 @@ EntityID UILayer::CreateUIText(const char* text, const char* name, EntityID pare
 {
     auto entity = CreateUIElement(name, parent);
     _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity).SetText(text);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIInputField()
+{
+    auto entity = CreateUIElement();
+    auto& uiText = _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity);
+    auto& uiImage = _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity);
+    uiImage.SetImage(defaultInputFieldSprite);
+    auto& inputField = _scene->GetEntitiesRegistry()->AddComponent<UIInputField>(entity);
+    inputField.SetTargetText(uiText.Owner);
+    inputField.SetTargetImage(uiText.Owner);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIInputField(const char* name, EntityID parent)
+{
+    auto entity = CreateUIElement(name, parent);
+    auto& uiText = _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity);
+    auto& inputField = _scene->GetEntitiesRegistry()->AddComponent<UIInputField>(entity);
+    inputField.SetTargetText(uiText.Owner);
 
     return entity;
 }

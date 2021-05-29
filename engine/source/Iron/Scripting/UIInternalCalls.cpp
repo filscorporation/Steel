@@ -332,6 +332,34 @@ void UIInternalCalls::UIButton_SetTextOverflowMode(EntityID entityID, OverflowMo
     component.SetOverflowMode(overflowMode);
 }
 
+EntityID UIInternalCalls::UIInputField_GetTargetText(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, 0)
+
+    return component.GetTargetText();
+}
+
+void UIInternalCalls::UIInputField_SetTargetText(EntityID entityID, EntityID targetID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetTargetText(targetID);
+}
+
+EntityID UIInternalCalls::UIInputField_GetTargetImage(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, 0)
+
+    return component.GetTargetImage();
+}
+
+void UIInternalCalls::UIInputField_SetTargetImage(EntityID entityID, EntityID targetID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetTargetImage(targetID);
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();
@@ -379,6 +407,16 @@ EntityID UIInternalCalls::UI_CreateUIText()
 EntityID UIInternalCalls::UI_CreateUIText2(MonoString* text, MonoString* name, EntityID parentEntityID)
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIText(mono_string_to_utf8(text), mono_string_to_utf8(name), parentEntityID);
+}
+
+EntityID UIInternalCalls::UI_CreateUIInputField()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIInputField();
+}
+
+EntityID UIInternalCalls::UI_CreateUIInputField2(MonoString* name, EntityID parentEntityID)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIInputField(mono_string_to_utf8(name), parentEntityID);
 }
 
 bool UIInternalCalls::UI_IsPointerOverUI()

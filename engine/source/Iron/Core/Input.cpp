@@ -11,6 +11,7 @@
 
 ButtonStates::ButtonState pressedKeys[MAX_KEY_CODE + 1];
 ButtonStates::ButtonState pressedMouse[MAX_MOUSE_CODE + 1];
+std::string textInput;
 glm::vec2 mousePosition;
 glm::vec2 lastMousePosition;
 glm::vec2 mouseScrollDelta;
@@ -34,6 +35,11 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
         pressedKeys[ikey] = ButtonStates::JustReleased;
         keyIsDirty = true;
     }
+}
+
+void TextInputCallback(GLFWwindow* window, uint32_t codepoint)
+{
+    textInput.push_back((char)codepoint);
 }
 
 void MouseCallback(GLFWwindow* window, int button, int action, int mods)
@@ -72,6 +78,7 @@ void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 void Input::Init(GLFWwindow* window)
 {
     glfwSetKeyCallback(window, KeyCallback);
+    glfwSetCharCallback(window, TextInputCallback);
     glfwSetMouseButtonCallback(window, MouseCallback);
     glfwSetCursorPosCallback(window, CursorPositionCallback);
     glfwSetScrollCallback(window, ScrollCallback);
@@ -164,6 +171,8 @@ UIEvent Input::GetUIEvent()
     uiEvent.ScrollDelta = mouseScrollDelta;
     uiEvent.LeftMouseButtonState = pressedMouse[MouseCodes::ButtonLeft];
     uiEvent.RightMouseButtonState = pressedMouse[MouseCodes::ButtonRight];
+    uiEvent.AnyKey = IsAnyKeyPressed();
+    uiEvent.InputString = textInput;
 
     return uiEvent;
 }
@@ -185,6 +194,7 @@ void Input::PollEvents()
         scrollDeltaIsDirty = true;
         CleanScrollDelta();
     }
+    textInput.clear();
 
     glfwPollEvents();
 }
@@ -280,6 +290,18 @@ void Input::SendMouseCallbacks()
         if (IsAnyMouseButtonJustReleased())
             sr.OnMouseJustReleased();
     }
+}
+
+bool Input::IsAnyKeyPressed()
+{
+    for (int i = 0; i < MAX_KEY_CODE + 1; ++i)
+    {
+        if (IsKeyPressed((KeyCodes::KeyCode)i) ||
+            IsKeyJustPressed((KeyCodes::KeyCode)i) ||
+            IsKeyJustReleased((KeyCodes::KeyCode)i))
+            return true;
+    }
+    return false;
 }
 
 bool Input::IsAnyMouseButtonPressed()

@@ -13,6 +13,7 @@
 #include "../UI/RectTransformation.h"
 #include "../UI/UIElements/UIImage.h"
 #include "../UI/UIElements/UIButton.h"
+#include "../UI/UIElements/UIInputField.h"
 #include "../UI/UIElements/UIText.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/NameComponent.h"
@@ -139,6 +140,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(UIImage, API_CLASS(UIImage))
     CACHE_CLASS(UIButton, API_CLASS(UIButton))
     CACHE_CLASS(UIText, API_CLASS(UIText))
+    CACHE_CLASS(UIInputField, API_CLASS(UIInputField))
 }
 
 void ScriptingCore::CacheDataTypes(MonoImage* image)
@@ -208,6 +210,8 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return entitiesRegistry->AddComponent<UIButton>(entity);
     if (monoClass == CACHED_CLASS(UIText))
         return entitiesRegistry->AddComponent<UIText>(entity);
+    if (monoClass == CACHED_CLASS(UIInputField))
+        return entitiesRegistry->AddComponent<UIInputField>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -259,6 +263,8 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass* monoCl
         return entitiesRegistry->HasComponent<UIButton>(entity);
     if (monoClass == CACHED_CLASS(UIText))
         return entitiesRegistry->HasComponent<UIText>(entity);
+    if (monoClass == CACHED_CLASS(UIInputField))
+        return entitiesRegistry->HasComponent<UIInputField>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -307,6 +313,8 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass* mon
         return entitiesRegistry->RemoveComponent<UIButton>(entity);
     if (monoClass == CACHED_CLASS(UIText))
         return entitiesRegistry->RemoveComponent<UIText>(entity);
+    if (monoClass == CACHED_CLASS(UIInputField))
+        return entitiesRegistry->RemoveComponent<UIInputField>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -356,6 +364,8 @@ bool ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* monoClass, std::vect
         RETURN_COMPONENT_OWNERS(UIButton)
     if (monoClass == CACHED_CLASS(UIText))
         RETURN_COMPONENT_OWNERS(UIText)
+    if (monoClass == CACHED_CLASS(UIInputField))
+        RETURN_COMPONENT_OWNERS(UIInputField)
 
     Log::LogError("Could not find cached class");
 
