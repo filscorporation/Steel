@@ -37,9 +37,7 @@ void DebugInfoWindow::Create()
     auto buttonSprite = resources->LoadImage("debug_button.png", true);
 
     {
-        debugWindowEntity = scene->GetUILayer()->CreateUIElement("Debug window", NULL_ENTITY);
-        auto& windowImage = registry->AddComponent<UIImage>(debugWindowEntity);
-        windowImage.SetImage(windowSprite);
+        debugWindowEntity = scene->GetUILayer()->CreateUIImage(windowSprite, "Debug window", NULL_ENTITY);
         auto& windowRT = registry->GetComponent<RectTransformation>(debugWindowEntity);
         windowRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         windowRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -52,11 +50,10 @@ void DebugInfoWindow::Create()
     float xOffset = 4;
 
     {
-        auto fpsLabelEntity = scene->GetUILayer()->CreateUIElement("FPS label", debugWindowEntity);
-        auto& fpsLabelText = registry->AddComponent<UIText>(fpsLabelEntity);
+        auto fpsLabelEntity = scene->GetUILayer()->CreateUIText("FPS", "FPS label", debugWindowEntity);
+        auto& fpsLabelText = registry->GetComponent<UIText>(fpsLabelEntity);
         fpsLabelText.SetTextSize(16);
         fpsLabelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        fpsLabelText.SetText("FPS");
         auto& fpsLabelRT = registry->GetComponent<RectTransformation>(fpsLabelEntity);
         fpsLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         fpsLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -65,11 +62,10 @@ void DebugInfoWindow::Create()
         fpsLabelRT.SetSortingOrder(-1);
     }
     {
-        fpsCounterEntity = scene->GetUILayer()->CreateUIElement("FPS counter", debugWindowEntity);
-        auto& fpsCounterText = registry->AddComponent<UIText>(fpsCounterEntity);
+        fpsCounterEntity = scene->GetUILayer()->CreateUIText("0", "FPS counter", debugWindowEntity);
+        auto& fpsCounterText = registry->GetComponent<UIText>(fpsCounterEntity);
         fpsCounterText.SetTextSize(16);
         fpsCounterText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        fpsCounterText.SetText("0");
         auto& fpsCounterRT = registry->GetComponent<RectTransformation>(fpsCounterEntity);
         fpsCounterRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         fpsCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -81,11 +77,10 @@ void DebugInfoWindow::Create()
     y += 20;
 
     {
-        auto drawCallsLabelEntity = scene->GetUILayer()->CreateUIElement("Draw Calls label", debugWindowEntity);
-        auto& drawCallsLabelText = registry->AddComponent<UIText>(drawCallsLabelEntity);
+        auto drawCallsLabelEntity = scene->GetUILayer()->CreateUIText("Draw calls", "Draw Calls label", debugWindowEntity);
+        auto& drawCallsLabelText = registry->GetComponent<UIText>(drawCallsLabelEntity);
         drawCallsLabelText.SetTextSize(16);
         drawCallsLabelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        drawCallsLabelText.SetText("Draw calls");
         auto& drawCallsLabelRT = registry->GetComponent<RectTransformation>(drawCallsLabelEntity);
         drawCallsLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         drawCallsLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -94,11 +89,10 @@ void DebugInfoWindow::Create()
         drawCallsLabelRT.SetSortingOrder(-1);
     }
     {
-        drawCallsCounterEntity = scene->GetUILayer()->CreateUIElement("Draw Calls counter", debugWindowEntity);
-        auto& drawCallsCounterText = registry->AddComponent<UIText>(drawCallsCounterEntity);
+        drawCallsCounterEntity = scene->GetUILayer()->CreateUIText("0", "Draw Calls counter", debugWindowEntity);
+        auto& drawCallsCounterText = registry->GetComponent<UIText>(drawCallsCounterEntity);
         drawCallsCounterText.SetTextSize(16);
         drawCallsCounterText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        drawCallsCounterText.SetText("0");
         auto& drawCallsCounterRT = registry->GetComponent<RectTransformation>(drawCallsCounterEntity);
         drawCallsCounterRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         drawCallsCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -110,11 +104,10 @@ void DebugInfoWindow::Create()
     y += 20;
 
     {
-        auto verticesLabelEntity = scene->GetUILayer()->CreateUIElement("Vertices label", debugWindowEntity);
-        auto& verticesLabelText = registry->AddComponent<UIText>(verticesLabelEntity);
+        auto verticesLabelEntity = scene->GetUILayer()->CreateUIText("Vertices count", "Vertices label", debugWindowEntity);
+        auto& verticesLabelText = registry->GetComponent<UIText>(verticesLabelEntity);
         verticesLabelText.SetTextSize(16);
         verticesLabelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        verticesLabelText.SetText("Vertices count");
         auto& verticesLabelRT = registry->GetComponent<RectTransformation>(verticesLabelEntity);
         verticesLabelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         verticesLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -123,11 +116,10 @@ void DebugInfoWindow::Create()
         verticesLabelRT.SetSortingOrder(-1);
     }
     {
-        verticesCounterEntity = scene->GetUILayer()->CreateUIElement("Vertices counter", debugWindowEntity);
+        verticesCounterEntity = scene->GetUILayer()->CreateUIText("0", "Vertices counter", debugWindowEntity);
         auto& verticesCounterText = registry->AddComponent<UIText>(verticesCounterEntity);
         verticesCounterText.SetTextSize(16);
         verticesCounterText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        verticesCounterText.SetText("0");
         auto& verticesCounterRT = registry->GetComponent<RectTransformation>(verticesCounterEntity);
         verticesCounterRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         verticesCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -139,11 +131,10 @@ void DebugInfoWindow::Create()
     y += 20;
 
     {
-        auto labelEntity = scene->GetUILayer()->CreateUIElement("Wireframe Mode label", debugWindowEntity);
-        auto& labelText = registry->AddComponent<UIText>(labelEntity);
+        auto labelEntity = scene->GetUILayer()->CreateUIText("Wireframe mode", "Wireframe Mode label", debugWindowEntity);
+        auto& labelText = registry->GetComponent<UIText>(labelEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetText("Wireframe mode");
         auto& labelRT = registry->GetComponent<RectTransformation>(labelEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -152,9 +143,8 @@ void DebugInfoWindow::Create()
         labelRT.SetSortingOrder(-1);
     }
     {
-        auto buttonEntity = scene->GetUILayer()->CreateUIElement("Wireframe Mode button", debugWindowEntity);
-        auto& button = registry->AddComponent<UIButton>(buttonEntity);
-        registry->GetComponent<UIImage>(buttonEntity).SetImage(buttonSprite);
+        auto buttonEntity = scene->GetUILayer()->CreateUIButton(buttonSprite, "Wireframe Mode button", debugWindowEntity);
+        auto& button = registry->GetComponent<UIButton>(buttonEntity);
         auto& buttonRT = registry->GetComponent<RectTransformation>(buttonEntity);
         buttonRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -162,11 +152,10 @@ void DebugInfoWindow::Create()
         buttonRT.SetAnchoredPosition(glm::vec2(-40 - 2, -y - 20 * 0.5f));
         buttonRT.SetSortingOrder(-1);
 
-        EntityID wireframeModeStatusEntity = scene->GetUILayer()->CreateUIElement("Wireframe Mode status", buttonEntity);
-        auto& labelText = registry->AddComponent<UIText>(wireframeModeStatusEntity);
+        EntityID wireframeModeStatusEntity = scene->GetUILayer()->CreateUIText("Disabled", "Wireframe Mode status", buttonEntity);
+        auto& labelText = registry->GetComponent<UIText>(wireframeModeStatusEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetText("Disabled");
         labelText.SetTextAlignment(AlignmentTypes::CenterMiddle);
         auto& labelRT = registry->GetComponent<RectTransformation>(wireframeModeStatusEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
@@ -187,11 +176,10 @@ void DebugInfoWindow::Create()
     y += 20;
 
     {
-        auto labelEntity = scene->GetUILayer()->CreateUIElement("Free Camera Mode label", debugWindowEntity);
-        auto& labelText = registry->AddComponent<UIText>(labelEntity);
+        auto labelEntity = scene->GetUILayer()->CreateUIText("Free camera mode", "Free Camera Mode label", debugWindowEntity);
+        auto& labelText = registry->GetComponent<UIText>(labelEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetText("Free camera mode");
         auto& labelRT = registry->GetComponent<RectTransformation>(labelEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
@@ -200,9 +188,8 @@ void DebugInfoWindow::Create()
         labelRT.SetSortingOrder(-1);
     }
     {
-        auto buttonEntity = scene->GetUILayer()->CreateUIElement("Free Camera Mode button", debugWindowEntity);
-        auto& button = registry->AddComponent<UIButton>(buttonEntity);
-        registry->GetComponent<UIImage>(buttonEntity).SetImage(buttonSprite);
+        auto buttonEntity = scene->GetUILayer()->CreateUIButton(buttonSprite, "Free Camera Mode button", debugWindowEntity);
+        auto& button = registry->GetComponent<UIButton>(buttonEntity);
         auto& buttonRT = registry->GetComponent<RectTransformation>(buttonEntity);
         buttonRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -210,11 +197,10 @@ void DebugInfoWindow::Create()
         buttonRT.SetAnchoredPosition(glm::vec2(-40 - 2, -y - 20 * 0.5f));
         buttonRT.SetSortingOrder(-1);
 
-        EntityID freeCameraModeStatusEntity = scene->GetUILayer()->CreateUIElement("Free Camera Mode status", buttonEntity);
-        auto& labelText = registry->AddComponent<UIText>(freeCameraModeStatusEntity);
+        EntityID freeCameraModeStatusEntity = scene->GetUILayer()->CreateUIText("Disabled", "Free Camera Mode status", buttonEntity);
+        auto& labelText = registry->GetComponent<UIText>(freeCameraModeStatusEntity);
         labelText.SetTextSize(16);
         labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetText("Disabled");
         labelText.SetTextAlignment(AlignmentTypes::CenterMiddle);
         auto& labelRT = registry->GetComponent<RectTransformation>(freeCameraModeStatusEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));

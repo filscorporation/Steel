@@ -1,7 +1,4 @@
 #include "UILayer.h"
-#include "UIEventHandler.h"
-#include "UIQuadRenderer.h"
-#include "UIElements/UIText.h"
 #include "../Core/Application.h"
 #include "../Rendering/Renderer.h"
 #include "../Scene/Hierarchy.h"
@@ -22,23 +19,6 @@ UILayer::~UILayer()
     _scene->GetEntitiesRegistry()->RemoveSystem<UIImage>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIButton>();
     delete uiSystem;
-}
-
-EntityID UILayer::CreateUIElement()
-{
-    return CreateUIElement("New UI element", NULL_ENTITY);
-}
-
-EntityID UILayer::CreateUIElement(const char* name, EntityID parent)
-{
-    auto entity = _scene->CreateEmptyEntity();
-    auto& nameComponent = _scene->GetEntitiesRegistry()->AddComponent<NameComponent>(entity);
-    nameComponent.Name = name;
-    _scene->GetEntitiesRegistry()->AddComponent<RectTransformation>(entity);
-    _scene->GetEntitiesRegistry()->AddComponent<HierarchyNode>(entity);
-    LinkChildToParent(_scene->GetEntitiesRegistry(), entity, parent);
-
-    return entity;
 }
 
 void UILayer::Update()
@@ -168,4 +148,71 @@ bool UILayer::IsPointerOverUI()
 UILayer* UILayer::Current()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer();
+}
+
+EntityID UILayer::CreateUIElement()
+{
+    return CreateUIElement("New UI element", NULL_ENTITY);
+}
+
+EntityID UILayer::CreateUIElement(const char* name, EntityID parent)
+{
+    auto entity = _scene->CreateEmptyEntity();
+    auto& nameComponent = _scene->GetEntitiesRegistry()->AddComponent<NameComponent>(entity);
+    nameComponent.Name = name;
+    _scene->GetEntitiesRegistry()->AddComponent<RectTransformation>(entity);
+    _scene->GetEntitiesRegistry()->AddComponent<HierarchyNode>(entity);
+    LinkChildToParent(_scene->GetEntitiesRegistry(), entity, parent);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIImage()
+{
+    auto entity = CreateUIElement();
+    _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIImage(Sprite* sprite, const char* name, EntityID parent)
+{
+    auto entity = CreateUIElement(name, parent);
+    _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity).SetImage(sprite);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIButton()
+{
+    auto entity = CreateUIImage();
+    auto& button = _scene->GetEntitiesRegistry()->AddComponent<UIButton>(entity);
+    button.SetTargetImage(entity);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIButton(Sprite* sprite, const char* name, EntityID parent)
+{
+    auto entity = CreateUIImage(sprite, name, parent);
+    auto& button = _scene->GetEntitiesRegistry()->AddComponent<UIButton>(entity);
+    button.SetTargetImage(entity);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIText()
+{
+    auto entity = CreateUIElement();
+    _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIText(const char* text, const char* name, EntityID parent)
+{
+    auto entity = CreateUIElement(name, parent);
+    _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity).SetText(text);
+
+    return entity;
 }

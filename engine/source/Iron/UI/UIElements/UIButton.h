@@ -4,6 +4,7 @@
 
 #include "../UIComponent.h"
 #include "../UIEvent.h"
+#include "../UIEventHandler.h"
 #include "UIImage.h"
 #include "../../Rendering/Sprite.h"
 
@@ -52,6 +53,7 @@ class UIButton : public UIComponent
 public:
     explicit UIButton(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
+    void Init(UIEventHandler& eventHandler);
     bool UpdateTransition();
 
     void SetTransitionsInfo(ButtonTransitionsInfo info);
@@ -76,8 +78,8 @@ private:
     bool isHovered = false;
     bool isInTransition = false;
     bool startingDataInitialized = false;
-    ButtonTransitionData startingTransitionData;
-    ButtonTransitionData targetTransitionData;
+    ButtonTransitionData startingTransitionData {};
+    ButtonTransitionData targetTransitionData {};
     float transitionProgress = 0.0f;
 
     friend class UISystem;

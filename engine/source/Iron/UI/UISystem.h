@@ -25,7 +25,7 @@ public:
 
 private:
     static bool CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID);
-    static void TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID entityID, bool warning = true);
+    static void TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID entityID);
     void ClearRenderers(UIImage& image);
     void RenderersSetActive(const UIImage& image, bool active);
 };

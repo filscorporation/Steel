@@ -228,5 +228,11 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal3", (void*)UIInternalCalls::UI_CreateUIElement3);
+    mono_add_internal_call("Iron.UI::CreateUIImage_Internal", (void*)UIInternalCalls::UI_CreateUIImage);
+    mono_add_internal_call("Iron.UI::CreateUIImage_Internal2", (void*)UIInternalCalls::UI_CreateUIImage2);
+    mono_add_internal_call("Iron.UI::CreateUIButton_Internal", (void*)UIInternalCalls::UI_CreateUIButton);
+    mono_add_internal_call("Iron.UI::CreateUIButton_Internal2", (void*)UIInternalCalls::UI_CreateUIButton2);
+    mono_add_internal_call("Iron.UI::CreateUIText_Internal", (void*)UIInternalCalls::UI_CreateUIText);
+    mono_add_internal_call("Iron.UI::CreateUIText_Internal2", (void*)UIInternalCalls::UI_CreateUIText2);
     mono_add_internal_call("Iron.UI::IsPointerOverUI_Internal", (void*)UIInternalCalls::UI_IsPointerOverUI);
 }

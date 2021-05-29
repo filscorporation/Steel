@@ -347,6 +347,40 @@ EntityID UIInternalCalls::UI_CreateUIElement3(MonoString* name, EntityID parentE
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement(mono_string_to_utf8(name), parentEntityID);
 }
 
+EntityID UIInternalCalls::UI_CreateUIImage()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIImage();
+}
+
+EntityID UIInternalCalls::UI_CreateUIImage2(ResourceID spriteID, MonoString* name, EntityID parentEntityID)
+{
+    Sprite* sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIImage(sprite, mono_string_to_utf8(name), parentEntityID);
+}
+
+EntityID UIInternalCalls::UI_CreateUIButton()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIButton();
+}
+
+EntityID UIInternalCalls::UI_CreateUIButton2(ResourceID spriteID, MonoString* name, EntityID parentEntityID)
+{
+    Sprite* sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIButton(sprite, mono_string_to_utf8(name), parentEntityID);
+}
+
+EntityID UIInternalCalls::UI_CreateUIText()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIText();
+}
+
+EntityID UIInternalCalls::UI_CreateUIText2(MonoString* text, MonoString* name, EntityID parentEntityID)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIText(mono_string_to_utf8(text), mono_string_to_utf8(name), parentEntityID);
+}
+
 bool UIInternalCalls::UI_IsPointerOverUI()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->IsPointerOverUI();

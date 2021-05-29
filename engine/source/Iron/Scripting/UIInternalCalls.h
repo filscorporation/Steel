@@ -66,5 +66,11 @@ namespace UIInternalCalls
     EntityID UI_CreateUIElement();
     EntityID UI_CreateUIElement2(MonoString* name);
     EntityID UI_CreateUIElement3(MonoString* name, EntityID parentEntityID);
+    EntityID UI_CreateUIImage();
+    EntityID UI_CreateUIImage2(ResourceID spriteID, MonoString* name, EntityID parentEntityID);
+    EntityID UI_CreateUIButton();
+    EntityID UI_CreateUIButton2(ResourceID spriteID, MonoString* name, EntityID parentEntityID);
+    EntityID UI_CreateUIText();
+    EntityID UI_CreateUIText2(MonoString* text, MonoString* name, EntityID parentEntityID);
     bool UI_IsPointerOverUI();
 }

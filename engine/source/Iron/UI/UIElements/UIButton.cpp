@@ -8,6 +8,20 @@
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
 
+void UIButton::Init(UIEventHandler& eventHandler)
+{
+    eventHandler.EventCallback = UIButton::HandleEvent;
+    eventHandler.EventsMask = UIEventTypes::MouseEnter | UIEventTypes::MouseExit
+                    | UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustReleased;
+
+    _transitionsInfo.TransitionType = ButtonTransitionTypes::ColorShift;
+    _transitionsInfo.TransitionDuration = 0.1f;
+    _transitionsInfo.Normal.FromColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    _transitionsInfo.Hovered.FromColor(glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
+    _transitionsInfo.Clicked.FromColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    _transitionsInfo.Disabled.FromColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+}
+
 bool UIButton::UpdateTransition()
 {
     transitionProgress += Time::UnscaledDeltaTime();

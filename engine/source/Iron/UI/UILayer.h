@@ -18,14 +18,20 @@ public:
     void Draw();
     void PollEvent(UIEvent& uiEvent);
 
-    EntityID CreateUIElement();
-    EntityID CreateUIElement(const char* name, EntityID parent);
+    bool IsPointerOverUI();
+    static UILayer* Current();
 
     void AddButtonToUpdateQueue(EntityID buttonID);
     void RemoveButtonFromUpdateQueue(EntityID buttonID);
 
-    bool IsPointerOverUI();
-    static UILayer* Current();
+    EntityID CreateUIElement();
+    EntityID CreateUIElement(const char* name, EntityID parent);
+    EntityID CreateUIImage();
+    EntityID CreateUIImage(Sprite* sprite, const char* name, EntityID parent);
+    EntityID CreateUIButton();
+    EntityID CreateUIButton(Sprite* sprite, const char* name, EntityID parent);
+    EntityID CreateUIText();
+    EntityID CreateUIText(const char* text, const char* name, EntityID parent);
 
     int PixelsPerUnit = 32;
 

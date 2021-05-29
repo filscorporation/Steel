@@ -105,5 +105,10 @@
         public static Color Brown => new Color(139, 69, 19);
         public static Color Orange => new Color(255, 165, 0);
         public static Color Pink => new Color(255, 105, 180);
+
+        public override string ToString()
+        {
+            return $"({R}; {G}; {B}; {A})";
+        }
     }
 }

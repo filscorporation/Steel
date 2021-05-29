@@ -63,22 +63,10 @@ void UISystem::OnComponentAdded(EntityID entityID, UIButton& component)
         ComponentSystem<UIButton>::Registry->RemoveComponent<UIButton>(entityID);
         return;
     }
-    TryAddEventHandler(ComponentSystem<UIButton>::Registry, entityID, false);
-    auto& image = ComponentSystem<UIButton>::Registry->AddComponent<UIImage>(entityID);
-    component._targetImage = image.Owner; // TODO: will be replaced with get, and adding moved to UI method
+    TryAddEventHandler(ComponentSystem<UIButton>::Registry, entityID);
 
-    auto& eh = ComponentSystem<UIButton>::Registry->GetComponent<UIEventHandler>(entityID);
-
-    eh.EventCallback = UIButton::HandleEvent;
-    eh.EventsMask = UIEventTypes::MouseEnter | UIEventTypes::MouseExit
-                    | UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustReleased;
-
-    component._transitionsInfo.TransitionType = ButtonTransitionTypes::ColorShift;
-    component._transitionsInfo.TransitionDuration = 0.1f;
-    component._transitionsInfo.Normal.FromColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    component._transitionsInfo.Hovered.FromColor(glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
-    component._transitionsInfo.Clicked.FromColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-    component._transitionsInfo.Disabled.FromColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+    auto& eventHandler = ComponentSystem<UIButton>::Registry->GetComponent<UIEventHandler>(entityID);
+    component.Init(eventHandler);
 }
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIButton& component)
@@ -110,15 +98,9 @@ bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, Entit
     return true;
 }
 
-void UISystem::TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID entityID, bool warning)
+void UISystem::TryAddEventHandler(EntitiesRegistry* entitiesRegistry, EntityID entityID)
 {
-    if (entitiesRegistry->HasComponent<UIEventHandler>(entityID))
-    {
-        if (warning)
-            Log::LogWarning("Entity {0} already has UIEventHandler component attached, "
-                             "this may lead to conflicts. Keep one UIEventHandler per object", entityID);
-    }
-    else
+    if (!entitiesRegistry->HasComponent<UIEventHandler>(entityID))
     {
         entitiesRegistry->AddComponent<UIEventHandler>(entityID);
     }

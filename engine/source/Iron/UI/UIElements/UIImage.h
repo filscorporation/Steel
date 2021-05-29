@@ -19,7 +19,7 @@ public:
     uint32_t GetImageTileIndex();
 
 protected:
-    Sprite* _image;
+    Sprite* _image = nullptr;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
     uint32_t currentImageTileIndex = 0;
