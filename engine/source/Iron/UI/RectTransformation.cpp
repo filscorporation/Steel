@@ -216,7 +216,11 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
         if (!DidTransformationChange() && !Screen::IsScreenSizeDirty())
             return;
         else
+        {
             SetTransformationChanged(true);
+            if (Screen::IsScreenSizeDirty())
+                sizeChanged = true;
+        }
 
         parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
         parentPosition = parentSize * 0.5f;
@@ -229,7 +233,11 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
         if (!DidTransformationChange() && !parentRT.DidTransformationChange() && !Screen::IsScreenSizeDirty())
             return;
         else
+        {
             SetTransformationChanged(true);
+            if (Screen::IsScreenSizeDirty() || parentRT.DidSizeChange())
+                sizeChanged = true;
+        }
 
         parentSize = parentRT.GetRealSizeCached();
         parentPosition = parentRT.GetRealPositionCached();

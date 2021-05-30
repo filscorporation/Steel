@@ -3,24 +3,22 @@
 #include "../UIComponent.h"
 #include "../UIEvent.h"
 #include "../UIEventHandler.h"
+#include "../UIInteractable.h"
 
-class UIInputField : public UIComponent
+class UIInputField : public UIInteractable
 {
 public:
-    explicit UIInputField(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
+    explicit UIInputField(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { }
 
     void Init(UIEventHandler& eventHandler);
 
-    void SetTargetImage(EntityID targetID);
-    EntityID GetTargetImage() const;
     void SetTargetText(EntityID targetID);
     EntityID GetTargetText() const;
 
 private:
     static void HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
+    static bool UpdateTransition(EntityID entityID);
 
-    EntityID _targetImage = NULL_ENTITY;
     EntityID _targetText = NULL_ENTITY;
-    bool isFocused = false;
 };

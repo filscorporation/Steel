@@ -55,9 +55,9 @@ namespace Iron
         /// <summary>
         /// How button reacts to mouse interactions
         /// </summary>
-        public ButtonTransitionsInfo Transition
+        public TransitionsInfo Transition
         {
-            get => GetTransition_Internal(Entity.ID).ToButtonTransitionsInfo();
+            get => GetTransition_Internal(Entity.ID).ToTransitionsInfo();
             set => SetTransition_Internal(Entity.ID, value.ToInternal());
         }
 
@@ -74,9 +74,9 @@ namespace Iron
         private static extern void SetInteractable_Internal(uint entityID, bool interactable);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern ButtonTransitionsInfo_Internal GetTransition_Internal(uint entityID);
+        private static extern TransitionsInfo_Internal GetTransition_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetTransition_Internal(uint entityID, ButtonTransitionsInfo_Internal transitions);
+        private static extern void SetTransition_Internal(uint entityID, TransitionsInfo_Internal transitions);
     }
 }

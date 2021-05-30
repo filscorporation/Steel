@@ -2,6 +2,7 @@
 #include "UIElements/UIButton.h"
 #include "UIElements/UIInputField.h"
 #include "../Core/Application.h"
+#include "../Core/Log.h"
 #include "../Rendering/Renderer.h"
 #include "../Scene/Hierarchy.h"
 #include "../Scene/NameComponent.h"
@@ -33,16 +34,15 @@ void UILayer::LoadDefaultResources()
 
 void UILayer::Update()
 {
-    if (_buttonsToUpdate.Size() == 0)
+    if (_updateQueue.Size() == 0)
         return;
 
-    auto entitiesRegistry = _scene->GetEntitiesRegistry();
-    for (int i = _buttonsToUpdate.Size() - 1; i >= 0; --i)
+    for (int i = _updateQueue.Size() - 1; i >= 0; --i)
     {
-        auto& button = entitiesRegistry->GetComponent<UIButton>(entitiesRegistry->EntityActual(_buttonsToUpdate[i]));
-        if (!button.UpdateTransition())
-            _buttonsToUpdate.Remove(_buttonsToUpdate[i]);
+        if (!_updateQueue[i].Callback(_updateQueue[i].Owner))
+            _updateQueue.Remove(EntitiesRegistry::EntityIDGetID(_updateQueue[i].Owner));
     }
+    _updateQueue.Condense();
 }
 
 void UILayer::Draw()
@@ -135,21 +135,21 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     _isPointerOverUI = uiEvent.Used;
 }
 
-void UILayer::AddButtonToUpdateQueue(EntityID buttonID)
+void UILayer::AddToUpdateQueue(EntityID entityID, UpdateIntaractable callback)
 {
-    auto id = EntitiesRegistry::EntityIDGetID(buttonID);
-    if (!_buttonsToUpdate.Has(id))
-        _buttonsToUpdate.Add(id);
+    auto id = EntitiesRegistry::EntityIDGetID(entityID);
+    if (!_updateQueue.Has(id))
+        _updateQueue.Add(id, callback, entityID);
 }
 
-void UILayer::RemoveButtonFromUpdateQueue(EntityID buttonID)
+void UILayer::RemoveFromUpdateQueue(EntityID entityID)
 {
-    auto id = EntitiesRegistry::EntityIDGetID(buttonID);
-    if (_buttonsToUpdate.Has(id))
-        _buttonsToUpdate.Remove(id);
+    auto id = EntitiesRegistry::EntityIDGetID(entityID);
+    if (_updateQueue.Has(id))
+        _updateQueue.Remove(id);
 }
 
-bool UILayer::IsPointerOverUI()
+bool UILayer::IsPointerOverUI() const
 {
     return _isPointerOverUI;
 }
@@ -228,23 +228,28 @@ EntityID UILayer::CreateUIText(const char* text, const char* name, EntityID pare
 
 EntityID UILayer::CreateUIInputField()
 {
-    auto entity = CreateUIElement();
-    auto& uiText = _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity);
-    auto& uiImage = _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity);
-    uiImage.SetImage(defaultInputFieldSprite);
-    auto& inputField = _scene->GetEntitiesRegistry()->AddComponent<UIInputField>(entity);
-    inputField.SetTargetText(uiText.Owner);
-    inputField.SetTargetImage(uiText.Owner);
-
-    return entity;
+    return CreateUIInputField("Input field", NULL_ENTITY);
 }
 
 EntityID UILayer::CreateUIInputField(const char* name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
-    auto& uiText = _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity);
+    auto& uiImage = _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity);
+    uiImage.SetImage(defaultInputFieldSprite);
     auto& inputField = _scene->GetEntitiesRegistry()->AddComponent<UIInputField>(entity);
-    inputField.SetTargetText(uiText.Owner);
+    inputField.SetTargetImage(uiImage.Owner);
+
+    auto textEntity = CreateUIText("", "Text", entity);
+    auto& uiText = _scene->GetEntitiesRegistry()->GetComponent<UIText>(textEntity);
+    uiText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    auto& textRT = _scene->GetEntitiesRegistry()->GetComponent<RectTransformation>(textEntity);
+    textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+    textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+    float offset = 6.0f;
+    textRT.SetOffsetMin(glm::vec2(offset, offset));
+    textRT.SetOffsetMax(glm::vec2(offset, offset));
+    textRT.SetSortingOrder(-1);
+    inputField.SetTargetText(textEntity);
 
     return entity;
 }

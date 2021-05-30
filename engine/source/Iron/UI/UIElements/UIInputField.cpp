@@ -6,17 +6,10 @@ void UIInputField::Init(UIEventHandler& eventHandler)
 {
     eventHandler.EventCallback = UIInputField::HandleEvent;
     eventHandler.EventsMask = UIEventTypes::TextInput | UIEventTypes::KeyInput |
+            UIEventTypes::MouseEnter | UIEventTypes::MouseExit |
             UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustPressedAnywhere;
-}
 
-void UIInputField::SetTargetImage(EntityID targetID)
-{
-    _targetImage = targetID;
-}
-
-EntityID UIInputField::GetTargetImage() const
-{
-    return _targetImage;
+    UIInteractable::Init(UpdateTransition);
 }
 
 void UIInputField::SetTargetText(EntityID targetID)
@@ -40,21 +33,41 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         return;
 
     auto& uiText = GetComponentS<UIText>(_targetText);
+    if (eventType & UIEventTypes::MouseEnter)
+    {
+        IsHovered = true;
+        if (!IsSelected)
+            PlayTransition(CurrentTransitionsInfo.Hovered);
+    }
+    if (eventType & UIEventTypes::MouseExit)
+    {
+        IsHovered = false;
+        if (IsSelected)
+            PlayTransition(CurrentTransitionsInfo.Selected);
+        else
+            PlayTransition(CurrentTransitionsInfo.Normal);
+    }
     if (eventType & UIEventTypes::MouseJustPressed)
     {
-        if (!isFocused)
-            isFocused = true;
+        if (!IsSelected)
+        {
+            IsSelected = true;
+            PlayTransition(CurrentTransitionsInfo.Selected);
+        }
     }
     if (eventType & UIEventTypes::MouseJustPressedAnywhere && !(eventType & UIEventTypes::MouseJustPressed))
     {
-        if (isFocused)
-            isFocused = false;
+        if (IsSelected)
+        {
+            IsSelected = false;
+            PlayTransition(CurrentTransitionsInfo.Normal);
+        }
     }
-    if (isFocused && eventType & UIEventTypes::TextInput)
+    if (IsSelected && eventType & UIEventTypes::TextInput)
     {
         uiText.SetText(uiText.GetText() + uiEvent.InputString);
     }
-    if (isFocused && eventType & UIEventTypes::KeyInput)
+    if (IsSelected && eventType & UIEventTypes::KeyInput)
     {
         if (Input::IsKeyJustPressed(KeyCodes::Backspace))
         {
@@ -63,4 +76,9 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
                 uiText.SetText(text.substr(0, text.size() - 1));
         }
     }
+}
+
+bool UIInputField::UpdateTransition(EntityID entityID)
+{
+    return GetComponentS<UIInputField>(entityID).UIInteractable::UpdateTransition();
 }

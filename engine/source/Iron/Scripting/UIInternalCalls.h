@@ -43,8 +43,8 @@ namespace UIInternalCalls
     void UIButton_SetTargetImage(EntityID entityID, EntityID targetID);
     bool UIButton_GetInteractable(EntityID entityID);
     void UIButton_SetInteractable(EntityID entityID, bool interactable);
-    ButtonTransitionsInfo UIButton_GetTransition(EntityID entityID);
-    void UIButton_SetTransition(EntityID entityID, ButtonTransitionsInfo info);
+    TransitionsInfo UIButton_GetTransition(EntityID entityID);
+    void UIButton_SetTransition(EntityID entityID, TransitionsInfo info);
 
     // UI text
     MonoString* UIText_GetText(EntityID entityID);

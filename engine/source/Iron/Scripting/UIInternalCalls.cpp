@@ -220,14 +220,14 @@ void UIInternalCalls::UIButton_SetInteractable(EntityID entityID, bool interacta
     component.SetInteractable(interactable);
 }
 
-ButtonTransitionsInfo UIInternalCalls::UIButton_GetTransition(EntityID entityID)
+TransitionsInfo UIInternalCalls::UIButton_GetTransition(EntityID entityID)
 {
-    GET_COMPONENT_OR_RETURN(UIButton, ButtonTransitionsInfo())
+    GET_COMPONENT_OR_RETURN(UIButton, TransitionsInfo())
 
     return component.GetTransitionsInfo();
 }
 
-void UIInternalCalls::UIButton_SetTransition(EntityID entityID, ButtonTransitionsInfo info)
+void UIInternalCalls::UIButton_SetTransition(EntityID entityID, TransitionsInfo info)
 {
     GET_COMPONENT_OR_RETURN(UIButton, )
 

@@ -1,11 +1,17 @@
 #pragma once
 
+#include <utility>
 #include <glm/glm.hpp>
 
 class Math
 {
 public:
     constexpr static const float Pi = 3.1415926536f;
+
+    static float Clamp01(float a)
+    {
+        return std::min(1.0f, std::max(0.0f, a));
+    }
 
     static float Lerp(float a, float b, float t)
     {

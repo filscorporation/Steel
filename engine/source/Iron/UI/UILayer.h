@@ -18,11 +18,11 @@ public:
     void Draw();
     void PollEvent(UIEvent& uiEvent);
 
-    bool IsPointerOverUI();
+    bool IsPointerOverUI() const;
     static UILayer* Current();
 
-    void AddButtonToUpdateQueue(EntityID buttonID);
-    void RemoveButtonFromUpdateQueue(EntityID buttonID);
+    void AddToUpdateQueue(EntityID entityID, UpdateIntaractable callback);
+    void RemoveFromUpdateQueue(EntityID entityID);
 
     EntityID CreateUIElement();
     EntityID CreateUIElement(const char* name, EntityID parent);
@@ -41,7 +41,17 @@ private:
     Scene* _scene;
     bool _isPointerOverUI = false;
 
-    SparseSet _buttonsToUpdate;
+    struct InteractableCallback
+    {
+        InteractableCallback(UpdateIntaractable callback, EntityID owner)
+        {
+            Callback = callback;
+            Owner = owner;
+        }
+        UpdateIntaractable Callback;
+        EntityID Owner;
+    };
+    SparseDataSet<InteractableCallback> _updateQueue;
 
     UISystem* uiSystem;
 

@@ -86,7 +86,7 @@ set(SOURCE_FILES
         source/Iron/Resources/AsepriteLoader.cpp source/Iron/Resources/AsepriteLoader.h source/Iron/Resources/AsepriteData.h
         source/Iron/Resources/FileLoader.cpp source/Iron/Resources/FileLoader.h source/Iron/Rendering/QuadRenderer.cpp source/Iron/Rendering/QuadRenderer.h
         source/Iron/UI/UIQuadRenderer.cpp source/Iron/UI/UIQuadRenderer.h source/Iron/Scripting/ScriptingCommon.h source/Iron/UI/UIElements/UIInputField.cpp
-        source/Iron/UI/UIElements/UIInputField.h)
+        source/Iron/UI/UIElements/UIInputField.h source/Iron/UI/TransitionInfo.h source/Iron/UI/UIInteractable.cpp source/Iron/UI/UIInteractable.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

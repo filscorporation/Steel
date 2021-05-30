@@ -45,11 +45,7 @@ void UISystem::OnComponentAdded(EntityID entityID, UIButton& component)
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIButton& component)
 {
-    if (component.isInTransition)
-    {
-        component.isInTransition = false;
-        Application::Instance->GetCurrentScene()->GetUILayer()->RemoveButtonFromUpdateQueue(entityID);
-    }
+    component.StopTransition();
     ScriptingCore::CallEventMethod(entityID, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
 }
 
@@ -100,7 +96,9 @@ void UISystem::OnComponentAdded(EntityID entityID, UIInputField& component)
 }
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIInputField& component)
-{ }
+{
+    component.StopTransition();
+}
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIInputField& component)
 { }
