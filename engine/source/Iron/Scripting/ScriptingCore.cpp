@@ -106,8 +106,8 @@ void ScriptingCore::LoadEventManagerMethods(MonoImage* image)
 {
     MonoClass* klass = mono_class_from_name(image, "Iron", "EventManager");
 
-    EventManagerCalls.callInvokeCallbacks = mono_class_get_method_from_name(klass, "InvokeCallbacks", 1);
-    EventManagerCalls.callDeregisterCallbacks = mono_class_get_method_from_name(klass, "DeregisterCallbacks", 1);
+    EventManagerCalls.callInvokeCallbacks = mono_class_get_method_from_name(klass, "InvokeCallbacks", 2);
+    EventManagerCalls.callDeregisterCallbacks = mono_class_get_method_from_name(klass, "DeregisterCallbacks", 2);
 }
 
 void ScriptingCore::LoadCoroutinesManagerMethods(MonoImage* image)
@@ -589,7 +589,7 @@ MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
     return method;
 }
 
-void ScriptingCore::CallEventMethod(EntityID ownerEntityID, MonoMethod* method)
+void ScriptingCore::CallEventMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method)
 {
     if (ownerEntityID == NULL_ENTITY)
     {
@@ -598,8 +598,9 @@ void ScriptingCore::CallEventMethod(EntityID ownerEntityID, MonoMethod* method)
     }
 
     MonoObject* exception = nullptr;
-    void* params[1];
+    void* params[2];
     params[0] = &ownerEntityID;
+    params[1] = &callbackType;
     mono_runtime_invoke(method, nullptr, params, &exception);
 
     if (exception != nullptr)

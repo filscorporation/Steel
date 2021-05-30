@@ -10,6 +10,7 @@
 #include "ScriptComponentSystem.h"
 #include "../EntityComponentSystem/Component.h"
 #include "../EntityComponentSystem/EntitiesRegistry.h"
+#include "../UI/CallbackType.h"
 
 struct CachedData
 {
@@ -103,7 +104,7 @@ public:
     static ScriptTypeInfo* ScriptParseRecursive(MonoClass* monoClass);
 
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);
-    static void CallEventMethod(EntityID ownerEntityID, MonoMethod* method);
+    static void CallEventMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method);
     static void CallMethod(MonoMethod* method);
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method);
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method, EntityID param);

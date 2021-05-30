@@ -8,6 +8,40 @@ namespace Iron
     public class UIInputField : UIComponent
     {
         /// <summary>
+        /// Callback to call when value in the input field get changed
+        /// </summary>
+        public CallbackList OnValueChanged
+        {
+            get
+            {
+                if (onValueChanged == null)
+                {
+                    onValueChanged = new CallbackList();
+                    EventManager.RegisterCallbacks(Entity.ID, CallbackType.InputFieldChangeValue, onValueChanged);
+                }
+                return onValueChanged;
+            }
+        }
+        private CallbackList onValueChanged;
+        
+        /// <summary>
+        /// Callback to call when input field editing finished
+        /// </summary>
+        public CallbackList OnEndEditing
+        {
+            get
+            {
+                if (onEndEditing == null)
+                {
+                    onEndEditing = new CallbackList();
+                    EventManager.RegisterCallbacks(Entity.ID, CallbackType.InputFieldEndEdit, onEndEditing);
+                }
+                return onEndEditing;
+            }
+        }
+        private CallbackList onEndEditing;
+        
+        /// <summary>
         /// Text component, controlled by input field
         /// </summary>
         public UIText TargetText

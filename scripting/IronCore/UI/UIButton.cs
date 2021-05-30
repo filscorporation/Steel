@@ -17,7 +17,7 @@ namespace Iron
                 if (onClick == null)
                 {
                     onClick = new CallbackList();
-                    EventManager.RegisterCallbacks(Entity.ID, OnClick);
+                    EventManager.RegisterCallbacks(Entity.ID, CallbackType.ButtonClick, onClick);
                 }
                 return onClick;
             }

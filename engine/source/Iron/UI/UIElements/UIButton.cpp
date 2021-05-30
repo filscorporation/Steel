@@ -45,7 +45,7 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& ui
         if (Callback != nullptr)
             Callback(Owner);
         if (ScriptingSystem::IsInitialized())
-            ScriptingCore::CallEventMethod(Owner, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
+            ScriptingCore::CallEventMethod(Owner, CallbackTypes::ButtonClick, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
     }
     if (eventType & UIEventTypes::MouseJustReleased)
     {

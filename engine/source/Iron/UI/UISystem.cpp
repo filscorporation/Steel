@@ -46,7 +46,7 @@ void UISystem::OnComponentAdded(EntityID entityID, UIButton& component)
 void UISystem::OnComponentRemoved(EntityID entityID, UIButton& component)
 {
     component.StopTransition();
-    ScriptingCore::CallEventMethod(entityID, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
+    ScriptingCore::CallEventMethod(entityID, CallbackTypes::ButtonClick, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
 }
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIButton& component)
