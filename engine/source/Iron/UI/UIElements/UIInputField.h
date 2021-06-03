@@ -4,6 +4,7 @@
 #include "../UIEvent.h"
 #include "../UIEventHandler.h"
 #include "../UIInteractable.h"
+#include "UIText.h"
 
 typedef std::function<void(EntityID, std::string)> InputFieldSubmitCallback;
 
@@ -23,9 +24,11 @@ private:
     static void HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     static bool UpdateTransition(EntityID entityID);
-
-    void Disselect(std::string text);
+    void Select(UIText& uiText);
+    void Disselect(UIText& uiText);
+    void AddText(UIText& uiText, const std::string& text);
 
     EntityID _targetText = NULL_ENTITY;
     bool wasEdited = false;
+    uint32_t cursorPosition = 0;
 };

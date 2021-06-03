@@ -1,18 +1,18 @@
 #include <vector>
-
 #include "UIText.h"
+
 #include "../../Core/Application.h"
 #include "../../Core/Log.h"
-#include "../UIQuadRenderer.h"
+#include "../../Core/Time.h"
 
 void UIText::Rebuild(RectTransformation& rectTransformation, bool transformationDirty)
 {
-    if (!_dirtyText && !_dirtyTextColor && !transformationDirty)
+    if (!_dirtyText && !_dirtyTextColor && !transformationDirty && !drawCursor)
         return;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    if (_font == nullptr || _text.empty())
+    if (_font == nullptr)
     {
         ForeachLetterDelete(entitiesRegistry, letters.size());
         _dirtyText = false;
@@ -96,62 +96,69 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
 
         // Create letter renderer for each letter and calculate its transformation
         letters.reserve(_text.size());
+        lettersDimensions.reserve(_text.size() + 1);
         uint32_t currentLine = 0, lettersInLine = 0;
         for (uint32_t i = letters.size(); i < _text.size(); ++i)
         {
-            if (lettersInLine >= lettersCount[currentLine])
-            {
-                currentLine++;
-                lettersInLine = 0;
-                cursorX = OriginX(rectSize.x, linesSize[currentLine]);
-                cursorY -= (int)spacing;
-                i--;
-                continue;
-            }
-
             char& c = _text[i];
             auto& character = atlas.Characters[c];
 
             // If letter doesn't fit into rect, it will be hidden
             bool isRendered = cursorX >= 0 && (float)cursorX + (float)character.Advance <= rectSize.x
                 && cursorY >= -atlas.MinY && (float)cursorY + (float)atlas.MaxY <= rectSize.y;
-            if (!isRendered)
+            if (isRendered)
             {
+                EntityID letterEntityID = entitiesRegistry->CreateNewEntity();
+                auto &letterRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(letterEntityID);
+
+                letterRenderer.Color = _color;
+                letterRenderer.TextureID = atlas.TextureID;
+                letterRenderer.Queue = RenderingQueue::Text;
+                letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
+                letterRenderer.TextureCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);
+                letterRenderer.TextureCoords[2] = glm::vec2(character.BottomLeft.x, character.BottomLeft.y);
+                letterRenderer.TextureCoords[3] = glm::vec2(character.BottomLeft.x, character.TopRight.y);
+
+                // Calculate letter rect
+                float x = ((float)cursorX + (float)character.Bearing.x + (float)character.Size.x * 0.5f) / rectSize.x - 0.5f;
+                float y = ((float)cursorY + (float)character.Bearing.y - (float)character.Size.y * 0.5f) / rectSize.y - 0.5f;
+                float hw = 0.5f * (float)character.Size.x / rectSize.x;
+                float hh = 0.5f * (float)character.Size.y / rectSize.y;
+                letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
+                letterRenderer.DefaultVertices[1] = glm::vec4(x + hw, y - hh, 0.0f, 1.0f);
+                letterRenderer.DefaultVertices[2] = glm::vec4(x - hw, y + hh, 0.0f, 1.0f);
+                letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
+
+                // Save letter origins for text navigation needs
+                lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
+
+                // Apply text rect transformation
+                for (int j = 0; j < 4; ++j)
+                    letterRenderer.Vertices[j] = rectMatrix * letterRenderer.DefaultVertices[j];
+
+                letters.push_back(letterEntityID);
+                lettersInLine++;
+                cursorX += (int)character.Advance;
+            }
+            else
+            {
+                lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
                 letters.push_back(NULL_ENTITY);
                 lettersInLine++;
                 cursorX += (int)character.Advance;
-                continue;
             }
 
-            EntityID letterEntityID = entitiesRegistry->CreateNewEntity();
-            auto& letterRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(letterEntityID);
-
-            letterRenderer.Color = _color;
-            letterRenderer.TextureID = atlas.TextureID;
-            letterRenderer.Queue = RenderingQueue::Text;
-            letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
-            letterRenderer.TextureCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);
-            letterRenderer.TextureCoords[2] = glm::vec2(character.BottomLeft.x, character.BottomLeft.y);
-            letterRenderer.TextureCoords[3] = glm::vec2(character.BottomLeft.x, character.TopRight.y);
-
-            // Calculate letter rect
-            float x = ((float)cursorX + (float)character.Bearing.x + (float)character.Size.x * 0.5f) / rectSize.x - 0.5f;
-            float y = ((float)cursorY + (float)character.Bearing.y - (float)character.Size.y * 0.5f) / rectSize.y - 0.5f;
-            float hw = 0.5f * (float)character.Size.x / rectSize.x;
-            float hh = 0.5f * (float)character.Size.y / rectSize.y;
-            letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
-            letterRenderer.DefaultVertices[1] = glm::vec4(x + hw, y - hh, 0.0f, 1.0f);
-            letterRenderer.DefaultVertices[2] = glm::vec4(x - hw, y + hh, 0.0f, 1.0f);
-            letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
-
-            // Apply text rect transformation
-            for (int j = 0; j < 4; ++j)
-                letterRenderer.Vertices[j] = rectMatrix * letterRenderer.DefaultVertices[j];
-
-            letters.push_back(letterEntityID);
-            lettersInLine++;
-            cursorX += (int)character.Advance;
+            if (lettersInLine >= lettersCount[currentLine] && currentLine < linesSize.size() - 1)
+            {
+                currentLine++;
+                lettersInLine = 0;
+                cursorX = OriginX(rectSize.x, currentLine >= linesSize.size() ? 0 : linesSize[currentLine]);
+                cursorY -= (int)spacing;
+            }
         }
+
+        // Add one more letter point in the end for new letters
+        lettersDimensions.emplace_back(cursorX, cursorY, 0);
 
         _dirtyText = false;
     }
@@ -159,6 +166,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
     if (_dirtyTextColor)
     {
         ForeachLetterChangeColor(entitiesRegistry, _color);
+        UpdateCursorColor();
         _dirtyTextColor = false;
     }
 
@@ -166,6 +174,14 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
     {
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
         ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix);
+    }
+
+    if (drawCursor)
+    {
+        auto& atlas = _font->characters[_textSize];
+        auto rectSize = rectTransformation.GetRealSizeCached();
+        auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
+        DrawCursor((float) atlas.MinY, (float) atlas.MaxY, rectSize, rectMatrix);
     }
 }
 
@@ -294,6 +310,80 @@ void UIText::SetOverflowMode(OverflowModes::OverflowMode overflowMode)
     _dirtyText = true;
 }
 
+void UIText::SetCursorPosition(uint32_t position)
+{
+    drawCursor = true;
+
+    cursorBlinkProgress = 0;
+    cursorIsInvisible = false;
+    cursorPosition = position;
+}
+
+void UIText::DisableCursor()
+{
+    if (!drawCursor)
+        return;
+    drawCursor = false;
+    if (cursor != NULL_ENTITY)
+        Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntitySetActive(cursor, false, true);
+}
+
+uint32_t UIText::GetCursorPosition(const glm::vec2& mousePosition)
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& atlas = _font->characters[_textSize];
+    float minY = atlas.MinY, maxY = atlas.MaxY;
+
+    glm::mat4 transformation = entitiesRegistry->GetComponent<RectTransformation>(Owner).GetTransformationMatrixCached();
+    glm::vec2 rectSize = entitiesRegistry->GetComponent<RectTransformation>(Owner).GetRealSizeCached();
+    // Transform mouse position to text local coord system
+    glm::vec4 localPosition = glm::inverse(transformation) * glm::vec4(mousePosition, 0.0f, 1.0f);
+    // Then transform it to pixel scale in the rect (same as cached letters positions)
+    localPosition = (localPosition + glm::vec4(0.5f)) * glm::vec4(rectSize, 1.0f, 1.0f);
+
+    // TODO: binary search
+    int i;
+    float minYDist = 0;
+    int minYIndex = -1;
+    for (i = 0; i < lettersDimensions.size(); ++i)
+    {
+        if (localPosition.y <= (float)lettersDimensions[i].y + maxY
+            && localPosition.y >= (float)lettersDimensions[i].y + minY)
+            break;
+        float dist = std::abs(localPosition.y - (float)lettersDimensions[i].y);
+        if (minYIndex == -1 || dist < minYDist)
+        {
+            minYIndex = i;
+            minYDist = dist;
+        }
+    }
+    if (i >= lettersDimensions.size())
+        i = minYIndex;
+
+    float minXDist = 0;
+    int minXIndex = -1;
+    for (int j = 0; j < lettersDimensions.size(); ++j)
+    {
+        if (lettersDimensions[i].y != lettersDimensions[j].y)
+            continue;
+
+        float dist = std::abs(localPosition.x - (float)lettersDimensions[j].x);
+        if (minXIndex == -1 || dist < minXDist)
+        {
+            minXIndex = j;
+            minXDist = dist;
+        }
+    }
+
+    if (minXIndex == -1)
+    {
+        // This should never happen
+        return 0;
+    }
+
+    return minXIndex;
+}
+
 void UIText::ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const
 {
     for (auto& letterID : letters)
@@ -312,6 +402,7 @@ void UIText::ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count)
             registry->DeleteEntity(letters[i]);
     }
     letters.resize(letters.size() - count);
+    lettersDimensions.resize(letters.size());
 }
 
 void UIText::ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const
@@ -333,6 +424,16 @@ void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const 
         for (int j = 0; j < 4; ++j)
             renderer.Vertices[j] = transformationMatrix * renderer.DefaultVertices[j];
     }
+}
+
+void UIText::UpdateCursorColor()
+{
+    if (cursor == NULL_ENTITY)
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
+    cursorRenderer.Color = _color;
 }
 
 bool UIText::IsNewLine(char c)
@@ -437,6 +538,8 @@ int UIText::OriginX(float rectWidth, uint32_t lineWidth)
         case AlignmentTypes::BottomRight:
             return (int)std::floor(rectWidth - (float)lineWidth);
     }
+
+    return 0;
 }
 
 int UIText::OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeight)
@@ -456,4 +559,65 @@ int UIText::OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeigh
         case AlignmentTypes::BottomRight:
             return (int)textHeight - (int)atlas.MaxY;
     }
+
+    return 0;
+}
+
+void UIText::DrawCursor(float minY, float maxY, const glm::vec2& rectSize, const glm::mat4& rectMatrix)
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    if (cursor == NULL_ENTITY)
+    {
+        // Create cursor renderer if it was not already
+        auto cursorSprite = Application::Instance->GetCurrentScene()->GetUILayer()->UIResources.DefaultPixelSprite;
+        cursor = entitiesRegistry->CreateNewEntity();
+
+        auto& cursorRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(cursor);
+        cursorRenderer.Color = _color;
+        cursorRenderer.TextureID = cursorSprite->TextureID;
+        cursorRenderer.Queue = RenderingQueue::Text;
+        cursorRenderer.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
+        cursorRenderer.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
+        cursorRenderer.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
+        cursorRenderer.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
+    }
+
+    cursorBlinkProgress += Time::UnscaledDeltaTime();
+    if (cursorBlinkProgress > cursorBlinkRate)
+    {
+        cursorBlinkProgress -= cursorBlinkRate;
+        cursorIsInvisible = !cursorIsInvisible;
+        entitiesRegistry->EntitySetActive(cursor, !cursorIsInvisible, true);
+    }
+
+    if (cursorIsInvisible)
+        return;
+
+    float width = (float)cursorWidth / rectSize.x;
+    uint32_t realPosition = std::min(letters.size(), cursorPosition);
+
+    // Place cursor in the origin of the letter where it is positioned
+    float ox = (float)lettersDimensions[realPosition].x / rectSize.x - 0.5f;
+    float oy = (float)lettersDimensions[realPosition].y / rectSize.y - 0.5f;
+
+    float up = maxY / rectSize.y;
+    float down = minY / rectSize.y;
+
+    bool isRendered = ox >= -0.5f && ox <= 0.5f && oy + down >= -0.5f && oy + up <= 0.5f;
+    if (!isRendered)
+    {
+        entitiesRegistry->EntitySetActive(cursor, false, true);
+        return;
+    }
+
+    entitiesRegistry->EntitySetActive(cursor, true, true);
+    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
+    cursorRenderer.DefaultVertices[0] = glm::vec4(ox + width, oy + up, 0.0f, 1.0f);
+    cursorRenderer.DefaultVertices[1] = glm::vec4(ox + width, oy + down, 0.0f, 1.0f);
+    cursorRenderer.DefaultVertices[2] = glm::vec4(ox, oy + up, 0.0f, 1.0f);
+    cursorRenderer.DefaultVertices[3] = glm::vec4(ox, oy + down, 0.0f, 1.0f);
+
+    for (int j = 0; j < 4; ++j)
+        cursorRenderer.Vertices[j] = rectMatrix * cursorRenderer.DefaultVertices[j];
 }

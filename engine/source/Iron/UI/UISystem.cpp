@@ -69,16 +69,22 @@ void UISystem::OnComponentAdded(EntityID entityID, UIText& component)
 void UISystem::OnComponentRemoved(EntityID entityID, UIText& component)
 {
     component.ForeachLetterDelete(ComponentSystem<UIText>::Registry, component.letters.size());
+    if (component.cursor != NULL_ENTITY)
+        ComponentSystem<UIText>::Registry->DeleteEntity(component.cursor);
 }
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIText& component)
 {
     component.ForeachLetterSetActive(ComponentSystem<UIText>::Registry, true);
+    if (component.cursor != NULL_ENTITY)
+        ComponentSystem<UIText>::Registry->EntitySetActive(component.cursor, true, true);
 }
 
 void UISystem::OnEntityDisabled(EntityID entityID, UIText& component)
 {
     component.ForeachLetterSetActive(ComponentSystem<UIText>::Registry, false);
+    if (component.cursor != NULL_ENTITY)
+        ComponentSystem<UIText>::Registry->EntitySetActive(component.cursor, false, true);
 }
 
 void UISystem::OnComponentAdded(EntityID entityID, UIInputField& component)

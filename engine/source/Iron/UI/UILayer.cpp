@@ -28,8 +28,10 @@ UILayer::~UILayer()
 
 void UILayer::LoadDefaultResources()
 {
-    defaultInputFieldSprite = Application::Instance->GetResourcesManager()->LoadImage("debug_button.png", true);
-    defaultInputFieldSprite->SetAsSliced(6);
+    auto resourcesManager = Application::Instance->GetResourcesManager();
+    UIResources.DefaultInputFieldSprite = resourcesManager->LoadImage("debug_button.png", true);
+    UIResources.DefaultInputFieldSprite->SetAsSliced(6);
+    UIResources.DefaultPixelSprite = resourcesManager->LoadImage("pixel.png", true);
 }
 
 void UILayer::Update()
@@ -235,7 +237,7 @@ EntityID UILayer::CreateUIInputField(const char* name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
     auto& uiImage = _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity);
-    uiImage.SetImage(defaultInputFieldSprite);
+    uiImage.SetImage(UIResources.DefaultInputFieldSprite);
     auto& inputField = _scene->GetEntitiesRegistry()->AddComponent<UIInputField>(entity);
     inputField.SetTargetImage(uiImage.Owner);
 

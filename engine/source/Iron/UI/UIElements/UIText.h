@@ -53,17 +53,23 @@ public:
     OverflowModes::OverflowMode GetOverflowMode() const;
     void SetOverflowMode(OverflowModes::OverflowMode overflowMode);
 
+    void SetCursorPosition(uint32_t position);
+    void DisableCursor();
+    uint32_t GetCursorPosition(const glm::vec2& mousePosition);
+
 private:
     void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
     void ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count);
     void ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const;
     void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const;
+    void UpdateCursorColor();
 
     void GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<uint32_t>& linesSize, std::vector<uint32_t>& lettersCount);
     static bool IsNewLine(char c);
     static bool IsSpace(char c);
     int OriginX(float rectWidth, uint32_t lineWidth);
     int OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeight);
+    void DrawCursor(float minY, float maxY, const glm::vec2& rectSize, const glm::mat4& rectMatrix);
 
     Font* _font = nullptr;
     std::string _text;
@@ -76,11 +82,19 @@ private:
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
     uint32_t _lettersChangedCount = 0;
-    uint32_t _lastLinesCount = 1;
     bool _dirtyText = false;
     bool _dirtyTextColor = false;
 
     std::vector<EntityID> letters;
+    std::vector<glm::ivec3> lettersDimensions;
+
+    bool drawCursor = false;
+    uint32_t cursorPosition = 0;
+    EntityID cursor = NULL_ENTITY;
+    uint32_t cursorWidth = 2;
+    float cursorBlinkRate = 0.53f;
+    float cursorBlinkProgress = 0.0f;
+    bool cursorIsInvisible = false;
 
     friend class UISystem;
 };

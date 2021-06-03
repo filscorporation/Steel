@@ -37,6 +37,13 @@ public:
 
     int PixelsPerUnit = 32;
 
+    struct UIResourcesStorage
+    {
+        Sprite* DefaultInputFieldSprite = nullptr;
+        Sprite* DefaultPixelSprite = nullptr;
+    };
+    UIResourcesStorage UIResources;
+
 private:
     Scene* _scene;
     bool _isPointerOverUI = false;
@@ -54,6 +61,4 @@ private:
     SparseDataSet<InteractableCallback> _updateQueue;
 
     UISystem* uiSystem;
-
-    Sprite* defaultInputFieldSprite = nullptr;
 };
