@@ -117,7 +117,7 @@ void DebugInfoWindow::Create()
     }
     {
         verticesCounterEntity = scene->GetUILayer()->CreateUIText("0", "Vertices counter", debugWindowEntity);
-        auto& verticesCounterText = registry->AddComponent<UIText>(verticesCounterEntity);
+        auto& verticesCounterText = registry->GetComponent<UIText>(verticesCounterEntity);
         verticesCounterText.SetTextSize(16);
         verticesCounterText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         auto& verticesCounterRT = registry->GetComponent<RectTransformation>(verticesCounterEntity);

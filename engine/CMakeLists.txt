@@ -75,7 +75,7 @@ set(SOURCE_FILES
         source/Iron/Scene/Hierarchy.cpp source/Iron/Rendering/RendererData.h source/Iron/UI/UILayer.cpp source/Iron/UI/UILayer.h
         source/Iron/UI/UIEventHandler.cpp source/Iron/UI/UIEventHandler.h source/Iron/UI/UIEvent.h source/Iron/Core/ButtonStates.h
         source/Iron/UI/UIElements/UIButton.cpp source/Iron/UI/UIElements/UIButton.h source/Iron/UI/UIElements/UIText.cpp source/Iron/UI/UIElements/UIText.h
-        source/Iron/UI/UIElements/UITextLetter.cpp source/Iron/UI/UIElements/UITextLetter.h source/Iron/UI/Font.cpp source/Iron/UI/Font.h
+        source/Iron/UI/Font.cpp source/Iron/UI/Font.h
         source/Iron/UI/FontManager.cpp source/Iron/UI/FontManager.h
         source/Iron/EntityComponentSystem/SparseSet.h source/Iron/Math/Math.h
         source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h source/Iron/Scene/HierarchySystem.cpp

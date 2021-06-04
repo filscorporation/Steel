@@ -193,11 +193,12 @@ void UIImage::SetImageTileIndex(uint32_t index)
 
     if (_image->IsSliced)
     {
-        for (uint32_t _renderer : _renderers)
-        {
-            auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
-            _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
-        }
+        // TODO
+        //for (uint32_t _renderer : _renderers)
+        //{
+        //    auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
+        //    _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
+        //}
     }
     else
     {

@@ -25,13 +25,16 @@ EntityID UIInputField::GetTargetText() const
     return _targetText;
 }
 
-void UIInputField::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent &uiEvent)
+void UIInputField::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
 {
     GetComponentS<UIInputField>(handler).HandleEventInner(eventType, uiEvent);
 }
 
 void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
 {
+    if (!IsInteractable)
+        return;
+
     if (_targetText == NULL_ENTITY)
         return;
 
@@ -57,6 +60,7 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         else
         {
             uint32_t newPosition = uiText.GetCursorPosition(uiEvent.MousePosition);
+            cursorHorizontalOffset = -1;
             if (newPosition != cursorPosition)
             {
                 cursorPosition = newPosition;
@@ -112,6 +116,7 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
             {
                 cursorPosition = std::min(uiText.GetText().size(), cursorPosition) - 1;
                 uiText.SetCursorPosition(cursorPosition);
+                cursorHorizontalOffset = -1;
             }
         }
         if (Input::IsKeyJustPressed(KeyCodes::Right))
@@ -119,6 +124,25 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
             if (cursorPosition < uiText.GetText().size())
             {
                 cursorPosition = cursorPosition + 1;
+                uiText.SetCursorPosition(cursorPosition);
+                cursorHorizontalOffset = -1;
+            }
+        }
+        if (Input::IsKeyJustPressed(KeyCodes::Up))
+        {
+            uint32_t newPosition = uiText.GetCursorPositionLineUp(cursorPosition, cursorHorizontalOffset);
+            if (newPosition != cursorPosition)
+            {
+                cursorPosition = newPosition;
+                uiText.SetCursorPosition(cursorPosition);
+            }
+        }
+        if (Input::IsKeyJustPressed(KeyCodes::Down))
+        {
+            uint32_t newPosition = uiText.GetCursorPositionLineDown(cursorPosition, cursorHorizontalOffset);
+            if (newPosition != cursorPosition)
+            {
+                cursorPosition = newPosition;
                 uiText.SetCursorPosition(cursorPosition);
             }
         }
@@ -135,6 +159,7 @@ void UIInputField::Select(UIText& uiText)
     IsSelected = true;
     cursorPosition = uiText.GetText().size();
     uiText.SetCursorPosition(cursorPosition);
+    cursorHorizontalOffset = -1;
     PlayTransition(CurrentTransitionsInfo.Selected);
 }
 
@@ -166,6 +191,7 @@ void UIInputField::AddText(UIText& uiText, const std::string& text)
     uiText.SetText(newText);
     cursorPosition += text.size();
     uiText.SetCursorPosition(cursorPosition);
+    cursorHorizontalOffset = -1;
 
     if (ScriptingSystem::IsInitialized())
         ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue,

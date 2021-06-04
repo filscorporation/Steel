@@ -229,6 +229,8 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UIInputField::SetTargetText_Internal", (void*)UIInternalCalls::UIInputField_SetTargetText);
     mono_add_internal_call("Iron.UIInputField::GetTargetImage_Internal", (void*)UIInternalCalls::UIInputField_GetTargetImage);
     mono_add_internal_call("Iron.UIInputField::SetTargetImage_Internal", (void*)UIInternalCalls::UIInputField_SetTargetImage);
+    mono_add_internal_call("Iron.UIInputField::GetInteractable_Internal", (void*)UIInternalCalls::UIInputField_GetInteractable);
+    mono_add_internal_call("Iron.UIInputField::SetInteractable_Internal", (void*)UIInternalCalls::UIInputField_SetInteractable);
 
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);

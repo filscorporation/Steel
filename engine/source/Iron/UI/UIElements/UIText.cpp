@@ -1,4 +1,5 @@
 #include <vector>
+#include <cctype>
 #include "UIText.h"
 
 #include "../../Core/Application.h"
@@ -130,7 +131,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
                 letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
 
                 // Save letter origins for text navigation needs
-                lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
+                lettersDimensions.emplace_back(cursorX, cursorY);
 
                 // Apply text rect transformation
                 for (int j = 0; j < 4; ++j)
@@ -142,7 +143,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             }
             else
             {
-                lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
+                lettersDimensions.emplace_back(cursorX, cursorY);
                 letters.push_back(NULL_ENTITY);
                 lettersInLine++;
                 cursorX += (int)character.Advance;
@@ -152,13 +153,13 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             {
                 currentLine++;
                 lettersInLine = 0;
-                cursorX = OriginX(rectSize.x, currentLine >= linesSize.size() ? 0 : linesSize[currentLine]);
+                cursorX = OriginX(rectSize.x, linesSize[currentLine]);
                 cursorY -= (int)spacing;
             }
         }
 
         // Add one more letter point in the end for new letters
-        lettersDimensions.emplace_back(cursorX, cursorY, 0);
+        lettersDimensions.emplace_back(cursorX, cursorY);
 
         _dirtyText = false;
     }
@@ -181,7 +182,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         auto& atlas = _font->characters[_textSize];
         auto rectSize = rectTransformation.GetRealSizeCached();
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
-        DrawCursor((float) atlas.MinY, (float) atlas.MaxY, rectSize, rectMatrix);
+        DrawCursor((float)atlas.MinY, (float)atlas.MaxY, rectSize, rectMatrix);
     }
 }
 
@@ -315,7 +316,7 @@ void UIText::SetCursorPosition(uint32_t position)
     drawCursor = true;
 
     cursorBlinkProgress = 0;
-    cursorIsInvisible = false;
+    cursorIsVisible = true;
     cursorPosition = position;
 }
 
@@ -331,8 +332,6 @@ void UIText::DisableCursor()
 uint32_t UIText::GetCursorPosition(const glm::vec2& mousePosition)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& atlas = _font->characters[_textSize];
-    float minY = atlas.MinY, maxY = atlas.MaxY;
 
     glm::mat4 transformation = entitiesRegistry->GetComponent<RectTransformation>(Owner).GetTransformationMatrixCached();
     glm::vec2 rectSize = entitiesRegistry->GetComponent<RectTransformation>(Owner).GetRealSizeCached();
@@ -340,6 +339,14 @@ uint32_t UIText::GetCursorPosition(const glm::vec2& mousePosition)
     glm::vec4 localPosition = glm::inverse(transformation) * glm::vec4(mousePosition, 0.0f, 1.0f);
     // Then transform it to pixel scale in the rect (same as cached letters positions)
     localPosition = (localPosition + glm::vec4(0.5f)) * glm::vec4(rectSize, 1.0f, 1.0f);
+
+    return GetCursorPositionLocal(localPosition);
+}
+
+uint32_t UIText::GetCursorPositionLocal(const glm::vec2& localPosition)
+{
+    auto& atlas = _font->characters[_textSize];
+    float minY = atlas.MinY, maxY = atlas.MaxY;
 
     // TODO: binary search
     int i;
@@ -382,6 +389,50 @@ uint32_t UIText::GetCursorPosition(const glm::vec2& mousePosition)
     }
 
     return minXIndex;
+}
+
+uint32_t UIText::GetCursorPositionLineUp(uint32_t currentPosition, float& horOffset)
+{
+    auto& atlas = _font->characters[_textSize];
+    float minY = atlas.MinY, maxY = atlas.MaxY;
+
+    uint32_t realPosition = std::min(letters.size(), currentPosition);
+
+    for (auto& letterDimension : lettersDimensions)
+    {
+        if (letterDimension.y > lettersDimensions[realPosition].y)
+        {
+            if (horOffset < 0)
+                horOffset = (float)lettersDimensions[realPosition].x;
+            glm::vec2 localPosition = glm::vec2(horOffset, lettersDimensions[realPosition].y);
+            localPosition = localPosition + glm::vec2(0, maxY - minY);
+            return GetCursorPositionLocal(localPosition);
+        }
+    }
+
+    return 0;
+}
+
+uint32_t UIText::GetCursorPositionLineDown(uint32_t currentPosition, float& horOffset)
+{
+    auto& atlas = _font->characters[_textSize];
+    float minY = atlas.MinY, maxY = atlas.MaxY;
+
+    uint32_t realPosition = std::min(letters.size(), currentPosition);
+
+    for (auto& letterDimension : lettersDimensions)
+    {
+        if (letterDimension.y < lettersDimensions[realPosition].y)
+        {
+            if (horOffset < 0)
+                horOffset = (float)lettersDimensions[realPosition].x;
+            glm::vec2 localPosition = glm::vec2(horOffset, lettersDimensions[realPosition].y);
+            localPosition = localPosition - glm::vec2(0, maxY - minY);
+            return GetCursorPositionLocal(localPosition);
+        }
+    }
+
+    return letters.size();
 }
 
 void UIText::ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const
@@ -443,7 +494,7 @@ bool UIText::IsNewLine(char c)
 
 bool UIText::IsSpace(char c)
 {
-    return c == ' ';
+    return !std::isalnum(c) && c != '-' && c != '\'' && c != '_';
 }
 
 void UIText::GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<uint32_t>& linesSize, std::vector<uint32_t>& lettersCount)
@@ -587,11 +638,11 @@ void UIText::DrawCursor(float minY, float maxY, const glm::vec2& rectSize, const
     if (cursorBlinkProgress > cursorBlinkRate)
     {
         cursorBlinkProgress -= cursorBlinkRate;
-        cursorIsInvisible = !cursorIsInvisible;
-        entitiesRegistry->EntitySetActive(cursor, !cursorIsInvisible, true);
+        cursorIsVisible = !cursorIsVisible;
+        entitiesRegistry->EntitySetActive(cursor, cursorIsVisible, true);
     }
 
-    if (cursorIsInvisible)
+    if (!cursorIsVisible)
         return;
 
     float width = (float)cursorWidth / rectSize.x;

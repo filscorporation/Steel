@@ -31,4 +31,5 @@ private:
     EntityID _targetText = NULL_ENTITY;
     bool wasEdited = false;
     uint32_t cursorPosition = 0;
+    float cursorHorizontalOffset = -1;
 };

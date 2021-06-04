@@ -78,6 +78,15 @@ namespace Iron
             }
             set => SetTargetImage_Internal(Entity.ID, value?.Entity.ID ?? Entity.NULL_ENTITY_ID);
         }
+
+        /// <summary>
+        /// Should field be interactable (clickable)
+        /// </summary>
+        public bool Interactable
+        {
+            get => GetInteractable_Internal(Entity.ID);
+            set => SetInteractable_Internal(Entity.ID, value);
+        }
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetTargetText_Internal(uint entityID);
@@ -90,5 +99,11 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetTargetImage_Internal(uint entityID, uint targetID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool GetInteractable_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetInteractable_Internal(uint entityID, bool interactable);
     }
 }

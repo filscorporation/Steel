@@ -104,6 +104,8 @@ void UISystem::OnComponentAdded(EntityID entityID, UIInputField& component)
 void UISystem::OnComponentRemoved(EntityID entityID, UIInputField& component)
 {
     component.StopTransition();
+    ScriptingCore::CallEventMethod(entityID, CallbackTypes::InputFieldChangeValue, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
+    ScriptingCore::CallEventMethod(entityID, CallbackTypes::InputFieldEndEdit, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
 }
 
 void UISystem::OnEntityEnabled(EntityID entityID, UIInputField& component)

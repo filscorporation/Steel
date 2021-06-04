@@ -234,7 +234,7 @@ namespace Iron
                 TransitionDuration = info.TransitionDuration,
                 Normal = info.Normal.Value,
                 Hovered = info.Hovered.Value,
-                Selected = info.Normal.Value,
+                Selected = info.Selected.Value,
                 Clicked = info.Clicked.Value,
                 Disabled = info.Disabled.Value,
             };

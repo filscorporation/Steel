@@ -149,6 +149,7 @@ void UILayer::RemoveFromUpdateQueue(EntityID entityID)
     auto id = EntitiesRegistry::EntityIDGetID(entityID);
     if (_updateQueue.Has(id))
         _updateQueue.Remove(id);
+    _updateQueue.Condense();
 }
 
 bool UILayer::IsPointerOverUI() const

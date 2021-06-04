@@ -192,7 +192,7 @@ void UIInternalCalls::UIImage_SetConsumeEvents(EntityID entityID, bool consume)
     component.IsTransparent = !consume;
 }
 
-ResourceID UIInternalCalls::UIButton_GetTargetImage(EntityID entityID)
+EntityID UIInternalCalls::UIButton_GetTargetImage(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIButton, 0)
 
@@ -358,6 +358,20 @@ void UIInternalCalls::UIInputField_SetTargetImage(EntityID entityID, EntityID ta
     GET_COMPONENT_OR_RETURN(UIInputField, )
 
     component.SetTargetImage(targetID);
+}
+
+bool UIInternalCalls::UIInputField_GetInteractable(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, 0)
+
+    return component.GetInteractable();
+}
+
+void UIInternalCalls::UIInputField_SetInteractable(EntityID entityID, bool interactable)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetInteractable(interactable);
 }
 
 EntityID UIInternalCalls::UI_CreateUIElement()

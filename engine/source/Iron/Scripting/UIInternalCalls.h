@@ -67,6 +67,8 @@ namespace UIInternalCalls
     void UIInputField_SetTargetText(EntityID entityID, EntityID targetID);
     EntityID UIInputField_GetTargetImage(EntityID entityID);
     void UIInputField_SetTargetImage(EntityID entityID, EntityID targetID);
+    bool UIInputField_GetInteractable(EntityID entityID);
+    void UIInputField_SetInteractable(EntityID entityID, bool interactable);
 
     // UI
     EntityID UI_CreateUIElement();

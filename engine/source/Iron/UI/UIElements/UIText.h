@@ -56,6 +56,9 @@ public:
     void SetCursorPosition(uint32_t position);
     void DisableCursor();
     uint32_t GetCursorPosition(const glm::vec2& mousePosition);
+    uint32_t GetCursorPositionLocal(const glm::vec2& localPosition);
+    uint32_t GetCursorPositionLineUp(uint32_t currentPosition, float& horOffset);
+    uint32_t GetCursorPositionLineDown(uint32_t currentPosition, float& horOffset);
 
 private:
     void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
@@ -86,7 +89,7 @@ private:
     bool _dirtyTextColor = false;
 
     std::vector<EntityID> letters;
-    std::vector<glm::ivec3> lettersDimensions;
+    std::vector<glm::ivec2> lettersDimensions;
 
     bool drawCursor = false;
     uint32_t cursorPosition = 0;
@@ -94,7 +97,7 @@ private:
     uint32_t cursorWidth = 2;
     float cursorBlinkRate = 0.53f;
     float cursorBlinkProgress = 0.0f;
-    bool cursorIsInvisible = false;
+    bool cursorIsVisible = true;
 
     friend class UISystem;
 };
