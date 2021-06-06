@@ -374,6 +374,48 @@ void UIInternalCalls::UIInputField_SetInteractable(EntityID entityID, bool inter
     component.SetInteractable(interactable);
 }
 
+uint32_t UIInternalCalls::UIInputField_GetCursorWidth(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, 0)
+
+    return component.GetCursorWidth();
+}
+
+void UIInternalCalls::UIInputField_SetCursorWidth(EntityID entityID, uint32_t width)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetCursorWidth(width);
+}
+
+glm::vec4 UIInternalCalls::UIInputField_GetCursorColor(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, glm::vec4(0.0f))
+
+    return component.GetCursorColor();
+}
+
+void UIInternalCalls::UIInputField_SetCursorColor(EntityID entityID, glm::vec4 color)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetCursorColor(color);
+}
+
+bool UIInternalCalls::UIInputField_GetAutoColor(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, false)
+
+    return component.GetCursorAutoColor();
+}
+
+void UIInternalCalls::UIInputField_SetAutoColor(EntityID entityID, bool isAuto)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetCursorAutoColor(isAuto);
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();

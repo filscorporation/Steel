@@ -21,7 +21,7 @@ struct CharactersAtlas
     unsigned int TextureID;
     glm::ivec2 CanvasSize;
     int MinY;
-    uint32_t MaxY;
+    int MaxY;
     uint32_t MaxX;
     std::unordered_map<char, Character> Characters;
 
@@ -59,4 +59,5 @@ private:
 
     friend class FontManager;
     friend class UIText;
+    friend class UIInputField;
 };

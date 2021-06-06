@@ -231,6 +231,12 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UIInputField::SetTargetImage_Internal", (void*)UIInternalCalls::UIInputField_SetTargetImage);
     mono_add_internal_call("Iron.UIInputField::GetInteractable_Internal", (void*)UIInternalCalls::UIInputField_GetInteractable);
     mono_add_internal_call("Iron.UIInputField::SetInteractable_Internal", (void*)UIInternalCalls::UIInputField_SetInteractable);
+    mono_add_internal_call("Iron.UIInputField::GetCursorWidth_Internal", (void*)UIInternalCalls::UIInputField_GetCursorWidth);
+    mono_add_internal_call("Iron.UIInputField::SetCursorWidth_Internal", (void*)UIInternalCalls::UIInputField_SetCursorWidth);
+    mono_add_internal_call("Iron.UIInputField::GetCursorColor_Internal", (void*)UIInternalCalls::UIInputField_GetCursorColor);
+    mono_add_internal_call("Iron.UIInputField::SetCursorColor_Internal", (void*)UIInternalCalls::UIInputField_SetCursorColor);
+    mono_add_internal_call("Iron.UIInputField::GetCursorAutoColor_Internal", (void*)UIInternalCalls::UIInputField_GetAutoColor);
+    mono_add_internal_call("Iron.UIInputField::SetCursorAutoColor_Internal", (void*)UIInternalCalls::UIInputField_SetAutoColor);
 
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);

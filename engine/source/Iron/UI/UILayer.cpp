@@ -74,6 +74,11 @@ void UILayer::Draw()
         }
     }
 
+    // Rebuild elements after rt update
+    auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
+    for (auto& uiIF : uiIFs)
+        uiIF.Rebuild(rtAccessor.Get(uiIF.Owner));
+
     // After rebuilding text we need to condense renderers list to not wait for the next frame
     entitiesRegistry->ClearRemoved<UIQuadRenderer>();
 
@@ -114,6 +119,9 @@ void UILayer::Draw()
     auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
     for (auto& rt : rectTransformations)
         rt.RefreshTransformation();
+    auto uiTexts = entitiesRegistry->GetComponentIterator<UIText>();
+    for (auto& uiText : uiTexts)
+        uiText.Refresh();
 }
 
 void UILayer::PollEvent(UIEvent& uiEvent)

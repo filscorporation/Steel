@@ -1,6 +1,7 @@
 #include "UIInputField.h"
 #include "../../Core/Input.h"
 #include "../../Core/Log.h"
+#include "../../Core/Time.h"
 #include "../../Scene/SceneHelper.h"
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
@@ -15,6 +16,42 @@ void UIInputField::Init(UIEventHandler& eventHandler)
     UIInteractable::Init(UpdateTransition);
 }
 
+void UIInputField::Rebuild(RectTransformation& transformation)
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
+    {
+        if (drawCursor)
+        {
+            entitiesRegistry->EntitySetActive(cursor, false, true);
+            drawCursor = false;
+        }
+        return;
+    }
+
+    if (drawCursor)
+        UpdateCursorBlink();
+
+    auto& uiText = GetComponentS<UIText>(_targetText);
+    auto& uiTextRT = GetComponentS<RectTransformation>(_targetText);
+    if (uiText.IsTextColorDirty() || cursorColorDirty)
+    {
+        UpdateCursorColor(uiText);
+    }
+    if (drawCursor && uiText.IsTextDirty())
+    {
+        SetCursorPosition(std::min(uiText.GetText().size(), cursorPosition));
+    }
+    if (uiTextRT.DidTransformationChange() || uiText.IsTextDirty()
+        || transformation.DidTransformationChange() || cursorDirty)
+    {
+        RebuildCursor(uiText, uiTextRT);
+    }
+
+    cursorDirty = false;
+    cursorColorDirty = false;
+}
+
 void UIInputField::SetTargetText(EntityID targetID)
 {
     _targetText = targetID;
@@ -23,6 +60,40 @@ void UIInputField::SetTargetText(EntityID targetID)
 EntityID UIInputField::GetTargetText() const
 {
     return _targetText;
+}
+
+void UIInputField::SetCursorWidth(uint32_t width)
+{
+    cursorWidth = width;
+    cursorDirty = true;
+}
+
+uint32_t UIInputField::GetCursorWidth() const
+{
+    return cursorWidth;
+}
+
+void UIInputField::SetCursorColor(glm::vec4 color)
+{
+    cursorColor = color;
+    autoCursorColor = false;
+    cursorColorDirty = true;
+}
+
+glm::vec4 UIInputField::GetCursorColor() const
+{
+    return cursorColor;
+}
+
+void UIInputField::SetCursorAutoColor(bool isAuto)
+{
+    autoCursorColor = isAuto;
+    cursorColorDirty = true;
+}
+
+bool UIInputField::GetCursorAutoColor() const
+{
+    return autoCursorColor;
 }
 
 void UIInputField::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
@@ -35,10 +106,6 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
     if (!IsInteractable)
         return;
 
-    if (_targetText == NULL_ENTITY)
-        return;
-
-    auto& uiText = GetComponentS<UIText>(_targetText);
     if (eventType & UIEventTypes::MouseEnter)
     {
         IsHovered = true;
@@ -53,19 +120,23 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         else
             PlayTransition(CurrentTransitionsInfo.Normal);
     }
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
+        return;
+    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
+
     if (eventType & UIEventTypes::MouseJustPressed)
     {
         if (!IsSelected)
+        {
             Select(uiText);
+        }
         else
         {
-            uint32_t newPosition = uiText.GetCursorPosition(uiEvent.MousePosition);
+            uint32_t newPosition = uiText.GetLetterPosition(uiEvent.MousePosition);
             cursorHorizontalOffset = -1;
-            if (newPosition != cursorPosition)
-            {
-                cursorPosition = newPosition;
-                uiText.SetCursorPosition(cursorPosition);
-            }
+            SetCursorPosition(newPosition);
         }
     }
     if (eventType & UIEventTypes::MouseJustPressedAnywhere && !(eventType & UIEventTypes::MouseJustPressed))
@@ -84,8 +155,8 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
             {
                 wasEdited = true;
                 uiText.SetText(uiText.GetText().erase(cursorPosition - 1, 1));
-                cursorPosition--;
-                uiText.SetCursorPosition(cursorPosition);
+                SetCursorPosition(cursorPosition - 1);
+                cursorHorizontalOffset = -1;
                 if (ScriptingSystem::IsInitialized())
                     ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue,
                                                    ScriptingCore::EventManagerCalls.callInvokeCallbacks);
@@ -114,8 +185,7 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         {
             if (cursorPosition != 0)
             {
-                cursorPosition = std::min(uiText.GetText().size(), cursorPosition) - 1;
-                uiText.SetCursorPosition(cursorPosition);
+                SetCursorPosition(std::min(uiText.GetText().size(), cursorPosition) - 1);
                 cursorHorizontalOffset = -1;
             }
         }
@@ -123,28 +193,19 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         {
             if (cursorPosition < uiText.GetText().size())
             {
-                cursorPosition = cursorPosition + 1;
-                uiText.SetCursorPosition(cursorPosition);
+                SetCursorPosition(cursorPosition + 1);
                 cursorHorizontalOffset = -1;
             }
         }
         if (Input::IsKeyJustPressed(KeyCodes::Up))
         {
-            uint32_t newPosition = uiText.GetCursorPositionLineUp(cursorPosition, cursorHorizontalOffset);
-            if (newPosition != cursorPosition)
-            {
-                cursorPosition = newPosition;
-                uiText.SetCursorPosition(cursorPosition);
-            }
+            uint32_t newPosition = uiText.GetLetterPositionLineUp(cursorPosition, cursorHorizontalOffset);
+            SetCursorPosition(newPosition);
         }
         if (Input::IsKeyJustPressed(KeyCodes::Down))
         {
-            uint32_t newPosition = uiText.GetCursorPositionLineDown(cursorPosition, cursorHorizontalOffset);
-            if (newPosition != cursorPosition)
-            {
-                cursorPosition = newPosition;
-                uiText.SetCursorPosition(cursorPosition);
-            }
+            uint32_t newPosition = uiText.GetLetterPositionLineDown(cursorPosition, cursorHorizontalOffset);
+            SetCursorPosition(newPosition);
         }
     }
 }
@@ -157,14 +218,14 @@ bool UIInputField::UpdateTransition(EntityID entityID)
 void UIInputField::Select(UIText& uiText)
 {
     IsSelected = true;
-    cursorPosition = uiText.GetText().size();
-    uiText.SetCursorPosition(cursorPosition);
+    SetCursorPosition(uiText.GetText().size());
     cursorHorizontalOffset = -1;
     PlayTransition(CurrentTransitionsInfo.Selected);
 }
 
 void UIInputField::Disselect(UIText& uiText)
 {
+    cursorPosition = -1;
     if (wasEdited)
     {
         wasEdited = false;
@@ -175,7 +236,7 @@ void UIInputField::Disselect(UIText& uiText)
                                            ScriptingCore::EventManagerCalls.callInvokeCallbacks);
     }
     IsSelected = false;
-    uiText.DisableCursor();
+    DisableCursor();
     if (IsHovered)
         PlayTransition(CurrentTransitionsInfo.Hovered);
     else
@@ -186,14 +247,125 @@ void UIInputField::AddText(UIText& uiText, const std::string& text)
 {
     wasEdited = true;
     std::string newText = uiText.GetText();
-    uint32_t offset = cursorPosition;
+    uint32_t offset = std::min(cursorPosition, newText.size());
     newText.insert(offset, text);
     uiText.SetText(newText);
-    cursorPosition += text.size();
-    uiText.SetCursorPosition(cursorPosition);
+    SetCursorPosition(cursorPosition + text.size());
     cursorHorizontalOffset = -1;
 
     if (ScriptingSystem::IsInitialized())
         ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue,
                                        ScriptingCore::EventManagerCalls.callInvokeCallbacks);
+}
+
+void UIInputField::SetCursorPosition(uint32_t position)
+{
+    if (position == cursorPosition)
+        return;
+
+    cursorPosition = position;
+    drawCursor = true;
+    cursorDirty = true;
+
+    cursorBlinkProgress = 0;
+    cursorIsVisible = true;
+    cursorPosition = position;
+}
+
+void UIInputField::DisableCursor()
+{
+    if (!drawCursor)
+        return;
+    drawCursor = false;
+    cursorDirty = true;
+    if (cursor != NULL_ENTITY)
+        Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntitySetActive(cursor, false, true);
+}
+
+void UIInputField::UpdateCursorBlink()
+{
+    cursorBlinkProgress += Time::UnscaledDeltaTime();
+    if (cursorBlinkProgress > cursorBlinkRate)
+    {
+        cursorBlinkProgress -= cursorBlinkRate;
+        cursorIsVisible = !cursorIsVisible;
+        cursorDirty = true;
+        auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+        entitiesRegistry->EntitySetActive(cursor, cursorIsVisible, true);
+    }
+}
+
+void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT)
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (!cursorIsVisible || !drawCursor)
+    {
+        entitiesRegistry->EntitySetActive(cursor, false, true);
+        return;
+    }
+
+    auto& atlas = uiText.GetFont()->characters[uiText.GetTextSize()];
+    auto rectSize = uiTextRT.GetRealSizeCached();
+    auto& rectMatrix = uiTextRT.GetTransformationMatrixCached();
+
+    if (cursor == NULL_ENTITY)
+    {
+        // Create cursor renderer if it was not already
+        auto cursorSprite = Application::Instance->GetCurrentScene()->GetUILayer()->UIResources.DefaultPixelSprite;
+        cursor = entitiesRegistry->CreateNewEntity();
+
+        auto& cursorRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(cursor);
+        cursorRenderer.Color = uiText.GetColor();
+        cursorRenderer.TextureID = cursorSprite->TextureID;
+        cursorRenderer.Queue = RenderingQueue::Text;
+        cursorRenderer.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
+        cursorRenderer.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
+        cursorRenderer.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
+        cursorRenderer.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
+    }
+
+    float width = (float)cursorWidth / rectSize.x;
+    uint32_t realPosition = std::min(uiText.GetText().size(), cursorPosition);
+
+    bool isRendered;
+    glm::vec2 origin = uiText.GetLetterOrigin(realPosition, isRendered);
+    if (!isRendered)
+    {
+        entitiesRegistry->EntitySetActive(cursor, false, true);
+        return;
+    }
+
+    // Place cursor in the origin of the letter where it is positioned
+    float ox = origin.x / rectSize.x - 0.5f;
+    float oy = origin.y / rectSize.y - 0.5f;
+
+    float up = (float)atlas.MaxY / rectSize.y;
+    float down = (float)atlas.MinY / rectSize.y;
+
+    isRendered = ox >= -0.5f && ox <= 0.5f && oy + down >= -0.5f && oy + up <= 0.5f;
+    if (!isRendered)
+    {
+        entitiesRegistry->EntitySetActive(cursor, false, true);
+        return;
+    }
+
+    entitiesRegistry->EntitySetActive(cursor, true, true);
+    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
+    cursorRenderer.DefaultVertices[0] = glm::vec4(ox + width, oy + up, 0.0f, 1.0f);
+    cursorRenderer.DefaultVertices[1] = glm::vec4(ox + width, oy + down, 0.0f, 1.0f);
+    cursorRenderer.DefaultVertices[2] = glm::vec4(ox, oy + up, 0.0f, 1.0f);
+    cursorRenderer.DefaultVertices[3] = glm::vec4(ox, oy + down, 0.0f, 1.0f);
+
+    for (int j = 0; j < 4; ++j)
+        cursorRenderer.Vertices[j] = rectMatrix * cursorRenderer.DefaultVertices[j];
+}
+
+void UIInputField::UpdateCursorColor(UIText& uiText) const
+{
+    if (cursor == NULL_ENTITY)
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
+    cursorRenderer.Color = autoCursorColor ? uiText.GetColor() : cursorColor;
 }

@@ -4,11 +4,10 @@
 
 #include "../../Core/Application.h"
 #include "../../Core/Log.h"
-#include "../../Core/Time.h"
 
 void UIText::Rebuild(RectTransformation& rectTransformation, bool transformationDirty)
 {
-    if (!_dirtyText && !_dirtyTextColor && !transformationDirty && !drawCursor)
+    if (!_dirtyText && !_dirtyTextColor && !transformationDirty)
         return;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
@@ -16,8 +15,6 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
     if (_font == nullptr)
     {
         ForeachLetterDelete(entitiesRegistry, letters.size());
-        _dirtyText = false;
-        _dirtyTextColor = false;
         if (_textSizeRef != 0)
         {
             _font->FreeSize(_textSizeRef);
@@ -160,15 +157,11 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
 
         // Add one more letter point in the end for new letters
         lettersDimensions.emplace_back(cursorX, cursorY);
-
-        _dirtyText = false;
     }
 
     if (_dirtyTextColor)
     {
         ForeachLetterChangeColor(entitiesRegistry, _color);
-        UpdateCursorColor();
-        _dirtyTextColor = false;
     }
 
     if (transformationDirty)
@@ -176,14 +169,12 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
         ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix);
     }
+}
 
-    if (drawCursor)
-    {
-        auto& atlas = _font->characters[_textSize];
-        auto rectSize = rectTransformation.GetRealSizeCached();
-        auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
-        DrawCursor((float)atlas.MinY, (float)atlas.MaxY, rectSize, rectMatrix);
-    }
+void UIText::Refresh()
+{
+    _dirtyText = false;
+    _dirtyTextColor = false;
 }
 
 Font* UIText::GetFont() const
@@ -311,25 +302,16 @@ void UIText::SetOverflowMode(OverflowModes::OverflowMode overflowMode)
     _dirtyText = true;
 }
 
-void UIText::SetCursorPosition(uint32_t position)
+glm::vec2 UIText::GetLetterOrigin(uint32_t letterIndex, bool& calculated)
 {
-    drawCursor = true;
+    calculated = letterIndex < lettersDimensions.size();
+    if (!calculated)
+        return glm::vec2(0.0f);
 
-    cursorBlinkProgress = 0;
-    cursorIsVisible = true;
-    cursorPosition = position;
+    return lettersDimensions[letterIndex];
 }
 
-void UIText::DisableCursor()
-{
-    if (!drawCursor)
-        return;
-    drawCursor = false;
-    if (cursor != NULL_ENTITY)
-        Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntitySetActive(cursor, false, true);
-}
-
-uint32_t UIText::GetCursorPosition(const glm::vec2& mousePosition)
+uint32_t UIText::GetLetterPosition(const glm::vec2& mousePosition)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
@@ -340,10 +322,10 @@ uint32_t UIText::GetCursorPosition(const glm::vec2& mousePosition)
     // Then transform it to pixel scale in the rect (same as cached letters positions)
     localPosition = (localPosition + glm::vec4(0.5f)) * glm::vec4(rectSize, 1.0f, 1.0f);
 
-    return GetCursorPositionLocal(localPosition);
+    return GetLetterPositionLocal(localPosition);
 }
 
-uint32_t UIText::GetCursorPositionLocal(const glm::vec2& localPosition)
+uint32_t UIText::GetLetterPositionLocal(const glm::vec2& localPosition)
 {
     auto& atlas = _font->characters[_textSize];
     float minY = atlas.MinY, maxY = atlas.MaxY;
@@ -391,10 +373,10 @@ uint32_t UIText::GetCursorPositionLocal(const glm::vec2& localPosition)
     return minXIndex;
 }
 
-uint32_t UIText::GetCursorPositionLineUp(uint32_t currentPosition, float& horOffset)
+uint32_t UIText::GetLetterPositionLineUp(uint32_t currentPosition, float& horOffset)
 {
     auto& atlas = _font->characters[_textSize];
-    float minY = atlas.MinY, maxY = atlas.MaxY;
+    float height = _lineSpacing * (float)(atlas.MaxY - atlas.MinY);
 
     uint32_t realPosition = std::min(letters.size(), currentPosition);
 
@@ -405,18 +387,18 @@ uint32_t UIText::GetCursorPositionLineUp(uint32_t currentPosition, float& horOff
             if (horOffset < 0)
                 horOffset = (float)lettersDimensions[realPosition].x;
             glm::vec2 localPosition = glm::vec2(horOffset, lettersDimensions[realPosition].y);
-            localPosition = localPosition + glm::vec2(0, maxY - minY);
-            return GetCursorPositionLocal(localPosition);
+            localPosition = localPosition + glm::vec2(0, height);
+            return GetLetterPositionLocal(localPosition);
         }
     }
 
     return 0;
 }
 
-uint32_t UIText::GetCursorPositionLineDown(uint32_t currentPosition, float& horOffset)
+uint32_t UIText::GetLetterPositionLineDown(uint32_t currentPosition, float& horOffset)
 {
     auto& atlas = _font->characters[_textSize];
-    float minY = atlas.MinY, maxY = atlas.MaxY;
+    float height = _lineSpacing * (float)(atlas.MaxY - atlas.MinY);
 
     uint32_t realPosition = std::min(letters.size(), currentPosition);
 
@@ -427,12 +409,22 @@ uint32_t UIText::GetCursorPositionLineDown(uint32_t currentPosition, float& horO
             if (horOffset < 0)
                 horOffset = (float)lettersDimensions[realPosition].x;
             glm::vec2 localPosition = glm::vec2(horOffset, lettersDimensions[realPosition].y);
-            localPosition = localPosition - glm::vec2(0, maxY - minY);
-            return GetCursorPositionLocal(localPosition);
+            localPosition = localPosition - glm::vec2(0, height);
+            return GetLetterPositionLocal(localPosition);
         }
     }
 
     return letters.size();
+}
+
+bool UIText::IsTextColorDirty() const
+{
+    return _dirtyTextColor;
+}
+
+bool UIText::IsTextDirty() const
+{
+    return _dirtyText;
 }
 
 void UIText::ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const
@@ -475,16 +467,6 @@ void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const 
         for (int j = 0; j < 4; ++j)
             renderer.Vertices[j] = transformationMatrix * renderer.DefaultVertices[j];
     }
-}
-
-void UIText::UpdateCursorColor()
-{
-    if (cursor == NULL_ENTITY)
-        return;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
-    cursorRenderer.Color = _color;
 }
 
 bool UIText::IsNewLine(char c)
@@ -612,63 +594,4 @@ int UIText::OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeigh
     }
 
     return 0;
-}
-
-void UIText::DrawCursor(float minY, float maxY, const glm::vec2& rectSize, const glm::mat4& rectMatrix)
-{
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    if (cursor == NULL_ENTITY)
-    {
-        // Create cursor renderer if it was not already
-        auto cursorSprite = Application::Instance->GetCurrentScene()->GetUILayer()->UIResources.DefaultPixelSprite;
-        cursor = entitiesRegistry->CreateNewEntity();
-
-        auto& cursorRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(cursor);
-        cursorRenderer.Color = _color;
-        cursorRenderer.TextureID = cursorSprite->TextureID;
-        cursorRenderer.Queue = RenderingQueue::Text;
-        cursorRenderer.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
-        cursorRenderer.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
-        cursorRenderer.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
-        cursorRenderer.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
-    }
-
-    cursorBlinkProgress += Time::UnscaledDeltaTime();
-    if (cursorBlinkProgress > cursorBlinkRate)
-    {
-        cursorBlinkProgress -= cursorBlinkRate;
-        cursorIsVisible = !cursorIsVisible;
-        entitiesRegistry->EntitySetActive(cursor, cursorIsVisible, true);
-    }
-
-    if (!cursorIsVisible)
-        return;
-
-    float width = (float)cursorWidth / rectSize.x;
-    uint32_t realPosition = std::min(letters.size(), cursorPosition);
-
-    // Place cursor in the origin of the letter where it is positioned
-    float ox = (float)lettersDimensions[realPosition].x / rectSize.x - 0.5f;
-    float oy = (float)lettersDimensions[realPosition].y / rectSize.y - 0.5f;
-
-    float up = maxY / rectSize.y;
-    float down = minY / rectSize.y;
-
-    bool isRendered = ox >= -0.5f && ox <= 0.5f && oy + down >= -0.5f && oy + up <= 0.5f;
-    if (!isRendered)
-    {
-        entitiesRegistry->EntitySetActive(cursor, false, true);
-        return;
-    }
-
-    entitiesRegistry->EntitySetActive(cursor, true, true);
-    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
-    cursorRenderer.DefaultVertices[0] = glm::vec4(ox + width, oy + up, 0.0f, 1.0f);
-    cursorRenderer.DefaultVertices[1] = glm::vec4(ox + width, oy + down, 0.0f, 1.0f);
-    cursorRenderer.DefaultVertices[2] = glm::vec4(ox, oy + up, 0.0f, 1.0f);
-    cursorRenderer.DefaultVertices[3] = glm::vec4(ox, oy + down, 0.0f, 1.0f);
-
-    for (int j = 0; j < 4; ++j)
-        cursorRenderer.Vertices[j] = rectMatrix * cursorRenderer.DefaultVertices[j];
 }

@@ -35,6 +35,7 @@ public:
     explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 
     void Rebuild(RectTransformation& transformation, bool transformationDirty);
+    void Refresh();
 
     Font* GetFont() const;
     void SetFont(Font* font);
@@ -53,26 +54,26 @@ public:
     OverflowModes::OverflowMode GetOverflowMode() const;
     void SetOverflowMode(OverflowModes::OverflowMode overflowMode);
 
-    void SetCursorPosition(uint32_t position);
-    void DisableCursor();
-    uint32_t GetCursorPosition(const glm::vec2& mousePosition);
-    uint32_t GetCursorPositionLocal(const glm::vec2& localPosition);
-    uint32_t GetCursorPositionLineUp(uint32_t currentPosition, float& horOffset);
-    uint32_t GetCursorPositionLineDown(uint32_t currentPosition, float& horOffset);
+    glm::vec2 GetLetterOrigin(uint32_t letterIndex, bool& calculated);
+    uint32_t GetLetterPosition(const glm::vec2& mousePosition);
+    uint32_t GetLetterPositionLocal(const glm::vec2& localPosition);
+    uint32_t GetLetterPositionLineUp(uint32_t currentPosition, float& horOffset);
+    uint32_t GetLetterPositionLineDown(uint32_t currentPosition, float& horOffset);
+
+    bool IsTextColorDirty() const;
+    bool IsTextDirty() const;
 
 private:
     void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
     void ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count);
     void ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const;
     void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const;
-    void UpdateCursorColor();
 
     void GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<uint32_t>& linesSize, std::vector<uint32_t>& lettersCount);
     static bool IsNewLine(char c);
     static bool IsSpace(char c);
     int OriginX(float rectWidth, uint32_t lineWidth);
     int OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeight);
-    void DrawCursor(float minY, float maxY, const glm::vec2& rectSize, const glm::mat4& rectMatrix);
 
     Font* _font = nullptr;
     std::string _text;
@@ -91,13 +92,6 @@ private:
     std::vector<EntityID> letters;
     std::vector<glm::ivec2> lettersDimensions;
 
-    bool drawCursor = false;
-    uint32_t cursorPosition = 0;
-    EntityID cursor = NULL_ENTITY;
-    uint32_t cursorWidth = 2;
-    float cursorBlinkRate = 0.53f;
-    float cursorBlinkProgress = 0.0f;
-    bool cursorIsVisible = true;
-
     friend class UISystem;
+    //friend class UIInputField;
 };

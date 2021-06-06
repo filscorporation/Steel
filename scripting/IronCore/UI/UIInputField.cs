@@ -87,6 +87,33 @@ namespace Iron
             get => GetInteractable_Internal(Entity.ID);
             set => SetInteractable_Internal(Entity.ID, value);
         }
+
+        /// <summary>
+        /// Cursor width in pixels
+        /// </summary>
+        public uint CursorWidth
+        {
+            get => GetCursorWidth_Internal(Entity.ID);
+            set => SetCursorWidth_Internal(Entity.ID, value);
+        }
+
+        /// <summary>
+        /// Cursor color if it is not auto
+        /// </summary>
+        public Color CursorColor
+        {
+            get => GetCursorColor_Internal(Entity.ID);
+            set => SetCursorColor_Internal(Entity.ID, value);
+        }
+
+        /// <summary>
+        /// Should cursor be same as text color
+        /// </summary>
+        public bool CursorAutoColor
+        {
+            get => GetCursorAutoColor_Internal(Entity.ID);
+            set => SetCursorAutoColor_Internal(Entity.ID, value);
+        }
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetTargetText_Internal(uint entityID);
@@ -105,5 +132,23 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetInteractable_Internal(uint entityID, bool interactable);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint GetCursorWidth_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCursorWidth_Internal(uint entityID, uint width);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Color GetCursorColor_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCursorColor_Internal(uint entityID, Color color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool GetCursorAutoColor_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCursorAutoColor_Internal(uint entityID, bool isAuto);
     }
 }

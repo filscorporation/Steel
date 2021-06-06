@@ -69,6 +69,12 @@ namespace UIInternalCalls
     void UIInputField_SetTargetImage(EntityID entityID, EntityID targetID);
     bool UIInputField_GetInteractable(EntityID entityID);
     void UIInputField_SetInteractable(EntityID entityID, bool interactable);
+    uint32_t UIInputField_GetCursorWidth(EntityID entityID);
+    void UIInputField_SetCursorWidth(EntityID entityID, uint32_t width);
+    glm::vec4 UIInputField_GetCursorColor(EntityID entityID);
+    void UIInputField_SetCursorColor(EntityID entityID, glm::vec4 color);
+    bool UIInputField_GetAutoColor(EntityID entityID);
+    void UIInputField_SetAutoColor(EntityID entityID, bool isAuto);
 
     // UI
     EntityID UI_CreateUIElement();
