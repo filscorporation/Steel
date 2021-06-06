@@ -6,6 +6,17 @@
 #include "../UIInteractable.h"
 #include "UIText.h"
 
+namespace TextTypes
+{
+    enum TextType
+    {
+        Standard,
+        IntegerNumber,
+        DecimalNumber,
+        Alphanumeric,
+    };
+}
+
 typedef std::function<void(EntityID, std::string)> InputFieldSubmitCallback;
 
 class UIInputField : public UIInteractable
@@ -24,6 +35,10 @@ public:
     glm::vec4 GetCursorColor() const;
     void SetCursorAutoColor(bool isAuto);
     bool GetCursorAutoColor() const;
+    void SetIsMultiline(bool isMultiline);
+    bool GetIsMultiline() const;
+    void SetTextType(TextTypes::TextType type);
+    TextTypes::TextType GetTextType() const;
 
     InputFieldSubmitCallback SubmitCallback = nullptr;
 
@@ -34,6 +49,8 @@ private:
     void Select(UIText& uiText);
     void Disselect(UIText& uiText);
     void AddText(UIText& uiText, const std::string& text);
+    int SetText(UIText& uiText, std::string& text);
+    void Validate(const std::string& oldText, std::string& newText, bool submit);
 
     void SetCursorPosition(uint32_t position);
     void DisableCursor();
@@ -45,6 +62,9 @@ private:
     bool wasEdited = false;
     uint32_t cursorPosition = -1;
     float cursorHorizontalOffset = -1;
+
+    bool multiline = false;
+    TextTypes::TextType textType = TextTypes::Alphanumeric;
 
     bool drawCursor = false;
     EntityID cursor = NULL_ENTITY;

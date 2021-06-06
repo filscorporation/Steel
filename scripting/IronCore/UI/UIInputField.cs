@@ -114,6 +114,24 @@ namespace Iron
             get => GetCursorAutoColor_Internal(Entity.ID);
             set => SetCursorAutoColor_Internal(Entity.ID, value);
         }
+
+        /// <summary>
+        /// Can field support multiline text
+        /// </summary>
+        public bool IsMultiline
+        {
+            get => GetIsMultiline_Internal(Entity.ID);
+            set => SetIsMultiline_Internal(Entity.ID, value);
+        }
+
+        /// <summary>
+        /// Text type field can support
+        /// </summary>
+        public TextType TextType
+        {
+            get => GetTextType_Internal(Entity.ID);
+            set => SetTextType_Internal(Entity.ID, value);
+        }
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetTargetText_Internal(uint entityID);
@@ -150,5 +168,17 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetCursorAutoColor_Internal(uint entityID, bool isAuto);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool GetIsMultiline_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetIsMultiline_Internal(uint entityID, bool isMultiline);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern TextType GetTextType_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetTextType_Internal(uint entityID, TextType type);
     }
 }

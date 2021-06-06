@@ -1,3 +1,7 @@
+#include <algorithm>
+#include <string>
+#include <sstream>
+
 #include "UIInputField.h"
 #include "../../Core/Input.h"
 #include "../../Core/Log.h"
@@ -96,6 +100,48 @@ bool UIInputField::GetCursorAutoColor() const
     return autoCursorColor;
 }
 
+void UIInputField::SetIsMultiline(bool isMultiline)
+{
+    if (multiline == isMultiline)
+        return;
+
+    multiline = isMultiline;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
+        return;
+    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
+    std::string text = uiText.GetText();
+    Validate(uiText.GetText(), text, false);
+    uiText.SetText(text);
+}
+
+bool UIInputField::GetIsMultiline() const
+{
+    return multiline;
+}
+
+void UIInputField::SetTextType(TextTypes::TextType type)
+{
+    if (type == textType)
+        return;
+
+    textType = type;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
+        return;
+    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
+    std::string text = uiText.GetText();
+    Validate(uiText.GetText(), text, false);
+    uiText.SetText(text);
+}
+
+TextTypes::TextType UIInputField::GetTextType() const
+{
+    return textType;
+}
+
 void UIInputField::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
 {
     GetComponentS<UIInputField>(handler).HandleEventInner(eventType, uiEvent);
@@ -153,29 +199,24 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         {
             if (cursorPosition > 0 && !uiText.GetText().empty())
             {
-                wasEdited = true;
-                uiText.SetText(uiText.GetText().erase(cursorPosition - 1, 1));
-                SetCursorPosition(cursorPosition - 1);
+                int diff = SetText(uiText, uiText.GetText().erase(cursorPosition - 1, 1));
+                SetCursorPosition(cursorPosition + diff);
                 cursorHorizontalOffset = -1;
-                if (ScriptingSystem::IsInitialized())
-                    ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue,
-                                                   ScriptingCore::EventManagerCalls.callInvokeCallbacks);
             }
         }
         if (Input::IsKeyJustPressed(KeyCodes::Delete))
         {
             if (cursorPosition < uiText.GetText().size() && !uiText.GetText().empty())
             {
-                wasEdited = true;
-                uiText.SetText(uiText.GetText().erase(cursorPosition, 1));
-                if (ScriptingSystem::IsInitialized())
-                    ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue,
-                                                   ScriptingCore::EventManagerCalls.callInvokeCallbacks);
+                SetText(uiText, uiText.GetText().erase(cursorPosition, 1));
             }
         }
         if (Input::IsKeyJustPressed(KeyCodes::Enter))
         {
-            AddText(uiText, "\n");
+            if (multiline)
+                AddText(uiText, "\n");
+            else
+                Disselect(uiText);
         }
         if (Input::IsKeyJustPressed(KeyCodes::Escape))
         {
@@ -228,6 +269,9 @@ void UIInputField::Disselect(UIText& uiText)
     cursorPosition = -1;
     if (wasEdited)
     {
+        std::string text = uiText.GetText();
+        Validate(uiText.GetText(), text, false);
+        uiText.SetText(text);
         wasEdited = false;
         if (SubmitCallback != nullptr)
             SubmitCallback(Owner, uiText.GetText());
@@ -245,17 +289,72 @@ void UIInputField::Disselect(UIText& uiText)
 
 void UIInputField::AddText(UIText& uiText, const std::string& text)
 {
-    wasEdited = true;
     std::string newText = uiText.GetText();
     uint32_t offset = std::min(cursorPosition, newText.size());
     newText.insert(offset, text);
-    uiText.SetText(newText);
-    SetCursorPosition(cursorPosition + text.size());
+
+    int diff = SetText(uiText, newText);
+    SetCursorPosition(cursorPosition + diff);
     cursorHorizontalOffset = -1;
+}
+
+int UIInputField::SetText(UIText& uiText, std::string& text)
+{
+    Validate(uiText.GetText(), text, false);
+    int diff = (int)text.size() - (int)(uiText.GetText().size());
+    uiText.SetText(text);
+    wasEdited = true;
 
     if (ScriptingSystem::IsInitialized())
         ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue,
                                        ScriptingCore::EventManagerCalls.callInvokeCallbacks);
+
+    return diff;
+}
+
+bool IsInt(const std::string& text, int& value)
+{
+    std::istringstream iss(text);
+    iss >> std::noskipws >> value;
+    return iss.eof() && !iss.fail();
+}
+
+bool IsFloat(const std::string& text, float& value)
+{
+    std::istringstream iss(text);
+    iss >> std::noskipws >> value;
+    return iss.eof() && !iss.fail();
+}
+
+void UIInputField::Validate(const std::string& oldText, std::string& newText, bool submit)
+{
+    if (!multiline)
+    {
+        newText.erase(std::remove(newText.begin(), newText.end(), '\n'), newText.end());
+    }
+
+    switch (textType)
+    {
+        case TextTypes::Standard:
+            break;
+        case TextTypes::IntegerNumber:
+            int integer;
+            if (!IsInt(newText, integer))
+                newText = oldText;
+            else if (submit)
+                newText = std::to_string(integer);
+            break;
+        case TextTypes::DecimalNumber:
+            float floatValue;
+            if (!IsFloat(newText, floatValue))
+                newText = oldText;
+            else if (submit)
+                newText = std::to_string(floatValue);
+            break;
+        case TextTypes::Alphanumeric:
+            newText.erase(std::remove_if(newText.begin(), newText.end(), std::not1(std::ptr_fun(std::isalnum))), newText.end());
+            break;
+    }
 }
 
 void UIInputField::SetCursorPosition(uint32_t position)

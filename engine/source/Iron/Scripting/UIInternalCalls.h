@@ -7,6 +7,7 @@
 #include "../Resources/ResourceID.h"
 #include "../UI/UIElements/UIText.h"
 #include "../UI/UIElements/UIButton.h"
+#include "../UI/UIElements/UIInputField.h"
 
 namespace UIInternalCalls
 {
@@ -75,6 +76,10 @@ namespace UIInternalCalls
     void UIInputField_SetCursorColor(EntityID entityID, glm::vec4 color);
     bool UIInputField_GetAutoColor(EntityID entityID);
     void UIInputField_SetAutoColor(EntityID entityID, bool isAuto);
+    bool UIInputField_GetIsMultiline(EntityID entityID);
+    void UIInputField_SetIsMultiline(EntityID entityID, bool isMultiline);
+    TextTypes::TextType UIInputField_GetTextType(EntityID entityID);
+    void UIInputField_SetTextType(EntityID entityID, TextTypes::TextType type);
 
     // UI
     EntityID UI_CreateUIElement();

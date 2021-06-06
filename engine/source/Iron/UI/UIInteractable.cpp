@@ -13,6 +13,9 @@ void UIInteractable::Init(UpdateIntaractable callback)
     CurrentTransitionsInfo.Selected.FromColor(glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
     CurrentTransitionsInfo.Clicked.FromColor(glm::vec4(0.55f, 0.55f, 0.55f, 1.0f));
     CurrentTransitionsInfo.Disabled.FromColor(glm::vec4(0.35f, 0.35f, 0.35f, 1.0f));
+
+    startingTransitionData = CurrentTransitionsInfo.Normal;
+    targetTransitionData = CurrentTransitionsInfo.Normal;
 }
 
 bool UIInteractable::UpdateTransition()
@@ -32,7 +35,7 @@ bool UIInteractable::UpdateTransition()
     }
     auto& image = entitiesRegistry->GetComponent<UIImage>(_targetImage);
 
-    float t = transitionProgress / CurrentTransitionsInfo.TransitionDuration;
+    float t = Math::Clamp01(transitionProgress / CurrentTransitionsInfo.TransitionDuration);
     switch (CurrentTransitionsInfo.TransitionType)
     {
         case TransitionTypes::ColorShift:

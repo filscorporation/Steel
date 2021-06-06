@@ -416,6 +416,34 @@ void UIInternalCalls::UIInputField_SetAutoColor(EntityID entityID, bool isAuto)
     component.SetCursorAutoColor(isAuto);
 }
 
+bool UIInternalCalls::UIInputField_GetIsMultiline(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, false)
+
+    return component.GetIsMultiline();
+}
+
+void UIInternalCalls::UIInputField_SetIsMultiline(EntityID entityID, bool isMultiline)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetIsMultiline(isMultiline);
+}
+
+TextTypes::TextType UIInternalCalls::UIInputField_GetTextType(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, TextTypes::Standard)
+
+    return component.GetTextType();
+}
+
+void UIInternalCalls::UIInputField_SetTextType(EntityID entityID, TextTypes::TextType type)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetTextType(type);
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();
