@@ -128,7 +128,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
                 letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
 
                 // Save letter origins for text navigation needs
-                lettersDimensions.emplace_back(cursorX, cursorY);
+                lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
 
                 // Apply text rect transformation
                 for (int j = 0; j < 4; ++j)
@@ -140,7 +140,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             }
             else
             {
-                lettersDimensions.emplace_back(cursorX, cursorY);
+                lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
                 letters.push_back(NULL_ENTITY);
                 lettersInLine++;
                 cursorX += (int)character.Advance;
@@ -156,7 +156,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         }
 
         // Add one more letter point in the end for new letters
-        lettersDimensions.emplace_back(cursorX, cursorY);
+        lettersDimensions.emplace_back(cursorX, cursorY, 0);
     }
 
     if (_dirtyTextColor)
@@ -302,11 +302,11 @@ void UIText::SetOverflowMode(OverflowModes::OverflowMode overflowMode)
     _dirtyText = true;
 }
 
-glm::vec2 UIText::GetLetterOrigin(uint32_t letterIndex, bool& calculated)
+glm::vec3 UIText::GetLetterOrigin(uint32_t letterIndex, bool& calculated)
 {
     calculated = letterIndex < lettersDimensions.size();
     if (!calculated)
-        return glm::vec2(0.0f);
+        return glm::vec3(0.0f);
 
     return lettersDimensions[letterIndex];
 }
@@ -415,6 +415,24 @@ uint32_t UIText::GetLetterPositionLineDown(uint32_t currentPosition, float& horO
     }
 
     return letters.size();
+}
+
+void UIText::GetLinesIndices(uint32_t from, uint32_t to, std::vector<std::tuple<uint32_t, uint32_t>>& indices)
+{
+    // TODO: probably should just be cached with letters origins
+    uint32_t lastY = lettersDimensions[from].y;
+    uint32_t lastIndex = from;
+    for (uint32_t i = from + 1; i <= to; ++i)
+    {
+        uint32_t currentY = lettersDimensions[i].y;
+        if (currentY != lastY)
+        {
+            lastY = currentY;
+            indices.emplace_back(lastIndex, i - 1);
+            lastIndex = i;
+        }
+    }
+    indices.emplace_back(lastIndex, to);
 }
 
 bool UIText::IsTextColorDirty() const

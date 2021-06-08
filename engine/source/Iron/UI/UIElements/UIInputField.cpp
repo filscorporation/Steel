@@ -14,8 +14,9 @@ void UIInputField::Init(UIEventHandler& eventHandler)
 {
     eventHandler.EventCallback = UIInputField::HandleEvent;
     eventHandler.EventsMask = UIEventTypes::TextInput | UIEventTypes::KeyInput |
-            UIEventTypes::MouseEnter | UIEventTypes::MouseExit |
-            UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustPressedAnywhere;
+            UIEventTypes::MouseEnter | UIEventTypes::MouseExit | UIEventTypes::MouseJustPressed |
+            UIEventTypes::MouseDragBegin | UIEventTypes::MouseDrag | UIEventTypes::MouseDragEnd |
+            UIEventTypes::MouseJustPressedAnywhere;
 
     UIInteractable::Init(UpdateTransition);
 }
@@ -46,14 +47,19 @@ void UIInputField::Rebuild(RectTransformation& transformation)
     {
         SetCursorPosition(std::min(uiText.GetText().size(), cursorPosition));
     }
-    if (uiTextRT.DidTransformationChange() || uiText.IsTextDirty()
-        || transformation.DidTransformationChange() || cursorDirty)
+    bool otherDirty = uiTextRT.DidTransformationChange() || uiText.IsTextDirty() || transformation.DidTransformationChange();
+    if (otherDirty || cursorDirty)
     {
         RebuildCursor(uiText, uiTextRT);
+    }
+    if (otherDirty || selectionDirty)
+    {
+        RebuildSelection(uiText, uiTextRT);
     }
 
     cursorDirty = false;
     cursorColorDirty = false;
+    selectionDirty = false;
 }
 
 void UIInputField::SetTargetText(EntityID targetID)
@@ -142,6 +148,37 @@ TextTypes::TextType UIInputField::GetTextType() const
     return textType;
 }
 
+void UIInputField::SetSelectionColor(glm::vec4 color)
+{
+    selectionColor = color;
+    selectionDirty = true;
+}
+
+glm::vec4 UIInputField::GetSelectionColor() const
+{
+    return selectionColor;
+}
+
+void UIInputField::OnRemoved()
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (cursor != NULL_ENTITY)
+        entitiesRegistry->DeleteEntity(cursor);
+    cursor = NULL_ENTITY;
+    for (auto& selectionEntity : selectionEntites)
+        entitiesRegistry->DeleteEntity(selectionEntity);
+    selectionEntites.clear();
+}
+
+void UIInputField::OnDisabled()
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
+        return;
+    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
+    Disselect(uiText);
+}
+
 void UIInputField::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
 {
     GetComponentS<UIInputField>(handler).HandleEventInner(eventType, uiEvent);
@@ -172,17 +209,38 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         return;
     auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
 
-    if (eventType & UIEventTypes::MouseJustPressed)
+    if (eventType & UIEventTypes::MouseDragBegin)
     {
         if (!IsSelected)
         {
+            isFirstSelection = true;
             Select(uiText);
         }
-        else
+        uint32_t newPosition = uiText.GetLetterPosition(uiEvent.MousePosition);
+        cursorHorizontalOffset = -1;
+        SetCursorPosition(newPosition);
+        selectionStart = newPosition;
+    }
+    if (eventType & UIEventTypes::MouseDragEnd)
+    {
+        if (isFirstSelection)
+        {
+            if (selectionStart == selectionEnd)
+            {
+                // Select full text when field selected without a drag
+                SetSelection(0, uiText.GetText().size());
+            }
+            isFirstSelection = false;
+        }
+    }
+    if (eventType & UIEventTypes::MouseDrag)
+    {
+        if (IsSelected)
         {
             uint32_t newPosition = uiText.GetLetterPosition(uiEvent.MousePosition);
             cursorHorizontalOffset = -1;
             SetCursorPosition(newPosition);
+            SetSelection(selectionStart, newPosition);
         }
     }
     if (eventType & UIEventTypes::MouseJustPressedAnywhere && !(eventType & UIEventTypes::MouseJustPressed))
@@ -191,13 +249,18 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
     }
     if (IsSelected && eventType & UIEventTypes::TextInput)
     {
+        RemoveSelectedText(uiText);
         AddText(uiText, uiEvent.InputString);
     }
     if (IsSelected && eventType & UIEventTypes::KeyInput)
     {
         if (Input::IsKeyJustPressed(KeyCodes::Backspace))
         {
-            if (cursorPosition > 0 && !uiText.GetText().empty())
+            if (selectionStart != selectionEnd)
+            {
+                RemoveSelectedText(uiText);
+            }
+            else if (cursorPosition > 0 && !uiText.GetText().empty())
             {
                 int diff = SetText(uiText, uiText.GetText().erase(cursorPosition - 1, 1));
                 SetCursorPosition(cursorPosition + diff);
@@ -206,7 +269,11 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         }
         if (Input::IsKeyJustPressed(KeyCodes::Delete))
         {
-            if (cursorPosition < uiText.GetText().size() && !uiText.GetText().empty())
+            if (selectionStart != selectionEnd)
+            {
+                RemoveSelectedText(uiText);
+            }
+            else if (cursorPosition < uiText.GetText().size() && !uiText.GetText().empty())
             {
                 SetText(uiText, uiText.GetText().erase(cursorPosition, 1));
             }
@@ -214,7 +281,10 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         if (Input::IsKeyJustPressed(KeyCodes::Enter))
         {
             if (multiline)
+            {
+                RemoveSelectedText(uiText);
                 AddText(uiText, "\n");
+            }
             else
                 Disselect(uiText);
         }
@@ -229,6 +299,7 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
                 SetCursorPosition(std::min(uiText.GetText().size(), cursorPosition) - 1);
                 cursorHorizontalOffset = -1;
             }
+            TryKeepSelection();
         }
         if (Input::IsKeyJustPressed(KeyCodes::Right))
         {
@@ -237,16 +308,19 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
                 SetCursorPosition(cursorPosition + 1);
                 cursorHorizontalOffset = -1;
             }
+            TryKeepSelection();
         }
         if (Input::IsKeyJustPressed(KeyCodes::Up))
         {
             uint32_t newPosition = uiText.GetLetterPositionLineUp(cursorPosition, cursorHorizontalOffset);
             SetCursorPosition(newPosition);
+            TryKeepSelection();
         }
         if (Input::IsKeyJustPressed(KeyCodes::Down))
         {
             uint32_t newPosition = uiText.GetLetterPositionLineDown(cursorPosition, cursorHorizontalOffset);
             SetCursorPosition(newPosition);
+            TryKeepSelection();
         }
     }
 }
@@ -280,7 +354,9 @@ void UIInputField::Disselect(UIText& uiText)
                                            ScriptingCore::EventManagerCalls.callInvokeCallbacks);
     }
     IsSelected = false;
+    isFirstSelection = false;
     DisableCursor();
+    DisableSelection();
     if (IsHovered)
         PlayTransition(CurrentTransitionsInfo.Hovered);
     else
@@ -467,4 +543,138 @@ void UIInputField::UpdateCursorColor(UIText& uiText) const
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
     cursorRenderer.Color = autoCursorColor ? uiText.GetColor() : cursorColor;
+}
+
+void UIInputField::SetSelection(uint32_t from, uint32_t to)
+{
+    if (from == selectionStart && to == selectionEnd)
+        return;
+
+    drawSelection = true;
+    selectionDirty = true;
+    selectionStart = from;
+    selectionEnd = to;
+}
+
+void UIInputField::DisableSelection()
+{
+    if (!drawSelection)
+        return;
+
+    drawSelection = false;
+    CleanSelection();
+}
+
+void UIInputField::CleanSelection()
+{
+    if (selectionEntites.empty())
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    for (auto& selectionEntity : selectionEntites)
+        entitiesRegistry->DeleteEntity(selectionEntity);
+    selectionEntites.clear();
+}
+
+void UIInputField::TryKeepSelection()
+{
+    bool keepSelection = Input::IsKeyPressed(KeyCodes::LeftShift) || Input::IsKeyPressed(KeyCodes::RightShift);
+
+    if (keepSelection)
+    {
+        SetSelection(selectionStart, cursorPosition);
+    }
+    else
+    {
+        CleanSelection();
+        selectionStart = cursorPosition;
+    }
+}
+
+void UIInputField::RemoveSelectedText(UIText &uiText)
+{
+    if (selectionStart == selectionEnd)
+        return;
+
+    uint32_t from = selectionStart < selectionEnd ? selectionStart : selectionEnd;
+    uint32_t len = std::abs((int)selectionStart - (int)selectionEnd);
+    SetText(uiText, uiText.GetText().erase(from, len));
+    SetCursorPosition(from);
+    selectionEnd = from;
+    selectionStart = from;
+    cursorHorizontalOffset = -1;
+}
+
+void UIInputField::RebuildSelection(UIText& uiText, RectTransformation& uiTextRT)
+{
+    CleanSelection();
+
+    if (selectionStart == selectionEnd)
+        return;
+
+    std::vector<std::tuple<uint32_t, uint32_t>> indices;
+    uiText.GetLinesIndices(std::min(selectionStart, selectionEnd), std::max(selectionStart, selectionEnd), indices);
+
+    for (auto& indexPair : indices)
+    {
+        selectionEntites.push_back(CreateSelectionBlock(uiText, uiTextRT, std::get<0>(indexPair), std::get<1>(indexPair)));
+    }
+}
+
+EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to)
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    auto& atlas = uiText.GetFont()->characters[uiText.GetTextSize()];
+    auto rectSize = uiTextRT.GetRealSizeCached();
+    auto& rectMatrix = uiTextRT.GetTransformationMatrixCached();
+
+    auto pixelSprite = Application::Instance->GetCurrentScene()->GetUILayer()->UIResources.DefaultPixelSprite;
+
+    bool isRendered;
+    glm::vec3 originFrom = uiText.GetLetterOrigin(from, isRendered);
+    glm::vec3 originTo = uiText.GetLetterOrigin(to, isRendered);
+    if (!isRendered)
+        return NULL_ENTITY;
+
+    float ox1 = originFrom.x / rectSize.x - 0.5f;
+    float oy1 = originFrom.y / rectSize.y - 0.5f;
+    float ox2 = originTo.x / rectSize.x - 0.5f;
+    float oy2 = originTo.y / rectSize.y - 0.5f;
+
+    float up = (float)atlas.MaxY / rectSize.y;
+    float down = (float)atlas.MinY / rectSize.y;
+
+    isRendered = (ox1 >= -0.5f || ox2 >= -0.5f) && (ox1 <= 0.5f || ox2 <= 0.5f)
+            && (oy1 + down >= -0.5f || oy2 + down >= -0.5f) && (oy1 + up <= 0.5f || oy2 + up <= 0.5f);
+
+    if (!isRendered)
+        return NULL_ENTITY;
+
+    ox1 = std::min(0.5f, std::max(-0.5f, ox1));
+    ox2 = std::min(0.5f, std::max(-0.5f, ox2));
+    oy1 = std::min(0.5f, std::max(-0.5f, oy1));
+    oy2 = std::min(0.5f, std::max(-0.5f, oy2));
+
+    EntityID entity = entitiesRegistry->CreateNewEntity();
+
+    auto& blockRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(entity);
+    blockRenderer.Color = selectionColor;
+    blockRenderer.TextureID = pixelSprite->TextureID;
+    blockRenderer.Queue = RenderingQueue::Text;
+    blockRenderer.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
+    blockRenderer.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
+    blockRenderer.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
+    blockRenderer.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
+
+    float z = -0.1f;
+    blockRenderer.DefaultVertices[0] = glm::vec4(ox2, oy2 + up, z, 1.0f);
+    blockRenderer.DefaultVertices[1] = glm::vec4(ox2, oy2 + down, z, 1.0f);
+    blockRenderer.DefaultVertices[2] = glm::vec4(ox1, oy1 + up, z, 1.0f);
+    blockRenderer.DefaultVertices[3] = glm::vec4(ox1, oy1 + down, z, 1.0f);
+
+    for (int j = 0; j < 4; ++j)
+        blockRenderer.Vertices[j] = rectMatrix * blockRenderer.DefaultVertices[j];
+
+    return entity;
 }

@@ -132,6 +132,15 @@ namespace Iron
             get => GetTextType_Internal(Entity.ID);
             set => SetTextType_Internal(Entity.ID, value);
         }
+
+        /// <summary>
+        /// Selection color
+        /// </summary>
+        public Color SelectionColor
+        {
+            get => GetSelectionColor_Internal(Entity.ID);
+            set => SetSelectionColor_Internal(Entity.ID, value);
+        }
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetTargetText_Internal(uint entityID);
@@ -180,5 +189,11 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetTextType_Internal(uint entityID, TextType type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Color GetSelectionColor_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetSelectionColor_Internal(uint entityID, Color color);
     }
 }

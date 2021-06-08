@@ -444,6 +444,20 @@ void UIInternalCalls::UIInputField_SetTextType(EntityID entityID, TextTypes::Tex
     component.SetTextType(type);
 }
 
+glm::vec4 UIInternalCalls::UIInputField_GetSelectionColor(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, glm::vec4(1.0f))
+
+    return component.GetSelectionColor();
+}
+
+void UIInternalCalls::UIInputField_SetSelectionColor(EntityID entityID, glm::vec4 color)
+{
+    GET_COMPONENT_OR_RETURN(UIInputField, )
+
+    component.SetSelectionColor(color);
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();

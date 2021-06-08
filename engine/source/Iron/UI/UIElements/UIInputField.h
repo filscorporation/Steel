@@ -39,6 +39,11 @@ public:
     bool GetIsMultiline() const;
     void SetTextType(TextTypes::TextType type);
     TextTypes::TextType GetTextType() const;
+    void SetSelectionColor(glm::vec4 color);
+    glm::vec4 GetSelectionColor() const;
+
+    void OnRemoved();
+    void OnDisabled();
 
     InputFieldSubmitCallback SubmitCallback = nullptr;
 
@@ -58,13 +63,21 @@ private:
     void RebuildCursor(UIText& uiText, RectTransformation& uiTextRT);
     void UpdateCursorColor(UIText& uiText) const;
 
+    void SetSelection(uint32_t from, uint32_t to);
+    void DisableSelection();
+    void CleanSelection();
+    void TryKeepSelection();
+    void RemoveSelectedText(UIText& uiText);
+    void RebuildSelection(UIText& uiText, RectTransformation& uiTextRT);
+    EntityID CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to);
+
     EntityID _targetText = NULL_ENTITY;
     bool wasEdited = false;
     uint32_t cursorPosition = -1;
     float cursorHorizontalOffset = -1;
 
     bool multiline = false;
-    TextTypes::TextType textType = TextTypes::Alphanumeric;
+    TextTypes::TextType textType = TextTypes::Standard;
 
     bool drawCursor = false;
     EntityID cursor = NULL_ENTITY;
@@ -77,6 +90,14 @@ private:
 
     bool cursorColorDirty = false;
     bool cursorDirty = false;
+
+    bool drawSelection = false;
+    bool selectionDirty = false;
+    bool isFirstSelection = false;
+    uint32_t selectionStart;
+    uint32_t selectionEnd;
+    std::vector<EntityID> selectionEntites;
+    glm::vec4 selectionColor = glm::vec4(0.42f, 0.57f, 0.7f, 1.0f);
 
     friend class UISystem;
 };

@@ -80,6 +80,8 @@ namespace UIInternalCalls
     void UIInputField_SetIsMultiline(EntityID entityID, bool isMultiline);
     TextTypes::TextType UIInputField_GetTextType(EntityID entityID);
     void UIInputField_SetTextType(EntityID entityID, TextTypes::TextType type);
+    glm::vec4 UIInputField_GetSelectionColor(EntityID entityID);
+    void UIInputField_SetSelectionColor(EntityID entityID, glm::vec4 color);
 
     // UI
     EntityID UI_CreateUIElement();

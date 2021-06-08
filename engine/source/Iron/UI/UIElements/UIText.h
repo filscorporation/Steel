@@ -54,11 +54,12 @@ public:
     OverflowModes::OverflowMode GetOverflowMode() const;
     void SetOverflowMode(OverflowModes::OverflowMode overflowMode);
 
-    glm::vec2 GetLetterOrigin(uint32_t letterIndex, bool& calculated);
+    glm::vec3 GetLetterOrigin(uint32_t letterIndex, bool& calculated);
     uint32_t GetLetterPosition(const glm::vec2& mousePosition);
     uint32_t GetLetterPositionLocal(const glm::vec2& localPosition);
     uint32_t GetLetterPositionLineUp(uint32_t currentPosition, float& horOffset);
     uint32_t GetLetterPositionLineDown(uint32_t currentPosition, float& horOffset);
+    void GetLinesIndices(uint32_t from, uint32_t to, std::vector<std::tuple<uint32_t, uint32_t>>& indices);
 
     bool IsTextColorDirty() const;
     bool IsTextDirty() const;
@@ -90,8 +91,7 @@ private:
     bool _dirtyTextColor = false;
 
     std::vector<EntityID> letters;
-    std::vector<glm::ivec2> lettersDimensions;
+    std::vector<glm::ivec3> lettersDimensions;
 
     friend class UISystem;
-    //friend class UIInputField;
 };
