@@ -58,7 +58,7 @@ void UIImage::SetImage(Sprite* image)
     _image = image;
 
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto rt = registry->GetComponent<RectTransformation>(Owner);
+    auto& rt = registry->GetComponent<RectTransformation>(Owner);
     if (_image == nullptr)
     {
         if (!wasNull)

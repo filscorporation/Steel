@@ -269,6 +269,8 @@ public:
 
     bool EntityExists(EntityID entityID)
     {
+        if (entityID == NULL_ENTITY)
+            return false;
         EntityID id = EntityIDGetID(entityID);
         return id < entityIDs.size() && EntityIDGetVersion(entityIDs[id]) == EntityIDGetVersion(entityID);
     }

@@ -1,5 +1,8 @@
 ﻿namespace Iron
 {
+    /// <summary>
+    /// Type of content text can support
+    /// </summary>
     public enum TextType
     {
         /// <summary>

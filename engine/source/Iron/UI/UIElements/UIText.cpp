@@ -107,7 +107,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             if (isRendered)
             {
                 EntityID letterEntityID = entitiesRegistry->CreateNewEntity();
-                auto &letterRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(letterEntityID);
+                auto& letterRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(letterEntityID);
 
                 letterRenderer.Color = _color;
                 letterRenderer.TextureID = atlas.TextureID;
@@ -122,10 +122,11 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
                 float y = ((float)cursorY + (float)character.Bearing.y - (float)character.Size.y * 0.5f) / rectSize.y - 0.5f;
                 float hw = 0.5f * (float)character.Size.x / rectSize.x;
                 float hh = 0.5f * (float)character.Size.y / rectSize.y;
-                letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
-                letterRenderer.DefaultVertices[1] = glm::vec4(x + hw, y - hh, 0.0f, 1.0f);
-                letterRenderer.DefaultVertices[2] = glm::vec4(x - hw, y + hh, 0.0f, 1.0f);
-                letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
+                float z = 0.1f;
+                letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, z, 1.0f);
+                letterRenderer.DefaultVertices[1] = glm::vec4(x + hw, y - hh, z, 1.0f);
+                letterRenderer.DefaultVertices[2] = glm::vec4(x - hw, y + hh, z, 1.0f);
+                letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, z, 1.0f);
 
                 // Save letter origins for text navigation needs
                 lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
@@ -459,8 +460,7 @@ void UIText::ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count)
     for (uint32_t i = letters.size() - count; i < letters.size(); ++i)
     {
         if (letters[i] == NULL_ENTITY) continue;
-        if (registry->EntityExists(letters[i]))
-            registry->DeleteEntity(letters[i]);
+        registry->DeleteEntity(letters[i]);
     }
     letters.resize(letters.size() - count);
     lettersDimensions.resize(letters.size());

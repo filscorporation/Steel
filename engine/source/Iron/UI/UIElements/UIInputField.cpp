@@ -31,14 +31,19 @@ void UIInputField::Rebuild(RectTransformation& transformation)
             entitiesRegistry->EntitySetActive(cursor, false, true);
             drawCursor = false;
         }
+        if (drawSelection)
+        {
+            CleanSelection();
+            drawSelection = false;
+        }
         return;
     }
 
     if (drawCursor)
         UpdateCursorBlink();
 
-    auto& uiText = GetComponentS<UIText>(_targetText);
-    auto& uiTextRT = GetComponentS<RectTransformation>(_targetText);
+    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
+    auto& uiTextRT = entitiesRegistry->GetComponent<RectTransformation>(_targetText);
     if (uiText.IsTextColorDirty() || cursorColorDirty)
     {
         UpdateCursorColor(uiText);
@@ -531,10 +536,11 @@ void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT)
 
     entitiesRegistry->EntitySetActive(cursor, true, true);
     auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
-    cursorRenderer.DefaultVertices[0] = glm::vec4(ox + width, oy + up, 0.0f, 1.0f);
-    cursorRenderer.DefaultVertices[1] = glm::vec4(ox + width, oy + down, 0.0f, 1.0f);
-    cursorRenderer.DefaultVertices[2] = glm::vec4(ox, oy + up, 0.0f, 1.0f);
-    cursorRenderer.DefaultVertices[3] = glm::vec4(ox, oy + down, 0.0f, 1.0f);
+    float z = 0.2f;
+    cursorRenderer.DefaultVertices[0] = glm::vec4(ox + width, oy + up, z, 1.0f);
+    cursorRenderer.DefaultVertices[1] = glm::vec4(ox + width, oy + down, z, 1.0f);
+    cursorRenderer.DefaultVertices[2] = glm::vec4(ox, oy + up, z, 1.0f);
+    cursorRenderer.DefaultVertices[3] = glm::vec4(ox, oy + down, z, 1.0f);
 
     for (int j = 0; j < 4; ++j)
         cursorRenderer.Vertices[j] = rectMatrix * cursorRenderer.DefaultVertices[j];
@@ -601,7 +607,7 @@ void UIInputField::RemoveSelectedText(UIText &uiText)
     if (selectionStart == selectionEnd)
         return;
 
-    uint32_t from = selectionStart < selectionEnd ? selectionStart : selectionEnd;
+    uint32_t from = std::min(selectionStart, selectionEnd);
     uint32_t len = std::abs((int)selectionStart - (int)selectionEnd);
     SetText(uiText, uiText.GetText().erase(from, len));
     SetCursorPosition(from);
@@ -612,6 +618,9 @@ void UIInputField::RemoveSelectedText(UIText &uiText)
 
 void UIInputField::RebuildSelection(UIText& uiText, RectTransformation& uiTextRT)
 {
+    if (!drawSelection)
+        return;
+
     CleanSelection();
 
     if (selectionStart == selectionEnd)
@@ -636,10 +645,10 @@ EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& 
 
     auto pixelSprite = Application::Instance->GetCurrentScene()->GetUILayer()->UIResources.DefaultPixelSprite;
 
-    bool isRendered;
-    glm::vec3 originFrom = uiText.GetLetterOrigin(from, isRendered);
-    glm::vec3 originTo = uiText.GetLetterOrigin(to, isRendered);
-    if (!isRendered)
+    bool isRenderedFrom, isRenderedTo;
+    glm::vec3 originFrom = uiText.GetLetterOrigin(from, isRenderedFrom);
+    glm::vec3 originTo = uiText.GetLetterOrigin(to, isRenderedTo);
+    if (!isRenderedFrom || !isRenderedTo)
         return NULL_ENTITY;
 
     float ox1 = originFrom.x / rectSize.x - 0.5f;
@@ -650,7 +659,7 @@ EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& 
     float up = (float)atlas.MaxY / rectSize.y;
     float down = (float)atlas.MinY / rectSize.y;
 
-    isRendered = (ox1 >= -0.5f || ox2 >= -0.5f) && (ox1 <= 0.5f || ox2 <= 0.5f)
+    bool isRendered = (ox1 >= -0.5f || ox2 >= -0.5f) && (ox1 <= 0.5f || ox2 <= 0.5f)
             && (oy1 + down >= -0.5f || oy2 + down >= -0.5f) && (oy1 + up <= 0.5f || oy2 + up <= 0.5f);
 
     if (!isRendered)
