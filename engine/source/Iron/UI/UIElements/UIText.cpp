@@ -378,7 +378,7 @@ uint32_t UIText::GetLetterPositionLineUp(uint32_t currentPosition, float& horOff
     auto& atlas = _font->characters[_textSize];
     float height = _lineSpacing * (float)(atlas.MaxY - atlas.MinY);
 
-    uint32_t realPosition = std::min(letters.size(), currentPosition);
+    uint32_t realPosition = std::min((uint32_t)letters.size(), currentPosition);
 
     for (auto& letterDimension : lettersDimensions)
     {
@@ -400,7 +400,7 @@ uint32_t UIText::GetLetterPositionLineDown(uint32_t currentPosition, float& horO
     auto& atlas = _font->characters[_textSize];
     float height = _lineSpacing * (float)(atlas.MaxY - atlas.MinY);
 
-    uint32_t realPosition = std::min(letters.size(), currentPosition);
+    uint32_t realPosition = std::min((uint32_t)letters.size(), currentPosition);
 
     for (auto& letterDimension : lettersDimensions)
     {

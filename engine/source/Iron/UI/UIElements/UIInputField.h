@@ -94,8 +94,8 @@ private:
     bool drawSelection = false;
     bool selectionDirty = false;
     bool isFirstSelection = false;
-    uint32_t selectionStart;
-    uint32_t selectionEnd;
+    uint32_t selectionStart = 0;
+    uint32_t selectionEnd = 0;
     std::vector<EntityID> selectionEntites;
     glm::vec4 selectionColor = glm::vec4(0.42f, 0.57f, 0.7f, 1.0f);
 

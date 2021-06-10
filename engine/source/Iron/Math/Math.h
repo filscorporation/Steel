@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <algorithm>
 #include <glm/glm.hpp>
 
 class Math

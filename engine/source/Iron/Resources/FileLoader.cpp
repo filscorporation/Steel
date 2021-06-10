@@ -19,7 +19,7 @@ bool FileLoader::IsImageTransparent(const unsigned char* imageData, uint32_t wid
     {
         for (uint32_t j = 0; j < height; ++j)
         {
-            auto alpha = imageData[(i * width + j) * 4 + 3];
+            auto alpha = imageData[(j * width + i) * 4 + 3];
             if (alpha != 0 && alpha != 255)
                 return true;
         }

@@ -45,7 +45,7 @@ void UIInputField::Rebuild(RectTransformation& transformation)
     }
     if (drawCursor && uiText.IsTextDirty())
     {
-        SetCursorPosition(std::min(uiText.GetText().size(), cursorPosition));
+        SetCursorPosition(std::min((uint32_t)uiText.GetText().size(), cursorPosition));
     }
     bool otherDirty = uiTextRT.DidTransformationChange() || uiText.IsTextDirty() || transformation.DidTransformationChange();
     if (otherDirty || cursorDirty)
@@ -296,7 +296,7 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         {
             if (cursorPosition != 0)
             {
-                SetCursorPosition(std::min(uiText.GetText().size(), cursorPosition) - 1);
+                SetCursorPosition(std::min((uint32_t)uiText.GetText().size(), cursorPosition) - 1);
                 cursorHorizontalOffset = -1;
             }
             TryKeepSelection();
@@ -366,7 +366,7 @@ void UIInputField::Disselect(UIText& uiText)
 void UIInputField::AddText(UIText& uiText, const std::string& text)
 {
     std::string newText = uiText.GetText();
-    uint32_t offset = std::min(cursorPosition, newText.size());
+    uint32_t offset = std::min(cursorPosition, (uint32_t)newText.size());
     newText.insert(offset, text);
 
     int diff = SetText(uiText, newText);
@@ -402,6 +402,11 @@ bool IsFloat(const std::string& text, float& value)
     return iss.eof() && !iss.fail();
 }
 
+int IsNotAlNum(char c)
+{
+    return !std::isalnum(c);
+}
+
 void UIInputField::Validate(const std::string& oldText, std::string& newText, bool submit)
 {
     if (!multiline)
@@ -428,7 +433,7 @@ void UIInputField::Validate(const std::string& oldText, std::string& newText, bo
                 newText = std::to_string(floatValue);
             break;
         case TextTypes::Alphanumeric:
-            newText.erase(std::remove_if(newText.begin(), newText.end(), std::not1(std::ptr_fun(std::isalnum))), newText.end());
+            newText.erase(std::remove_if(newText.begin(), newText.end(), IsNotAlNum), newText.end());
             break;
     }
 }
@@ -500,7 +505,7 @@ void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT)
     }
 
     float width = (float)cursorWidth / rectSize.x;
-    uint32_t realPosition = std::min(uiText.GetText().size(), cursorPosition);
+    uint32_t realPosition = std::min((uint32_t)uiText.GetText().size(), cursorPosition);
 
     bool isRendered;
     glm::vec2 origin = uiText.GetLetterOrigin(realPosition, isRendered);

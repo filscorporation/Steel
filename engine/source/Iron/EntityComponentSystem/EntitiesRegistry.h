@@ -142,7 +142,7 @@ public:
 
     int Size()
     {
-        return _pool->Storage.Size();
+        return _pool == nullptr ? 0 : _pool->Storage.Size();
     }
 
     using Iterator = typename ComponentsPool<T>::Iterator;
@@ -384,7 +384,7 @@ public:
 
         if (componentsMap.find(typeID) == componentsMap.end())
         {
-            return ComponentIterator<T>(new ComponentsPoolWrapper<T>());
+            return ComponentIterator<T>(nullptr);
         }
 
         return ComponentIterator<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID]);
@@ -397,7 +397,7 @@ public:
 
         if (componentsMap.find(typeID) == componentsMap.end())
         {
-            return ComponentAccessor<T>(new ComponentsPoolWrapper<T>());
+            return ComponentAccessor<T>(nullptr);
         }
 
         return ComponentAccessor<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID]);
@@ -580,6 +580,8 @@ public:
 
     bool Has(EntityID entityID)
     {
+        if (_componentsPool == nullptr)
+            return false;
         EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
         return _componentsPool->Storage.Has(id);
     }
@@ -592,6 +594,8 @@ public:
 
     bool HasInactive(EntityID entityID)
     {
+        if (_componentsPool == nullptr)
+            return false;
         EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
         return _componentsPool->InactiveStorage.Has(id);
     }
