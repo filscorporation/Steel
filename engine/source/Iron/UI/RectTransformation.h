@@ -10,6 +10,8 @@
 #include "../EntityComponentSystem/EntitiesRegistry.h"
 #include "../Scene/HierarchyNode.h"
 
+#define PIXEL_CORRECTION true
+
 class RectTransformation : public Component
 {
 public:

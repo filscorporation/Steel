@@ -40,18 +40,18 @@ namespace OpenGLAPI
     void SetUniformIntegers(int uniform, int valuesCount, const int* values);
     void SetUniformMatrix4Float(int uniform, const float* values);
 
-    uint32_t GenerateVetexArray();
-    void BindVetexArray(uint32_t arrayID);
-    void UnbindVetexArray();
-    void DeleteVetexArray(uint32_t arrayID);
+    uint32_t GenerateVertexArray();
+    void BindVertexArray(uint32_t arrayID);
+    void UnbindVertexArray();
+    void DeleteVertexArray(uint32_t arrayID);
 
-    uint32_t GenerateVetexBuffer(int size, void* data, BufferType type);
+    uint32_t GenerateVertexBuffer(int size, void* data, BufferType type);
     uint32_t GenerateIndexBuffer(int size, void* data, BufferType type);
-    void SetVetexBufferSubData(uint32_t size, void* data);
+    void SetVertexBufferSubData(uint32_t size, void* data);
     void EnableVertexFloatAttribute(int attributeID, int size, int step, int offset);
-    void BindVetexBuffer(uint32_t bufferID);
+    void BindVertexBuffer(uint32_t bufferID);
     void BindIndexBuffer(uint32_t bufferID);
-    void UnbindVetexBuffer();
+    void UnbindVertexBuffer();
     void UnbindIndexBuffer();
     void DeleteBuffer(uint32_t bufferID);
 

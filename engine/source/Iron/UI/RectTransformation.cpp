@@ -260,7 +260,11 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
         }
     }
 
-    _transformationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(_realPosition, -_globalSortingOrder))
+    // Pixel correction is fixing bug caused by rounding error when quad position is in the middle of pixel
+    // Shifting position will prevent this bug for rects with uneven size
+    const float d = PIXEL_CORRECTION ? 0.01f : 0.0f;
+    glm::vec3 pixelCorrection = glm::vec3(d, d, 0.0f);
+    _transformationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(_realPosition, -_globalSortingOrder) + pixelCorrection)
                             * glm::toMat4(glm::quat(_rotation))
                             * glm::scale(glm::mat4(1.0f), glm::vec3(_realSize, 1.0f));
 }

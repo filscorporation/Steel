@@ -61,7 +61,7 @@ void Renderer::Init()
 
     // Reserve space for all vertex data
     vertexBufferData = new float[MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4];
-    vertexDataBufferID = GenerateVetexBuffer(MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4, nullptr, Dynamic);
+    vertexDataBufferID = GenerateVertexBuffer(MAX_RENDER_CALLS * RENDER_CALL_DATA_SIZE * 4, nullptr, Dynamic);
 
     Log::LogDebug("Vertices data generated");
 
@@ -201,12 +201,12 @@ void Renderer::EndBatch()
 void Renderer::DrawBatchedData()
 {
     // Generate vertex array
-    uint32_t vertexArrayID = GenerateVetexArray();
-    BindVetexArray(vertexArrayID);
+    uint32_t vertexArrayID = GenerateVertexArray();
+    BindVertexArray(vertexArrayID);
 
     // Set vertices data
-    BindVetexBuffer(vertexDataBufferID);
-    SetVetexBufferSubData(renderCallsCount * RENDER_CALL_DATA_SIZE * 4, vertexBufferData);
+    BindVertexBuffer(vertexDataBufferID);
+    SetVertexBufferSubData(renderCallsCount * RENDER_CALL_DATA_SIZE * 4, vertexBufferData);
 
     // Bind indexes buffer and define attributes
     BindIndexBuffer(indexBufferID);
@@ -220,7 +220,7 @@ void Renderer::DrawBatchedData()
     // Texture ID
     EnableVertexFloatAttribute(3, 1, RENDER_CALL_DATA_SIZE, 9);
 
-    UnbindVetexBuffer();
+    UnbindVertexBuffer();
 
     // Bind textures
     for (int i = 0; i < texturesCount; ++i)
@@ -229,10 +229,10 @@ void Renderer::DrawBatchedData()
     // Draw
     DrawTriangles(renderCallsCount * 6);
 
-    UnbindVetexArray();
+    UnbindVertexArray();
 
     UnbindTexture();
-    DeleteVetexArray(vertexArrayID);
+    DeleteVertexArray(vertexArrayID);
 }
 
 int Renderer::FindTextureSlot(uint32_t textureID)

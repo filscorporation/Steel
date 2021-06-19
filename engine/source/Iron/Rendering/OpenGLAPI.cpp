@@ -101,7 +101,7 @@ int GLBufferType(OpenGLAPI::BufferType type)
     return -1;
 }
 
-uint32_t OpenGLAPI::GenerateVetexArray()
+uint32_t OpenGLAPI::GenerateVertexArray()
 {
     uint32_t id = 0;
     glGenVertexArrays(1, &id);
@@ -109,22 +109,22 @@ uint32_t OpenGLAPI::GenerateVetexArray()
     return id;
 }
 
-void OpenGLAPI::BindVetexArray(uint32_t arrayID)
+void OpenGLAPI::BindVertexArray(uint32_t arrayID)
 {
     glBindVertexArray(arrayID);
 }
 
-void OpenGLAPI::UnbindVetexArray()
+void OpenGLAPI::UnbindVertexArray()
 {
     glBindVertexArray(0);
 }
 
-void OpenGLAPI::DeleteVetexArray(uint32_t arrayID)
+void OpenGLAPI::DeleteVertexArray(uint32_t arrayID)
 {
     glDeleteVertexArrays(1, &arrayID);
 }
 
-uint32_t OpenGLAPI::GenerateVetexBuffer(int size, void* data, BufferType type)
+uint32_t OpenGLAPI::GenerateVertexBuffer(int size, void* data, BufferType type)
 {
     uint32_t id = 0;
     glGenBuffers(1, &id);
@@ -144,7 +144,7 @@ uint32_t OpenGLAPI::GenerateIndexBuffer(int size, void* data, BufferType type)
     return id;
 }
 
-void OpenGLAPI::SetVetexBufferSubData(uint32_t size, void* data)
+void OpenGLAPI::SetVertexBufferSubData(uint32_t size, void* data)
 {
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * size, data);
 }
@@ -155,7 +155,7 @@ void OpenGLAPI::EnableVertexFloatAttribute(int attributeID, int size, int step, 
     glEnableVertexAttribArray(attributeID);
 }
 
-void OpenGLAPI::BindVetexBuffer(uint32_t bufferID)
+void OpenGLAPI::BindVertexBuffer(uint32_t bufferID)
 {
     glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 }
@@ -165,7 +165,7 @@ void OpenGLAPI::BindIndexBuffer(uint32_t bufferID)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
 }
 
-void OpenGLAPI::UnbindVetexBuffer()
+void OpenGLAPI::UnbindVertexBuffer()
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
