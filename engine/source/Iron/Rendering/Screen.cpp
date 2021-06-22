@@ -6,9 +6,6 @@
 #include "../Core/Input.h"
 #include "../Core/Log.h"
 
-#define UI_MIN_DISTANCE -100.0f
-#define UI_MAX_DISTANCE 100.0f
-
 GLFWwindow* _window;
 bool needToUpdateViewport = false;
 bool screenSizeDirty = false;
@@ -135,7 +132,7 @@ void Screen::UpdateUIViewProjection()
     glm::mat4 projection = glm::ortho(
             0.0f, (float)_width,
             0.0f, (float)_height,
-            UI_MIN_DISTANCE, UI_MAX_DISTANCE
+            -1.0f, UI_MAX_DISTANCE
     );
 
     _viewProjection = projection;

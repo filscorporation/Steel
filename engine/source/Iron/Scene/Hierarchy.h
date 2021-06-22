@@ -26,9 +26,11 @@ void UpdateChildrenDepthAndSetDirty(EntitiesRegistry* registry, HierarchyNode& p
 
 void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID parent);
 
-void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNode);
+void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNode, HierarchyParent& hierarchyParent);
 
 bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent);
+
+void UpdateThicknessUpwards(EntitiesRegistry* registry, EntityID nodeID, int diff);
 
 std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent);
 

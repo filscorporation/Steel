@@ -1,6 +1,7 @@
 #include "UILayer.h"
 #include "UIElements/UIButton.h"
 #include "UIElements/UIInputField.h"
+#include "UISystem.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 #include "../Rendering/Renderer.h"
@@ -51,6 +52,8 @@ void UILayer::Draw()
 {
     // Prepare to draw
     auto entitiesRegistry = _scene->GetEntitiesRegistry();
+    // TODO: support non default thickness
+    _layerThickness = entitiesRegistry->GetComponentIterator<RectTransformation>().Size() + 1;
 
     // Update rect transformations if needed
     auto hierarchyNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
@@ -63,21 +66,21 @@ void UILayer::Draw()
         if (rtAccessor.Has(hierarchyNode.Owner))
         {
             auto& rt = rtAccessor.Get(hierarchyNode.Owner);
-            rt.UpdateTransformation(rtAccessor, hierarchyNode);
+            rt.UpdateTransformation(this, rtAccessor, hierarchyNode);
 
             bool transformationDirty = rt.DidTransformationChange();
-            if (transformationDirty && imageAccessor.Has(hierarchyNode.Owner))
-                imageAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt);
+            if ((transformationDirty || _rebuildSortingOrder) && imageAccessor.Has(hierarchyNode.Owner))
+                imageAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt, transformationDirty, _rebuildSortingOrder);
             if (textAccessor.Has(hierarchyNode.Owner))
                 // Possible place for optimization - entering component even if transformation not dirty
-                textAccessor.Get(hierarchyNode.Owner).Rebuild(rt, transformationDirty);
+                textAccessor.Get(hierarchyNode.Owner).Rebuild(this, rt, transformationDirty, _rebuildSortingOrder);
         }
     }
 
     // Rebuild elements after rt update
     auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
     for (auto& uiIF : uiIFs)
-        uiIF.Rebuild(rtAccessor.Get(uiIF.Owner));
+        uiIF.Rebuild(this, rtAccessor.Get(uiIF.Owner));
 
     // After rebuilding text we need to condense renderers list to not wait for the next frame
     entitiesRegistry->ClearRemoved<UIQuadRenderer>();
@@ -122,6 +125,8 @@ void UILayer::Draw()
     auto uiTexts = entitiesRegistry->GetComponentIterator<UIText>();
     for (auto& uiText : uiTexts)
         uiText.Refresh();
+    _currentHierarchyIndex = 0;
+    _rebuildSortingOrder = false;
 }
 
 void UILayer::PollEvent(UIEvent& uiEvent)
@@ -133,7 +138,7 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     struct
     {
         bool operator()(UIEventHandler& a, UIEventHandler& b) const
-        { return a.SortingOrder < b.SortingOrder; }
+        { return a.SortingOrder > b.SortingOrder; }
     } SOComparer;
     entitiesRegistry->SortComponents<UIEventHandler>(SOComparer);
 
@@ -168,6 +173,31 @@ bool UILayer::IsPointerOverUI() const
 UILayer* UILayer::Current()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer();
+}
+
+uint32_t UILayer::GetLayerThickness() const
+{
+    return _layerThickness;
+}
+
+uint32_t UILayer::GetCurrentHeirarchyIndex() const
+{
+    return _currentHierarchyIndex;
+}
+
+void UILayer::IncreaseCurrentHierarchyIndex(uint32_t thickness)
+{
+    _currentHierarchyIndex += thickness;
+}
+
+void UILayer::SetSortingOrderDirty()
+{
+    _rebuildSortingOrder = true;
+}
+
+bool UILayer::NeedRebuildSortingOrder() const
+{
+    return _rebuildSortingOrder;
 }
 
 EntityID UILayer::CreateUIElement()
@@ -259,7 +289,6 @@ EntityID UILayer::CreateUIInputField(const char* name, EntityID parent)
     float offset = 6.0f;
     textRT.SetOffsetMin(glm::vec2(offset, offset));
     textRT.SetOffsetMax(glm::vec2(offset, offset));
-    textRT.SetSortingOrder(-1);
     inputField.SetTargetText(textEntity);
 
     return entity;

@@ -7,11 +7,12 @@
 #include "../Resources/AsepriteData.h"
 #include "../UI/UILayer.h"
 #include "HierarchySystem.h"
-#include "TransformationSystem.h"
+#include "HierarchyParent.h"
 
 class UILayer;
+class TransformationSystem;
 
-class Scene
+class Scene : public HierarchyParent
 {
 public:
     EntitiesRegistry* GetEntitiesRegistry();

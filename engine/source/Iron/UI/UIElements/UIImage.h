@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../RectTransformation.h"
 #include "../UIComponent.h"
 #include "../UIQuadRenderer.h"
 #include "../../Rendering/Sprite.h"
@@ -9,7 +10,7 @@ class UIImage : public UIComponent
 public:
     explicit UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    void UpdateRenderer(RectTransformation& transformation);
+    void UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
 
     void SetImage(Sprite* image);
     Sprite* GetImage();

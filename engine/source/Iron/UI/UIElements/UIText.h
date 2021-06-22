@@ -2,6 +2,7 @@
 
 #include "../Font.h"
 #include "../UIComponent.h"
+#include "../RectTransformation.h"
 
 namespace AlignmentTypes
 {
@@ -34,7 +35,7 @@ class UIText : public UIComponent
 public:
     explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 
-    void Rebuild(RectTransformation& transformation, bool transformationDirty);
+    void Rebuild(UILayer* layer, RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
     void Refresh();
 
     Font* GetFont() const;
@@ -68,7 +69,7 @@ private:
     void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
     void ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count);
     void ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const;
-    void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const;
+    void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix, float sortingOrder) const;
 
     void GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<uint32_t>& linesSize, std::vector<uint32_t>& lettersCount);
     static bool IsNewLine(char c);

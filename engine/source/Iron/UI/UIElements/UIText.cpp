@@ -4,10 +4,11 @@
 
 #include "../../Core/Application.h"
 #include "../../Core/Log.h"
+#include "../UIQuadRenderer.h"
 
-void UIText::Rebuild(RectTransformation& rectTransformation, bool transformationDirty)
+void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, bool transformationDirty, bool sortingOrderDirty)
 {
-    if (!_dirtyText && !_dirtyTextColor && !transformationDirty)
+    if (!_dirtyText && !_dirtyTextColor && !transformationDirty && !sortingOrderDirty)
         return;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
@@ -49,6 +50,7 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
             // If all letter changed, we don't need to change transformation and color, as new one will be created
             transformationDirty = false;
             _dirtyTextColor = false;
+            sortingOrderDirty = false;
         }
 
         if (_textSizeRef != 0 && _textSizeRef != _textSize)
@@ -122,11 +124,11 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
                 float y = ((float)cursorY + (float)character.Bearing.y - (float)character.Size.y * 0.5f) / rectSize.y - 0.5f;
                 float hw = 0.5f * (float)character.Size.x / rectSize.x;
                 float hh = 0.5f * (float)character.Size.y / rectSize.y;
-                float z = 0.1f;
-                letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, z, 1.0f);
-                letterRenderer.DefaultVertices[1] = glm::vec4(x + hw, y - hh, z, 1.0f);
-                letterRenderer.DefaultVertices[2] = glm::vec4(x - hw, y + hh, z, 1.0f);
-                letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, z, 1.0f);
+                letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
+                letterRenderer.DefaultVertices[1] = glm::vec4(x + hw, y - hh, 0.0f, 1.0f);
+                letterRenderer.DefaultVertices[2] = glm::vec4(x - hw, y + hh, 0.0f, 1.0f);
+                letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
+                letterRenderer.SortingOrder = rectTransformation.GetSortingOrder();
 
                 // Save letter origins for text navigation needs
                 lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
@@ -165,10 +167,10 @@ void UIText::Rebuild(RectTransformation& rectTransformation, bool transformation
         ForeachLetterChangeColor(entitiesRegistry, _color);
     }
 
-    if (transformationDirty)
+    if (transformationDirty || sortingOrderDirty)
     {
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
-        ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix);
+        ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix, rectTransformation.GetSortingOrder());
     }
 }
 
@@ -475,7 +477,7 @@ void UIText::ForeachLetterSetActive(EntitiesRegistry* registry, bool active) con
     }
 }
 
-void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix) const
+void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix, float sortingOrder) const
 {
     auto lettersAccessor = registry->GetComponentAccessor<UIQuadRenderer>();
     for (auto& letterID : letters)
@@ -484,6 +486,7 @@ void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const 
         auto& renderer = lettersAccessor.Get(letterID);
         for (int j = 0; j < 4; ++j)
             renderer.Vertices[j] = transformationMatrix * renderer.DefaultVertices[j];
+        renderer.SortingOrder = sortingOrder;
     }
 }
 

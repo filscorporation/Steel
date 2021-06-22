@@ -25,7 +25,7 @@ public:
     explicit UIInputField(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { }
 
     void Init(UIEventHandler& eventHandler);
-    void Rebuild(RectTransformation& transformation);
+    void Rebuild(UILayer* layer, RectTransformation& transformation);
 
     void SetTargetText(EntityID targetID);
     EntityID GetTargetText() const;
@@ -60,16 +60,18 @@ private:
     void SetCursorPosition(uint32_t position);
     void DisableCursor();
     void UpdateCursorBlink();
-    void RebuildCursor(UIText& uiText, RectTransformation& uiTextRT);
+    void RebuildCursor(UIText& uiText, RectTransformation& uiTextRT, float dz);
     void UpdateCursorColor(UIText& uiText) const;
+    void UpdateCursorSortingOrder(RectTransformation& uiTextRT, float dz) const;
 
     void SetSelection(uint32_t from, uint32_t to);
     void DisableSelection();
     void CleanSelection();
     void TryKeepSelection();
     void RemoveSelectedText(UIText& uiText);
-    void RebuildSelection(UIText& uiText, RectTransformation& uiTextRT);
-    EntityID CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to);
+    void RebuildSelection(UIText& uiText, RectTransformation& uiTextRT, float dz);
+    void UpdateSelectionSortingOrder(RectTransformation& uiTextRT, float dz) const;
+    EntityID CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to, float dz);
 
     EntityID _targetText = NULL_ENTITY;
     bool wasEdited = false;

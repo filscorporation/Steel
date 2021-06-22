@@ -5,14 +5,14 @@
 #include "../../Scene/SceneHelper.h"
 #include "../../Rendering/Screen.h"
 
-void UIImage::UpdateRenderer(RectTransformation& transformation)
+void UIImage::UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty)
 {
     if (_image == nullptr)
         return;
 
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
-    float sortingOrder = transformation.GetGlobalSortingOrderCached();
+    float sortingOrder = transformation.GetSortingOrder();
 
     if (_image->IsSliced)
     {
@@ -58,7 +58,7 @@ void UIImage::SetImage(Sprite* image)
     _image = image;
 
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& rt = registry->GetComponent<RectTransformation>(Owner);
+    auto& transformation = registry->GetComponent<RectTransformation>(Owner);
     if (_image == nullptr)
     {
         if (!wasNull)
@@ -138,13 +138,13 @@ void UIImage::SetImage(Sprite* image)
     }
 
     if (_image == nullptr)
-        rt.SetSize(glm::vec2(0.0f, 0.0f));
+        transformation.SetSize(glm::vec2(0.0f, 0.0f));
     else if (wasNull)
     {
         glm::vec2 size;
         size.x = _image->IsSpriteSheet ? _image->TileWidth : _image->Width;
         size.y = _image->IsSpriteSheet ? _image->TileHeight : _image->Height;
-        rt.SetSize(size);
+        transformation.SetSize(size);
     }
 }
 

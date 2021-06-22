@@ -2,9 +2,11 @@
 #include "Transformation.h"
 #include "NameComponent.h"
 #include "Hierarchy.h"
+#include "../Animation/Animator.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Rendering/QuadRenderer.h"
-#include "../Animation/Animator.h"
+#include "../Scene/TransformationSystem.h"
+#include "../UI/RectTransformation.h"
 
 int Scene::EntitiesWasCreated = 0;
 
@@ -109,7 +111,10 @@ void Scene::SortByHierarchy()
     // Sort all objects by hierarchy depth
     struct
     {
-        bool operator()(const HierarchyNode& a, const HierarchyNode& b) const { return a.HierarchyDepth < b.HierarchyDepth; }
+        bool operator()(const HierarchyNode& a, const HierarchyNode& b) const
+        {
+            return a.HierarchyDepth < b.HierarchyDepth || (a.HierarchyDepth == b.HierarchyDepth && a.NodeIndex < b.NodeIndex);
+        }
     } DepthComparer;
     entitiesRegistry->SortComponents<HierarchyNode>(DepthComparer);
     entitiesRegistry->ApplyOrder<HierarchyNode, Transformation>();
@@ -149,7 +154,7 @@ void Scene::SortByDrawOrder()
     struct
     {
         bool operator()(QuadRenderer& a, QuadRenderer& b) const
-        { return a.SortingOrder > b.SortingOrder; }
+        { return a.SortingOrder > b.SortingOrder; } // TODO: check direction
     } ZComparer;
     entitiesRegistry->SortComponents<QuadRenderer>(ZComparer);
 }

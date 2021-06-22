@@ -101,12 +101,8 @@ namespace Iron
         /// <summary>
         /// Order when element will be drawn in UI, bigger - later
         /// </summary>
-        public float SortingOrder
-        {
-            get => GetSortingOrder_Internal(Entity.ID);
-            set => SetSortingOrder_Internal(Entity.ID, value);
-        }
-        
+        public float SortingOrder => GetSortingOrder_Internal(Entity.ID);
+
         /// <summary>
         /// Element global rotation
         /// </summary>
@@ -160,9 +156,6 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float GetSortingOrder_Internal(uint entityID);
-        
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetSortingOrder_Internal(uint entityID, float sortingOrder);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Vector3 GetRotation_Internal(uint entityID);

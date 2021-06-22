@@ -192,6 +192,16 @@ void RectTransformation::SetLocalRotation(const glm::vec3& rotation)
     SetTransformationChanged(true);
 }
 
+uint32_t RectTransformation::GetCurrentHierarchyIndex() const
+{
+    return _currentHierarchyIndex;
+}
+
+void RectTransformation::IncreaseCurrentHierarchyIndex(uint32_t thickness)
+{
+    _currentHierarchyIndex += thickness;
+}
+
 bool RectTransformation::Contains(const glm::vec2& point) const
 {
     // TODO: does not use rotation
@@ -206,7 +216,7 @@ const glm::mat4& RectTransformation::GetTransformationMatrixCached()
     return _transformationMatrix;
 }
 
-void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformation>& rtAccessor, HierarchyNode& hierarchyNode)
+void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<RectTransformation>& rtAccessor, HierarchyNode& hierarchyNode)
 {
     glm::vec2 parentSize;
     glm::vec2 parentPosition;
@@ -214,7 +224,10 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
     if (hierarchyNode.ParentNode == NULL_ENTITY)
     {
         if (!DidTransformationChange() && !Screen::IsScreenSizeDirty())
-            return;
+        {
+            if (!layer->NeedRebuildSortingOrder())
+                return;
+        }
         else
         {
             SetTransformationChanged(true);
@@ -224,14 +237,18 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
 
         parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
         parentPosition = parentSize * 0.5f;
-        _globalSortingOrder = _sortingOrder;
+        _currentHierarchyIndex = layer->GetCurrentHeirarchyIndex();
+        layer->IncreaseCurrentHierarchyIndex(hierarchyNode.Thickness);
     }
     else
     {
         auto& parentRT = rtAccessor.Get(hierarchyNode.ParentNode);
 
         if (!DidTransformationChange() && !parentRT.DidTransformationChange() && !Screen::IsScreenSizeDirty())
-            return;
+        {
+            if (!layer->NeedRebuildSortingOrder())
+                return;
+        }
         else
         {
             SetTransformationChanged(true);
@@ -241,7 +258,8 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
 
         parentSize = parentRT.GetRealSizeCached();
         parentPosition = parentRT.GetRealPositionCached();
-        _globalSortingOrder = parentRT.GetGlobalSortingOrderCached() + _sortingOrder;
+        _currentHierarchyIndex = parentRT.GetCurrentHierarchyIndex();
+        parentRT.IncreaseCurrentHierarchyIndex(hierarchyNode.Thickness);
     }
 
     for (int i = 0; i < 2; ++i)
@@ -260,11 +278,15 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
         }
     }
 
+    _currentHierarchyIndex += DEFAULT_THICKNESS;
+    if (layer->NeedRebuildSortingOrder())
+        _sortingOrder = (float)_currentHierarchyIndex / (float)layer->GetLayerThickness();
+
     // Pixel correction is fixing bug caused by rounding error when quad position is in the middle of pixel
     // Shifting position will prevent this bug for rects with uneven size
     const float d = PIXEL_CORRECTION ? 0.01f : 0.0f;
     glm::vec3 pixelCorrection = glm::vec3(d, d, 0.0f);
-    _transformationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(_realPosition, -_globalSortingOrder) + pixelCorrection)
+    _transformationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(_realPosition, _sortingOrder) + pixelCorrection)
                             * glm::toMat4(glm::quat(_rotation))
                             * glm::scale(glm::mat4(1.0f), glm::vec3(_realSize, 1.0f));
 }
@@ -272,38 +294,6 @@ void RectTransformation::UpdateTransformation(ComponentAccessor<RectTransformati
 float RectTransformation::GetSortingOrder() const
 {
     return _sortingOrder;
-}
-
-void RectTransformation::SetSortingOrder(float sortingOrder)
-{
-    if (std::abs(_sortingOrder - sortingOrder) < TRANSFORM_EPS)
-        return;
-
-    _sortingOrder = sortingOrder;
-
-    SetTransformationChanged(true);
-}
-
-float RectTransformation::GetGlobalSortingOrder()
-{
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& node = registry->GetComponent<HierarchyNode>(Owner);
-    if (node.ParentNode == NULL_ENTITY)
-    {
-        _globalSortingOrder = _sortingOrder;
-    }
-    else
-    {
-        auto& parentRT = registry->GetComponent<RectTransformation>(node.ParentNode);
-        _globalSortingOrder = parentRT.GetGlobalSortingOrder() + _sortingOrder;
-    }
-
-    return _globalSortingOrder;
-}
-
-float RectTransformation::GetGlobalSortingOrderCached() const
-{
-    return _globalSortingOrder;
 }
 
 const glm::vec2& RectTransformation::GetRealPositionCached()
@@ -330,4 +320,5 @@ void RectTransformation::RefreshTransformation()
 {
     transformationChanged = false;
     sizeChanged = false;
+    _currentHierarchyIndex = 0;
 }

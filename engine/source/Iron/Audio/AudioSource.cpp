@@ -2,6 +2,7 @@
 #include "AudioCore.h"
 #include "../Core/Log.h"
 #include "../Scene/SceneHelper.h"
+#include "../Scene/Transformation.h"
 
 void AudioSource::OnUpdate()
 {

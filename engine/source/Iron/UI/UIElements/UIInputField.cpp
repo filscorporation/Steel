@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "UIInputField.h"
+#include "../UIQuadRenderer.h"
 #include "../../Core/Input.h"
 #include "../../Core/Log.h"
 #include "../../Core/Time.h"
@@ -21,9 +22,10 @@ void UIInputField::Init(UIEventHandler& eventHandler)
     UIInteractable::Init(UpdateTransition);
 }
 
-void UIInputField::Rebuild(RectTransformation& transformation)
+void UIInputField::Rebuild(UILayer* layer, RectTransformation& transformation)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    bool sortingOrderDirty = layer->NeedRebuildSortingOrder();
     if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
     {
         if (drawCursor)
@@ -53,13 +55,21 @@ void UIInputField::Rebuild(RectTransformation& transformation)
         SetCursorPosition(std::min((uint32_t)uiText.GetText().size(), cursorPosition));
     }
     bool otherDirty = uiTextRT.DidTransformationChange() || uiText.IsTextDirty() || transformation.DidTransformationChange();
+    float dz = 1.0f / (float)layer->GetLayerThickness();
     if (otherDirty || cursorDirty)
     {
-        RebuildCursor(uiText, uiTextRT);
+        sortingOrderDirty = false;
+        RebuildCursor(uiText, uiTextRT, dz);
     }
     if (otherDirty || selectionDirty)
     {
-        RebuildSelection(uiText, uiTextRT);
+        sortingOrderDirty = false;
+        RebuildSelection(uiText, uiTextRT, dz);
+    }
+    if (sortingOrderDirty)
+    {
+        UpdateCursorSortingOrder(uiTextRT, dz);
+        UpdateSelectionSortingOrder(uiTextRT, dz);
     }
 
     cursorDirty = false;
@@ -480,7 +490,7 @@ void UIInputField::UpdateCursorBlink()
     }
 }
 
-void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT)
+void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT, float dz)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (!cursorIsVisible || !drawCursor)
@@ -536,11 +546,11 @@ void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT)
 
     entitiesRegistry->EntitySetActive(cursor, true, true);
     auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
-    float z = 0.2f;
-    cursorRenderer.DefaultVertices[0] = glm::vec4(ox + width, oy + up, z, 1.0f);
-    cursorRenderer.DefaultVertices[1] = glm::vec4(ox + width, oy + down, z, 1.0f);
-    cursorRenderer.DefaultVertices[2] = glm::vec4(ox, oy + up, z, 1.0f);
-    cursorRenderer.DefaultVertices[3] = glm::vec4(ox, oy + down, z, 1.0f);
+    cursorRenderer.DefaultVertices[0] = glm::vec4(ox + width, oy + up, dz * 0.1f, 1.0f);
+    cursorRenderer.DefaultVertices[1] = glm::vec4(ox + width, oy + down, dz * 0.1f, 1.0f);
+    cursorRenderer.DefaultVertices[2] = glm::vec4(ox, oy + up, dz * 0.1f, 1.0f);
+    cursorRenderer.DefaultVertices[3] = glm::vec4(ox, oy + down, dz * 0.1f, 1.0f);
+    cursorRenderer.SortingOrder = uiTextRT.GetSortingOrder() + dz * 0.1f;
 
     for (int j = 0; j < 4; ++j)
         cursorRenderer.Vertices[j] = rectMatrix * cursorRenderer.DefaultVertices[j];
@@ -554,6 +564,18 @@ void UIInputField::UpdateCursorColor(UIText& uiText) const
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
     cursorRenderer.Color = autoCursorColor ? uiText.GetColor() : cursorColor;
+}
+
+void UIInputField::UpdateCursorSortingOrder(RectTransformation& uiTextRT, float dz) const
+{
+    if (cursor == NULL_ENTITY)
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
+    for (auto dv : cursorRenderer.DefaultVertices)
+        dv.z = dz * 0.1f;
+    cursorRenderer.SortingOrder = uiTextRT.GetSortingOrder() + dz * 0.1f;
 }
 
 void UIInputField::SetSelection(uint32_t from, uint32_t to)
@@ -616,7 +638,7 @@ void UIInputField::RemoveSelectedText(UIText &uiText)
     cursorHorizontalOffset = -1;
 }
 
-void UIInputField::RebuildSelection(UIText& uiText, RectTransformation& uiTextRT)
+void UIInputField::RebuildSelection(UIText& uiText, RectTransformation& uiTextRT, float dz)
 {
     if (!drawSelection)
         return;
@@ -631,11 +653,26 @@ void UIInputField::RebuildSelection(UIText& uiText, RectTransformation& uiTextRT
 
     for (auto& indexPair : indices)
     {
-        selectionEntites.push_back(CreateSelectionBlock(uiText, uiTextRT, std::get<0>(indexPair), std::get<1>(indexPair)));
+        selectionEntites.push_back(CreateSelectionBlock(uiText, uiTextRT, std::get<0>(indexPair), std::get<1>(indexPair), dz));
     }
 }
 
-EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to)
+void UIInputField::UpdateSelectionSortingOrder(RectTransformation& uiTextRT, float dz) const
+{
+    if (cursor == NULL_ENTITY)
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    for (auto selectionID : selectionEntites)
+    {
+        auto& blockRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(selectionID);
+        for (auto dv : blockRenderer.DefaultVertices)
+            dv.z = -dz * 0.1f;
+        blockRenderer.SortingOrder = uiTextRT.GetSortingOrder() - dz * 0.1f;
+    }
+}
+
+EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to, float dz)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
@@ -681,11 +718,11 @@ EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& 
     blockRenderer.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
     blockRenderer.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
 
-    float z = -0.1f;
-    blockRenderer.DefaultVertices[0] = glm::vec4(ox2, oy2 + up, z, 1.0f);
-    blockRenderer.DefaultVertices[1] = glm::vec4(ox2, oy2 + down, z, 1.0f);
-    blockRenderer.DefaultVertices[2] = glm::vec4(ox1, oy1 + up, z, 1.0f);
-    blockRenderer.DefaultVertices[3] = glm::vec4(ox1, oy1 + down, z, 1.0f);
+    blockRenderer.DefaultVertices[0] = glm::vec4(ox2, oy2 + up, -dz * 0.1f, 1.0f);
+    blockRenderer.DefaultVertices[1] = glm::vec4(ox2, oy2 + down, -dz * 0.1f, 1.0f);
+    blockRenderer.DefaultVertices[2] = glm::vec4(ox1, oy1 + up, -dz * 0.1f, 1.0f);
+    blockRenderer.DefaultVertices[3] = glm::vec4(ox1, oy1 + down, -dz * 0.1f, 1.0f);
+    blockRenderer.SortingOrder = uiTextRT.GetSortingOrder() - dz * 0.1f;
 
     for (int j = 0; j < 4; ++j)
         blockRenderer.Vertices[j] = rectMatrix * blockRenderer.DefaultVertices[j];

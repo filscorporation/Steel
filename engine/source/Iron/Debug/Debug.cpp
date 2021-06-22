@@ -2,6 +2,7 @@
 #include "../Core/Application.h"
 #include "../Core/Input.h"
 #include "../Core/Time.h"
+#include "../Scene/Transformation.h"
 
 DebugInfoWindow* Debug::debugInfoWindow;
 

@@ -6,6 +6,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include "UILayer.h"
 #include "../EntityComponentSystem/Component.h"
 #include "../EntityComponentSystem/EntitiesRegistry.h"
 #include "../Scene/HierarchyNode.h"
@@ -40,12 +41,11 @@ public:
     bool Contains(const glm::vec2& point) const;
 
     const glm::mat4& GetTransformationMatrixCached();
-    void UpdateTransformation(ComponentAccessor<RectTransformation>& rtAccessor, HierarchyNode& hierarchyNode);
-    float GetSortingOrder() const;
-    void SetSortingOrder(float sortingOrder);
-    float GetGlobalSortingOrder();
-    float GetGlobalSortingOrderCached() const;
+    void UpdateTransformation(UILayer* layer, ComponentAccessor<RectTransformation>& rtAccessor, HierarchyNode& hierarchyNode);
     const glm::vec2& GetRealPositionCached();
+    float GetSortingOrder() const;
+    uint32_t GetCurrentHierarchyIndex() const;
+    void IncreaseCurrentHierarchyIndex(uint32_t thickness);
 
     // Did anything in transformation change in this frame
     bool DidTransformationChange() const;
@@ -59,8 +59,6 @@ private:
     glm::vec2 _anchorMin = { 0.0f, 0.0f };
     glm::vec2 _anchorMax = { 0.0f, 0.0f };
     glm::vec2 _anchoredPosition = { 0.0f, 0.0f };
-    float _sortingOrder = 0.0f;
-    float _globalSortingOrder = 0.0f;
     glm::vec2 _offsetMin = { 0.0f, 0.0f };
     glm::vec2 _offsetMax = { 0.0f, 0.0f };
     glm::vec2 _size = { 0.0f, 0.0f };
@@ -69,6 +67,9 @@ private:
     glm::vec3 _rotation = { 0.0f, 0.0f, 0.0f };
     glm::vec3 _localRotation = { 0.0f, 0.0f, 0.0f };
     glm::vec2 _realPosition = { 0.0f, 0.0f };
+
+    uint32_t _currentHierarchyIndex = 0;
+    float _sortingOrder = 0.0f;
 
     bool transformationChanged = true;
     bool sizeChanged = true;

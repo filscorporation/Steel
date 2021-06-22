@@ -2,15 +2,18 @@
 
 #include "../EntityComponentSystem/Component.h"
 #include "../EntityComponentSystem/Entity.h"
+#include "HierarchyParent.h"
 
-class HierarchyNode : public Component
+#define DEFAULT_THICKNESS 1
+
+class HierarchyNode : public Component, public HierarchyParent
 {
 public:
     explicit HierarchyNode(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    uint32_t ChildrenCount = 0;
     uint32_t HierarchyDepth = 0;
-    EntityID FirstChildNode = NULL_ENTITY;
+    uint32_t NodeIndex = -1; // Value of -1 will show that node just initialized
+    uint32_t Thickness = DEFAULT_THICKNESS;
     EntityID PreviousNode = NULL_ENTITY;
     EntityID NextNode = NULL_ENTITY;
     EntityID ParentNode = NULL_ENTITY;

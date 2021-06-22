@@ -1,5 +1,6 @@
 #include "UIInteractable.h"
 
+#include "UIElements/UIImage.h"
 #include "../Core/Log.h"
 #include "../Core/Time.h"
 

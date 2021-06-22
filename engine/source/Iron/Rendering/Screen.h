@@ -4,6 +4,8 @@
 
 class Application;
 
+#define UI_MAX_DISTANCE 1.0f
+
 class Screen
 {
 public:

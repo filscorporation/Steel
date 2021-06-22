@@ -192,7 +192,6 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.RectTransformation::GetSize_Internal", (void*)UIInternalCalls::RectTransformation_GetSize);
     mono_add_internal_call("Iron.RectTransformation::SetSize_Internal", (void*)UIInternalCalls::RectTransformation_SetSize);
     mono_add_internal_call("Iron.RectTransformation::GetSortingOrder_Internal", (void*)UIInternalCalls::RectTransformation_GetSortingOrder);
-    mono_add_internal_call("Iron.RectTransformation::SetSortingOrder_Internal", (void*)UIInternalCalls::RectTransformation_SetSortingOrder);
     mono_add_internal_call("Iron.RectTransformation::GetRotation_Internal", (void*)UIInternalCalls::RectTransformation_GetRotation);
     mono_add_internal_call("Iron.RectTransformation::SetRotation_Internal", (void*)UIInternalCalls::RectTransformation_SetRotation);
 

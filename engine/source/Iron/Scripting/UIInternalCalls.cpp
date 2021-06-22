@@ -128,13 +128,6 @@ float UIInternalCalls::RectTransformation_GetSortingOrder(EntityID entityID)
     return component.GetSortingOrder();
 }
 
-void UIInternalCalls::RectTransformation_SetSortingOrder(EntityID entityID, float sortingOrder)
-{
-    GET_COMPONENT_OR_RETURN(RectTransformation, )
-
-    component.SetSortingOrder(sortingOrder);
-}
-
 glm::vec3 UIInternalCalls::RectTransformation_GetRotation(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(RectTransformation, glm::vec3(0.0f))

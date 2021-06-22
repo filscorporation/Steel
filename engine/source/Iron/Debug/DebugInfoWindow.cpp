@@ -1,6 +1,7 @@
 #include "DebugInfoWindow.h"
 #include "../Core/Time.h"
 #include "../Rendering/Renderer.h"
+#include "../UI/UIElements/UIButton.h"
 #include "Debug.h"
 
 DebugInfoWindow::DebugInfoWindow()
@@ -43,7 +44,6 @@ void DebugInfoWindow::Create()
         windowRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         windowRT.SetSize(glm::vec2(200, 114));
         windowRT.SetAnchoredPosition(-windowRT.GetSize() * 0.5f - glm::vec2(2, 2));
-        windowRT.SetSortingOrder(-90);
     }
 
     float y = 6;
@@ -59,7 +59,6 @@ void DebugInfoWindow::Create()
         fpsLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         fpsLabelRT.SetSize(glm::vec2(100, 20));
         fpsLabelRT.SetAnchoredPosition(glm::vec2(50 + xOffset, -y - 20 * 0.5f));
-        fpsLabelRT.SetSortingOrder(-1);
     }
     {
         fpsCounterEntity = scene->GetUILayer()->CreateUIText("0", "FPS counter", debugWindowEntity);
@@ -71,7 +70,6 @@ void DebugInfoWindow::Create()
         fpsCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         fpsCounterRT.SetSize(glm::vec2(100, 20));
         fpsCounterRT.SetAnchoredPosition(glm::vec2(-50 - 2, -y - 20 * 0.5f));
-        fpsCounterRT.SetSortingOrder(-1);
     }
 
     y += 20;
@@ -86,7 +84,6 @@ void DebugInfoWindow::Create()
         drawCallsLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         drawCallsLabelRT.SetSize(glm::vec2(100, 20));
         drawCallsLabelRT.SetAnchoredPosition(glm::vec2(50 + xOffset, -y - 20 * 0.5f));
-        drawCallsLabelRT.SetSortingOrder(-1);
     }
     {
         drawCallsCounterEntity = scene->GetUILayer()->CreateUIText("0", "Draw Calls counter", debugWindowEntity);
@@ -98,7 +95,6 @@ void DebugInfoWindow::Create()
         drawCallsCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         drawCallsCounterRT.SetSize(glm::vec2(100, 20));
         drawCallsCounterRT.SetAnchoredPosition(glm::vec2(-50 - 2, -y - 20 * 0.5f));
-        drawCallsCounterRT.SetSortingOrder(-1);
     }
 
     y += 20;
@@ -113,7 +109,6 @@ void DebugInfoWindow::Create()
         verticesLabelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         verticesLabelRT.SetSize(glm::vec2(100, 20));
         verticesLabelRT.SetAnchoredPosition(glm::vec2(50 + xOffset, -y - 20 * 0.5f));
-        verticesLabelRT.SetSortingOrder(-1);
     }
     {
         verticesCounterEntity = scene->GetUILayer()->CreateUIText("0", "Vertices counter", debugWindowEntity);
@@ -125,7 +120,6 @@ void DebugInfoWindow::Create()
         verticesCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         verticesCounterRT.SetSize(glm::vec2(100, 20));
         verticesCounterRT.SetAnchoredPosition(glm::vec2(-50 - 2, -y - 20 * 0.5f));
-        verticesCounterRT.SetSortingOrder(-1);
     }
 
     y += 20;
@@ -140,7 +134,6 @@ void DebugInfoWindow::Create()
         labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         labelRT.SetSize(glm::vec2(120, 20));
         labelRT.SetAnchoredPosition(glm::vec2(60 + xOffset, -y - 20 * 0.5f));
-        labelRT.SetSortingOrder(-1);
     }
     {
         auto buttonEntity = scene->GetUILayer()->CreateUIButton(buttonSprite, "Wireframe Mode button", debugWindowEntity);
@@ -150,7 +143,6 @@ void DebugInfoWindow::Create()
         buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         buttonRT.SetSize(glm::vec2(80, 20));
         buttonRT.SetAnchoredPosition(glm::vec2(-40 - 2, -y - 20 * 0.5f));
-        buttonRT.SetSortingOrder(-1);
 
         EntityID wireframeModeStatusEntity = scene->GetUILayer()->CreateUIText("Disabled", "Wireframe Mode status", buttonEntity);
         auto& labelText = registry->GetComponent<UIText>(wireframeModeStatusEntity);
@@ -160,7 +152,6 @@ void DebugInfoWindow::Create()
         auto& labelRT = registry->GetComponent<RectTransformation>(wireframeModeStatusEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         labelRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        labelRT.SetSortingOrder(-1);
 
         button.Callback = [wireframeModeStatusEntity](EntityID entityID)
         {
@@ -185,7 +176,6 @@ void DebugInfoWindow::Create()
         labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
         labelRT.SetSize(glm::vec2(120, 20));
         labelRT.SetAnchoredPosition(glm::vec2(60 + xOffset, -y - 20 * 0.5f));
-        labelRT.SetSortingOrder(-1);
     }
     {
         auto buttonEntity = scene->GetUILayer()->CreateUIButton(buttonSprite, "Free Camera Mode button", debugWindowEntity);
@@ -195,7 +185,6 @@ void DebugInfoWindow::Create()
         buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         buttonRT.SetSize(glm::vec2(80, 20));
         buttonRT.SetAnchoredPosition(glm::vec2(-40 - 2, -y - 20 * 0.5f));
-        buttonRT.SetSortingOrder(-1);
 
         EntityID freeCameraModeStatusEntity = scene->GetUILayer()->CreateUIText("Disabled", "Free Camera Mode status", buttonEntity);
         auto& labelText = registry->GetComponent<UIText>(freeCameraModeStatusEntity);
@@ -205,7 +194,6 @@ void DebugInfoWindow::Create()
         auto& labelRT = registry->GetComponent<RectTransformation>(freeCameraModeStatusEntity);
         labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         labelRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        labelRT.SetSortingOrder(-1);
 
         button.Callback = [freeCameraModeStatusEntity](EntityID entityID)
         {

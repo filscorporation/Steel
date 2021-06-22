@@ -1,6 +1,8 @@
 #include "Hierarchy.h"
 #include "Transformation.h"
+#include "../Core/Application.h"
 #include "../Core/Log.h"
+#include "../UI/RectTransformation.h"
 
 void UpdateChildrenDepthAndSetDirty(EntitiesRegistry* registry, HierarchyNode& parentNode)
 {
@@ -26,7 +28,7 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
 
     auto& childNode = registry->GetComponent<HierarchyNode>(child);
 
-    if (child == parent || childNode.ParentNode == parent)
+    if (child == parent || parent != NULL_ENTITY && childNode.ParentNode == parent)
         return;
 
     // Check if child is parent for new parent (possible loop)
@@ -46,13 +48,23 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
         rotationCache = childTransformation.GetRotation();
         scaleCache = childTransformation.GetScale();
     }
-
-    if (childNode.ParentNode != NULL_ENTITY)
+    else if (registry->HasComponent<RectTransformation>(child))
     {
-        // Child already has a parent, we need to change links
-        RemoveChildFromItsParent(registry, childNode);
+        // If any UI element changed hierarchy - rebuild all sorting orders
+        Application::Instance->GetCurrentScene()->GetUILayer()->SetSortingOrderDirty();
     }
 
+    HierarchyParent& prevParent = childNode.ParentNode == NULL_ENTITY
+                                       ? (HierarchyParent&)(*Application::Instance->GetCurrentScene())
+                                       : registry->GetComponent<HierarchyNode>(childNode.ParentNode);
+    // Child already has a parent, we need to change links
+    RemoveChildFromItsParent(registry, childNode, prevParent);
+    if (childNode.ParentNode != NULL_ENTITY)
+        UpdateThicknessUpwards(registry, childNode.ParentNode, -(int)childNode.Thickness);
+
+    HierarchyParent& hierarchyParent = parent == NULL_ENTITY
+                                       ? (HierarchyParent&)(*Application::Instance->GetCurrentScene())
+                                       : registry->GetComponent<HierarchyNode>(parent);
     if (parent == NULL_ENTITY)
     {
         // Removing parent from this child, now it will be on top of hierarchy
@@ -67,28 +79,31 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
         auto& parentNode = registry->GetComponent<HierarchyNode>(parent);
         childNode.ParentNode = parent;
         childNode.HierarchyDepth = parentNode.HierarchyDepth + 1;
-        if (parentNode.ChildrenCount == 0)
-        {
-            parentNode.FirstChildNode = child;
-            parentNode.ChildrenCount = 1;
-            // Link first child to itself to ease further children list changes
-            childNode.NextNode = child;
-            childNode.PreviousNode = child;
-        }
-        else
-        {
-            parentNode.ChildrenCount++;
-            // Insert this node between first child and previously last (effectively in the end)
-            auto& firstChildNode = registry->GetComponent<HierarchyNode>(parentNode.FirstChildNode);
-            auto& lastChildNode = registry->GetComponent<HierarchyNode>(firstChildNode.PreviousNode);
-            // We are now next for previously last child
-            lastChildNode.NextNode = child;
-            childNode.PreviousNode = firstChildNode.PreviousNode;
-            // And previous for first child
-            firstChildNode.PreviousNode = child;
-            childNode.NextNode = parentNode.FirstChildNode;
-        }
+        UpdateThicknessUpwards(registry, parentNode.Owner, (int)childNode.Thickness);
     }
+
+    if (hierarchyParent.ChildrenCount == 0)
+    {
+        hierarchyParent.FirstChildNode = child;
+        hierarchyParent.ChildrenCount = 1;
+        // Link first child to itself to ease further children list changes
+        childNode.NextNode = child;
+        childNode.PreviousNode = child;
+    }
+    else
+    {
+        hierarchyParent.ChildrenCount++;
+        // Insert this node between first child and previously last (effectively in the end)
+        auto& firstChildNode = registry->GetComponent<HierarchyNode>(hierarchyParent.FirstChildNode);
+        auto& lastChildNode = registry->GetComponent<HierarchyNode>(firstChildNode.PreviousNode);
+        // We are now next for previously last child
+        lastChildNode.NextNode = child;
+        childNode.PreviousNode = firstChildNode.PreviousNode;
+        // And previous for first child
+        firstChildNode.PreviousNode = child;
+        childNode.NextNode = hierarchyParent.FirstChildNode;
+    }
+    childNode.NodeIndex = hierarchyParent.ChildrenCount;
 
     // We need to recalculate HierarchyDepth for all children
     childNode.IsDirty = true;
@@ -108,26 +123,43 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     registry->EntitySetActive(child, isParentActiveGlobally, false);
 }
 
-void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNode)
+void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNode, HierarchyParent& hierarchyParent)
 {
+    if (childNode.NodeIndex == -1)
+        return;
+
     // Remove child from its parent and keep all links valid
-    auto& prevParentNode = registry->GetComponent<HierarchyNode>(childNode.ParentNode);
-    if (prevParentNode.ChildrenCount == 1)
+    if (hierarchyParent.ChildrenCount == 1)
     {
         // This child was the only child of its parent, remove all children then
-        prevParentNode.ChildrenCount = 0;
-        prevParentNode.FirstChildNode = NULL_ENTITY;
+        hierarchyParent.ChildrenCount = 0;
+        hierarchyParent.FirstChildNode = NULL_ENTITY;
     }
     else
     {
         // This child was part of parent children, change links to keep hierarchy
-        prevParentNode.ChildrenCount--;
-        if (prevParentNode.FirstChildNode == childNode.Owner)
-            prevParentNode.FirstChildNode = childNode.NextNode;
+        hierarchyParent.ChildrenCount--;
+        if (hierarchyParent.FirstChildNode == childNode.Owner)
+            hierarchyParent.FirstChildNode = childNode.NextNode;
         auto& prevPrevNode = registry->GetComponent<HierarchyNode>(childNode.PreviousNode);
         auto& prevNextNode = registry->GetComponent<HierarchyNode>(childNode.NextNode);
         prevPrevNode.NextNode = childNode.NextNode;
         prevNextNode.PreviousNode = childNode.PreviousNode;
+
+        // Recalculating all previous parent's children indices
+        EntityID currentNodeID = hierarchyParent.FirstChildNode;
+        for (uint32_t i = 0; i < hierarchyParent.ChildrenCount; ++i)
+        {
+            auto& currentNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+            currentNode.NodeIndex = i;
+            currentNodeID = currentNode.NextNode;
+        }
+    }
+
+    if (registry->HasComponent<RectTransformation>(childNode.Owner))
+    {
+        // If any UI element changed hierarchy - rebuild all sorting orders
+        Application::Instance->GetCurrentScene()->GetUILayer()->SetSortingOrderDirty();
     }
 }
 
@@ -147,6 +179,18 @@ bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID p
     }
 
     return false;
+}
+
+void UpdateThicknessUpwards(EntitiesRegistry* registry, EntityID nodeID, int diff)
+{
+    EntityID currentNodeID = nodeID;
+    while (currentNodeID != NULL_ENTITY)
+    {
+        auto& currentNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+        currentNode.Thickness += diff;
+
+        currentNodeID = currentNode.ParentNode;
+    }
 }
 
 std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent)

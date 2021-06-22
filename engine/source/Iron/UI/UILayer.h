@@ -3,9 +3,10 @@
 #include "../EntityComponentSystem/SparseSet.h"
 #include "../Scene/Scene.h"
 #include "UIEvent.h"
-#include "UISystem.h"
+#include "UIInteractable.h"
 
 class Scene;
+class UISystem;
 
 class UILayer
 {
@@ -20,6 +21,11 @@ public:
 
     bool IsPointerOverUI() const;
     static UILayer* Current();
+    uint32_t GetLayerThickness() const;
+    uint32_t GetCurrentHeirarchyIndex() const;
+    void IncreaseCurrentHierarchyIndex(uint32_t thickness);
+    void SetSortingOrderDirty();
+    bool NeedRebuildSortingOrder() const;
 
     void AddToUpdateQueue(EntityID entityID, UpdateIntaractable callback);
     void RemoveFromUpdateQueue(EntityID entityID);
@@ -47,6 +53,10 @@ public:
 private:
     Scene* _scene;
     bool _isPointerOverUI = false;
+
+    uint32_t _layerThickness = 0;
+    uint32_t _currentHierarchyIndex = 0;
+    bool _rebuildSortingOrder = true;
 
     struct InteractableCallback
     {
