@@ -58,7 +58,7 @@ void SpriteRenderer::SetImage(Sprite* image)
         }
         qr.SetDefaultQuad(_image->Pivot);
         qr.Color = _color;
-        qr.Material = _material;
+        qr.RenderMaterial = _material;
         qr.CustomProperties.SetTexture(0, _image->TextureID);
         qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
     }

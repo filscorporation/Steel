@@ -24,7 +24,7 @@ public:
     glm::vec3 Vertices[4];
     glm::vec2 TextureCoords[4];
     glm::vec4 Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    Material* Material = nullptr;
+    Material* RenderMaterial = nullptr;
     MaterialPropertyBlock CustomProperties;
 
     float SortingOrder = 0;

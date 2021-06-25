@@ -123,15 +123,15 @@ void Renderer::Draw(const QuadRenderer& quad)
     StartBatch();
 
     // TODO: Try to batch
-    quad.Material->MainShader->Use();
-    quad.Material->Properties.Apply(quad.Material->MainShader);
-    quad.CustomProperties.Apply(quad.Material->MainShader);
+    quad.RenderMaterial->MainShader->Use();
+    quad.RenderMaterial->Properties.Apply(quad.RenderMaterial->MainShader);
+    quad.CustomProperties.Apply(quad.RenderMaterial->MainShader);
 
-    if (!quad.Material->MainShader->GlobalUniformsSet)
+    if (!quad.RenderMaterial->MainShader->GlobalUniformsSet)
     {
-        shadersUsed.push_back(quad.Material->MainShader);
-        quad.Material->MainShader->GlobalUniformsSet = true;
-        quad.Material->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(currentViewProjection));
+        shadersUsed.push_back(quad.RenderMaterial->MainShader);
+        quad.RenderMaterial->MainShader->GlobalUniformsSet = true;
+        quad.RenderMaterial->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(currentViewProjection));
     }
 
     int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;

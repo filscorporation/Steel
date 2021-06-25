@@ -111,7 +111,7 @@ void UIImage::SetImage(Sprite* image)
                 {
                     auto& qr = registry->AddComponent<UIQuadRenderer>(_renderers[j * 3 + i]);
                     qr.CustomOwner = Owner;
-                    qr.Material = _material;
+                    qr.RenderMaterial = _material;
                     qr.CustomProperties.SetTexture(0, _image->TextureID);
                     qr.Color = _color;
                     qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
@@ -146,7 +146,7 @@ void UIImage::SetImage(Sprite* image)
             }
             qr.SetDefaultQuad();
             qr.Color = _color;
-            qr.Material = _material;
+            qr.RenderMaterial = _material;
             qr.CustomProperties.SetTexture(0, _image->TextureID);
             qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
             qr.CustomOwner = Owner;

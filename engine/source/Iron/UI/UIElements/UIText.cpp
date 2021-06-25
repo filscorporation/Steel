@@ -115,7 +115,7 @@ void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, boo
                 auto& letterRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(letterEntityID);
 
                 letterRenderer.Color = _color;
-                letterRenderer.Material = _material;
+                letterRenderer.RenderMaterial = _material;
                 letterRenderer.CustomProperties.SetTexture(0, atlas.TextureID);
                 letterRenderer.Queue = RenderingQueue::Opaque;
                 letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
