@@ -2,8 +2,9 @@
 
 #include <glm/glm.hpp>
 
-#include "RendererData.h"
 #include "Camera.h"
+#include "QuadRenderer.h"
+#include "RendererData.h"
 
 namespace DrawModes
 {
@@ -25,7 +26,7 @@ public:
     static void OnAfterRender();
     static void Clear(glm::vec3 color);
     static void PrepareUIRender();
-    static void DrawQuad(glm::vec3 vertices[4], glm::vec2 textureCoords[4], const glm::vec4& color, uint32_t textureID);
+    static void Draw(const QuadRenderer& quad);
 
     static void StartBatch();
     static void EndBatch();
@@ -38,7 +39,8 @@ public:
     static int VerticesStats;
 
 private:
-    static int FindTextureSlot(uint32_t textureID);
 
+    static glm::mat4 currentViewProjection;
+    static std::vector<Shader*> shadersUsed;
     static DrawModes::DrawMode currentDrawMode;
 };

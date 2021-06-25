@@ -36,9 +36,11 @@ namespace OpenGLAPI
     void SetPolygonMode(PolygonMode mode);
 
     int GetUniformLocation(uint32_t shaderProgram, const char* name);
-    void SetUniformInteger(int uniform, int value);
+    void SetUniformFloat(int uniform, float value);
+    void SetUniformInt(int uniform, int value);
+    void SetUniformUInt(int uniform, uint32_t value);
     void SetUniformIntegers(int uniform, int valuesCount, const int* values);
-    void SetUniformMatrix4Float(int uniform, const float* values);
+    void SetUniformMat4F(int uniform, const float* values);
 
     uint32_t GenerateVertexArray();
     void BindVertexArray(uint32_t arrayID);
@@ -58,10 +60,10 @@ namespace OpenGLAPI
     void DrawTriangles(int count);
 
     uint32_t GenerateTexture(unsigned char* imageData, uint32_t width, uint32_t height, TextureFiltering filtering);
-    uint32_t BeginGenerateMonochromeTexture(uint32_t width, uint32_t height);
-    void SetMonochromeTextureSubImage(unsigned char* imageData, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+    uint32_t BeginGenerateTexture(uint32_t width, uint32_t height);
+    void SetTextureSubImage(unsigned char* imageData, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
     void EndGenerateTexture();
     void DeleteTexture(uint32_t textureID);
-    void BindTexture(uint32_t textureID, int textureSlot);
+    void BindTexture(uint32_t textureID, uint32_t textureSlot);
     void UnbindTexture();
 }

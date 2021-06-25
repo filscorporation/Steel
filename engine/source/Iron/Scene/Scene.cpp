@@ -5,6 +5,7 @@
 #include "../Animation/Animator.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Rendering/QuadRenderer.h"
+#include "../Rendering/Renderer.h"
 #include "../Scene/TransformationSystem.h"
 #include "../UI/RectTransformation.h"
 
@@ -166,12 +167,12 @@ void Scene::Draw()
     // Opaque pass
     for (int i = 0; i < quadRenderers.Size(); ++i)
         if (quadRenderers[i].Queue == RenderingQueue::Opaque)
-            quadRenderers[i].Render();
+            Renderer::Draw(quadRenderers[i]);
 
     // Transparent pass
     for (int i = quadRenderers.Size() - 1; i >=0; --i)
         if (quadRenderers[i].Queue == RenderingQueue::Transparent)
-            quadRenderers[i].Render();
+            Renderer::Draw(quadRenderers[i]);
 }
 
 void Scene::CleanDestroyedEntities()

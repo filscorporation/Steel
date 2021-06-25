@@ -6,6 +6,7 @@
 #include "RendererData.h"
 #include "../EntityComponentSystem/Component.h"
 #include "../Scene/Transformation.h"
+#include "Material.h"
 
 class SpriteRenderer : public Component
 {
@@ -14,18 +15,18 @@ public:
 
     void UpdateRenderer(Transformation& transformation);
 
+    void SetMaterial(Material* material);
+    Material* GetMaterial();
     void SetImage(Sprite* image);
     Sprite* GetImage();
     void SetTileIndex(uint32_t tileIndex);
     uint32_t GetTileIndex() const;
     glm::vec2 GetWorldSize();
-    bool IsTransparent() const;
 
 private:
     Sprite* _image = nullptr;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    Material* _material = nullptr;
 
     uint32_t currentImageTileIndex = 0;
-    bool _isTransparent = false;
-    bool imageDirty = true;
 };

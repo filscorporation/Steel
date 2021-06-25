@@ -6,7 +6,9 @@
 #include "ResourceID.h"
 #include "../Animation/Animation.h"
 #include "../Audio/AudioTrack.h"
+#include "../Rendering/Shader.h"
 #include "../Rendering/Sprite.h"
+#include "../Rendering/Material.h"
 #include "../UI/Font.h"
 
 class ResourcesManager
@@ -15,7 +17,7 @@ public:
     ResourcesManager();
     ~ResourcesManager();
 
-    void LoadDefaultFont();
+    void LoadDefaultResources();
     const char* GetResourcesPath();
 
     Sprite* LoadImage(const char* filePath, bool engineResource = false);
@@ -38,13 +40,32 @@ public:
     Font* GetFont(ResourceID fontID);
     Font* DefaultFont();
 
-private:
+    void AddShader(Shader* shader);
+    Shader* GetShader(ResourceID shaderID);
+    Shader* DefaultSpriteShader();
+    Shader* DefaultUIShader();
 
-    std::vector<Sprite*> images;
-    std::vector<AudioTrack*> audioTracks;
-    std::vector<Animation*> animations;
-    std::vector<Font*> fonts;
-    std::vector<AsepriteData*> asepriteDatas;
+    void AddMaterial(Material* material);
+    Material* GetMaterial(ResourceID materialID);
+    Material* DefaultSpriteMaterial();
+    Material* DefaultUIMaterial();
+
+private:
+    ResourceID nextResourceID = 0;
+    ResourceID GetNextResourceID();
+    void FreeResourceID(ResourceID resourceID);
+
+    std::unordered_map<ResourceID, Sprite*> images;
+    std::unordered_map<ResourceID, AudioTrack*> audioTracks;
+    std::unordered_map<ResourceID, Animation*> animations;
+    std::unordered_map<ResourceID, Font*> fonts;
+    std::unordered_map<ResourceID, AsepriteData*> asepriteDatas;
+    std::unordered_map<ResourceID, Shader*> shaders;
+    std::unordered_map<ResourceID, Material*> materials;
 
     Font* defaultFont;
+    Shader* defaultSpriteShader;
+    Shader* defaultUIShader;
+    Material* defaultSpriteMaterial;
+    Material* defaultUIMaterial;
 };

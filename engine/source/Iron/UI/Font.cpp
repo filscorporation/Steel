@@ -96,7 +96,7 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
         maxX = (int)std::max((uint32_t)maxX, static_cast<uint32_t>(glyph->advance.x >> 6));
     }
 
-    uint32_t textureID = OpenGLAPI::BeginGenerateMonochromeTexture(width, height);
+    uint32_t textureID = OpenGLAPI::BeginGenerateTexture(width, height);
 
     uint32_t x = 0;
     for (int i = CHARACTERS_START; i < CHARACTERS_NUMBER; i++)
@@ -104,7 +104,22 @@ void Font::LoadFromSize(uint32_t size, CharactersAtlas& atlas)
         if (FT_Load_Char(face, i, FT_LOAD_RENDER))
             continue;
 
-        OpenGLAPI::SetMonochromeTextureSubImage(glyph->bitmap.buffer, x, 0, glyph->bitmap.width, glyph->bitmap.rows);
+        // Fill font atlas as RGBA image and not just Red
+        auto fullBuffer = new unsigned char[glyph->bitmap.width * glyph->bitmap.rows * 4];
+        for (int m = 0; m < glyph->bitmap.rows; ++m)
+        {
+            for (int n = 0; n < glyph->bitmap.width; ++n)
+            {
+                fullBuffer[(m * glyph->bitmap.width + n) * 4 + 0] = 255;
+                fullBuffer[(m * glyph->bitmap.width + n) * 4 + 1] = 255;
+                fullBuffer[(m * glyph->bitmap.width + n) * 4 + 2] = 255;
+                unsigned char value = glyph->bitmap.buffer[m * glyph->bitmap.width + n];
+                fullBuffer[(m * glyph->bitmap.width + n) * 4 + 3] = value;
+            }
+        }
+
+        OpenGLAPI::SetTextureSubImage(fullBuffer, x, 0, glyph->bitmap.width, glyph->bitmap.rows);
+        delete[] fullBuffer;
 
         Character character =
         {

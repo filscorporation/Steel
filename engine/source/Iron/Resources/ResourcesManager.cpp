@@ -4,6 +4,7 @@
 #include "../Core/Log.h"
 #include "../Audio/AudioCore.h"
 #include "../Audio/WavLoader.h"
+#include "../Rendering/BuiltInShaders.h"
 #include "../Rendering/OpenGLAPI.h"
 #include "../UI/FontManager.h"
 
@@ -28,37 +29,61 @@ ResourcesManager::~ResourcesManager()
 {
     for (auto image : images)
     {
-        OpenGLAPI::DeleteTexture(image->TextureID);
-        delete image;
+        OpenGLAPI::DeleteTexture(image.second->TextureID);
+        delete image.second;
     }
 
     for (auto audioTrack : audioTracks)
     {
-        alDeleteBuffers(1, &audioTrack->BufferID);
-        delete audioTrack;
+        alDeleteBuffers(1, &audioTrack.second->BufferID);
+        delete audioTrack.second;
     }
 
     for (auto animation : animations)
     {
-        delete animation;
+        delete animation.second;
     }
 
     for (auto font : fonts)
     {
-        delete font;
+        delete font.second;
     }
 
     for (auto data : asepriteDatas)
     {
-        delete data;
+        delete data.second;
+    }
+
+    for (auto shader : shaders)
+    {
+        delete shader.second;
+    }
+
+    for (auto material : materials)
+    {
+        delete material.second;
     }
 }
 
-void ResourcesManager::LoadDefaultFont()
+void ResourcesManager::LoadDefaultResources()
 {
     defaultFont = LoadFont("font.ttf", true);
     if (defaultFont != nullptr)
         defaultFont->AddSizeIfNotExists(32);
+
+    defaultSpriteShader = new Shader(BuiltInShaders::DefaultSpriteVS, BuiltInShaders::DefaultSpriteFS);
+    AddShader(defaultSpriteShader);
+
+    defaultUIShader = new Shader(BuiltInShaders::DefaultUIVS, BuiltInShaders::DefaultUIFS);
+    AddShader(defaultUIShader);
+
+    defaultSpriteMaterial = new Material();
+    defaultSpriteMaterial->MainShader = defaultSpriteShader;
+    AddMaterial(defaultSpriteMaterial);
+
+    defaultUIMaterial = new Material();
+    defaultUIMaterial->MainShader = defaultUIShader;
+    AddMaterial(defaultUIMaterial);
 }
 
 const char* ResourcesManager::GetResourcesPath()
@@ -118,8 +143,8 @@ Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
 
 void ResourcesManager::AddImage(Sprite* image)
 {
-    image->ID = images.size() + 1;
-    images.push_back(image);
+    image->ID = GetNextResourceID();
+    images[image->ID] = image;
 }
 
 Sprite* ResourcesManager::GetImage(ResourceID imageID)
@@ -127,13 +152,13 @@ Sprite* ResourcesManager::GetImage(ResourceID imageID)
     if (imageID == NULL_RESOURCE)
         return nullptr;
 
-    if (imageID - 1 > images.size() || images[imageID - 1] == nullptr)
+    if (images.find(imageID) == images.end())
     {
-        Log::LogError("Sprite does not exist: {0}", imageID);
+        Log::LogError("Image {0} does not exist", imageID);
         return nullptr;
     }
 
-    return images[imageID - 1];
+    return images[imageID];
 }
 
 void ResourcesManager::UnloadImage(ResourceID imageID)
@@ -143,8 +168,8 @@ void ResourcesManager::UnloadImage(ResourceID imageID)
         return;
 
     OpenGLAPI::DeleteTexture(sprite->TextureID);
-    //images.erase(images.begin() + imageID); // TODO: remove
-    images[imageID - 1] = nullptr;
+    images.erase(imageID);
+    FreeResourceID(imageID);
     delete sprite;
 }
 
@@ -175,8 +200,8 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
         return nullptr;
     }
 
-    data->ID = asepriteDatas.size() + 1;
-    asepriteDatas.push_back(data);
+    data->ID = GetNextResourceID();
+    asepriteDatas[data->ID] = data;
 
     Log::LogDebug("Aseprite file loaded: {0}, {1}", fullPath, data->ID);
 
@@ -188,13 +213,13 @@ AsepriteData* ResourcesManager::GetAsepriteData(ResourceID resourceID)
     if (resourceID == NULL_RESOURCE)
         return nullptr;
 
-    if (resourceID - 1 > asepriteDatas.size() || asepriteDatas[resourceID - 1] == nullptr)
+    if (asepriteDatas.find(resourceID) == asepriteDatas.end())
     {
-        Log::LogError("Aseprite data does not exist: {0}", resourceID);
+        Log::LogError("Aseprite data {0} does not exist", resourceID);
         return nullptr;
     }
 
-    return asepriteDatas[resourceID - 1];
+    return asepriteDatas[resourceID];
 }
 
 static inline ALenum ToALFormat(int channels, int samples)
@@ -242,8 +267,6 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
     if (audioTrack == nullptr)
         return nullptr;
 
-    audioTrack->ID = audioTracks.size() + 1;
-
     alGenBuffers((ALuint)1, &audioBuffer);
     if (AudioCore::CheckForErrors())
     {
@@ -260,8 +283,9 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
         return nullptr;
     }
 
+    audioTrack->ID = GetNextResourceID();
     audioTrack->BufferID = audioBuffer;
-    audioTracks.push_back(audioTrack);
+    audioTracks[audioTrack->BufferID] = audioTrack;
 
     Log::LogDebug("Audio track loaded: {0}, {1}", fullPath, audioTrack->ID);
 
@@ -273,13 +297,13 @@ AudioTrack* ResourcesManager::GetAudioTrack(ResourceID audioID)
     if (audioID == NULL_RESOURCE)
         return nullptr;
 
-    if (audioID - 1 > images.size() || images[audioID - 1] == nullptr)
+    if (audioTracks.find(audioID) == audioTracks.end())
     {
-        Log::LogError("Audio track does not exist");
+        Log::LogError("Audio track {0} does not exist", audioID);
         return nullptr;
     }
 
-    return audioTracks[audioID - 1];
+    return audioTracks[audioID];
 }
 
 void ResourcesManager::UnloadAudioTrack(ResourceID audioID)
@@ -289,20 +313,19 @@ void ResourcesManager::UnloadAudioTrack(ResourceID audioID)
         return;
 
     alDeleteBuffers(1, &audioTrack->BufferID);
-    //audioTracks.erase(audioTracks.begin() + audioID); // TODO: remove
-    audioTracks[audioID - 1] = nullptr;
+    audioTracks.erase(audioID);
+    FreeResourceID(audioID);
     delete audioTrack;
-
 }
 
 void ResourcesManager::AddAnimation(Animation* animation)
 {
-    animation->ID = animations.size() + 1;
+    animation->ID = GetNextResourceID();
     if (animation->Name.empty())
     {
         animation->Name = std::to_string(animation->ID);
     }
-    animations.push_back(animation);
+    animations[animation->ID] = animation;
 }
 
 Animation* ResourcesManager::GetAnimation(ResourceID animationID)
@@ -310,13 +333,13 @@ Animation* ResourcesManager::GetAnimation(ResourceID animationID)
     if (animationID == NULL_RESOURCE)
         return nullptr;
 
-    if (animationID - 1 > animations.size() || animations[animationID - 1] == nullptr)
+    if (animations.find(animationID) == animations.end())
     {
-        Log::LogError("Animation does not exist");
+        Log::LogError("Animation {0} does not exist", animationID);
         return nullptr;
     }
 
-    return animations[animationID - 1];
+    return animations[animationID];
 }
 
 void ResourcesManager::RemoveAnimation(ResourceID animationID)
@@ -325,8 +348,8 @@ void ResourcesManager::RemoveAnimation(ResourceID animationID)
     if (animation == nullptr)
         return;
 
-    //animations.erase(animations.begin() + animationID); // TODO: remove
-    animations[animationID - 1] = nullptr;
+    animations.erase(animationID);
+    FreeResourceID(animationID);
     delete animation;
 }
 
@@ -354,8 +377,8 @@ Font* ResourcesManager::LoadFont(const char* fontPath, bool engineResource)
     if (font == nullptr)
         return nullptr;
 
-    font->ID = fonts.size() + 1;
-    fonts.push_back(font);
+    font->ID = GetNextResourceID();
+    fonts[font->ID] = font;
 
     Log::LogDebug("Font loaded: {0}, {1}", fullPath, font->ID);
 
@@ -367,16 +390,90 @@ Font* ResourcesManager::GetFont(ResourceID fontID)
     if (fontID == NULL_RESOURCE)
         return nullptr;
 
-    if (fontID - 1 > fonts.size() || fonts[fontID - 1] == nullptr)
+    if (fonts.find(fontID) == fonts.end())
     {
-        Log::LogError("Font does not exist");
+        Log::LogError("Font {0} does not exist", fontID);
         return nullptr;
     }
 
-    return fonts[fontID - 1];
+    return fonts[fontID];
 }
 
 Font* ResourcesManager::DefaultFont()
 {
     return defaultFont;
+}
+
+void ResourcesManager::AddShader(Shader* shader)
+{
+    shader->ID = GetNextResourceID();
+    shaders[shader->ID] = shader;
+}
+
+Shader* ResourcesManager::GetShader(ResourceID shaderID)
+{
+    if (shaderID == NULL_RESOURCE)
+        return nullptr;
+
+    if (shaders.find(shaderID) == shaders.end())
+    {
+        Log::LogError("Shader {0} does not exist", shaderID);
+        return nullptr;
+    }
+
+    return shaders[shaderID];
+}
+
+Shader* ResourcesManager::DefaultSpriteShader()
+{
+    return defaultSpriteShader;
+}
+
+Shader* ResourcesManager::DefaultUIShader()
+{
+    return defaultUIShader;
+}
+
+void ResourcesManager::AddMaterial(Material* material)
+{
+    material->ID = GetNextResourceID();
+    materials[material->ID] = material;
+}
+
+Material* ResourcesManager::GetMaterial(ResourceID materialID)
+{
+    if (materialID == NULL_RESOURCE)
+        return nullptr;
+
+    if (materials.find(materialID) == materials.end())
+    {
+        Log::LogError("Material {0} does not exist", materialID);
+        return nullptr;
+    }
+
+    return materials[materialID];
+}
+
+Material* ResourcesManager::DefaultSpriteMaterial()
+{
+    return defaultSpriteMaterial;
+}
+
+Material* ResourcesManager::DefaultUIMaterial()
+{
+    return defaultUIMaterial;
+}
+
+ResourceID ResourcesManager::GetNextResourceID()
+{
+    if (nextResourceID == (uint32_t)-1)
+    {
+        Log::LogError("Resource ID overflow");
+    }
+    return nextResourceID++;
+}
+
+void ResourcesManager::FreeResourceID(ResourceID resourceID)
+{
+    // TODO: recycle resource IDs
 }

@@ -13,6 +13,9 @@ void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, boo
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
+    if (_material == nullptr)
+        _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
+
     if (_font == nullptr)
     {
         ForeachLetterDelete(entitiesRegistry, letters.size());
@@ -112,8 +115,9 @@ void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, boo
                 auto& letterRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(letterEntityID);
 
                 letterRenderer.Color = _color;
-                letterRenderer.TextureID = atlas.TextureID;
-                letterRenderer.Queue = RenderingQueue::Text;
+                letterRenderer.Material = _material;
+                letterRenderer.CustomProperties.SetTexture(0, atlas.TextureID);
+                letterRenderer.Queue = RenderingQueue::Opaque;
                 letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
                 letterRenderer.TextureCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);
                 letterRenderer.TextureCoords[2] = glm::vec2(character.BottomLeft.x, character.BottomLeft.y);

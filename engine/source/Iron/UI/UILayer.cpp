@@ -100,15 +100,7 @@ void UILayer::Draw()
     // Opaque pass
     for (int i = 0; i < uiRenderers.Size(); ++i)
         if (uiRenderers[i].Queue == RenderingQueue::Opaque)
-            uiRenderers[i].Render();
-    Renderer::EndBatch();
-
-    Renderer::StartBatch();
-    Renderer::SetDrawMode(DrawModes::Text);
-    // Text letters
-    for (int i = 0; i < uiRenderers.Size(); ++i)
-        if (uiRenderers[i].Queue == RenderingQueue::Text)
-            uiRenderers[i].Render();
+            Renderer::Draw((const QuadRenderer&)uiRenderers[i]);
     Renderer::EndBatch();
 
     Renderer::StartBatch();
@@ -116,7 +108,7 @@ void UILayer::Draw()
     // Transparent pass
     for (int i = uiRenderers.Size() - 1; i >= 0; --i)
         if (uiRenderers[i].Queue == RenderingQueue::Transparent)
-            uiRenderers[i].Render();
+            Renderer::Draw((const QuadRenderer&)uiRenderers[i]);
 
     // Refresh rect transformation
     auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();

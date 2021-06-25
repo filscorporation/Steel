@@ -1,11 +1,6 @@
 #include "QuadRenderer.h"
 #include "Renderer.h"
 
-void QuadRenderer::Render()
-{
-    Renderer::DrawQuad(Vertices, TextureCoords, Color, TextureID);
-}
-
 void QuadRenderer::SetDefaultQuad()
 {
     DefaultVertices[0] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);

@@ -1,6 +1,8 @@
 #include <GLAD/glad.h>
+#include <glm/glm.hpp>
 
 #include "Shader.h"
+#include "OpenGLAPI.h"
 #include "../Core/Log.h"
 
 Shader::Shader(const char* vertexCode, const char* fragmentCode)
@@ -47,7 +49,7 @@ Shader::Shader(const char* vertexCode, const char* fragmentCode)
     glDeleteShader(fragment);
 }
 
-Shader* Shader::FromFilePaths(const char *vertexPath, const char *fragmentPath)
+Shader* Shader::FromFilePaths(const char* vertexPath, const char* fragmentPath)
 {
     std::string vertexCode;
     std::string fragmentCode;
@@ -87,4 +89,12 @@ Shader* Shader::FromFilePaths(const char *vertexPath, const char *fragmentPath)
 void Shader::Use()
 {
     glUseProgram(this->Program);
+}
+
+int Shader::GetUniformLocation(const std::string& name)
+{
+    if (uniformsCache.find(name) == uniformsCache.end())
+        uniformsCache[name] = OpenGLAPI::GetUniformLocation(Program, name.c_str());
+
+    return uniformsCache[name];
 }

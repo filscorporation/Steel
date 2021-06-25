@@ -1,27 +1,23 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Renderer.h"
-#include "BuiltInShaders.h"
 #include "Screen.h"
 #include "SpriteRenderer.h"
 #include "OpenGLAPI.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 
-const int RENDER_CALL_DATA_SIZE = 10;
-const int MAX_RENDER_CALLS = 10000;
-const int MAX_TEXTURE_SLOTS = 32;
+#define VIEW_PROJECTION "view_projection"
 
-Shader* shader;
+const int RENDER_CALL_DATA_SIZE = 9;
+const int MAX_RENDER_CALLS = 10000;
 
 int renderCallsCount;
-int texturesCount;
 float* vertexBufferData;
-uint32_t textureIDs[MAX_TEXTURE_SLOTS];
 uint32_t indexBufferID, vertexDataBufferID;
-int viewProjectionUniform;
-int drawModeUniform;
 
+glm::mat4 Renderer::currentViewProjection;
+std::vector<Shader*> Renderer::shadersUsed;
 DrawModes::DrawMode Renderer::currentDrawMode = DrawModes::Normal;
 bool Renderer::DrawWireframe = false;
 int Renderer::DrawCallsStats = 0;
@@ -41,21 +37,6 @@ void Renderer::Init()
 
     EnableDepthTest();
     EnableBlend();
-
-    // Create shader and initialize it's texture slots variable
-    shader = new Shader(BuiltInShaders::VertexShader, BuiltInShaders::FragmentShader);
-    shader->Use();
-    int textureSlots[MAX_TEXTURE_SLOTS];
-    for (int i = 0; i < MAX_TEXTURE_SLOTS; i++)
-        textureSlots[i] = i;
-    SetUniformIntegers(GetUniformLocation(shader->Program, "images"), MAX_TEXTURE_SLOTS, textureSlots);
-
-    Log::LogDebug("Shader created");
-
-    // Camera transformation uniform
-    viewProjectionUniform = GetUniformLocation(shader->Program, "view_projection");
-    // Draw mode
-    drawModeUniform = GetUniformLocation(shader->Program, "draw_mode");
 
     Log::LogDebug("Uniforms saved");
 
@@ -94,14 +75,12 @@ void Renderer::Terminate()
     DeleteBuffer(vertexDataBufferID);
 
     delete[] vertexBufferData;
-    delete shader;
 }
 
 void Renderer::OnBeforeRender(Camera& camera)
 {
     // Set camera transformation
-    glm::mat4 viewProjection = camera.GetViewProjection();
-    SetUniformMatrix4Float(viewProjectionUniform, glm::value_ptr(viewProjection));
+    currentViewProjection = camera.GetViewProjection();
 
     SetDrawMode(DrawModes::Normal);
 
@@ -115,6 +94,10 @@ void Renderer::OnBeforeRender(Camera& camera)
 void Renderer::OnAfterRender()
 {
     EndBatch();
+
+    for (auto& shader : shadersUsed)
+        shader->GlobalUniformsSet = false;
+    shadersUsed.clear();
 }
 
 void Renderer::Clear(glm::vec3 color)
@@ -129,28 +112,40 @@ void Renderer::PrepareUIRender()
     EndBatch();
     StartBatch();
 
-    glm::mat4 uiViewProjection = Screen::GetUIViewProjection();
-    SetUniformMatrix4Float(viewProjectionUniform, glm::value_ptr(uiViewProjection));
+    // Set camera transformation
+    currentViewProjection = Screen::GetUIViewProjection();
     ClearDepth();
 }
 
-void Renderer::DrawQuad(glm::vec3 vertices[4], glm::vec2 textureCoords[4], const glm::vec4& color, uint32_t textureID)
+void Renderer::Draw(const QuadRenderer& quad)
 {
-    int textureIDIndex = FindTextureSlot(textureID);
+    EndBatch();
+    StartBatch();
+
+    // TODO: Try to batch
+    quad.Material->MainShader->Use();
+    quad.Material->Properties.Apply(quad.Material->MainShader);
+    quad.CustomProperties.Apply(quad.Material->MainShader);
+
+    if (!quad.Material->MainShader->GlobalUniformsSet)
+    {
+        shadersUsed.push_back(quad.Material->MainShader);
+        quad.Material->MainShader->GlobalUniformsSet = true;
+        quad.Material->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(currentViewProjection));
+    }
 
     int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
     for (int i = 0; i < 4; ++i)
     {
-        vertexBufferData[offset++] = vertices[i][0];
-        vertexBufferData[offset++] = vertices[i][1];
-        vertexBufferData[offset++] = vertices[i][2];
-        vertexBufferData[offset++] = color[0];
-        vertexBufferData[offset++] = color[1];
-        vertexBufferData[offset++] = color[2];
-        vertexBufferData[offset++] = color[3];
-        vertexBufferData[offset++] = textureCoords[i][0];
-        vertexBufferData[offset++] = textureCoords[i][1];
-        vertexBufferData[offset++] = (float)textureIDIndex;
+        vertexBufferData[offset++] = quad.Vertices[i][0];
+        vertexBufferData[offset++] = quad.Vertices[i][1];
+        vertexBufferData[offset++] = quad.Vertices[i][2];
+        vertexBufferData[offset++] = quad.Color[0];
+        vertexBufferData[offset++] = quad.Color[1];
+        vertexBufferData[offset++] = quad.Color[2];
+        vertexBufferData[offset++] = quad.Color[3];
+        vertexBufferData[offset++] = quad.TextureCoords[i][0];
+        vertexBufferData[offset++] = quad.TextureCoords[i][1];
     }
 
     renderCallsCount++;
@@ -159,17 +154,19 @@ void Renderer::DrawQuad(glm::vec3 vertices[4], glm::vec2 textureCoords[4], const
 
 void Renderer::SetDrawMode(DrawModes::DrawMode drawMode)
 {
+    // TODO: not implemented
+    return;
+
     if (currentDrawMode == drawMode)
         return;
 
     currentDrawMode = drawMode;
-    SetUniformInteger(drawModeUniform, (int)currentDrawMode);
+    //SetUniformInteger(drawModeUniform, (int)currentDrawMode);
 }
 
 void Renderer::StartBatch()
 {
     renderCallsCount = 0;
-    texturesCount = 0;
 }
 
 void Renderer::EndBatch()
@@ -217,14 +214,8 @@ void Renderer::DrawBatchedData()
     EnableVertexFloatAttribute(1, 4, RENDER_CALL_DATA_SIZE, 3);
     // Texture coords
     EnableVertexFloatAttribute(2, 2, RENDER_CALL_DATA_SIZE, 7);
-    // Texture ID
-    EnableVertexFloatAttribute(3, 1, RENDER_CALL_DATA_SIZE, 9);
 
     UnbindVertexBuffer();
-
-    // Bind textures
-    for (int i = 0; i < texturesCount; ++i)
-        BindTexture(textureIDs[i], i);
 
     // Draw
     DrawTriangles(renderCallsCount * 6);
@@ -233,38 +224,4 @@ void Renderer::DrawBatchedData()
 
     UnbindTexture();
     DeleteVertexArray(vertexArrayID);
-}
-
-int Renderer::FindTextureSlot(uint32_t textureID)
-{
-    if (renderCallsCount >= MAX_RENDER_CALLS)
-    {
-        EndBatch();
-        StartBatch();
-    }
-
-    int textureIDIndex = -1;
-    for (int i = 0; i < texturesCount; ++i)
-    {
-        if (textureIDs[i] == textureID)
-        {
-            textureIDIndex = i;
-            break;
-        }
-    }
-
-    if (textureIDIndex == -1)
-    {
-        if (texturesCount >= MAX_TEXTURE_SLOTS)
-        {
-            EndBatch();
-            StartBatch();
-        }
-
-        textureIDIndex = texturesCount;
-        textureIDs[textureIDIndex] = textureID;
-        texturesCount++;
-    }
-
-    return textureIDIndex;
 }

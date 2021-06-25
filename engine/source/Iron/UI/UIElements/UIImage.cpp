@@ -52,8 +52,22 @@ void UIImage::UpdateRenderer(RectTransformation& transformation, bool transforma
         registry->GetComponent<UIEventHandler>(Owner).SortingOrder = sortingOrder;
 }
 
+void UIImage::SetMaterial(Material* material)
+{
+    _material = material;
+    SetImage(_image);
+}
+
+Material* UIImage::GetMaterial()
+{
+    return _material;
+}
+
 void UIImage::SetImage(Sprite* image)
 {
+    if (image != nullptr && _material == nullptr)
+        _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
+
     bool wasNull = _image == nullptr;
     _image = image;
 
@@ -97,7 +111,8 @@ void UIImage::SetImage(Sprite* image)
                 {
                     auto& qr = registry->AddComponent<UIQuadRenderer>(_renderers[j * 3 + i]);
                     qr.CustomOwner = Owner;
-                    qr.TextureID = _image->TextureID;
+                    qr.Material = _material;
+                    qr.CustomProperties.SetTexture(0, _image->TextureID);
                     qr.Color = _color;
                     qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
                     qr.TextureCoords[0] = glm::vec2(xtc[i + 1], ytc[j]);
@@ -131,7 +146,8 @@ void UIImage::SetImage(Sprite* image)
             }
             qr.SetDefaultQuad();
             qr.Color = _color;
-            qr.TextureID = _image->TextureID;
+            qr.Material = _material;
+            qr.CustomProperties.SetTexture(0, _image->TextureID);
             qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
             qr.CustomOwner = Owner;
         }

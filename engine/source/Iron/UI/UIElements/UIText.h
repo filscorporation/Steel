@@ -3,6 +3,7 @@
 #include "../Font.h"
 #include "../UIComponent.h"
 #include "../RectTransformation.h"
+#include "../../Rendering/Material.h"
 
 namespace AlignmentTypes
 {
@@ -77,6 +78,7 @@ private:
     int OriginX(float rectWidth, uint32_t lineWidth);
     int OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeight);
 
+    Material* _material = nullptr;
     Font* _font = nullptr;
     std::string _text;
     uint32_t _textSize = 14;

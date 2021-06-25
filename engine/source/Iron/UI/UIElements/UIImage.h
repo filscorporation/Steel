@@ -3,6 +3,7 @@
 #include "../RectTransformation.h"
 #include "../UIComponent.h"
 #include "../UIQuadRenderer.h"
+#include "../../Rendering/Material.h"
 #include "../../Rendering/Sprite.h"
 
 class UIImage : public UIComponent
@@ -12,6 +13,8 @@ public:
 
     void UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
 
+    void SetMaterial(Material* material);
+    Material* GetMaterial();
     void SetImage(Sprite* image);
     Sprite* GetImage();
     void SetColor(glm::vec4 color);
@@ -22,6 +25,7 @@ public:
 protected:
     Sprite* _image = nullptr;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    Material* _material = nullptr;
 
     uint32_t currentImageTileIndex = 0;
     std::vector<EntityID> _renderers;

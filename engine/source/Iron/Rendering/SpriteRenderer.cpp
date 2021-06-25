@@ -15,12 +15,24 @@ void SpriteRenderer::UpdateRenderer(Transformation& transformation)
     for (int i = 0; i < 4; ++i)
         qr.Vertices[i] = matrix * qr.DefaultVertices[i];
     qr.SortingOrder = transformation.GetGlobalSortingOrderCached();
+}
 
-    imageDirty = false;
+void SpriteRenderer::SetMaterial(Material* material)
+{
+    _material = material;
+    SetImage(_image);
+}
+
+Material* SpriteRenderer::GetMaterial()
+{
+    return _material;
 }
 
 void SpriteRenderer::SetImage(Sprite* image)
 {
+    if (image != nullptr && _material == nullptr)
+        _material = Application::Instance->GetResourcesManager()->DefaultSpriteMaterial();
+
     bool wasNull = _image == nullptr;
     _image = image;
 
@@ -46,10 +58,9 @@ void SpriteRenderer::SetImage(Sprite* image)
         }
         qr.SetDefaultQuad(_image->Pivot);
         qr.Color = _color;
-        qr.TextureID = _image->TextureID;
+        qr.Material = _material;
+        qr.CustomProperties.SetTexture(0, _image->TextureID);
         qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
-
-        imageDirty = true;
     }
 }
 

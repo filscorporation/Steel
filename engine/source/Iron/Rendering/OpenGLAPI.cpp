@@ -71,9 +71,19 @@ int OpenGLAPI::GetUniformLocation(uint32_t shaderProgram, const char* name)
     return glGetUniformLocation(shaderProgram, name);
 }
 
-void OpenGLAPI::SetUniformInteger(int uniform, int value)
+void OpenGLAPI::SetUniformFloat(int uniform, float value)
+{
+    glUniform1f(uniform, value);
+}
+
+void OpenGLAPI::SetUniformInt(int uniform, int value)
 {
     glUniform1i(uniform, value);
+}
+
+void OpenGLAPI::SetUniformUInt(int uniform, uint32_t value)
+{
+    glUniform1ui(uniform, value);
 }
 
 void OpenGLAPI::SetUniformIntegers(int uniform, int valuesCount, const int* values)
@@ -81,7 +91,7 @@ void OpenGLAPI::SetUniformIntegers(int uniform, int valuesCount, const int* valu
     glUniform1iv(uniform, valuesCount, values);
 }
 
-void OpenGLAPI::SetUniformMatrix4Float(int uniform, const float* values)
+void OpenGLAPI::SetUniformMat4F(int uniform, const float* values)
 {
     glUniformMatrix4fv(uniform, 1, GL_FALSE, values);
 }
@@ -206,7 +216,7 @@ void OpenGLAPI::DeleteTexture(uint32_t textureID)
     glDeleteTextures(1, &textureID);
 }
 
-uint32_t OpenGLAPI::BeginGenerateMonochromeTexture(uint32_t width, uint32_t height)
+uint32_t OpenGLAPI::BeginGenerateTexture(uint32_t width, uint32_t height)
 {
     GLuint textureID;
     glActiveTexture(GL_TEXTURE0);
@@ -216,16 +226,15 @@ uint32_t OpenGLAPI::BeginGenerateMonochromeTexture(uint32_t width, uint32_t heig
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, (GLint)width, (GLint)height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLint)width, (GLint)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
     return textureID;
 }
 
-void OpenGLAPI::SetMonochromeTextureSubImage(unsigned char* imageData, uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+void OpenGLAPI::SetTextureSubImage(unsigned char* imageData, uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
-    glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)x, (GLint)y, (GLint)width, (GLint)height, GL_RED, GL_UNSIGNED_BYTE, imageData);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)x, (GLint)y, (GLint)width, (GLint)height, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 }
 
 void OpenGLAPI::EndGenerateTexture()
@@ -233,7 +242,7 @@ void OpenGLAPI::EndGenerateTexture()
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void OpenGLAPI::BindTexture(uint32_t textureID, int textureSlot)
+void OpenGLAPI::BindTexture(uint32_t textureID, uint32_t textureSlot)
 {
     GLenum activeTexture = GL_TEXTURE0 + textureSlot;
     glActiveTexture(activeTexture);
