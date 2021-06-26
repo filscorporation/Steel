@@ -17,6 +17,8 @@ float* vertexBufferData;
 uint32_t indexBufferID, vertexDataBufferID;
 
 glm::mat4 Renderer::currentViewProjection;
+size_t Renderer::lastPropertyBlockHash = 0;
+ResourceID Renderer::lastMaterial = NULL_RESOURCE;
 std::vector<Shader*> Renderer::shadersUsed;
 DrawModes::DrawMode Renderer::currentDrawMode = DrawModes::Normal;
 bool Renderer::DrawWireframe = false;
@@ -98,6 +100,8 @@ void Renderer::OnAfterRender()
     for (auto& shader : shadersUsed)
         shader->GlobalUniformsSet = false;
     shadersUsed.clear();
+    lastPropertyBlockHash = 0;
+    lastMaterial = NULL_RESOURCE;
 }
 
 void Renderer::Clear(glm::vec3 color)
@@ -119,13 +123,23 @@ void Renderer::PrepareUIRender()
 
 void Renderer::Draw(const QuadRenderer& quad)
 {
-    EndBatch();
-    StartBatch();
-
-    // TODO: Try to batch
-    quad.RenderMaterial->MainShader->Use();
-    quad.RenderMaterial->Properties.Apply(quad.RenderMaterial->MainShader);
-    quad.CustomProperties.Apply(quad.RenderMaterial->MainShader);
+    if (quad.RenderMaterial->ID != lastMaterial)
+    {
+        EndBatch();
+        StartBatch();
+        lastMaterial = quad.RenderMaterial->ID;
+        lastPropertyBlockHash = 0;
+        quad.RenderMaterial->MainShader->Use();
+        quad.RenderMaterial->Properties.Apply(quad.RenderMaterial->MainShader);
+        quad.CustomProperties.Apply(quad.RenderMaterial->MainShader);
+    }
+    else if (quad.CustomProperties.GetHash() != lastPropertyBlockHash)
+    {
+        EndBatch();
+        StartBatch();
+        lastPropertyBlockHash = quad.CustomProperties.GetHash();
+        quad.CustomProperties.Apply(quad.RenderMaterial->MainShader);
+    }
 
     if (!quad.RenderMaterial->MainShader->GlobalUniformsSet)
     {
@@ -150,6 +164,15 @@ void Renderer::Draw(const QuadRenderer& quad)
 
     renderCallsCount++;
     VerticesStats += 4;
+
+    if (renderCallsCount >= MAX_RENDER_CALLS)
+    {
+        EndBatch();
+        StartBatch();
+
+        lastMaterial = NULL_RESOURCE;
+        lastPropertyBlockHash = 0;
+    }
 }
 
 void Renderer::SetDrawMode(DrawModes::DrawMode drawMode)
@@ -177,6 +200,7 @@ void Renderer::EndBatch()
     DrawCallsStats ++;
     DrawBatchedData();
 
+    // TODO: move to different pass
     if (DrawWireframe)
     {
         // Wireframe mode

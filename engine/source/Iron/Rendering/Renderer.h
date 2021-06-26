@@ -41,7 +41,11 @@ public:
 
 private:
 
+    // Renderer state
     static glm::mat4 currentViewProjection;
+    static ResourceID lastMaterial;
+    static size_t lastPropertyBlockHash;
+
     static std::vector<Shader*> shadersUsed;
     static DrawModes::DrawMode currentDrawMode;
 };
