@@ -199,7 +199,8 @@ uint32_t RectTransformation::GetCurrentHierarchyIndex() const
 
 void RectTransformation::IncreaseCurrentHierarchyIndex(uint32_t thickness)
 {
-    _currentHierarchyIndex += thickness;
+    if (!_parallelHierarchy)
+        _currentHierarchyIndex += thickness;
 }
 
 bool RectTransformation::Contains(const glm::vec2& point) const
@@ -237,7 +238,7 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
 
         parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
         parentPosition = parentSize * 0.5f;
-        _currentHierarchyIndex = layer->GetCurrentHeirarchyIndex();
+        _currentHierarchyIndex = layer->GetCurrentHierarchyIndex();
         layer->IncreaseCurrentHierarchyIndex(hierarchyNode.Thickness);
     }
     else

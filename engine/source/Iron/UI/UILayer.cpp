@@ -172,7 +172,7 @@ uint32_t UILayer::GetLayerThickness() const
     return _layerThickness;
 }
 
-uint32_t UILayer::GetCurrentHeirarchyIndex() const
+uint32_t UILayer::GetCurrentHierarchyIndex() const
 {
     return _currentHierarchyIndex;
 }

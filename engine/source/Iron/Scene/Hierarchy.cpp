@@ -147,6 +147,7 @@ void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNo
         prevNextNode.PreviousNode = childNode.PreviousNode;
 
         // Recalculating all previous parent's children indices
+        // TODO: performance bottleneck when many children get mass destroyed (maybe add dirty flag)
         EntityID currentNodeID = hierarchyParent.FirstChildNode;
         for (uint32_t i = 0; i < hierarchyParent.ChildrenCount; ++i)
         {

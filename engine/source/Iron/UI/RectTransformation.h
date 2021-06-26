@@ -68,6 +68,7 @@ private:
     glm::vec3 _localRotation = { 0.0f, 0.0f, 0.0f };
     glm::vec2 _realPosition = { 0.0f, 0.0f };
 
+    bool _parallelHierarchy = false;
     uint32_t _currentHierarchyIndex = 0;
     float _sortingOrder = 0.0f;
 

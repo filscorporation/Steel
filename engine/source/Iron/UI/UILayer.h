@@ -22,7 +22,7 @@ public:
     bool IsPointerOverUI() const;
     static UILayer* Current();
     uint32_t GetLayerThickness() const;
-    uint32_t GetCurrentHeirarchyIndex() const;
+    uint32_t GetCurrentHierarchyIndex() const;
     void IncreaseCurrentHierarchyIndex(uint32_t thickness);
     void SetSortingOrderDirty();
     bool NeedRebuildSortingOrder() const;
