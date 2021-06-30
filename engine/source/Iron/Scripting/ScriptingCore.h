@@ -109,10 +109,19 @@ public:
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method);
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method, EntityID param);
     static void FindAndCallEntryPoint(MonoImage* image);
+
     static MonoArray* ToMonoUInt32Array(const std::vector<uint32_t>& inArray);
     static MonoArray* ToMonoIntPtrArray(const std::vector<intptr_t>& inArray);
-    static void FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t>& outArray);
+    static MonoArray* ToMonoStringArray(const std::vector<std::string>& inArray);
+    static MonoArray* ToMonoFloatArray(const std::vector<float>& inArray);
+    static MonoArray* ToMonoIntArray(const std::vector<int>& inArray);
     template<typename T> static MonoArray* ToMonoDataTypeArray(const std::vector<T>& inArray, int cachedDataTypeID);
+
+    static void FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t>& outArray);
+    static void FromMonoStringArray(MonoArray* inArray, std::vector<std::string>& outArray);
+    static void FromMonoFloatArray(MonoArray* inArray, std::vector<float>& outArray);
+    static void FromMonoIntArray(MonoArray* inArray, std::vector<int>& outArray);
+    template<typename T> static void FromMonoDataTypeArray(MonoArray* inArray, std::vector<T>& outArray, int cachedDataTypeID);
 
     static EngineCallsMethods EngineCalls;
     static EventManagerMethods EventManagerCalls;
@@ -139,6 +148,18 @@ MonoArray* ScriptingCore::ToMonoDataTypeArray(const std::vector<T>& inArray, int
     }
 
     return outArray;
+}
+
+template<typename T>
+void ScriptingCore::FromMonoDataTypeArray(MonoArray* inArray, std::vector<T>& outArray, int cachedDataTypeID)
+{
+    uint32_t length = mono_array_length(inArray);
+    outArray.reserve(length);
+
+    for (uint32_t i = 0; i < length; i++)
+    {
+        outArray.push_back(mono_array_get(inArray, T, i));
+    }
 }
 
 #define API_CLASS(m_class) mono_class_from_name(image, "Iron", #m_class)

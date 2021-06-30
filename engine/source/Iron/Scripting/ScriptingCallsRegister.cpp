@@ -50,11 +50,14 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.ResourcesManager::LoadImage_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadImage);
     mono_add_internal_call("Iron.ResourcesManager::LoadAsepriteData_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAsepriteData);
     mono_add_internal_call("Iron.ResourcesManager::LoadAudioTrack_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAudioTrack);
+    mono_add_internal_call("Iron.ResourcesManager::LoadShader_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadShader);
+    mono_add_internal_call("Iron.ResourcesManager::CreateMaterial_Internal", (void*)CoreInternalCalls::ResourcesManager_CreateMaterial);
     mono_add_internal_call("Iron.AudioTrack::GetLength_Internal", (void*)CoreInternalCalls::AudioTrack_GetLength);
     mono_add_internal_call("Iron.Sprite::SetAsNormal_Internal", (void*)CoreInternalCalls::Sprite_SetAsNormal);
     mono_add_internal_call("Iron.Sprite::SetAsSpriteSheet_Internal", (void*)CoreInternalCalls::Sprite_SetAsSpriteSheet);
     mono_add_internal_call("Iron.Sprite::SetAs9Sliced_Internal", (void*)CoreInternalCalls::Sprite_SetAs9Sliced);
     mono_add_internal_call("Iron.Sprite::SetAs9Sliced_Internal2", (void*)CoreInternalCalls::Sprite_SetAs9Sliced2);
+    mono_add_internal_call("Iron.Sprite::GetTextureID_Internal", (void*)CoreInternalCalls::Sprite_GetTextureID);
     mono_add_internal_call("Iron.Sprite::GetWidth_Internal", (void*)CoreInternalCalls::Sprite_GetWidth);
     mono_add_internal_call("Iron.Sprite::GetHeight_Internal", (void*)CoreInternalCalls::Sprite_GetHeight);
     mono_add_internal_call("Iron.Sprite::GetPixelsPerUnit_Internal", (void*)CoreInternalCalls::Sprite_GetPixelsPerUnit);
@@ -72,6 +75,10 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.AsepriteData::GetSprites_Internal", (void*)CoreInternalCalls::AsepriteData_GetSprites);
     mono_add_internal_call("Iron.AsepriteData::GetAnimations_Internal", (void*)CoreInternalCalls::AsepriteData_GetAnimations);
     mono_add_internal_call("Iron.AsepriteData::CreateEntityFromAsepriteData_Internal", (void*)CoreInternalCalls::AsepriteData_CreateEntityFromAsepriteData);
+    mono_add_internal_call("Iron.Material::GetShader_Internal", (void*)CoreInternalCalls::Material_GetShader);
+    mono_add_internal_call("Iron.Material::SetShader_Internal", (void*)CoreInternalCalls::Material_SetShader);
+    mono_add_internal_call("Iron.Material::GetProperties_Internal", (void*)CoreInternalCalls::Material_GetProperties);
+    mono_add_internal_call("Iron.Material::SetProperties_Internal", (void*)CoreInternalCalls::Material_SetProperties);
 
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal", (void*)EntityInternalCalls::Entity_CreateNewEntity);
     mono_add_internal_call("Iron.Entity::CreateNewEntity_Internal2", (void*)EntityInternalCalls::Entity_CreateNewEntity2);
@@ -121,6 +128,10 @@ void ScriptingCallsRegister::RegisterInternalCalls()
 
     mono_add_internal_call("Iron.SpriteRenderer::GetSprite_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_GetSprite);
     mono_add_internal_call("Iron.SpriteRenderer::SetSprite_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_SetSprite);
+    mono_add_internal_call("Iron.SpriteRenderer::GetMaterial_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_GetMaterial);
+    mono_add_internal_call("Iron.SpriteRenderer::SetMaterial_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_SetMaterial);
+    mono_add_internal_call("Iron.SpriteRenderer::GetCustomMaterialProperties_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_GetCustomMaterialProperties);
+    mono_add_internal_call("Iron.SpriteRenderer::SetCustomMaterialProperties_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_SetCustomMaterialProperties);
 
     mono_add_internal_call("Iron.Animator::PlayAnimation_Internal", (void*)ComponentsInternalCalls::Animator_PlayAnimation);
     mono_add_internal_call("Iron.Animator::PlayAnimation_Internal2", (void*)ComponentsInternalCalls::Animator_PlayAnimation2);
@@ -197,10 +208,14 @@ void ScriptingCallsRegister::RegisterInternalCalls()
 
     mono_add_internal_call("Iron.UIImage::GetSprite_Internal", (void*)UIInternalCalls::UIImage_GetSprite);
     mono_add_internal_call("Iron.UIImage::SetSprite_Internal", (void*)UIInternalCalls::UIImage_SetSprite);
+    mono_add_internal_call("Iron.UIImage::GetMaterial_Internal", (void*)UIInternalCalls::UIImage_GetMaterial);
+    mono_add_internal_call("Iron.UIImage::SetMaterial_Internal", (void*)UIInternalCalls::UIImage_SetMaterial);
     mono_add_internal_call("Iron.UIImage::GetColor_Internal", (void*)UIInternalCalls::UIImage_GetColor);
     mono_add_internal_call("Iron.UIImage::SetColor_Internal", (void*)UIInternalCalls::UIImage_SetColor);
     mono_add_internal_call("Iron.UIImage::GetConsumeEvents_Internal", (void*)UIInternalCalls::UIImage_GetConsumeEvents);
     mono_add_internal_call("Iron.UIImage::SetConsumeEvents_Internal", (void*)UIInternalCalls::UIImage_SetConsumeEvents);
+    mono_add_internal_call("Iron.UIImage::GetCustomMaterialProperties_Internal", (void*)UIInternalCalls::UIImage_GetCustomMaterialProperties);
+    mono_add_internal_call("Iron.UIImage::SetCustomMaterialProperties_Internal", (void*)UIInternalCalls::UIImage_SetCustomMaterialProperties);
 
     mono_add_internal_call("Iron.UIButton::GetTargetImage_Internal", (void*)UIInternalCalls::UIButton_GetTargetImage);
     mono_add_internal_call("Iron.UIButton::SetTargetImage_Internal", (void*)UIInternalCalls::UIButton_SetTargetImage);

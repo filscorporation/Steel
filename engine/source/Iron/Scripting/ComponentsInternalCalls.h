@@ -7,6 +7,7 @@
 #include "../Physics/RigidBody.h"
 #include "../Rendering/Camera.h"
 #include "../Resources/ResourceID.h"
+#include "MaterialPropertyBlockInternal.h"
 
 namespace ComponentsInternalCalls
 {
@@ -42,6 +43,10 @@ namespace ComponentsInternalCalls
     // Sprite Renderer
     ResourceID SpriteRenderer_GetSprite(EntityID entityID);
     void SpriteRenderer_SetSprite(EntityID entityID, ResourceID spriteID);
+    ResourceID SpriteRenderer_GetMaterial(EntityID entityID);
+    void SpriteRenderer_SetMaterial(EntityID entityID, ResourceID materialID);
+    void SpriteRenderer_GetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal* properties);
+    void SpriteRenderer_SetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal properties);
 
     // Animator
     void Animator_PlayAnimation(EntityID entityID, ResourceID animationID);

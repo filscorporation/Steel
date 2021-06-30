@@ -146,6 +146,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
 void ScriptingCore::CacheDataTypes(MonoImage* image)
 {
     cachedDataTypes.push_back(API_CLASS(RayCastHit));
+    cachedDataTypes.push_back(API_CLASS(Color));
 }
 
 void ScriptingCore::FreeScriptHandle(ScriptPointer scriptPointer)
@@ -715,6 +716,42 @@ MonoArray* ScriptingCore::ToMonoIntPtrArray(const std::vector<intptr_t>& inArray
     return outArray;
 }
 
+MonoArray* ScriptingCore::ToMonoStringArray(const std::vector<std::string>& inArray)
+{
+    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_string_class(), inArray.size());
+
+    for (uint32_t i = 0; i < inArray.size(); ++i)
+    {
+        mono_array_set(outArray, MonoString*, i, mono_string_new(mono_domain_get(), inArray[i].c_str()));
+    }
+
+    return outArray;
+}
+
+MonoArray* ScriptingCore::ToMonoFloatArray(const std::vector<float>& inArray)
+{
+    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_single_class(), inArray.size());
+
+    for (uint32_t i = 0; i < inArray.size(); ++i)
+    {
+        mono_array_set(outArray, float, i, inArray[i]);
+    }
+
+    return outArray;
+}
+
+MonoArray* ScriptingCore::ToMonoIntArray(const std::vector<int>& inArray)
+{
+    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_int32_class(), inArray.size());
+
+    for (uint32_t i = 0; i < inArray.size(); ++i)
+    {
+        mono_array_set(outArray, int, i, inArray[i]);
+    }
+
+    return outArray;
+}
+
 void ScriptingCore::FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t>& outArray)
 {
     uint32_t length = mono_array_length(inArray);
@@ -723,5 +760,38 @@ void ScriptingCore::FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t
     for (uint32_t i = 0; i < length; i++)
     {
         outArray.push_back(mono_array_get(inArray, uint32_t, i));
+    }
+}
+
+void ScriptingCore::FromMonoStringArray(MonoArray* inArray, std::vector<std::string>& outArray)
+{
+    uint32_t length = mono_array_length(inArray);
+    outArray.reserve(length);
+
+    for (uint32_t i = 0; i < length; i++)
+    {
+        outArray.emplace_back(mono_string_to_utf8(mono_array_get(inArray, MonoString*, i)));
+    }
+}
+
+void ScriptingCore::FromMonoFloatArray(MonoArray* inArray, std::vector<float>& outArray)
+{
+    uint32_t length = mono_array_length(inArray);
+    outArray.reserve(length);
+
+    for (uint32_t i = 0; i < length; i++)
+    {
+        outArray.emplace_back(mono_array_get(inArray, float, i));
+    }
+}
+
+void ScriptingCore::FromMonoIntArray(MonoArray* inArray, std::vector<int>& outArray)
+{
+    uint32_t length = mono_array_length(inArray);
+    outArray.reserve(length);
+
+    for (uint32_t i = 0; i < length; i++)
+    {
+        outArray.emplace_back(mono_array_get(inArray, int, i));
     }
 }

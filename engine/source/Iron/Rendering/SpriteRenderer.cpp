@@ -28,6 +28,23 @@ Material* SpriteRenderer::GetMaterial()
     return _material;
 }
 
+void SpriteRenderer::SetCustomProperties(const MaterialPropertyBlock& properties)
+{
+    _customProperties = properties;
+
+    if (_image == nullptr || _material == nullptr)
+        return;
+
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& qr = registry->AddComponent<QuadRenderer>(Owner);
+    qr.CustomProperties = _customProperties;
+}
+
+const MaterialPropertyBlock& SpriteRenderer::GetCustomProperties()
+{
+    return _customProperties;
+}
+
 void SpriteRenderer::SetImage(Sprite* image)
 {
     if (image != nullptr && _material == nullptr)
@@ -59,7 +76,8 @@ void SpriteRenderer::SetImage(Sprite* image)
         qr.SetDefaultQuad(_image->Pivot);
         qr.Color = _color;
         qr.RenderMaterial = _material;
-        qr.CustomProperties.SetTexture(0, _image->TextureID);
+        _customProperties.SetTexture(MAIN_TEX, _image->TextureID);
+        qr.CustomProperties = _customProperties;
         qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
     }
 }

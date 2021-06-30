@@ -116,7 +116,7 @@ void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, boo
 
                 letterRenderer.Color = _color;
                 letterRenderer.RenderMaterial = _material;
-                letterRenderer.CustomProperties.SetTexture(0, atlas.TextureID);
+                letterRenderer.CustomProperties.SetTexture(MAIN_TEX, atlas.TextureID);
                 letterRenderer.Queue = RenderingQueue::Opaque;
                 letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
                 letterRenderer.TextureCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);

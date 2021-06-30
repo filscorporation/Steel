@@ -5,6 +5,8 @@
 #include "OpenGLAPI.h"
 #include "../Core/Log.h"
 
+#define MAX_TEXTURES 16
+
 Shader::Shader(const char* vertexCode, const char* fragmentCode)
 {
     GLuint vertex, fragment;
@@ -86,7 +88,7 @@ Shader* Shader::FromFilePaths(const char* vertexPath, const char* fragmentPath)
     return new Shader(vShaderCode, fShaderCode);
 }
 
-void Shader::Use()
+void Shader::Use() const
 {
     glUseProgram(this->Program);
 }
@@ -97,4 +99,19 @@ int Shader::GetUniformLocation(const std::string& name)
         uniformsCache[name] = OpenGLAPI::GetUniformLocation(Program, name.c_str());
 
     return uniformsCache[name];
+}
+
+int Shader::GetTextureSlot(int uniformID)
+{
+    if (textureLocationsCache.find(uniformID) == textureLocationsCache.end())
+    {
+        if (textureLocationsCache.size() >= MAX_TEXTURES - 1)
+        {
+            Log::LogError("Too much textures in one shader, max is: {0}", MAX_TEXTURES);
+            return 0;
+        }
+        textureLocationsCache[uniformID] = (int)textureLocationsCache.size();
+    }
+
+    return textureLocationsCache[uniformID];
 }

@@ -6,6 +6,8 @@
 
 #include "Shader.h"
 
+#define MAIN_TEX "main_tex"
+
 struct MaterialPropertyBlock
 {
 public:
@@ -15,8 +17,9 @@ public:
 
     void SetFloat(const std::string& name, float value);
     void SetInt(const std::string& name, int value);
-    void SetUInt(const std::string& name, uint32_t value);
-    void SetTexture(uint32_t textureSlot, uint32_t textureID);
+    void SetTexture(const std::string& name, uint32_t textureID);
+    void SetColor(const std::string& name, const glm::vec4& value);
+
     void SetMat4(const std::string& name, const float* value);
 
 private:
@@ -26,7 +29,10 @@ private:
 
     std::map<std::string, float> floatProperties;
     std::map<std::string, int> intProperties;
-    std::map<std::string, uint32_t> uintProperties;
-    std::map<uint32_t, uint32_t> textureProperties;
+    std::map<std::string, uint32_t> textureProperties;
+    std::map<std::string, glm::vec4> colorProperties;
+
     std::map<std::string, const float*> mat4Properties;
+
+    friend class MaterialPropertyBlockInternal;
 };

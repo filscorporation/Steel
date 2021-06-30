@@ -96,6 +96,11 @@ void OpenGLAPI::SetUniformMat4F(int uniform, const float* values)
     glUniformMatrix4fv(uniform, 1, GL_FALSE, values);
 }
 
+void OpenGLAPI::SetUniformVec4F(int uniform, const float* values)
+{
+    glUniform4fv(uniform, 1, values);
+}
+
 int GLBufferType(OpenGLAPI::BufferType type)
 {
     switch (type)

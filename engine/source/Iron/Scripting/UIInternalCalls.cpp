@@ -2,6 +2,7 @@
 
 #include "UIInternalCalls.h"
 #include "InternalCallsCommon.h"
+#include "MaterialPropertyBlockInternal.h"
 #include "../Core/Log.h"
 #include "../Core/Application.h"
 #include "../Scene/SceneHelper.h"
@@ -157,6 +158,21 @@ void UIInternalCalls::UIImage_SetSprite(EntityID entityID, ResourceID spriteID)
     component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
 }
 
+ResourceID UIInternalCalls::UIImage_GetMaterial(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIImage, 0)
+    auto material = component.GetMaterial();
+
+    return material == nullptr ? NULL_RESOURCE : material->ID;
+}
+
+void UIInternalCalls::UIImage_SetMaterial(EntityID entityID, ResourceID materialID)
+{
+    GET_COMPONENT_OR_RETURN(UIImage, )
+
+    component.SetMaterial(Application::Instance->GetResourcesManager()->GetMaterial(materialID));
+}
+
 glm::vec4 UIInternalCalls::UIImage_GetColor(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIImage, glm::vec4(0.0f))
@@ -183,6 +199,22 @@ void UIInternalCalls::UIImage_SetConsumeEvents(EntityID entityID, bool consume)
     GET_COMPONENT_OR_RETURN(UIEventHandler, )
 
     component.IsTransparent = !consume;
+}
+
+void UIInternalCalls::UIImage_GetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal* properties)
+{
+    GET_COMPONENT_OR_RETURN(UIImage, )
+
+    properties->FromMaterialPropertyBlock(component.GetCustomProperties());
+}
+
+void UIInternalCalls::UIImage_SetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal properties)
+{
+    GET_COMPONENT_OR_RETURN(UIImage, )
+
+    MaterialPropertyBlock propertiesOut;
+    properties.ToMaterialPropertyBlock(propertiesOut);
+    component.SetCustomProperties(propertiesOut);
 }
 
 EntityID UIInternalCalls::UIButton_GetTargetImage(EntityID entityID)

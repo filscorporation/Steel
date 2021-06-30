@@ -189,6 +189,37 @@ void ComponentsInternalCalls::SpriteRenderer_SetSprite(EntityID entityID, Resour
     component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
 }
 
+ResourceID ComponentsInternalCalls::SpriteRenderer_GetMaterial(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(SpriteRenderer, NULL_RESOURCE)
+    auto material = component.GetMaterial();
+
+    return material == nullptr ? 0 : material->ID;
+}
+
+void ComponentsInternalCalls::SpriteRenderer_SetMaterial(EntityID entityID, ResourceID materialID)
+{
+    GET_COMPONENT_OR_RETURN(SpriteRenderer, )
+
+    component.SetMaterial(Application::Instance->GetResourcesManager()->GetMaterial(materialID));
+}
+
+void ComponentsInternalCalls::SpriteRenderer_GetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal* properties)
+{
+    GET_COMPONENT_OR_RETURN(SpriteRenderer, )
+
+    properties->FromMaterialPropertyBlock(component.GetCustomProperties());
+}
+
+void ComponentsInternalCalls::SpriteRenderer_SetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal properties)
+{
+    GET_COMPONENT_OR_RETURN(SpriteRenderer, )
+
+    MaterialPropertyBlock propertiesOut;
+    properties.ToMaterialPropertyBlock(propertiesOut);
+    component.SetCustomProperties(propertiesOut);
+}
+
 void ComponentsInternalCalls::Animator_PlayAnimation(EntityID entityID, ResourceID animationID)
 {
     GET_COMPONENT_OR_RETURN(Animator, )

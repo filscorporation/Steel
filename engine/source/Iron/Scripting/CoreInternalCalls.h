@@ -5,6 +5,7 @@
 #include <glm/vec4.hpp>
 
 #include "ScriptingCore.h"
+#include "MaterialPropertyBlockInternal.h"
 #include "../Resources/ResourceID.h"
 
 namespace CoreInternalCalls
@@ -29,11 +30,14 @@ namespace CoreInternalCalls
     ResourceID ResourcesManager_LoadImage(MonoString* path);
     EntityID ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll);
     ResourceID ResourcesManager_LoadAudioTrack(MonoString* path);
+    ResourceID ResourcesManager_LoadShader(MonoString* vsPath, MonoString* fsPath);
+    ResourceID ResourcesManager_CreateMaterial(ResourceID shaderID);
     float AudioTrack_GetLength(ResourceID audioTrackID);
     void Sprite_SetAsNormal(ResourceID spriteID);
     void Sprite_SetAsSpriteSheet(ResourceID spriteID, int tileWidth, int tileHeight);
     void Sprite_SetAs9Sliced(ResourceID spriteID, int offset);
     void Sprite_SetAs9Sliced2(ResourceID spriteID, int offsetTop, int offsetBottom, int offsetLeft, int offsetRight);
+    uint32_t Sprite_GetTextureID(ResourceID spriteID);
     int Sprite_GetWidth(ResourceID spriteID);
     int Sprite_GetHeight(ResourceID spriteID);
     int Sprite_GetPixelsPerUnit(ResourceID spriteID);
@@ -51,6 +55,10 @@ namespace CoreInternalCalls
     MonoArray* AsepriteData_GetSprites(ResourceID resourceID);
     MonoArray* AsepriteData_GetAnimations(ResourceID resourceID);
     EntityID AsepriteData_CreateEntityFromAsepriteData(ResourceID resourceID);
+    ResourceID Material_GetShader(ResourceID resourceID);
+    void Material_SetShader(ResourceID resourceID, ResourceID shaderID);
+    void Material_GetProperties(EntityID resourceID, MaterialPropertyBlockInternal* properties);
+    void Material_SetProperties(EntityID resourceID, MaterialPropertyBlockInternal properties);
 
     // Time
     float Time_GetDeltaTime();

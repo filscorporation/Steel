@@ -1,5 +1,8 @@
+#include <glm/gtc/type_ptr.hpp>
+
 #include "MaterialPropertyBlock.h"
 #include "OpenGLAPI.h"
+#include "../Core/Log.h"
 
 void MaterialPropertyBlock::Apply(Shader* shader) const
 {
@@ -7,10 +10,16 @@ void MaterialPropertyBlock::Apply(Shader* shader) const
         OpenGLAPI::SetUniformFloat(shader->GetUniformLocation(property.first), property.second);
     for (auto& property : intProperties)
         OpenGLAPI::SetUniformInt(shader->GetUniformLocation(property.first), property.second);
-    for (auto& property : uintProperties)
-        OpenGLAPI::SetUniformUInt(shader->GetUniformLocation(property.first), property.second);
     for (auto& property : textureProperties)
-        OpenGLAPI::BindTexture(property.second, property.first);
+    {
+        int uniformID = shader->GetUniformLocation(property.first);
+        int textureSlot = shader->GetTextureSlot(uniformID);
+        OpenGLAPI::BindTexture(property.second, textureSlot);
+        OpenGLAPI::SetUniformInt(uniformID, textureSlot);
+    }
+    for (auto& property : colorProperties)
+        OpenGLAPI::SetUniformVec4F(shader->GetUniformLocation(property.first), glm::value_ptr(property.second));
+
     for (auto& property : mat4Properties)
         OpenGLAPI::SetUniformMat4F(shader->GetUniformLocation(property.first), property.second);
 }
@@ -20,6 +29,20 @@ inline void HashCombine(std::size_t& seed, const T& v)
 {
     std::hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+inline void HashCombine(std::size_t& seed, const glm::vec4& v)
+{
+    HashCombine(seed, v[0]);
+    HashCombine(seed, v[1]);
+    HashCombine(seed, v[2]);
+    HashCombine(seed, v[3]);
+}
+
+inline void HashCombineMat4(std::size_t& seed, const float* v)
+{
+    for (int i = 0; i < 16; ++i)
+        HashCombine(seed, v[i]);
 }
 
 template<class K, class V>
@@ -34,14 +57,26 @@ std::size_t MapHash(const std::map<K, V>& value)
     return seed;
 }
 
+template<class K>
+std::size_t MapHashMat4(const std::map<K, const float*>& value)
+{
+    std::size_t seed = value.size();
+    for(auto& pair : value)
+    {
+        HashCombine(seed, pair.first);
+        HashCombineMat4(seed, pair.second);
+    }
+    return seed;
+}
+
 std::size_t MaterialPropertyBlock::Hash(const MaterialPropertyBlock& value)
 {
     std::size_t seed = 0;
     HashCombine(seed, MapHash(value.floatProperties));
     HashCombine(seed, MapHash(value.intProperties));
-    HashCombine(seed, MapHash(value.uintProperties));
     HashCombine(seed, MapHash(value.textureProperties));
-    HashCombine(seed, MapHash(value.mat4Properties));
+    HashCombine(seed, MapHash(value.colorProperties));
+    HashCombine(seed, MapHashMat4(value.mat4Properties));
 
     return seed;
 }
@@ -68,15 +103,15 @@ void MaterialPropertyBlock::SetInt(const std::string& name, int value)
     UpdateHash();
 }
 
-void MaterialPropertyBlock::SetUInt(const std::string& name, uint32_t value)
+void MaterialPropertyBlock::SetTexture(const std::string& name, uint32_t textureID)
 {
-    uintProperties[name] = value;
+    textureProperties[name] = textureID;
     UpdateHash();
 }
 
-void MaterialPropertyBlock::SetTexture(uint32_t textureSlot, uint32_t textureID)
+void MaterialPropertyBlock::SetColor(const std::string& name, const glm::vec4& value)
 {
-    textureProperties[textureSlot] = textureID;
+    colorProperties[name] = value;
     UpdateHash();
 }
 

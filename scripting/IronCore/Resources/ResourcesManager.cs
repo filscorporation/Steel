@@ -34,12 +34,36 @@ namespace Iron
         /// Loads audio track in memory (supported formats: wav)
         /// </summary>
         /// <param name="path">Path to file relative to resources folder</param>
-        /// <returns></returns>
+        /// <returns>Track or null if loading failed</returns>
         /// <remarks>Loading same track twice will duplicate it in memory</remarks>
         public static AudioTrack LoadAudioTrack(string path)
         {
             uint audioTrackID = LoadAudioTrack_Internal(path);
             return audioTrackID == Resource.NULL_RESOURCE_ID ? null : new AudioTrack(audioTrackID);
+        }
+        
+        /// <summary>
+        /// Loads shader in memory (supported language: GLSL)
+        /// </summary>
+        /// <param name="vsPath">Path to vertex shader file relative to resources folder</param>
+        /// <param name="fsPath">Path to fragment shader file relative to resources folder</param>
+        /// <returns>Shader or null if loading failed</returns>
+        /// <remarks>Loading same shader twice will duplicate it in memory</remarks>
+        public static Shader LoadShader(string vsPath, string fsPath)
+        {
+            uint shaderID = LoadShader_Internal(vsPath, fsPath);
+            return shaderID == Resource.NULL_RESOURCE_ID ? null : new Shader(shaderID);
+        }
+        
+        /// <summary>
+        /// Creates new material from shader
+        /// </summary>
+        /// <param name="shader">Shader to initialize material with</param>
+        /// <returns>Material or null if creation failed</returns>
+        public static Material CreateMaterial(Shader shader)
+        {
+            uint materialID = CreateMaterial_Internal(shader?.ID ?? Resource.NULL_RESOURCE_ID);
+            return materialID == Resource.NULL_RESOURCE_ID ? null : new Material(materialID);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -50,5 +74,11 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint LoadAudioTrack_Internal(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint LoadShader_Internal(string vsPath, string fsPath);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateMaterial_Internal(uint shaderID);
     }
 }

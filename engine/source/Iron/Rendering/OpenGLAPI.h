@@ -41,6 +41,7 @@ namespace OpenGLAPI
     void SetUniformUInt(int uniform, uint32_t value);
     void SetUniformIntegers(int uniform, int valuesCount, const int* values);
     void SetUniformMat4F(int uniform, const float* values);
+    void SetUniformVec4F(int uniform, const float* values);
 
     uint32_t GenerateVertexArray();
     void BindVertexArray(uint32_t arrayID);

@@ -90,6 +90,30 @@ ResourceID CoreInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
     return track == nullptr ? NULL_RESOURCE : track->ID;
 }
 
+ResourceID CoreInternalCalls::ResourcesManager_LoadShader(MonoString* vsPath, MonoString* fsPath)
+{
+    // TODO: move path concat
+    std::string fullVSPathString = Application::Instance->GetResourcesManager()->GetResourcesPath();
+    fullVSPathString += mono_string_to_utf8(vsPath);
+    std::string fullFSPathString = Application::Instance->GetResourcesManager()->GetResourcesPath();
+    fullFSPathString += mono_string_to_utf8(fsPath);
+
+    auto shader = Shader::FromFilePaths(fullVSPathString.c_str(), fullFSPathString.c_str());
+    if (shader == nullptr)
+        return NULL_RESOURCE;
+    Application::Instance->GetResourcesManager()->AddShader(shader);
+    return shader->ID;
+}
+
+ResourceID CoreInternalCalls::ResourcesManager_CreateMaterial(ResourceID shaderID)
+{
+    auto shader = Application::Instance->GetResourcesManager()->GetShader(shaderID);
+    auto material = new Material();
+    material->MainShader = shader;
+    Application::Instance->GetResourcesManager()->AddMaterial(material);
+    return material->ID;
+}
+
 float CoreInternalCalls::AudioTrack_GetLength(ResourceID audioTrackID)
 {
     auto track = Application::Instance->GetResourcesManager()->GetAudioTrack(audioTrackID);
@@ -124,6 +148,12 @@ void CoreInternalCalls::Sprite_SetAs9Sliced2(ResourceID spriteID, int offsetTop,
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
     if (image != nullptr)
         image->SetAsSliced(offsetTop, offsetBottom, offsetLeft, offsetRight);
+}
+
+uint32_t CoreInternalCalls::Sprite_GetTextureID(ResourceID spriteID)
+{
+    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    return image == nullptr ? 0 : image->TextureID;
 }
 
 int CoreInternalCalls::Sprite_GetWidth(ResourceID spriteID)
@@ -293,6 +323,41 @@ EntityID CoreInternalCalls::AsepriteData_CreateEntityFromAsepriteData(ResourceID
         return NULL_ENTITY;
 
     return Application::Instance->GetCurrentScene()->CreateEntity(*data);
+}
+
+ResourceID CoreInternalCalls::Material_GetShader(ResourceID resourceID)
+{
+    auto material = Application::Instance->GetResourcesManager()->GetMaterial(resourceID);
+    if (material == nullptr)
+        return NULL_ENTITY;
+
+    return material->MainShader == nullptr ? NULL_RESOURCE : material->MainShader->ID;
+}
+
+void CoreInternalCalls::Material_SetShader(ResourceID resourceID, ResourceID shaderID)
+{
+    auto material = Application::Instance->GetResourcesManager()->GetMaterial(resourceID);
+    if (material == nullptr)
+        return;
+    material->MainShader = Application::Instance->GetResourcesManager()->GetShader(shaderID);
+}
+
+void CoreInternalCalls::Material_GetProperties(EntityID resourceID, MaterialPropertyBlockInternal* properties)
+{
+    auto material = Application::Instance->GetResourcesManager()->GetMaterial(resourceID);
+    if (material == nullptr)
+        return;
+    properties->FromMaterialPropertyBlock(material->Properties);
+}
+
+void CoreInternalCalls::Material_SetProperties(EntityID resourceID, MaterialPropertyBlockInternal properties)
+{
+    auto material = Application::Instance->GetResourcesManager()->GetMaterial(resourceID);
+    if (material == nullptr)
+        return;
+    MaterialPropertyBlock propertiesOut;
+    properties.ToMaterialPropertyBlock(propertiesOut);
+    material->Properties = propertiesOut;
 }
 
 float CoreInternalCalls::Time_GetDeltaTime()

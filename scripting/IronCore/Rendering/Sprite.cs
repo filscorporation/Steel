@@ -8,6 +8,11 @@ namespace Iron
     public class Sprite : Resource
     {
         internal Sprite(uint id) : base(id) { }
+
+        /// <summary>
+        /// Texture ID in GPU
+        /// </summary>
+        public uint TextureID => GetTextureID_Internal(ID);
         
         /// <summary>
         /// Sprite width in pixels
@@ -82,6 +87,9 @@ namespace Iron
         {
             SetAs9Sliced_Internal2(ID, offsetTop, offsetBottom, offsetLeft, offsetRight);
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint GetTextureID_Internal(uint spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int GetWidth_Internal(uint spriteID);

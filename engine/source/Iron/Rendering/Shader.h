@@ -15,12 +15,14 @@ public:
     uint32_t Program;
     Shader(const char* vertexCode, const char* fragmentCode);
     static Shader* FromFilePaths(const char* vertexPath, const char* fragmentPath);
-    void Use();
+    void Use() const;
 
     int GetUniformLocation(const std::string& name);
+    int GetTextureSlot(int uniformID);
 
     bool GlobalUniformsSet = false;
 
 private:
     std::unordered_map<std::string, int> uniformsCache;
+    std::unordered_map<int, int> textureLocationsCache;
 };

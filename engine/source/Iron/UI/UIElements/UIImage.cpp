@@ -63,6 +63,32 @@ Material* UIImage::GetMaterial()
     return _material;
 }
 
+void UIImage::SetCustomProperties(const MaterialPropertyBlock& properties)
+{
+    _customProperties = properties;
+
+    if (_image == nullptr || _material == nullptr)
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_image->IsSliced)
+    {
+        for (uint32_t _renderer : _renderers)
+        {
+            entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer).CustomProperties = _customProperties;
+        }
+    }
+    else
+    {
+        entitiesRegistry->GetComponent<UIQuadRenderer>(Owner).CustomProperties = _customProperties;
+    }
+}
+
+const MaterialPropertyBlock& UIImage::GetCustomProperties()
+{
+    return _customProperties;
+}
+
 void UIImage::SetImage(Sprite* image)
 {
     if (image != nullptr && _material == nullptr)
@@ -112,7 +138,7 @@ void UIImage::SetImage(Sprite* image)
                     auto& qr = registry->AddComponent<UIQuadRenderer>(_renderers[j * 3 + i]);
                     qr.CustomOwner = Owner;
                     qr.RenderMaterial = _material;
-                    qr.CustomProperties.SetTexture(0, _image->TextureID);
+                    qr.CustomProperties.SetTexture(MAIN_TEX, _image->TextureID);
                     qr.Color = _color;
                     qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
                     qr.TextureCoords[0] = glm::vec2(xtc[i + 1], ytc[j]);
@@ -147,7 +173,7 @@ void UIImage::SetImage(Sprite* image)
             qr.SetDefaultQuad();
             qr.Color = _color;
             qr.RenderMaterial = _material;
-            qr.CustomProperties.SetTexture(0, _image->TextureID);
+            qr.CustomProperties.SetTexture(MAIN_TEX, _image->TextureID);
             qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
             qr.CustomOwner = Owner;
         }
