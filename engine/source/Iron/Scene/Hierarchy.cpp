@@ -3,6 +3,9 @@
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 #include "../UI/RectTransformation.h"
+#include "../UI/UIElements/UIClipping.h"
+#include "../UI/UIElements/UIImage.h"
+#include "../UI/UIElements/UIText.h"
 
 void UpdateChildrenDepthAndSetDirty(EntitiesRegistry* registry, HierarchyNode& parentNode)
 {
@@ -121,10 +124,53 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     // Apply new parent's active state to child entity (null parent similar to active)
     bool isParentActiveGlobally = parent == NULL_ENTITY || (registry->EntityGetState(parent) & EntityStates::IsActive);
     registry->EntitySetActive(child, isParentActiveGlobally, false);
+
+    // Recalculate components properties
+    UpdateHierarchyDependantProperties(registry, childNode);
+}
+
+void UpdateClippingRecursive(EntitiesRegistry* registry, HierarchyNode& currentNode, short clippingLevel)
+{
+    if (registry->HasComponent<UIClipping>(currentNode.Owner))
+    {
+        auto& clipping = registry->GetComponent<UIClipping>(currentNode.Owner);
+        if (!clipping.WasRemoved())
+        {
+            clippingLevel++;
+            clipping.ClippingLevel = clippingLevel;
+        }
+    }
+    if (registry->HasComponent<UIImage>(currentNode.Owner))
+    {
+        auto& image = registry->GetComponent<UIImage>(currentNode.Owner);
+        image.SetClippingLevel(clippingLevel);
+    }
+    if (registry->HasComponent<UIText>(currentNode.Owner))
+    {
+        auto& text = registry->GetComponent<UIText>(currentNode.Owner);
+        text.SetClippingLevel(clippingLevel);
+    }
+
+    EntityID currentNodeID = currentNode.FirstChildNode;
+    for (uint32_t i = 0; i < currentNode.ChildrenCount; ++i)
+    {
+        auto& currentChildNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+        UpdateClippingRecursive(registry, currentChildNode, clippingLevel);
+
+        currentNodeID = currentChildNode.NextNode;
+    }
+}
+
+void UpdateHierarchyDependantProperties(EntitiesRegistry* registry, HierarchyNode& targetNode)
+{
+    // Update clipping
+    short clippingLevel = GetClippingLevelUpwards(registry, targetNode.ParentNode);
+    UpdateClippingRecursive(registry, targetNode, clippingLevel);
 }
 
 void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNode, HierarchyParent& hierarchyParent)
 {
+    // Node is just initialized
     if (childNode.NodeIndex == -1)
         return;
 
@@ -180,6 +226,27 @@ bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID p
     }
 
     return false;
+}
+
+short GetClippingLevelUpwards(EntitiesRegistry* registry, EntityID parent)
+{
+    if (parent == NULL_ENTITY)
+        return 0;
+
+    EntityID currentNodeID = parent;
+    while (currentNodeID != NULL_ENTITY)
+    {
+        if (registry->HasComponent<UIClipping>(currentNodeID))
+        {
+            return registry->GetComponent<UIClipping>(currentNodeID).ClippingLevel;
+        }
+
+        auto& currentNode = registry->GetComponent<HierarchyNode>(currentNodeID);
+
+        currentNodeID = currentNode.ParentNode;
+    }
+
+    return 0;
 }
 
 void UpdateThicknessUpwards(EntitiesRegistry* registry, EntityID nodeID, int diff)

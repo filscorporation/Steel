@@ -77,6 +77,9 @@ void ResourcesManager::LoadDefaultResources()
     defaultUIShader = new Shader(BuiltInShaders::DefaultUIVS, BuiltInShaders::DefaultUIFS);
     AddShader(defaultUIShader);
 
+    defaultUIClippingShader = new Shader(BuiltInShaders::DefaultUIClippingVS, BuiltInShaders::DefaultUIClippingFS);
+    AddShader(defaultUIClippingShader);
+
     defaultSpriteMaterial = new Material();
     defaultSpriteMaterial->MainShader = defaultSpriteShader;
     AddMaterial(defaultSpriteMaterial);
@@ -84,6 +87,10 @@ void ResourcesManager::LoadDefaultResources()
     defaultUIMaterial = new Material();
     defaultUIMaterial->MainShader = defaultUIShader;
     AddMaterial(defaultUIMaterial);
+
+    defaultUIClippingMaterial = new Material();
+    defaultUIClippingMaterial->MainShader = defaultUIClippingShader;
+    AddMaterial(defaultUIClippingMaterial);
 }
 
 const char* ResourcesManager::GetResourcesPath()
@@ -462,6 +469,11 @@ Material* ResourcesManager::DefaultSpriteMaterial()
 Material* ResourcesManager::DefaultUIMaterial()
 {
     return defaultUIMaterial;
+}
+
+Material* ResourcesManager::DefaultUIClippingMaterial()
+{
+    return defaultUIClippingMaterial;
 }
 
 ResourceID ResourcesManager::GetNextResourceID()

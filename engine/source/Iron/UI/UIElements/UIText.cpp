@@ -4,7 +4,13 @@
 
 #include "../../Core/Application.h"
 #include "../../Core/Log.h"
+#include "../../Scene/Hierarchy.h"
 #include "../UIQuadRenderer.h"
+
+void UIText::Init(EntitiesRegistry* entitiesRegistry)
+{
+    _clippingLevel = GetClippingLevelUpwards(entitiesRegistry, Owner);
+}
 
 void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, bool transformationDirty, bool sortingOrderDirty)
 {
@@ -117,6 +123,7 @@ void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, boo
                 letterRenderer.Color = _color;
                 letterRenderer.RenderMaterial = _material;
                 letterRenderer.CustomProperties.SetTexture(MAIN_TEX, atlas.TextureID);
+                letterRenderer.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
                 letterRenderer.Queue = RenderingQueue::Opaque;
                 letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
                 letterRenderer.TextureCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);
@@ -307,6 +314,21 @@ void UIText::SetOverflowMode(OverflowModes::OverflowMode overflowMode)
     _lettersChangedCount = letters.size();
     _overflowMode = overflowMode;
     _dirtyText = true;
+}
+
+void UIText::SetClippingLevel(short clippingLevel)
+{
+    if (clippingLevel == _clippingLevel)
+        return;
+
+    _clippingLevel = clippingLevel;
+
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    for (auto& letterID : letters)
+    {
+        if (letterID == NULL_ENTITY) continue;
+        registry->GetComponent<UIQuadRenderer>(letterID).CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+    }
 }
 
 glm::vec3 UIText::GetLetterOrigin(uint32_t letterIndex, bool& calculated)

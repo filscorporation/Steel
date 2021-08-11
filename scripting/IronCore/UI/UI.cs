@@ -145,6 +145,33 @@ namespace Iron
 
             return field;
         }
+        
+        /// <summary>
+        /// Creates new UI clipping in layout
+        /// </summary>
+        /// <returns>Created clipping element</returns>
+        public static UIClipping CreateUIClipping()
+        {
+            Entity entity = new Entity(CreateUIClipping_Internal());
+            UIClipping element = new UIClipping();
+            element.Entity = entity;
+
+            return element;
+        }
+        
+        /// <summary>
+        /// Creates new UI clipping in layout
+        /// </summary>
+        /// <param name="parent">Entity's parent in the hierarchy</param>
+        /// <returns>Created clipping element</returns>
+        public static UIClipping CreateUIClipping(Entity parent)
+        {
+            Entity entity = new Entity(CreateUIClipping_Internal2(parent?.ID ?? Entity.NULL_ENTITY_ID));
+            UIClipping element = new UIClipping();
+            element.Entity = entity;
+
+            return element;
+        }
 
         /// <summary>
         /// Is there any UI object under mouse cursor
@@ -183,6 +210,12 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUIInputField_Internal2(string name, uint parentEntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUIClipping_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUIClipping_Internal2(uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool IsPointerOverUI_Internal();

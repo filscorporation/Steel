@@ -17,6 +17,16 @@ void OpenGLAPI::DisableDepthTest()
     glDisable(GL_DEPTH_TEST);
 }
 
+void OpenGLAPI::EnableStencilTest()
+{
+    glEnable(GL_STENCIL_TEST);
+}
+
+void OpenGLAPI::DisableStencilTest()
+{
+    glDisable(GL_STENCIL_TEST);
+}
+
 void OpenGLAPI::EnableBlend()
 {
     glEnable(GL_BLEND);
@@ -64,6 +74,71 @@ int GLPolygonMode(OpenGLAPI::PolygonMode mode)
 void OpenGLAPI::SetPolygonMode(PolygonMode mode)
 {
     glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(mode));
+}
+
+int GLStencilFunc(StencilFunctions::StencilFunction func)
+{
+    switch (func)
+    {
+        case StencilFunctions::Never:
+            return GL_NEVER;
+        case StencilFunctions::Less:
+            return GL_LESS;
+        case StencilFunctions::LessEqual:
+            return GL_LEQUAL;
+        case StencilFunctions::Greater:
+            return GL_GREATER;
+        case StencilFunctions::GreaterEqual:
+            return GL_GEQUAL;
+        case StencilFunctions::Equal:
+            return GL_EQUAL;
+        case StencilFunctions::NotEqual:
+            return GL_NOTEQUAL;
+        case StencilFunctions::Always:
+            return GL_ALWAYS;
+    }
+
+    return -1;
+}
+
+int GLStencilOperation(StencilOperations::StencilOperation op)
+{
+    switch (op)
+    {
+        case StencilOperations::Keep:
+            return GL_KEEP;
+        case StencilOperations::Zero:
+            return GL_ZERO;
+        case StencilOperations::Replace:
+            return GL_REPLACE;
+        case StencilOperations::Increment:
+            return GL_INCR;
+        case StencilOperations::IncrementWrap:
+            return GL_INCR_WRAP;
+        case StencilOperations::Decrement:
+            return GL_DECR;
+        case StencilOperations::DecrementWrap:
+            return GL_DECR_WRAP;
+        case StencilOperations::Invert:
+            return GL_INVERT;
+    }
+
+    return -1;
+}
+
+void OpenGLAPI::SetStencilFunc(StencilFunctions::StencilFunction func, short ref, short mask)
+{
+    glStencilFunc(GLStencilFunc(func), ref, mask);
+}
+
+void OpenGLAPI::SetStencilMask(short mask)
+{
+    glStencilMask(mask);
+}
+
+void OpenGLAPI::SetStencilOperation(StencilOperations::StencilOperation fail, StencilOperations::StencilOperation zfail, StencilOperations::StencilOperation zpass)
+{
+    glStencilOp(GLStencilOperation(fail), GLStencilOperation(zfail), GLStencilOperation(zpass));
 }
 
 int OpenGLAPI::GetUniformLocation(uint32_t shaderProgram, const char* name)

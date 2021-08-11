@@ -98,5 +98,7 @@ namespace UIInternalCalls
     EntityID UI_CreateUIText2(MonoString* text, MonoString* name, EntityID parentEntityID);
     EntityID UI_CreateUIInputField();
     EntityID UI_CreateUIInputField2(MonoString* name, EntityID parentEntityID);
+    EntityID UI_CreateUIClipping();
+    EntityID UI_CreateUIClipping2(EntityID parentEntityID);
     bool UI_IsPointerOverUI();
 }

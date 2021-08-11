@@ -40,6 +40,8 @@ public:
     EntityID CreateUIText(const char* text, const char* name, EntityID parent);
     EntityID CreateUIInputField();
     EntityID CreateUIInputField(const char* name, EntityID parent);
+    EntityID CreateUIClipping();
+    EntityID CreateUIClipping(EntityID parent);
 
     int PixelsPerUnit = 32;
 

@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "MaterialPropertyBlock.h"
+
 namespace OpenGLAPI
 {
     enum TextureFiltering
@@ -27,6 +29,8 @@ namespace OpenGLAPI
 
     void EnableDepthTest();
     void DisableDepthTest();
+    void EnableStencilTest();
+    void DisableStencilTest();
     void EnableBlend();
     void DisableBlend();
     void SetClearColor(float r, float g, float b, float a);
@@ -34,6 +38,10 @@ namespace OpenGLAPI
     void ClearDepth();
     void ClearStencil();
     void SetPolygonMode(PolygonMode mode);
+
+    void SetStencilFunc(StencilFunctions::StencilFunction func, short ref, short mask);
+    void SetStencilMask(short mask);
+    void SetStencilOperation(StencilOperations::StencilOperation fail, StencilOperations::StencilOperation zfail, StencilOperations::StencilOperation zpass);
 
     int GetUniformLocation(uint32_t shaderProgram, const char* name);
     void SetUniformFloat(int uniform, float value);

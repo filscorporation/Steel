@@ -542,6 +542,16 @@ EntityID UIInternalCalls::UI_CreateUIInputField2(MonoString* name, EntityID pare
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIInputField(mono_string_to_utf8(name), parentEntityID);
 }
 
+EntityID UIInternalCalls::UI_CreateUIClipping()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIClipping();
+}
+
+EntityID UIInternalCalls::UI_CreateUIClipping2(EntityID parentEntityID)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIClipping(parentEntityID);
+}
+
 bool UIInternalCalls::UI_IsPointerOverUI()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->IsPointerOverUI();

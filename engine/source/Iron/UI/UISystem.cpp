@@ -13,6 +13,7 @@ void UISystem::OnComponentAdded(EntityID entityID, UIImage& component)
     }
 
     TryAddEventHandler(ComponentSystem<UIImage>::Registry, entityID);
+    component.Init(ComponentSystem<UIImage>::Registry);
 }
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIImage& component)
@@ -64,6 +65,7 @@ void UISystem::OnComponentAdded(EntityID entityID, UIText& component)
     }
 
     component._font = Application::Instance->GetResourcesManager()->DefaultFont();
+    component.Init(ComponentSystem<UIText>::Registry);
 }
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIText& component)
@@ -109,6 +111,32 @@ void UISystem::OnEntityEnabled(EntityID entityID, UIInputField& component)
 void UISystem::OnEntityDisabled(EntityID entityID, UIInputField& component)
 {
     component.OnDisabled();
+}
+
+void UISystem::OnComponentAdded(EntityID entityID, UIClipping& component)
+{
+    if (!CheckRectTransformation(ComponentSystem<UIClipping>::Registry, entityID))
+    {
+        ComponentSystem<UIInputField>::Registry->RemoveComponent<UIClipping>(entityID);
+        return;
+    }
+
+    component.Init(ComponentSystem<UIInputField>::Registry);
+}
+
+void UISystem::OnComponentRemoved(EntityID entityID, UIClipping& component)
+{
+    component.OnRemoved(ComponentSystem<UIClipping>::Registry);
+}
+
+void UISystem::OnEntityEnabled(EntityID entityID, UIClipping& component)
+{
+    component.OnEnabled(ComponentSystem<UIClipping>::Registry);
+}
+
+void UISystem::OnEntityDisabled(EntityID entityID, UIClipping& component)
+{
+    component.OnDisabled(ComponentSystem<UIClipping>::Registry);
 }
 
 bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID)

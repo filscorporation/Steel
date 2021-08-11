@@ -148,7 +148,7 @@ glm::vec3 RectTransformation::GetRotation()
     else
     {
         auto& parentRT = registry->GetComponent<RectTransformation>(node.ParentNode);
-        // For rotation it should be enough to add parent's rotation to out local
+        // For rotation, it should be enough to add parent's rotation to out local
         _rotation = parentRT.GetRotation() + _localRotation;
     }
 
@@ -168,7 +168,7 @@ void RectTransformation::SetRotation(const glm::vec3& rotation)
     else
     {
         auto& parentRT = registry->GetComponent<RectTransformation>(node.ParentNode);
-        // For rotation it should be enough to subtract parent's rotation from target global
+        // For rotation, it should be enough to subtract parent's rotation from target global
         _localRotation = _rotation - parentRT.GetRotation();
     }
 
@@ -194,13 +194,18 @@ void RectTransformation::SetLocalRotation(const glm::vec3& rotation)
 
 uint32_t RectTransformation::GetCurrentHierarchyIndex() const
 {
-    return _currentHierarchyIndex;
+    return _hierarchyIndex + _currentThickness;
 }
 
-void RectTransformation::IncreaseCurrentHierarchyIndex(uint32_t thickness)
+uint32_t RectTransformation::GetChildrenThickness() const
+{
+    return _currentThickness - DEFAULT_THICKNESS;
+}
+
+void RectTransformation::IncreaseCurrentThickness(uint32_t thickness)
 {
     if (!_parallelHierarchy)
-        _currentHierarchyIndex += thickness;
+        _currentThickness += thickness;
 }
 
 bool RectTransformation::Contains(const glm::vec2& point) const
@@ -238,7 +243,7 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
 
         parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
         parentPosition = parentSize * 0.5f;
-        _currentHierarchyIndex = layer->GetCurrentHierarchyIndex();
+        _hierarchyIndex = layer->GetCurrentHierarchyIndex();
         layer->IncreaseCurrentHierarchyIndex(hierarchyNode.Thickness);
     }
     else
@@ -259,8 +264,8 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
 
         parentSize = parentRT.GetRealSizeCached();
         parentPosition = parentRT.GetRealPositionCached();
-        _currentHierarchyIndex = parentRT.GetCurrentHierarchyIndex();
-        parentRT.IncreaseCurrentHierarchyIndex(hierarchyNode.Thickness);
+        _hierarchyIndex = parentRT.GetCurrentHierarchyIndex();
+        parentRT.IncreaseCurrentThickness(hierarchyNode.Thickness);
     }
 
     for (int i = 0; i < 2; ++i)
@@ -279,9 +284,9 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
         }
     }
 
-    _currentHierarchyIndex += DEFAULT_THICKNESS;
+    _currentThickness = DEFAULT_THICKNESS;
     if (layer->NeedRebuildSortingOrder())
-        _sortingOrder = (float)_currentHierarchyIndex / (float)layer->GetLayerThickness();
+        _sortingOrder = (float)(_hierarchyIndex + _currentThickness) / (float)layer->GetLayerThickness();
 
     // Pixel correction is fixing bug caused by rounding error when quad position is in the middle of pixel
     // Shifting position will prevent this bug for rects with uneven size
@@ -321,5 +326,4 @@ void RectTransformation::RefreshTransformation()
 {
     transformationChanged = false;
     sizeChanged = false;
-    _currentHierarchyIndex = 0;
 }

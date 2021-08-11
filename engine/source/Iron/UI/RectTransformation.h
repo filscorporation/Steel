@@ -45,7 +45,8 @@ public:
     const glm::vec2& GetRealPositionCached();
     float GetSortingOrder() const;
     uint32_t GetCurrentHierarchyIndex() const;
-    void IncreaseCurrentHierarchyIndex(uint32_t thickness);
+    uint32_t GetChildrenThickness() const;
+    void IncreaseCurrentThickness(uint32_t thickness);
 
     // Did anything in transformation change in this frame
     bool DidTransformationChange() const;
@@ -69,7 +70,8 @@ private:
     glm::vec2 _realPosition = { 0.0f, 0.0f };
 
     bool _parallelHierarchy = false;
-    uint32_t _currentHierarchyIndex = 0;
+    uint32_t _currentThickness = 0;
+    uint32_t _hierarchyIndex = 0;
     float _sortingOrder = 0.0f;
 
     bool transformationChanged = true;

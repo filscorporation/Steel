@@ -19,9 +19,12 @@ void MaterialPropertyBlock::Apply(Shader* shader) const
     }
     for (auto& property : colorProperties)
         OpenGLAPI::SetUniformVec4F(shader->GetUniformLocation(property.first), glm::value_ptr(property.second));
-
     for (auto& property : mat4Properties)
         OpenGLAPI::SetUniformMat4F(shader->GetUniformLocation(property.first), property.second);
+
+    OpenGLAPI::SetStencilMask(stencilMask);
+    OpenGLAPI::SetStencilFunc(stencilFunction, stencilFunctionRef, stencilFunctionMask);
+    OpenGLAPI::SetStencilOperation(stencilFailOperation, stencilZFailOperation, stencilZPassOperation);
 }
 
 template<class T>
@@ -77,6 +80,13 @@ std::size_t MaterialPropertyBlock::Hash(const MaterialPropertyBlock& value)
     HashCombine(seed, MapHash(value.textureProperties));
     HashCombine(seed, MapHash(value.colorProperties));
     HashCombine(seed, MapHashMat4(value.mat4Properties));
+    HashCombine(seed, value.stencilMask);
+    HashCombine(seed, value.stencilFunction);
+    HashCombine(seed, value.stencilFunctionRef);
+    HashCombine(seed, value.stencilFunctionMask);
+    HashCombine(seed, value.stencilFailOperation);
+    HashCombine(seed, value.stencilZFailOperation);
+    HashCombine(seed, value.stencilZPassOperation);
 
     return seed;
 }
@@ -118,5 +128,27 @@ void MaterialPropertyBlock::SetColor(const std::string& name, const glm::vec4& v
 void MaterialPropertyBlock::SetMat4(const std::string& name, const float* value)
 {
     mat4Properties[name] = value;
+    UpdateHash();
+}
+
+void MaterialPropertyBlock::SetStencilFunc(StencilFunctions::StencilFunction func, short ref, short mask)
+{
+    stencilFunction = func;
+    stencilFunctionRef = ref;
+    stencilFunctionMask = mask;
+    UpdateHash();
+}
+
+void MaterialPropertyBlock::SetStencilMask(short mask)
+{
+    stencilMask = mask;
+    UpdateHash();
+}
+
+void MaterialPropertyBlock::SetStencilOperation(StencilOperations::StencilOperation fail, StencilOperations::StencilOperation zfail, StencilOperations::StencilOperation zpass)
+{
+    stencilFailOperation = fail;
+    stencilZFailOperation = zfail;
+    stencilZPassOperation = zpass;
     UpdateHash();
 }

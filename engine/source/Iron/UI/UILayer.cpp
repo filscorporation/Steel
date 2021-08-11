@@ -1,6 +1,7 @@
 #include "UILayer.h"
 #include "UIElements/UIButton.h"
 #include "UIElements/UIInputField.h"
+#include "UIElements/UIClipping.h"
 #include "UISystem.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
@@ -16,6 +17,7 @@ UILayer::UILayer(Scene* scene)
     _scene->GetEntitiesRegistry()->RegisterSystem<UIImage>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIButton>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIInputField>(uiSystem);
+    _scene->GetEntitiesRegistry()->RegisterSystem<UIClipping>(uiSystem);
 }
 
 UILayer::~UILayer()
@@ -24,6 +26,7 @@ UILayer::~UILayer()
     _scene->GetEntitiesRegistry()->RemoveSystem<UIImage>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIButton>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIInputField>();
+    _scene->GetEntitiesRegistry()->RemoveSystem<UIClipping>();
     delete uiSystem;
 }
 
@@ -78,6 +81,14 @@ void UILayer::Draw()
     }
 
     // Rebuild elements after rt update
+    // TODO: need refactoring to regulate UI components update order
+
+    // Clipping requires element thickness to be calculated (for closing cap)
+    auto uiClippings = entitiesRegistry->GetComponentIterator<UIClipping>();
+    for (auto& uiClipping : uiClippings)
+        uiClipping.Rebuild(this, rtAccessor.Get(uiClipping.Owner), _rebuildSortingOrder);
+
+    // Input fields requires target text to be updated
     auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
     for (auto& uiIF : uiIFs)
         uiIF.Rebuild(this, rtAccessor.Get(uiIF.Owner));
@@ -282,6 +293,22 @@ EntityID UILayer::CreateUIInputField(const char* name, EntityID parent)
     textRT.SetOffsetMin(glm::vec2(offset, offset));
     textRT.SetOffsetMax(glm::vec2(offset, offset));
     inputField.SetTargetText(textEntity);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIClipping()
+{
+    auto entity = CreateUIElement();
+    _scene->GetEntitiesRegistry()->AddComponent<UIClipping>(entity);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIClipping(EntityID parent)
+{
+    auto entity = CreateUIElement("Clipping", parent);
+    _scene->GetEntitiesRegistry()->AddComponent<UIClipping>(entity);
 
     return entity;
 }

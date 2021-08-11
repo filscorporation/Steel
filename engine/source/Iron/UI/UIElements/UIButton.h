@@ -2,11 +2,11 @@
 
 #include <functional>
 
+#include "UIImage.h"
 #include "../UIEvent.h"
 #include "../UIEventHandler.h"
 #include "../UIInteractable.h"
 #include "../TransitionInfo.h"
-#include "UIImage.h"
 #include "../../Rendering/Sprite.h"
 
 typedef std::function<void(EntityID)> ButtonCallback;

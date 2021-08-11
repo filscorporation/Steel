@@ -11,6 +11,7 @@ class UIImage : public UIComponent
 public:
     explicit UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
+    void Init(EntitiesRegistry* entitiesRegistry);
     void UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
 
     void SetMaterial(Material* material);
@@ -23,12 +24,14 @@ public:
     glm::vec4 GetColor();
     void SetImageTileIndex(uint32_t index);
     uint32_t GetImageTileIndex();
+    void SetClippingLevel(short clippingLevel);
 
 protected:
     Sprite* _image = nullptr;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     Material* _material = nullptr;
     MaterialPropertyBlock _customProperties;
+    short _clippingLevel = 0;
 
     uint32_t currentImageTileIndex = 0;
     std::vector<EntityID> _renderers;

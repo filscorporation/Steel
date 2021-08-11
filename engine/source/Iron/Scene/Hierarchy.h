@@ -26,9 +26,13 @@ void UpdateChildrenDepthAndSetDirty(EntitiesRegistry* registry, HierarchyNode& p
 
 void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID parent);
 
+void UpdateHierarchyDependantProperties(EntitiesRegistry* registry, HierarchyNode& targetNode);
+
 void RemoveChildFromItsParent(EntitiesRegistry* registry, HierarchyNode& childNode, HierarchyParent& hierarchyParent);
 
 bool CheckIsParentUpwards(EntitiesRegistry* registry, EntityID child, EntityID parent);
+
+short GetClippingLevelUpwards(EntitiesRegistry* registry, EntityID child);
 
 void UpdateThicknessUpwards(EntitiesRegistry* registry, EntityID nodeID, int diff);
 

@@ -2,8 +2,14 @@
 #include "../UIQuadRenderer.h"
 #include "../UIEventHandler.h"
 #include "../../Core/Log.h"
+#include "../../Scene/Hierarchy.h"
 #include "../../Scene/SceneHelper.h"
 #include "../../Rendering/Screen.h"
+
+void UIImage::Init(EntitiesRegistry* entitiesRegistry)
+{
+    _clippingLevel = GetClippingLevelUpwards(entitiesRegistry, Owner);
+}
 
 void UIImage::UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty)
 {
@@ -139,6 +145,7 @@ void UIImage::SetImage(Sprite* image)
                     qr.CustomOwner = Owner;
                     qr.RenderMaterial = _material;
                     qr.CustomProperties.SetTexture(MAIN_TEX, _image->TextureID);
+                    qr.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
                     qr.Color = _color;
                     qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
                     qr.TextureCoords[0] = glm::vec2(xtc[i + 1], ytc[j]);
@@ -174,6 +181,7 @@ void UIImage::SetImage(Sprite* image)
             qr.Color = _color;
             qr.RenderMaterial = _material;
             qr.CustomProperties.SetTexture(MAIN_TEX, _image->TextureID);
+            qr.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
             qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
             qr.CustomOwner = Owner;
         }
@@ -252,4 +260,27 @@ void UIImage::SetImageTileIndex(uint32_t index)
 uint32_t UIImage::GetImageTileIndex()
 {
     return currentImageTileIndex;
+}
+
+void UIImage::SetClippingLevel(short clippingLevel)
+{
+    if (clippingLevel == _clippingLevel)
+        return;
+
+    _clippingLevel = clippingLevel;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_image->IsSliced)
+    {
+        for (uint32_t _renderer : _renderers)
+        {
+            auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
+            qr.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+        }
+    }
+    else
+    {
+        auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(Owner);
+        qr.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+    }
 }

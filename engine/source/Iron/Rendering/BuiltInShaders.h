@@ -75,4 +75,25 @@ namespace BuiltInShaders
 "    color = texel * vertexColor;\n"
 "    if (color.a < 0.01) discard;\n"
 "}";
+
+    const char* DefaultUIClippingVS =
+"#version 330 core\n"
+"\n"
+"layout (location = 0) in vec3 position;\n"
+"\n"
+"uniform mat4 view_projection;\n"
+"\n"
+"void main()\n"
+"{\n"
+"    gl_Position = view_projection * vec4(position, 1.0f);\n"
+"}";
+
+    const char* DefaultUIClippingFS =
+"#version 330 core\n"
+"\n"
+"out vec4 color;\n"
+"\n"
+"void main()\n"
+"{\n"
+"}";
 }

@@ -269,5 +269,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UI::CreateUIText_Internal2", (void*)UIInternalCalls::UI_CreateUIText2);
     mono_add_internal_call("Iron.UI::CreateUIInputField_Internal", (void*)UIInternalCalls::UI_CreateUIInputField);
     mono_add_internal_call("Iron.UI::CreateUIInputField_Internal2", (void*)UIInternalCalls::UI_CreateUIInputField2);
+    mono_add_internal_call("Iron.UI::CreateUIClipping_Internal", (void*)UIInternalCalls::UI_CreateUIClipping);
+    mono_add_internal_call("Iron.UI::CreateUIClipping_Internal2", (void*)UIInternalCalls::UI_CreateUIClipping2);
     mono_add_internal_call("Iron.UI::IsPointerOverUI_Internal", (void*)UIInternalCalls::UI_IsPointerOverUI);
 }

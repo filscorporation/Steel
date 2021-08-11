@@ -49,6 +49,7 @@ public:
     Material* GetMaterial(ResourceID materialID);
     Material* DefaultSpriteMaterial();
     Material* DefaultUIMaterial();
+    Material* DefaultUIClippingMaterial();
 
 private:
     ResourceID nextResourceID = 0;
@@ -66,6 +67,8 @@ private:
     Font* defaultFont;
     Shader* defaultSpriteShader;
     Shader* defaultUIShader;
+    Shader* defaultUIClippingShader;
     Material* defaultSpriteMaterial;
     Material* defaultUIMaterial;
+    Material* defaultUIClippingMaterial;
 };

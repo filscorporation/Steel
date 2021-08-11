@@ -38,6 +38,7 @@ void Renderer::Init()
     }
 
     EnableDepthTest();
+    EnableStencilTest();
     EnableBlend();
 
     Log::LogDebug("Uniforms saved");
@@ -109,6 +110,7 @@ void Renderer::Clear(glm::vec3 color)
     SetClearColor(color.r, color.g, color.b, 1.0f);
     ClearColor();
     ClearDepth();
+    ClearStencil();
 }
 
 void Renderer::PrepareUIRender()
