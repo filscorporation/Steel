@@ -16,6 +16,14 @@ public:
     MonoArray* colorPropertiesKeys;
     MonoArray* colorPropertiesValues;
 
+    short stencilMask;
+    StencilFunctions::StencilFunction stencilFunction;
+    short stencilFunctionRef;
+    short stencilFunctionMask;
+    StencilOperations::StencilOperation stencilFailOperation;
+    StencilOperations::StencilOperation stencilZFailOperation;
+    StencilOperations::StencilOperation stencilZPassOperation;
+
     void FromMaterialPropertyBlock(const MaterialPropertyBlock& properties);
     void ToMaterialPropertyBlock(MaterialPropertyBlock& outProperties) const;
 };

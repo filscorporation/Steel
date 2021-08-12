@@ -52,6 +52,14 @@ void MaterialPropertyBlockInternal::FromMaterialPropertyBlock(const MaterialProp
     }
     colorPropertiesKeys = ScriptingCore::ToMonoStringArray(colorKeys);
     colorPropertiesValues = ScriptingCore::ToMonoDataTypeArray(colorValues, 1);
+
+    stencilMask = properties.stencilMask;
+    stencilFunction = properties.stencilFunction;
+    stencilFunctionRef = properties.stencilFunctionRef;
+    stencilFunctionMask = properties.stencilFunctionMask;
+    stencilFailOperation = properties.stencilFailOperation;
+    stencilZFailOperation = properties.stencilZFailOperation;
+    stencilZPassOperation = properties.stencilZPassOperation;
 }
 
 void MaterialPropertyBlockInternal::ToMaterialPropertyBlock(MaterialPropertyBlock& outProperties) const
@@ -83,4 +91,12 @@ void MaterialPropertyBlockInternal::ToMaterialPropertyBlock(MaterialPropertyBloc
     ScriptingCore::FromMonoDataTypeArray(colorPropertiesValues, colorValues, 1);
     for (uint32_t i = 0; i < colorKeys.size(); ++i)
         outProperties.SetColor(colorKeys[i], colorValues[i]);
+
+    outProperties.stencilMask = stencilMask;
+    outProperties.stencilFunction = stencilFunction;
+    outProperties.stencilFunctionRef = stencilFunctionRef;
+    outProperties.stencilFunctionMask = stencilFunctionMask;
+    outProperties.stencilFailOperation = stencilFailOperation;
+    outProperties.stencilZFailOperation = stencilZFailOperation;
+    outProperties.stencilZPassOperation = stencilZPassOperation;
 }
