@@ -41,6 +41,9 @@ namespace UIEventTypes
 struct UIEvent
 {
     bool Used = false;
+    // If not 0, then event got 'clipped' by UI clipping planes
+    int ClippingDepth = 0;
+
     glm::vec2 MousePosition;
     glm::vec2 MouseDelta;
     glm::vec2 ScrollDelta;

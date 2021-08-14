@@ -31,6 +31,15 @@ void UIClipping::Init(EntitiesRegistry* entitiesRegistry)
         qr.CustomProperties.SetStencilOperation(StencilOperations::Keep, op, op);
     }
 
+    openingEH = entitiesRegistry->CreateNewEntity();
+    auto& eh1 = entitiesRegistry->AddComponent<UIEventHandler>(openingEH);
+    eh1.Type = EventHandlerTypes::ClippingOpen;
+    eh1.RectEntity = Owner;
+    closingEH = entitiesRegistry->CreateNewEntity();
+    auto& eh2 = entitiesRegistry->AddComponent<UIEventHandler>(closingEH);
+    eh2.Type = EventHandlerTypes::ClippingClose;
+    eh2.RectEntity = Owner;
+
     needRebuild = true;
 
     UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));
@@ -41,7 +50,7 @@ void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, boo
     if (!needRebuild && !transformation.DidTransformationChange() && !sortingOrderDirty)
         return;
 
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     float sortingOrder = transformation.GetSortingOrder();
     float dz = 1.0f / (float)layer->GetLayerThickness();
@@ -49,7 +58,7 @@ void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, boo
 
     for (int i = 0; i < 4; ++i)
     {
-        auto& qr = registry->GetComponent<UIQuadRenderer>(clippingQuads[i]);
+        auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(clippingQuads[i]);
         for (int j = 0; j < 4; ++j)
             qr.Vertices[j] = matrix * qr.DefaultVertices[j];
         qr.SortingOrder = i == 0 || i == 3 ? sortingOrder - dz * SO_OFFSET : sortingOrder + dz * (thickness + SO_OFFSET);
@@ -57,16 +66,15 @@ void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, boo
 
     needRebuild = false;
 
-    // TODO: event handling rects
-    //if (registry->HasComponent<UIEventHandler>(Owner))
-    //    registry->GetComponent<UIEventHandler>(Owner).SortingOrder = sortingOrder;
+    // Opening event handler cap
+    entitiesRegistry->GetComponent<UIEventHandler>(openingEH).SortingOrder = sortingOrder - dz * SO_OFFSET;
+    // Closing event handler cap
+    entitiesRegistry->GetComponent<UIEventHandler>(closingEH).SortingOrder = sortingOrder + dz * (thickness + SO_OFFSET);
 }
 
 void UIClipping::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    for (auto qrID : clippingQuads)
-        entitiesRegistry->DeleteEntity(qrID);
-    clippingQuads.clear();
+    ClearCaps(entitiesRegistry);
 
     wasRemoved = true;
     UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));
@@ -79,12 +87,21 @@ void UIClipping::OnEnabled(EntitiesRegistry* entitiesRegistry)
 
 void UIClipping::OnDisabled(EntitiesRegistry* entitiesRegistry)
 {
-    for (auto qrID : clippingQuads)
-        entitiesRegistry->DeleteEntity(qrID);
-    clippingQuads.clear();
+    ClearCaps(entitiesRegistry);
 }
 
 bool UIClipping::WasRemoved() const
 {
     return wasRemoved;
+}
+
+void UIClipping::ClearCaps(EntitiesRegistry* entitiesRegistry)
+{
+    for (auto qrID : clippingQuads)
+        entitiesRegistry->DeleteEntity(qrID);
+    clippingQuads.clear();
+    entitiesRegistry->DeleteEntity(openingEH);
+    openingEH = NULL_ENTITY;
+    entitiesRegistry->DeleteEntity(closingEH);
+    closingEH = NULL_ENTITY;
 }

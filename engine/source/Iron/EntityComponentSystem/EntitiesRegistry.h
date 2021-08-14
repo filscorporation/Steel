@@ -580,7 +580,7 @@ class ComponentAccessor
 public:
     explicit ComponentAccessor(ComponentsPoolWrapper<T>* componentsPool) { _componentsPool = componentsPool; }
 
-    bool Has(EntityID entityID)
+    bool Has(EntityID entityID) const
     {
         if (_componentsPool == nullptr)
             return false;
@@ -588,13 +588,13 @@ public:
         return _componentsPool->Storage.Has(id);
     }
 
-    T& Get(EntityID entityID)
+    T& Get(EntityID entityID) const
     {
         EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
         return _componentsPool->Storage.Get(id);
     }
 
-    bool HasInactive(EntityID entityID)
+    bool HasInactive(EntityID entityID) const
     {
         if (_componentsPool == nullptr)
             return false;
@@ -602,7 +602,7 @@ public:
         return _componentsPool->InactiveStorage.Has(id);
     }
 
-    T& GetInactive(EntityID entityID)
+    T& GetInactive(EntityID entityID) const
     {
         EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
         return _componentsPool->InactiveStorage.Get(id);

@@ -22,7 +22,11 @@ public:
 
 private:
     std::vector<EntityID> clippingQuads;
+    EntityID openingEH = NULL_ENTITY;
+    EntityID closingEH = NULL_ENTITY;
     bool needRebuild = false;
     // This is used to prevent clippling recalculation process initiated by this element to count it in
     bool wasRemoved = false;
+
+    void ClearCaps(EntitiesRegistry* entitiesRegistry);
 };

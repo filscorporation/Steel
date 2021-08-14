@@ -191,14 +191,14 @@ bool UIInternalCalls::UIImage_GetConsumeEvents(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIEventHandler, 0)
 
-    return !component.IsTransparent;
+    return component.Type == EventHandlerTypes::Normal;
 }
 
 void UIInternalCalls::UIImage_SetConsumeEvents(EntityID entityID, bool consume)
 {
     GET_COMPONENT_OR_RETURN(UIEventHandler, )
 
-    component.IsTransparent = !consume;
+    component.Type = consume ? EventHandlerTypes::Normal : EventHandlerTypes::Transparent;
 }
 
 void UIInternalCalls::UIImage_GetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal* properties)

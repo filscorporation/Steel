@@ -1,13 +1,31 @@
 #include "UIEventHandler.h"
 #include "../Core/Time.h"
 
-void UIEventHandler::HandleEvent(const RectTransformation& rectTransformation, UIEvent& uiEvent)
+void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rtAccessor, UIEvent& uiEvent)
 {
+    auto& rectTransformation = rtAccessor.Get(RectEntity == NULL_ENTITY ? Owner : RectEntity);
     bool contains = rectTransformation.Contains(uiEvent.MousePosition);
-    bool wasUsed = uiEvent.Used;
-    uiEvent.Used = wasUsed || contains && !IsTransparent;
 
-    if (EventCallback == nullptr)
+    bool wasUsed = uiEvent.Used;
+    switch (Type)
+    {
+        case EventHandlerTypes::Normal:
+            uiEvent.Used = wasUsed || contains;
+            break;
+        case EventHandlerTypes::Transparent:
+            break;
+        case EventHandlerTypes::ClippingOpen:
+            if (!contains)
+                uiEvent.ClippingDepth++;
+            break;
+        case EventHandlerTypes::ClippingClose:
+            if (!contains)
+                uiEvent.ClippingDepth--;
+            break;
+    }
+    wasUsed = wasUsed || uiEvent.ClippingDepth != 0;
+
+    if (Type == EventHandlerTypes::ClippingOpen || Type == EventHandlerTypes::ClippingClose || EventCallback == nullptr)
         return;
 
     if (EventsMask & UIEventTypes::Any)

@@ -148,7 +148,7 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     int size = uiEventHandlers.Size();
     for (int i = 0; i < size; ++i)
         if (uiEventHandlers[i].IsAlive())
-            uiEventHandlers[i].HandleEvent(rtAccessor.Get(uiEventHandlers[i].Owner), uiEvent);
+            uiEventHandlers[i].HandleEvent(rtAccessor, uiEvent);
 
     _isPointerOverUI = uiEvent.Used;
 }
