@@ -10,7 +10,7 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
     switch (Type)
     {
         case EventHandlerTypes::Normal:
-            uiEvent.Used = wasUsed || contains;
+            uiEvent.Used = wasUsed || contains && uiEvent.ClippingDepth == 0;
             break;
         case EventHandlerTypes::Transparent:
             break;

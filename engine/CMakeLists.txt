@@ -89,7 +89,8 @@ set(SOURCE_FILES
         source/Iron/UI/UIElements/UIInputField.h source/Iron/UI/TransitionInfo.h source/Iron/UI/UIInteractable.cpp source/Iron/UI/UIInteractable.h
         source/Iron/UI/CallbackType.h source/Iron/Scene/HierarchyParent.h source/Iron/Rendering/Material.cpp source/Iron/Rendering/Material.h
         source/Iron/Rendering/MaterialPropertyBlock.cpp source/Iron/Rendering/MaterialPropertyBlock.h source/Iron/Scripting/MaterialPropertyBlockInternal.h
-        source/Iron/Scripting/MaterialPropertyBlockInternal.cpp source/Iron/UI/UIElements/UIClipping.cpp source/Iron/UI/UIElements/UIClipping.h)
+        source/Iron/Scripting/MaterialPropertyBlockInternal.cpp source/Iron/UI/UIElements/UIClipping.cpp source/Iron/UI/UIElements/UIClipping.h
+        source/Iron/UI/UIElements/UICheckBox.cpp source/Iron/UI/UIElements/UICheckBox.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

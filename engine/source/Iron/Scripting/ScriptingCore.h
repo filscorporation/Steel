@@ -30,6 +30,7 @@ struct CachedData
     MonoClass* classUIText;
     MonoClass* classUIInputField;
     MonoClass* classUIClipping;
+    MonoClass* classUICheckBox;
 };
 
 struct EngineCallsMethods

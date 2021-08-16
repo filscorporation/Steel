@@ -16,6 +16,7 @@
 #include "../UI/UIElements/UIInputField.h"
 #include "../UI/UIElements/UIClipping.h"
 #include "../UI/UIElements/UIText.h"
+#include "../UI/UIElements/UICheckBox.h"
 #include "../Scene/SceneHelper.h"
 #include "../Scene/NameComponent.h"
 
@@ -143,6 +144,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(UIText, API_CLASS(UIText))
     CACHE_CLASS(UIInputField, API_CLASS(UIInputField))
     CACHE_CLASS(UIClipping, API_CLASS(UIClipping))
+    CACHE_CLASS(UICheckBox, API_CLASS(UICheckBox))
 }
 
 void ScriptingCore::CacheDataTypes(MonoImage* image)
@@ -217,6 +219,8 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return entitiesRegistry->AddComponent<UIInputField>(entity);
     if (monoClass == CACHED_CLASS(UIClipping))
         return entitiesRegistry->AddComponent<UIClipping>(entity);
+    if (monoClass == CACHED_CLASS(UICheckBox))
+        return entitiesRegistry->AddComponent<UICheckBox>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -272,6 +276,8 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass* monoCl
         return entitiesRegistry->HasComponent<UIInputField>(entity);
     if (monoClass == CACHED_CLASS(UIClipping))
         return entitiesRegistry->HasComponent<UIClipping>(entity);
+    if (monoClass == CACHED_CLASS(UICheckBox))
+        return entitiesRegistry->HasComponent<UICheckBox>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -324,6 +330,8 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass* mon
         return entitiesRegistry->RemoveComponent<UIInputField>(entity);
     if (monoClass == CACHED_CLASS(UIClipping))
         return entitiesRegistry->RemoveComponent<UIClipping>(entity);
+    if (monoClass == CACHED_CLASS(UICheckBox))
+        return entitiesRegistry->RemoveComponent<UICheckBox>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -377,6 +385,8 @@ bool ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* monoClass, std::vect
         RETURN_COMPONENT_OWNERS(UIInputField)
     if (monoClass == CACHED_CLASS(UIClipping))
         RETURN_COMPONENT_OWNERS(UIClipping)
+    if (monoClass == CACHED_CLASS(UICheckBox))
+        RETURN_COMPONENT_OWNERS(UICheckBox)
 
     Log::LogError("Could not find cached class");
 

@@ -172,6 +172,35 @@ namespace Iron
 
             return element;
         }
+        
+        /// <summary>
+        /// Creates new UI check box in layout
+        /// </summary>
+        /// <returns>Created element</returns>
+        public static UICheckBox CreateUICheckBox()
+        {
+            Entity entity = new Entity(CreateUICheckBox_Internal());
+            UICheckBox element = new UICheckBox();
+            element.Entity = entity;
+
+            return element;
+        }
+
+        /// <summary>
+        /// Creates new UI check box in layout
+        /// </summary>
+        /// <param name="label">Text to display near element</param>
+        /// <param name="name">Entity name</param>
+        /// <param name="parent">Entity's parent in the hierarchy</param>
+        /// <returns>Created element</returns>
+        public static UICheckBox CreateUICheckBox(string label, string name, Entity parent)
+        {
+            Entity entity = new Entity(CreateUICheckBox_Internal2(label, name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            UICheckBox element = new UICheckBox();
+            element.Entity = entity;
+
+            return element;
+        }
 
         /// <summary>
         /// Is there any UI object under mouse cursor
@@ -216,6 +245,12 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUIClipping_Internal2(uint parentEntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUICheckBox_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUICheckBox_Internal2(string label, string name, uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool IsPointerOverUI_Internal();

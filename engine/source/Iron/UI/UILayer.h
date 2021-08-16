@@ -42,6 +42,8 @@ public:
     EntityID CreateUIInputField(const char* name, EntityID parent);
     EntityID CreateUIClipping();
     EntityID CreateUIClipping(EntityID parent);
+    EntityID CreateUICheckBox();
+    EntityID CreateUICheckBox(const char* label, const char* name, EntityID parent);
 
     int PixelsPerUnit = 32;
 
@@ -49,6 +51,8 @@ public:
     {
         Sprite* DefaultInputFieldSprite = nullptr;
         Sprite* DefaultPixelSprite = nullptr;
+        Sprite* DefaultCheckBoxSprite = nullptr;
+        Sprite* DefaultCheckMarkSprite = nullptr;
     };
     UIResourcesStorage UIResources;
 

@@ -258,6 +258,13 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UIInputField::GetSelectionColor_Internal", (void*)UIInternalCalls::UIInputField_GetSelectionColor);
     mono_add_internal_call("Iron.UIInputField::SetSelectionColor_Internal", (void*)UIInternalCalls::UIInputField_SetSelectionColor);
 
+    mono_add_internal_call("Iron.UICheckBox::GetValue_Internal", (void*)UIInternalCalls::UICheckBox_GetValue);
+    mono_add_internal_call("Iron.UICheckBox::SetValue_Internal", (void*)UIInternalCalls::UICheckBox_SetValue);
+    mono_add_internal_call("Iron.UICheckBox::GetInteractable_Internal", (void*)UIInternalCalls::UICheckBox_GetInteractable);
+    mono_add_internal_call("Iron.UICheckBox::SetInteractable_Internal", (void*)UIInternalCalls::UICheckBox_SetInteractable);
+    mono_add_internal_call("Iron.UICheckBox::GetTransition_Internal", (void*)UIInternalCalls::UICheckBox_GetTransition);
+    mono_add_internal_call("Iron.UICheckBox::SetTransition_Internal", (void*)UIInternalCalls::UICheckBox_SetTransition);
+
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal3", (void*)UIInternalCalls::UI_CreateUIElement3);
@@ -271,5 +278,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UI::CreateUIInputField_Internal2", (void*)UIInternalCalls::UI_CreateUIInputField2);
     mono_add_internal_call("Iron.UI::CreateUIClipping_Internal", (void*)UIInternalCalls::UI_CreateUIClipping);
     mono_add_internal_call("Iron.UI::CreateUIClipping_Internal2", (void*)UIInternalCalls::UI_CreateUIClipping2);
+    mono_add_internal_call("Iron.UI::CreateUICheckBox_Internal", (void*)UIInternalCalls::UI_CreateUICheckBox);
+    mono_add_internal_call("Iron.UI::CreateUICheckBox_Internal2", (void*)UIInternalCalls::UI_CreateUICheckBox2);
     mono_add_internal_call("Iron.UI::IsPointerOverUI_Internal", (void*)UIInternalCalls::UI_IsPointerOverUI);
 }

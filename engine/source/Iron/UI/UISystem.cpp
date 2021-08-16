@@ -117,11 +117,11 @@ void UISystem::OnComponentAdded(EntityID entityID, UIClipping& component)
 {
     if (!CheckRectTransformation(ComponentSystem<UIClipping>::Registry, entityID))
     {
-        ComponentSystem<UIInputField>::Registry->RemoveComponent<UIClipping>(entityID);
+        ComponentSystem<UIClipping>::Registry->RemoveComponent<UIClipping>(entityID);
         return;
     }
 
-    component.Init(ComponentSystem<UIInputField>::Registry);
+    component.Init(ComponentSystem<UIClipping>::Registry);
 }
 
 void UISystem::OnComponentRemoved(EntityID entityID, UIClipping& component)
@@ -138,6 +138,31 @@ void UISystem::OnEntityDisabled(EntityID entityID, UIClipping& component)
 {
     component.OnDisabled(ComponentSystem<UIClipping>::Registry);
 }
+
+void UISystem::OnComponentAdded(EntityID entityID, UICheckBox& component)
+{
+    if (!CheckRectTransformation(ComponentSystem<UICheckBox>::Registry, entityID))
+    {
+        ComponentSystem<UICheckBox>::Registry->RemoveComponent<UICheckBox>(entityID);
+        return;
+    }
+    TryAddEventHandler(ComponentSystem<UICheckBox>::Registry, entityID);
+
+    auto& eventHandler = ComponentSystem<UICheckBox>::Registry->GetComponent<UIEventHandler>(entityID);
+    component.Init(eventHandler);
+}
+
+void UISystem::OnComponentRemoved(EntityID entityID, UICheckBox& component)
+{
+    component.StopTransition();
+    ScriptingCore::CallEventMethod(entityID, CallbackTypes::CheckBoxChangeValue, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
+}
+
+void UISystem::OnEntityEnabled(EntityID entityID, UICheckBox& component)
+{ }
+
+void UISystem::OnEntityDisabled(EntityID entityID, UICheckBox& component)
+{ }
 
 bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID)
 {

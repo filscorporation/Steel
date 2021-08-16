@@ -99,6 +99,7 @@
         <Compile Include="UI\RectTransformation.cs" />
         <Compile Include="UI\UI.cs" />
         <Compile Include="UI\UIButton.cs" />
+        <Compile Include="UI\UICheckBox.cs" />
         <Compile Include="UI\UIClipping.cs" />
         <Compile Include="UI\UIComponent.cs" />
         <Compile Include="UI\UIImage.cs" />

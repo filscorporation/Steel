@@ -54,7 +54,7 @@ void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, boo
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     float sortingOrder = transformation.GetSortingOrder();
     float dz = 1.0f / (float)layer->GetLayerThickness();
-    float thickness = (float) transformation.GetChildrenThickness();
+    float thickness = (float)transformation.GetChildrenThickness();
 
     for (int i = 0; i < 4; ++i)
     {

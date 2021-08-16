@@ -2,6 +2,7 @@
 #include "UIElements/UIButton.h"
 #include "UIElements/UIInputField.h"
 #include "UIElements/UIClipping.h"
+#include "UIElements/UICheckBox.h"
 #include "UISystem.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
@@ -18,6 +19,7 @@ UILayer::UILayer(Scene* scene)
     _scene->GetEntitiesRegistry()->RegisterSystem<UIButton>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIInputField>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIClipping>(uiSystem);
+    _scene->GetEntitiesRegistry()->RegisterSystem<UICheckBox>(uiSystem);
 }
 
 UILayer::~UILayer()
@@ -27,6 +29,7 @@ UILayer::~UILayer()
     _scene->GetEntitiesRegistry()->RemoveSystem<UIButton>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIInputField>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIClipping>();
+    _scene->GetEntitiesRegistry()->RemoveSystem<UICheckBox>();
     delete uiSystem;
 }
 
@@ -36,6 +39,8 @@ void UILayer::LoadDefaultResources()
     UIResources.DefaultInputFieldSprite = resourcesManager->LoadImage("debug_button.png", true);
     UIResources.DefaultInputFieldSprite->SetAsSliced(6);
     UIResources.DefaultPixelSprite = resourcesManager->LoadImage("pixel.png", true);
+    UIResources.DefaultCheckBoxSprite = resourcesManager->LoadImage("check_box.png", true);
+    UIResources.DefaultCheckMarkSprite = resourcesManager->LoadImage("check_mark.png", true);
 }
 
 void UILayer::Update()
@@ -309,6 +314,53 @@ EntityID UILayer::CreateUIClipping(EntityID parent)
 {
     auto entity = CreateUIElement("Clipping", parent);
     _scene->GetEntitiesRegistry()->AddComponent<UIClipping>(entity);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUICheckBox()
+{
+    return CreateUICheckBox("", "Check box", NULL_ENTITY);
+}
+
+EntityID UILayer::CreateUICheckBox(const char* label, const char* name, EntityID parent)
+{
+    float boxSize = (float)UIResources.DefaultCheckBoxSprite->Height * 2;
+    float markSize = (float)UIResources.DefaultCheckMarkSprite->Height * 2;
+
+    auto entity = CreateUIElement(name, parent);
+    auto& checkBox = _scene->GetEntitiesRegistry()->AddComponent<UICheckBox>(entity);
+    auto& entityRT = _scene->GetEntitiesRegistry()->GetComponent<RectTransformation>(entity);
+    entityRT.SetSize(glm::vec2(boxSize * 5, boxSize));
+
+    auto boxEntity = CreateUIImage(UIResources.DefaultCheckBoxSprite, "Check box frame", entity);
+    auto& boxRT = _scene->GetEntitiesRegistry()->GetComponent<RectTransformation>(boxEntity);
+    boxRT.SetSize(glm::vec2(boxSize, boxSize));
+    boxRT.SetAnchorMin(glm::vec2(0.0f, 0.5f));
+    boxRT.SetAnchorMax(glm::vec2(0.0f, 0.5f));
+    boxRT.SetAnchoredPosition(glm::vec2(boxSize * 0.6f, 0));
+    _scene->GetEntitiesRegistry()->GetComponent<UIEventHandler>(boxEntity).Type = EventHandlerTypes::Transparent;
+
+    auto markEntity = CreateUIImage(UIResources.DefaultCheckMarkSprite, "Check mark", boxEntity);
+    auto& markRT = _scene->GetEntitiesRegistry()->GetComponent<RectTransformation>(markEntity);
+    markRT.SetAnchorMin(glm::vec2(0.5f, 0.5f));
+    markRT.SetAnchorMax(glm::vec2(0.5f, 0.5f));
+    markRT.SetSize(glm::vec2(markSize, markSize));
+    _scene->GetEntitiesRegistry()->GetComponent<UIEventHandler>(markEntity).Type = EventHandlerTypes::Transparent;
+    _scene->GetEntitiesRegistry()->EntitySetActive(markEntity, false, true);
+
+    auto textEntity = CreateUIText(label, "Text", entity);
+    auto& uiText = _scene->GetEntitiesRegistry()->GetComponent<UIText>(textEntity);
+    uiText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    uiText.SetTextSize(16);
+    auto& textRT = _scene->GetEntitiesRegistry()->GetComponent<RectTransformation>(textEntity);
+    textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+    textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+    textRT.SetOffsetMin(glm::vec2(boxSize * 1.2f, 0));
+    textRT.SetOffsetMax(glm::vec2(0, 0));
+
+    checkBox.checkMark = markEntity;
+    checkBox.SetTargetImage(boxEntity);
 
     return entity;
 }

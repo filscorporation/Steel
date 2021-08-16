@@ -8,6 +8,7 @@
 #include "../Scene/SceneHelper.h"
 #include "../UI/UIEventHandler.h"
 #include "../UI/UIElements/UIButton.h"
+#include "../UI/UIElements/UICheckBox.h"
 #include "../UI/UIElements/UIText.h"
 
 void UIInternalCalls::RectTransformation_GetAnchorMin(EntityID entityID, glm::vec2* anchor)
@@ -483,6 +484,48 @@ void UIInternalCalls::UIInputField_SetSelectionColor(EntityID entityID, glm::vec
     component.SetSelectionColor(color);
 }
 
+bool UIInternalCalls::UICheckBox_GetValue(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UICheckBox, false)
+
+    return component.GetValue();
+}
+
+void UIInternalCalls::UICheckBox_SetValue(EntityID entityID, bool value)
+{
+    GET_COMPONENT_OR_RETURN(UICheckBox, )
+
+    component.SetValue(value);
+}
+
+bool UIInternalCalls::UICheckBox_GetInteractable(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UICheckBox, 0)
+
+    return component.GetInteractable();
+}
+
+void UIInternalCalls::UICheckBox_SetInteractable(EntityID entityID, bool interactable)
+{
+    GET_COMPONENT_OR_RETURN(UICheckBox, )
+
+    component.SetInteractable(interactable);
+}
+
+TransitionsInfo UIInternalCalls::UICheckBox_GetTransition(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UICheckBox, TransitionsInfo())
+
+    return component.GetTransitionsInfo();
+}
+
+void UIInternalCalls::UICheckBox_SetTransition(EntityID entityID, TransitionsInfo info)
+{
+    GET_COMPONENT_OR_RETURN(UICheckBox, )
+
+    component.SetTransitionsInfo(info);
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();
@@ -550,6 +593,16 @@ EntityID UIInternalCalls::UI_CreateUIClipping()
 EntityID UIInternalCalls::UI_CreateUIClipping2(EntityID parentEntityID)
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIClipping(parentEntityID);
+}
+
+EntityID UIInternalCalls::UI_CreateUICheckBox()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUICheckBox();
+}
+
+EntityID UIInternalCalls::UI_CreateUICheckBox2(MonoString* label, MonoString* name, EntityID parentEntityID)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUICheckBox(mono_string_to_utf8(label), mono_string_to_utf8(name), parentEntityID);
 }
 
 bool UIInternalCalls::UI_IsPointerOverUI()

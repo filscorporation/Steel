@@ -86,6 +86,14 @@ namespace UIInternalCalls
     glm::vec4 UIInputField_GetSelectionColor(EntityID entityID);
     void UIInputField_SetSelectionColor(EntityID entityID, glm::vec4 color);
 
+    // UI check box
+    bool UICheckBox_GetValue(EntityID entityID);
+    void UICheckBox_SetValue(EntityID entityID, bool value);
+    bool UICheckBox_GetInteractable(EntityID entityID);
+    void UICheckBox_SetInteractable(EntityID entityID, bool interactable);
+    TransitionsInfo UICheckBox_GetTransition(EntityID entityID);
+    void UICheckBox_SetTransition(EntityID entityID, TransitionsInfo info);
+
     // UI
     EntityID UI_CreateUIElement();
     EntityID UI_CreateUIElement2(MonoString* name);
@@ -100,5 +108,7 @@ namespace UIInternalCalls
     EntityID UI_CreateUIInputField2(MonoString* name, EntityID parentEntityID);
     EntityID UI_CreateUIClipping();
     EntityID UI_CreateUIClipping2(EntityID parentEntityID);
+    EntityID UI_CreateUICheckBox();
+    EntityID UI_CreateUICheckBox2(MonoString* label, MonoString* name, EntityID parentEntityID);
     bool UI_IsPointerOverUI();
 }

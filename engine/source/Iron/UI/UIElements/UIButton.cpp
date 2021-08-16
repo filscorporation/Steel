@@ -1,6 +1,5 @@
 #include "UIButton.h"
 #include "../../Core/Log.h"
-#include "../../Core/Time.h"
 #include "../../Scene/SceneHelper.h"
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
