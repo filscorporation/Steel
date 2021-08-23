@@ -207,6 +207,9 @@ void UIImage::SetColor(glm::vec4 color)
 {
     _color = color;
 
+    if (_image == nullptr)
+        return;
+
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (_image->IsSliced)
     {

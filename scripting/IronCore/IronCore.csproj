@@ -98,13 +98,14 @@
         <Compile Include="UI\OverflowMode.cs" />
         <Compile Include="UI\RectTransformation.cs" />
         <Compile Include="UI\UI.cs" />
-        <Compile Include="UI\UIButton.cs" />
-        <Compile Include="UI\UICheckBox.cs" />
-        <Compile Include="UI\UIClipping.cs" />
         <Compile Include="UI\UIComponent.cs" />
-        <Compile Include="UI\UIImage.cs" />
-        <Compile Include="UI\UIInputField.cs" />
-        <Compile Include="UI\UIText.cs" />
+        <Compile Include="UI\UIElements\UIButton.cs" />
+        <Compile Include="UI\UIElements\UICheckBox.cs" />
+        <Compile Include="UI\UIElements\UIClipping.cs" />
+        <Compile Include="UI\UIElements\UIImage.cs" />
+        <Compile Include="UI\UIElements\UIInputField.cs" />
+        <Compile Include="UI\UIElements\UITabs.cs" />
+        <Compile Include="UI\UIElements\UIText.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

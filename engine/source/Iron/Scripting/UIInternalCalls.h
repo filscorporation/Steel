@@ -94,6 +94,14 @@ namespace UIInternalCalls
     TransitionsInfo UICheckBox_GetTransition(EntityID entityID);
     void UICheckBox_SetTransition(EntityID entityID, TransitionsInfo info);
 
+    // UI tabs
+    int UITabs_TabsCount(EntityID entityID);
+    int UITabs_GetActiveTab(EntityID entityID);
+    void UITabs_SetActiveTab(EntityID entityID, int value);
+    EntityID UITabs_GetTab(EntityID entityID, int index);
+    EntityID UITabs_AddTab(EntityID entityID, MonoString* name);
+    bool UITabs_RemoveTab(EntityID entityID, int index);
+
     // UI
     EntityID UI_CreateUIElement();
     EntityID UI_CreateUIElement2(MonoString* name);
@@ -110,5 +118,7 @@ namespace UIInternalCalls
     EntityID UI_CreateUIClipping2(EntityID parentEntityID);
     EntityID UI_CreateUICheckBox();
     EntityID UI_CreateUICheckBox2(MonoString* label, MonoString* name, EntityID parentEntityID);
+    EntityID UI_CreateUITabs();
+    EntityID UI_CreateUITabs2(MonoArray* tabs, MonoString* name, EntityID parentEntityID);
     bool UI_IsPointerOverUI();
 }

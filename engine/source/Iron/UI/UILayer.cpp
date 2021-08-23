@@ -3,6 +3,7 @@
 #include "UIElements/UIInputField.h"
 #include "UIElements/UIClipping.h"
 #include "UIElements/UICheckBox.h"
+#include "UIElements/UITabs.h"
 #include "UISystem.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
@@ -20,6 +21,7 @@ UILayer::UILayer(Scene* scene)
     _scene->GetEntitiesRegistry()->RegisterSystem<UIInputField>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIClipping>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UICheckBox>(uiSystem);
+    _scene->GetEntitiesRegistry()->RegisterSystem<UITabs>(uiSystem);
 }
 
 UILayer::~UILayer()
@@ -30,6 +32,7 @@ UILayer::~UILayer()
     _scene->GetEntitiesRegistry()->RemoveSystem<UIInputField>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIClipping>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UICheckBox>();
+    _scene->GetEntitiesRegistry()->RemoveSystem<UITabs>();
     delete uiSystem;
 }
 
@@ -41,6 +44,8 @@ void UILayer::LoadDefaultResources()
     UIResources.DefaultPixelSprite = resourcesManager->LoadImage("pixel.png", true);
     UIResources.DefaultCheckBoxSprite = resourcesManager->LoadImage("check_box.png", true);
     UIResources.DefaultCheckMarkSprite = resourcesManager->LoadImage("check_mark.png", true);
+    UIResources.DefaultTabOpenedSprite = resourcesManager->LoadImage("tab_opened.png", true);
+    UIResources.DefaultTabClosedSprite = resourcesManager->LoadImage("tab_closed.png", true);
 }
 
 void UILayer::Update()
@@ -61,7 +66,7 @@ void UILayer::Draw()
     // Prepare to draw
     auto entitiesRegistry = _scene->GetEntitiesRegistry();
     // TODO: support non default thickness
-    _layerThickness = entitiesRegistry->GetComponentIterator<RectTransformation>().Size() + 1;
+    _layerThickness = entitiesRegistry->GetComponentsCount<RectTransformation>() + 1;
 
     // Update rect transformations if needed
     auto hierarchyNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
@@ -361,6 +366,24 @@ EntityID UILayer::CreateUICheckBox(const char* label, const char* name, EntityID
 
     checkBox.checkMark = markEntity;
     checkBox.SetTargetImage(boxEntity);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUITabs()
+{
+    std::vector<std::string> tabs;
+    return CreateUITabs(tabs, "Tabs", NULL_ENTITY);
+}
+
+EntityID UILayer::CreateUITabs(const std::vector<std::string>& tabsNames, const char* name, EntityID parent)
+{
+    auto entity = CreateUIElement(name, parent);
+    _scene->GetEntitiesRegistry()->AddComponent<UIClipping>(entity);
+    auto& tabs = _scene->GetEntitiesRegistry()->AddComponent<UITabs>(entity);
+
+    for (auto& tabName : tabsNames)
+        tabs.AddTab(tabName);
 
     return entity;
 }

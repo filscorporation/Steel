@@ -380,6 +380,20 @@ private:
 
 public:
     template <typename T>
+    int32_t GetComponentsCount()
+    {
+        auto typeID = TYPE_ID(T);
+
+        if (componentsMap.find(typeID) == componentsMap.end())
+        {
+            return 0;
+        }
+
+        return ((ComponentsPoolWrapper<T>*)componentsMap[typeID])->Storage.Size()
+            + ((ComponentsPoolWrapper<T>*)componentsMap[typeID])->InactiveStorage.Size();
+    }
+
+    template <typename T>
     ComponentIterator<T> GetComponentIterator()
     {
         auto typeID = TYPE_ID(T);

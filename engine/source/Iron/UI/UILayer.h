@@ -44,6 +44,8 @@ public:
     EntityID CreateUIClipping(EntityID parent);
     EntityID CreateUICheckBox();
     EntityID CreateUICheckBox(const char* label, const char* name, EntityID parent);
+    EntityID CreateUITabs();
+    EntityID CreateUITabs(const std::vector<std::string>& tabsNames, const char* name, EntityID parent);
 
     int PixelsPerUnit = 32;
 
@@ -53,6 +55,8 @@ public:
         Sprite* DefaultPixelSprite = nullptr;
         Sprite* DefaultCheckBoxSprite = nullptr;
         Sprite* DefaultCheckMarkSprite = nullptr;
+        Sprite* DefaultTabOpenedSprite = nullptr;
+        Sprite* DefaultTabClosedSprite = nullptr;
     };
     UIResourcesStorage UIResources;
 

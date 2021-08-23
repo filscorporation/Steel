@@ -7,9 +7,11 @@
 #include "UIElements/UICheckBox.h"
 #include "UIElements/UIClipping.h"
 #include "UIElements/UIButton.h"
+#include "UIElements/UITabs.h"
 
 class UISystem : public ComponentSystem<UIImage>, public ComponentSystem<UIButton>, public ComponentSystem<UIText>,
-        public ComponentSystem<UIInputField>, public ComponentSystem<UIClipping>, public ComponentSystem<UICheckBox>
+        public ComponentSystem<UIInputField>, public ComponentSystem<UIClipping>, public ComponentSystem<UICheckBox>,
+        public ComponentSystem<UITabs>
 {
 public:
     void OnComponentAdded(EntityID entityID, UIImage& component) override;
@@ -41,6 +43,11 @@ public:
     void OnComponentRemoved(EntityID entityID, UICheckBox& component) override;
     void OnEntityEnabled(EntityID entityID, UICheckBox& component) override;
     void OnEntityDisabled(EntityID entityID, UICheckBox& component) override;
+
+    void OnComponentAdded(EntityID entityID, UITabs& component) override;
+    void OnComponentRemoved(EntityID entityID, UITabs& component) override;
+    void OnEntityEnabled(EntityID entityID, UITabs& component) override;
+    void OnEntityDisabled(EntityID entityID, UITabs& component) override;
 
 private:
     static bool CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID);

@@ -265,6 +265,13 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UICheckBox::GetTransition_Internal", (void*)UIInternalCalls::UICheckBox_GetTransition);
     mono_add_internal_call("Iron.UICheckBox::SetTransition_Internal", (void*)UIInternalCalls::UICheckBox_SetTransition);
 
+    mono_add_internal_call("Iron.UITabs::TabsCount_Internal", (void*)UIInternalCalls::UITabs_TabsCount);
+    mono_add_internal_call("Iron.UITabs::GetActiveTab_Internal", (void*)UIInternalCalls::UITabs_GetActiveTab);
+    mono_add_internal_call("Iron.UITabs::SetActiveTab_Internal", (void*)UIInternalCalls::UITabs_SetActiveTab);
+    mono_add_internal_call("Iron.UITabs::GetTab_Internal", (void*)UIInternalCalls::UITabs_GetTab);
+    mono_add_internal_call("Iron.UITabs::AddTab_Internal", (void*)UIInternalCalls::UITabs_AddTab);
+    mono_add_internal_call("Iron.UITabs::RemoveTab_Internal", (void*)UIInternalCalls::UITabs_RemoveTab);
+
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);
     mono_add_internal_call("Iron.UI::CreateUIElement_Internal3", (void*)UIInternalCalls::UI_CreateUIElement3);
@@ -280,5 +287,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.UI::CreateUIClipping_Internal2", (void*)UIInternalCalls::UI_CreateUIClipping2);
     mono_add_internal_call("Iron.UI::CreateUICheckBox_Internal", (void*)UIInternalCalls::UI_CreateUICheckBox);
     mono_add_internal_call("Iron.UI::CreateUICheckBox_Internal2", (void*)UIInternalCalls::UI_CreateUICheckBox2);
+    mono_add_internal_call("Iron.UI::CreateUITabs_Internal", (void*)UIInternalCalls::UI_CreateUITabs);
+    mono_add_internal_call("Iron.UI::CreateUITabs_Internal2", (void*)UIInternalCalls::UI_CreateUITabs2);
     mono_add_internal_call("Iron.UI::IsPointerOverUI_Internal", (void*)UIInternalCalls::UI_IsPointerOverUI);
 }

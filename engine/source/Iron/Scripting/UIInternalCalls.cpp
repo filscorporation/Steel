@@ -1,5 +1,6 @@
 #include <mono/jit/jit.h>
 
+#include "ScriptingCore.h"
 #include "UIInternalCalls.h"
 #include "InternalCallsCommon.h"
 #include "MaterialPropertyBlockInternal.h"
@@ -10,6 +11,7 @@
 #include "../UI/UIElements/UIButton.h"
 #include "../UI/UIElements/UICheckBox.h"
 #include "../UI/UIElements/UIText.h"
+#include "../UI/UIElements/UITabs.h"
 
 void UIInternalCalls::RectTransformation_GetAnchorMin(EntityID entityID, glm::vec2* anchor)
 {
@@ -526,6 +528,48 @@ void UIInternalCalls::UICheckBox_SetTransition(EntityID entityID, TransitionsInf
     component.SetTransitionsInfo(info);
 }
 
+int UIInternalCalls::UITabs_TabsCount(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UITabs, 0)
+
+    return component.GetTabsCount();
+}
+
+int UIInternalCalls::UITabs_GetActiveTab(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UITabs, 0)
+
+    return component.GetActiveTab();
+}
+
+void UIInternalCalls::UITabs_SetActiveTab(EntityID entityID, int value)
+{
+    GET_COMPONENT_OR_RETURN(UITabs, )
+
+    component.SetActiveTab(value);
+}
+
+EntityID UIInternalCalls::UITabs_GetTab(EntityID entityID, int index)
+{
+    GET_COMPONENT_OR_RETURN(UITabs, NULL_ENTITY)
+
+    return component.GetTab(index);
+}
+
+EntityID UIInternalCalls::UITabs_AddTab(EntityID entityID, MonoString* name)
+{
+    GET_COMPONENT_OR_RETURN(UITabs, NULL_ENTITY)
+
+    return component.AddTab(mono_string_to_utf8(name));
+}
+
+bool UIInternalCalls::UITabs_RemoveTab(EntityID entityID, int index)
+{
+    GET_COMPONENT_OR_RETURN(UITabs, false)
+
+    return component.RemoveTab(index);
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();
@@ -609,3 +653,17 @@ bool UIInternalCalls::UI_IsPointerOverUI()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->IsPointerOverUI();
 }
+
+EntityID UIInternalCalls::UI_CreateUITabs()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUITabs();
+}
+
+EntityID UIInternalCalls::UI_CreateUITabs2(MonoArray* tabs, MonoString* name, EntityID parentEntityID)
+{
+    std::vector<std::string> tabsNames;
+    ScriptingCore::FromMonoStringArray(tabs, tabsNames);
+
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUITabs(tabsNames, mono_string_to_utf8(name), parentEntityID);
+}
+

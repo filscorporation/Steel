@@ -164,6 +164,25 @@ void UISystem::OnEntityEnabled(EntityID entityID, UICheckBox& component)
 void UISystem::OnEntityDisabled(EntityID entityID, UICheckBox& component)
 { }
 
+void UISystem::OnComponentAdded(EntityID entityID, UITabs& component)
+{
+    if (!CheckRectTransformation(ComponentSystem<UITabs>::Registry, entityID))
+    {
+        ComponentSystem<UITabs>::Registry->RemoveComponent<UITabs>(entityID);
+        return;
+    }
+    component.Init(ComponentSystem<UITabs>::Registry);
+}
+
+void UISystem::OnComponentRemoved(EntityID entityID, UITabs& component)
+{ }
+
+void UISystem::OnEntityEnabled(EntityID entityID, UITabs& component)
+{ }
+
+void UISystem::OnEntityDisabled(EntityID entityID, UITabs& component)
+{ }
+
 bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID)
 {
     if (!entitiesRegistry->HasComponent<RectTransformation>(entityID))

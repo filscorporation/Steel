@@ -83,7 +83,7 @@ private:
     Material* _material = nullptr;
     Font* _font = nullptr;
     std::string _text;
-    uint32_t _textSize = 14;
+    uint32_t _textSize = 16;
     uint32_t _textSizeRef = 0;
     float _lineSpacing = 1.0f;
     bool _isTextAutoSize = false;

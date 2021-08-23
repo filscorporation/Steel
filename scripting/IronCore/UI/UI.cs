@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Iron
 {
@@ -201,6 +203,35 @@ namespace Iron
 
             return element;
         }
+        
+        /// <summary>
+        /// Creates new UI tabs in layout
+        /// </summary>
+        /// <returns>Created element</returns>
+        public static UITabs CreateUITabs()
+        {
+            Entity entity = new Entity(CreateUITabs_Internal());
+            UITabs element = new UITabs();
+            element.Entity = entity;
+
+            return element;
+        }
+
+        /// <summary>
+        /// Creates new UI tabs in layout
+        /// </summary>
+        /// <param name="tabs">Tabs names</param>
+        /// <param name="name">Entity name</param>
+        /// <param name="parent">Entity's parent in the hierarchy</param>
+        /// <returns>Created element</returns>
+        public static UITabs CreateUITabs(IEnumerable<string> tabs, string name, Entity parent)
+        {
+            Entity entity = new Entity(CreateUITabs_Internal2(tabs.ToArray(), name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            UITabs element = new UITabs();
+            element.Entity = entity;
+
+            return element;
+        }
 
         /// <summary>
         /// Is there any UI object under mouse cursor
@@ -251,6 +282,12 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUICheckBox_Internal2(string label, string name, uint parentEntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUITabs_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUITabs_Internal2(string[] tabs, string name, uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool IsPointerOverUI_Internal();
