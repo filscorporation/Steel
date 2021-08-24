@@ -53,6 +53,10 @@ public:
             {
                 System->OnComponentRemoved(component.Owner, component);
             }
+            for (auto& component : InactiveStorage)
+            {
+                System->OnComponentRemoved(component.Owner, component);
+            }
         }
     }
 
@@ -89,19 +93,24 @@ public:
         if (System == nullptr)
             return;
 
-        if (!Storage.Has(id))
-            return;
-
-        auto& component = Storage.Get(id);
-        System->OnComponentRemoved(entityID, component);
+        if (Storage.Has(id))
+        {
+            auto& component = Storage.Get(id);
+            System->OnComponentRemoved(entityID, component);
+        }
+        if (InactiveStorage.Has(id))
+        {
+            auto& component = InactiveStorage.Get(id);
+            System->OnComponentRemoved(entityID, component);
+        }
     }
 
     void DeleteByEntityID(EntityID entityID, EntityID id) override
     {
-        if (!Storage.Has(id))
-            return;
-
-        Storage.Remove(id);
+        if (Storage.Has(id))
+            Storage.Remove(id);
+        if (InactiveStorage.Has(id))
+            InactiveStorage.Remove(id);
     }
 
     void AfterEntitySetActive(EntityID entityID, EntityID id, bool isActive) override
@@ -128,7 +137,7 @@ public:
 // Stores all components pools by Component type ID
 using ComponentsMap = std::unordered_map<ComponentTypeID, ComponentsPoolWrapperBase*>;
 
-// Allows to iterate over certain component
+// Allows iterating over certain component in ACTIVE entities
 template <typename T>
 struct ComponentIterator
 {
@@ -419,6 +428,7 @@ public:
         return ComponentAccessor<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID]);
     }
 
+    // Sorts all components of ACTIVE entities of some type
     template<class T, class Comparer>
     bool SortComponents(Comparer comparer)
     {
@@ -446,6 +456,7 @@ public:
         return true;
     }
 
+    // Apply sorting order from source component type to target for ACTIVE entities
     template<class SourceT, class TargetT>
     void ApplyOrder()
     {

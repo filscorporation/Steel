@@ -19,11 +19,11 @@ void HierarchySystem::OnComponentRemoved(EntityID entityID, HierarchyNode& compo
             component.ParentNode == NULL_ENTITY
                ? (HierarchyParent&)(*Application::Instance->GetCurrentScene())
                : ComponentSystem<HierarchyNode>::Registry->GetComponent<HierarchyNode>(component.ParentNode);
-    RemoveChildFromItsParent(Registry, component, hierarchyParent);
+    RemoveChildFromItsParent(ComponentSystem<HierarchyNode>::Registry, component, hierarchyParent);
     if (component.ParentNode != NULL_ENTITY)
         UpdateThicknessUpwards(ComponentSystem<HierarchyNode>::Registry, component.ParentNode, -(int)component.Thickness);
     // Delete all children entities
-    DeleteRecursively(Registry, component);
+    DeleteRecursively(ComponentSystem<HierarchyNode>::Registry, component);
 
     _lock = false;
 }
@@ -34,7 +34,7 @@ void HierarchySystem::OnEntityEnabled(EntityID entityID, HierarchyNode& componen
         return;
     _lock = true;
 
-    SetActiveRecursively(Registry, component, true);
+    SetActiveRecursively(ComponentSystem<HierarchyNode>::Registry, component, true);
     if (ComponentSystem<HierarchyNode>::Registry->HasComponent<RectTransformation>(entityID))
         Application::Instance->GetCurrentScene()->GetUILayer()->SetSortingOrderDirty();
 
@@ -47,7 +47,7 @@ void HierarchySystem::OnEntityDisabled(EntityID entityID, HierarchyNode& compone
         return;
     _lock = true;
 
-    SetActiveRecursively(Registry, component, false);
+    SetActiveRecursively(ComponentSystem<HierarchyNode>::Registry, component, false);
     if (ComponentSystem<HierarchyNode>::Registry->HasComponent<RectTransformation>(entityID))
         Application::Instance->GetCurrentScene()->GetUILayer()->SetSortingOrderDirty();
 

@@ -106,7 +106,7 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
         firstChildNode.PreviousNode = child;
         childNode.NextNode = hierarchyParent.FirstChildNode;
     }
-    childNode.NodeIndex = hierarchyParent.ChildrenCount;
+    childNode.NodeIndex = hierarchyParent.ChildrenCount - 1;
 
     // We need to recalculate HierarchyDepth for all children
     childNode.IsDirty = true;
