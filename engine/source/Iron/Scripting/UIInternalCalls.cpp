@@ -10,6 +10,7 @@
 #include "../UI/UIEventHandler.h"
 #include "../UI/UIElements/UIButton.h"
 #include "../UI/UIElements/UICheckBox.h"
+#include "../UI/UIElements/UILayoutGroup.h"
 #include "../UI/UIElements/UIText.h"
 #include "../UI/UIElements/UITabs.h"
 
@@ -570,6 +571,20 @@ bool UIInternalCalls::UITabs_RemoveTab(EntityID entityID, int index)
     return component.RemoveTab(index);
 }
 
+EntityID UIInternalCalls::UILayoutGroup_AddElement(EntityID entityID, LayoutElementInfo info)
+{
+    GET_COMPONENT_OR_RETURN(UILayoutGroup, NULL_ENTITY)
+
+    return component.AddElement(info);
+}
+
+EntityID UIInternalCalls::UILayoutGroup_AddElement2(EntityID entityID, EntityID elementID)
+{
+    GET_COMPONENT_OR_RETURN(UILayoutGroup, NULL_ENTITY)
+
+    return component.AddElement(elementID);
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();
@@ -667,3 +682,12 @@ EntityID UIInternalCalls::UI_CreateUITabs2(MonoArray* tabs, MonoString* name, En
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUITabs(tabsNames, mono_string_to_utf8(name), parentEntityID);
 }
 
+EntityID UIInternalCalls::UI_CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUILayoutGroup(type);
+}
+
+EntityID UIInternalCalls::UI_CreateUILayoutGroup2(LayoutGroupTypes::LayoutGroupType type, MonoString* name, EntityID parentEntityID)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUILayoutGroup(type, mono_string_to_utf8(name), parentEntityID);
+}

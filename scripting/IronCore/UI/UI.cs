@@ -232,6 +232,35 @@ namespace Iron
 
             return element;
         }
+        
+        /// <summary>
+        /// Creates new UI layout group
+        /// </summary>
+        /// <returns>Created element</returns>
+        public static UILayoutGroup CreateUILayoutGroup(UILayoutGroup.LayoutType type)
+        {
+            Entity entity = new Entity(CreateUILayoutGroup_Internal(type));
+            UILayoutGroup element = new UILayoutGroup();
+            element.Entity = entity;
+
+            return element;
+        }
+
+        /// <summary>
+        /// Creates new UI layout group
+        /// </summary>
+        /// <param name="type">Layout group type</param>
+        /// <param name="name">Entity name</param>
+        /// <param name="parent">Entity's parent in the hierarchy</param>
+        /// <returns>Created element</returns>
+        public static UILayoutGroup CreateUILayoutGroup(UILayoutGroup.LayoutType type, string name, Entity parent)
+        {
+            Entity entity = new Entity(CreateUILayoutGroup_Internal2(type, name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            UILayoutGroup element = new UILayoutGroup();
+            element.Entity = entity;
+
+            return element;
+        }
 
         /// <summary>
         /// Is there any UI object under mouse cursor
@@ -288,6 +317,12 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUITabs_Internal2(string[] tabs, string name, uint parentEntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUILayoutGroup_Internal(UILayoutGroup.LayoutType type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUILayoutGroup_Internal2(UILayoutGroup.LayoutType type, string name, uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool IsPointerOverUI_Internal();

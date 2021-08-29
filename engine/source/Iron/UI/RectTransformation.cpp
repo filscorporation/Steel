@@ -31,6 +31,7 @@ void RectTransformation::SetAnchorMin(const glm::vec2& anchor)
     _anchorMax.y = std::max(_anchorMin.y, _anchorMax.y);
 
     SetTransformationChanged(true);
+    sizeChanged = true;
 }
 
 glm::vec2 RectTransformation::GetAnchorMax() const
@@ -49,6 +50,7 @@ void RectTransformation::SetAnchorMax(const glm::vec2& anchor)
     _anchorMin.y = std::min(_anchorMin.y, _anchorMax.y);
 
     SetTransformationChanged(true);
+    sizeChanged = true;
 }
 
 glm::vec2 RectTransformation::GetAnchoredPosition() const
@@ -81,6 +83,7 @@ void RectTransformation::SetOffsetMin(const glm::vec2& offset)
     _offsetMin = offset;
 
     SetTransformationChanged(true);
+    sizeChanged = true;
 }
 
 glm::vec2 RectTransformation::GetOffsetMax() const
@@ -97,6 +100,7 @@ void RectTransformation::SetOffsetMax(const glm::vec2& offset)
     _offsetMax = offset;
 
     SetTransformationChanged(true);
+    sizeChanged = true;
 }
 
 glm::vec2 RectTransformation::GetSize() const

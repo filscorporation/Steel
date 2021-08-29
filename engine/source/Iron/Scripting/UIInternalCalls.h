@@ -5,9 +5,10 @@
 
 #include "../EntityComponentSystem/Entity.h"
 #include "../Resources/ResourceID.h"
-#include "../UI/UIElements/UIText.h"
 #include "../UI/UIElements/UIButton.h"
+#include "../UI/UIElements/UILayoutGroup.h"
 #include "../UI/UIElements/UIInputField.h"
+#include "../UI/UIElements/UIText.h"
 
 namespace UIInternalCalls
 {
@@ -102,6 +103,10 @@ namespace UIInternalCalls
     EntityID UITabs_AddTab(EntityID entityID, MonoString* name);
     bool UITabs_RemoveTab(EntityID entityID, int index);
 
+    // UI layout group
+    EntityID UILayoutGroup_AddElement(EntityID entityID, LayoutElementInfo info);
+    EntityID UILayoutGroup_AddElement2(EntityID entityID, EntityID elementID);
+
     // UI
     EntityID UI_CreateUIElement();
     EntityID UI_CreateUIElement2(MonoString* name);
@@ -120,5 +125,7 @@ namespace UIInternalCalls
     EntityID UI_CreateUICheckBox2(MonoString* label, MonoString* name, EntityID parentEntityID);
     EntityID UI_CreateUITabs();
     EntityID UI_CreateUITabs2(MonoArray* tabs, MonoString* name, EntityID parentEntityID);
+    EntityID UI_CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type);
+    EntityID UI_CreateUILayoutGroup2(LayoutGroupTypes::LayoutGroupType type, MonoString* name, EntityID parentEntityID);
     bool UI_IsPointerOverUI();
 }

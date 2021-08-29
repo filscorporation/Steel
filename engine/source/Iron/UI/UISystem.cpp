@@ -183,6 +183,33 @@ void UISystem::OnEntityEnabled(EntityID entityID, UITabs& component)
 void UISystem::OnEntityDisabled(EntityID entityID, UITabs& component)
 { }
 
+void UISystem::OnComponentAdded(EntityID entityID, UILayoutGroup& component)
+{
+    if (ComponentSystem<UILayoutGroup>::Registry->HasComponent<UILayoutElement>(entityID))
+    {
+        Log::LogWarning("UILayoutElement component will be replaced with UILayoutGroup");
+        ComponentSystem<UILayoutGroup>::Registry->RemoveComponent<UILayoutElement>(entityID);
+    }
+    if (!CheckRectTransformation(ComponentSystem<UILayoutGroup>::Registry, entityID))
+    {
+        ComponentSystem<UILayoutGroup>::Registry->RemoveComponent<UILayoutGroup>(entityID);
+        return;
+    }
+    TryAddEventHandler(ComponentSystem<UICheckBox>::Registry, entityID);
+
+    auto& eventHandler = ComponentSystem<UICheckBox>::Registry->GetComponent<UIEventHandler>(entityID);
+    component.Init(eventHandler);
+}
+
+void UISystem::OnComponentRemoved(EntityID entityID, UILayoutGroup& component)
+{ }
+
+void UISystem::OnEntityEnabled(EntityID entityID, UILayoutGroup& component)
+{ }
+
+void UISystem::OnEntityDisabled(EntityID entityID, UILayoutGroup& component)
+{ }
+
 bool UISystem::CheckRectTransformation(EntitiesRegistry* entitiesRegistry, EntityID entityID)
 {
     if (!entitiesRegistry->HasComponent<RectTransformation>(entityID))

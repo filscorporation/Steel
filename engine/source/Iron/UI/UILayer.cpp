@@ -3,6 +3,7 @@
 #include "UIElements/UIInputField.h"
 #include "UIElements/UIClipping.h"
 #include "UIElements/UICheckBox.h"
+#include "UIElements/UILayoutGroup.h"
 #include "UIElements/UITabs.h"
 #include "UISystem.h"
 #include "../Core/Application.h"
@@ -22,6 +23,7 @@ UILayer::UILayer(Scene* scene)
     _scene->GetEntitiesRegistry()->RegisterSystem<UIClipping>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UICheckBox>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UITabs>(uiSystem);
+    _scene->GetEntitiesRegistry()->RegisterSystem<UILayoutGroup>(uiSystem);
 }
 
 UILayer::~UILayer()
@@ -33,6 +35,7 @@ UILayer::~UILayer()
     _scene->GetEntitiesRegistry()->RemoveSystem<UIClipping>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UICheckBox>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UITabs>();
+    _scene->GetEntitiesRegistry()->RemoveSystem<UILayoutGroup>();
     delete uiSystem;
 }
 
@@ -74,6 +77,7 @@ void UILayer::Draw()
     // Components to apply changed transformation
     auto imageAccessor = entitiesRegistry->GetComponentAccessor<UIImage>();
     auto textAccessor = entitiesRegistry->GetComponentAccessor<UIText>();
+    auto hlAccessor = entitiesRegistry->GetComponentAccessor<UILayoutGroup>();
     for (auto& hierarchyNode : hierarchyNodes)
     {
         if (rtAccessor.Has(hierarchyNode.Owner))
@@ -87,6 +91,8 @@ void UILayer::Draw()
             if (textAccessor.Has(hierarchyNode.Owner))
                 // Possible place for optimization - entering component even if transformation not dirty
                 textAccessor.Get(hierarchyNode.Owner).Rebuild(this, rt, transformationDirty, _rebuildSortingOrder);
+            if (transformationDirty && hlAccessor.Has(hierarchyNode.Owner))
+                hlAccessor.Get(hierarchyNode.Owner).Rebuild(this, rt);
         }
     }
 
@@ -384,6 +390,20 @@ EntityID UILayer::CreateUITabs(const std::vector<std::string>& tabsNames, const 
 
     for (auto& tabName : tabsNames)
         tabs.AddTab(tabName);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type)
+{
+    return CreateUILayoutGroup(type, "Layout group", NULL_ENTITY);
+}
+
+EntityID UILayer::CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type, const char* name, EntityID parent)
+{
+    auto entity = CreateUIElement(name, parent);
+    auto& layout = _scene->GetEntitiesRegistry()->AddComponent<UILayoutGroup>(entity);
+    layout.SetType(type);
 
     return entity;
 }

@@ -4,6 +4,7 @@
 #include "../Scene/Scene.h"
 #include "UIEvent.h"
 #include "UIInteractable.h"
+#include "UIElements/LayoutGroupTypes.h"
 
 class Scene;
 class UISystem;
@@ -46,6 +47,8 @@ public:
     EntityID CreateUICheckBox(const char* label, const char* name, EntityID parent);
     EntityID CreateUITabs();
     EntityID CreateUITabs(const std::vector<std::string>& tabsNames, const char* name, EntityID parent);
+    EntityID CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type);
+    EntityID CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type, const char* name, EntityID parent);
 
     int PixelsPerUnit = 32;
 

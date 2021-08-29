@@ -15,6 +15,7 @@
 #include "../UI/UIElements/UIButton.h"
 #include "../UI/UIElements/UIInputField.h"
 #include "../UI/UIElements/UIClipping.h"
+#include "../UI/UIElements/UILayoutGroup.h"
 #include "../UI/UIElements/UITabs.h"
 #include "../UI/UIElements/UIText.h"
 #include "../UI/UIElements/UICheckBox.h"
@@ -147,6 +148,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(UIClipping, API_CLASS(UIClipping))
     CACHE_CLASS(UICheckBox, API_CLASS(UICheckBox))
     CACHE_CLASS(UITabs, API_CLASS(UITabs))
+    CACHE_CLASS(UILayoutGroup, API_CLASS(UILayoutGroup))
 }
 
 void ScriptingCore::CacheDataTypes(MonoImage* image)
@@ -225,6 +227,8 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return entitiesRegistry->AddComponent<UICheckBox>(entity);
     if (monoClass == CACHED_CLASS(UITabs))
         return entitiesRegistry->AddComponent<UITabs>(entity);
+    if (monoClass == CACHED_CLASS(UILayoutGroup))
+        return entitiesRegistry->AddComponent<UILayoutGroup>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -284,6 +288,8 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass* monoCl
         return entitiesRegistry->HasComponent<UICheckBox>(entity);
     if (monoClass == CACHED_CLASS(UITabs))
         return entitiesRegistry->HasComponent<UITabs>(entity);
+    if (monoClass == CACHED_CLASS(UILayoutGroup))
+        return entitiesRegistry->HasComponent<UILayoutGroup>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -340,6 +346,8 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass* mon
         return entitiesRegistry->RemoveComponent<UICheckBox>(entity);
     if (monoClass == CACHED_CLASS(UITabs))
         return entitiesRegistry->RemoveComponent<UITabs>(entity);
+    if (monoClass == CACHED_CLASS(UILayoutGroup))
+        return entitiesRegistry->RemoveComponent<UILayoutGroup>(entity);
 
     Log::LogError("Could not find cached class");
 
@@ -397,6 +405,8 @@ bool ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* monoClass, std::vect
         RETURN_COMPONENT_OWNERS(UICheckBox)
     if (monoClass == CACHED_CLASS(UITabs))
         RETURN_COMPONENT_OWNERS(UITabs)
+    if (monoClass == CACHED_CLASS(UILayoutGroup))
+        RETURN_COMPONENT_OWNERS(UILayoutGroup)
 
     Log::LogError("Could not find cached class");
 
