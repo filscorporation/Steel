@@ -117,7 +117,7 @@ void UIImage::SetImage(Sprite* image)
     }
     else
     {
-        if (image->IsSliced)
+        if (_image->IsSliced)
         {
             if (_renderers.empty())
             {
@@ -186,16 +186,6 @@ void UIImage::SetImage(Sprite* image)
             qr.CustomOwner = Owner;
         }
     }
-
-    if (_image == nullptr)
-        transformation.SetSize(glm::vec2(0.0f, 0.0f));
-    else if (wasNull)
-    {
-        glm::vec2 size;
-        size.x = _image->IsSpriteSheet ? _image->TileWidth : _image->Width;
-        size.y = _image->IsSpriteSheet ? _image->TileHeight : _image->Height;
-        transformation.SetSize(size);
-    }
 }
 
 Sprite* UIImage::GetImage()
@@ -231,6 +221,12 @@ glm::vec4 UIImage::GetColor()
 
 void UIImage::SetImageTileIndex(uint32_t index)
 {
+    if (index == currentImageTileIndex)
+        return;
+
+    if (_image == nullptr || !_image->IsSpriteSheet)
+        return;
+
     if (_image->IsSliced)
     {
         // TODO: make it work for sliced
@@ -238,26 +234,11 @@ void UIImage::SetImageTileIndex(uint32_t index)
         return;
     }
 
-    if (index == currentImageTileIndex)
-        return;
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& qr = registry->GetComponent<UIQuadRenderer>(Owner);
+
     currentImageTileIndex = index;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    if (_image->IsSliced)
-    {
-        // TODO
-        //for (uint32_t _renderer : _renderers)
-        //{
-        //    auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
-        //    _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
-        //}
-    }
-    else
-    {
-        auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(Owner);
-        _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
-    }
+    _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
 }
 
 uint32_t UIImage::GetImageTileIndex()

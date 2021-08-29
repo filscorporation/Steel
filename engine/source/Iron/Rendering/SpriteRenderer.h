@@ -21,8 +21,8 @@ public:
     const MaterialPropertyBlock& GetCustomProperties();
     void SetImage(Sprite* image);
     Sprite* GetImage();
-    void SetTileIndex(uint32_t tileIndex);
-    uint32_t GetTileIndex() const;
+    void SetImageTileIndex(uint32_t index);
+    uint32_t GetImageTileIndex() const;
     glm::vec2 GetWorldSize();
 
 private:

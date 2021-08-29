@@ -2,6 +2,7 @@
 #include "../Core/Time.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Scene/SceneHelper.h"
+#include "../UI/UIElements/UIImage.h"
 
 void Animator::Init()
 {
@@ -83,17 +84,36 @@ void Animator::AddAndPlay(Animation* animation)
 
 void ApplyFrame(EntityID entity, Keyframe keyframe)
 {
-    auto& sr = GetComponentS<SpriteRenderer>(entity);
-    if (sr.GetImage() == nullptr && keyframe.SpriteID != NULL_RESOURCE
-        || sr.GetImage() != nullptr && sr.GetImage()->ID != keyframe.SpriteID)
-    {
-        if (keyframe.SpriteID == NULL_RESOURCE)
-            sr.SetImage(nullptr);
-        else
-            sr.SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
-    }
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    sr.SetTileIndex(keyframe.TileIndex);
+    if (entitiesRegistry->HasComponent<SpriteRenderer>(entity))
+    {
+        auto& sr = entitiesRegistry->GetComponent<SpriteRenderer>(entity);
+        if (sr.GetImage() == nullptr && keyframe.SpriteID != NULL_RESOURCE
+        || sr.GetImage() != nullptr && sr.GetImage()->ID != keyframe.SpriteID)
+        {
+            if (keyframe.SpriteID == NULL_RESOURCE)
+                sr.SetImage(nullptr);
+            else
+                sr.SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
+        }
+
+        sr.SetImageTileIndex(keyframe.TileIndex);
+    }
+    if (entitiesRegistry->HasComponent<UIImage>(entity))
+    {
+        auto& iui = entitiesRegistry->GetComponent<UIImage>(entity);
+        if (iui.GetImage() == nullptr && keyframe.SpriteID != NULL_RESOURCE
+        || iui.GetImage() != nullptr && iui.GetImage()->ID != keyframe.SpriteID)
+        {
+            if (keyframe.SpriteID == NULL_RESOURCE)
+                iui.SetImage(nullptr);
+            else
+                iui.SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
+        }
+
+        iui.SetImageTileIndex(keyframe.TileIndex);
+    }
 }
 
 void Animator::OnUpdate()

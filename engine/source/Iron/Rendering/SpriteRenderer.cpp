@@ -87,9 +87,9 @@ Sprite* SpriteRenderer::GetImage()
     return _image;
 }
 
-void SpriteRenderer::SetTileIndex(uint32_t tileIndex)
+void SpriteRenderer::SetImageTileIndex(uint32_t index)
 {
-    if (tileIndex == currentImageTileIndex)
+    if (index == currentImageTileIndex)
         return;
 
     if (_image == nullptr || !_image->IsSpriteSheet)
@@ -98,11 +98,11 @@ void SpriteRenderer::SetTileIndex(uint32_t tileIndex)
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& qr = registry->AddComponent<QuadRenderer>(Owner);
 
-    currentImageTileIndex = tileIndex;
+    currentImageTileIndex = index;
     _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
 }
 
-uint32_t SpriteRenderer::GetTileIndex() const
+uint32_t SpriteRenderer::GetImageTileIndex() const
 {
     return currentImageTileIndex;
 }
