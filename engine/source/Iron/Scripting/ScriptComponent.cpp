@@ -140,3 +140,33 @@ void ScriptComponent::OnMouseJustReleased()
 {
     CALL_IF_MASK(OnMouseJustReleased)
 }
+
+void ScriptComponent::OnMouseOverUI()
+{
+    CALL_IF_MASK(OnMouseOverUI)
+}
+
+void ScriptComponent::OnMouseEnterUI()
+{
+    CALL_IF_MASK(OnMouseEnterUI)
+}
+
+void ScriptComponent::OnMouseExitUI()
+{
+    CALL_IF_MASK(OnMouseExitUI)
+}
+
+void ScriptComponent::OnMousePressedUI()
+{
+    CALL_IF_MASK(OnMousePressedUI)
+}
+
+void ScriptComponent::OnMouseJustPressedUI()
+{
+    CALL_IF_MASK(OnMouseJustPressedUI)
+}
+
+void ScriptComponent::OnMouseJustReleasedUI()
+{
+    CALL_IF_MASK(OnMouseJustReleasedUI)
+}

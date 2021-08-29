@@ -88,9 +88,6 @@ void Application::RunUpdate()
 
     Renderer::Clear(Screen::GetColor());
 
-    // Send callbacks for mouse events to affected entities
-    Input::SendMouseCallbacks();
-
     // Update and render objects in scene
     state = ApplicationStates::OnUpdate;
 

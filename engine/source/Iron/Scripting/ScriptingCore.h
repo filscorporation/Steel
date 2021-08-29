@@ -57,6 +57,13 @@ struct EngineCallsMethods
     MonoMethod* callOnMousePressed;
     MonoMethod* callOnMouseJustPressed;
     MonoMethod* callOnMouseJustReleased;
+
+    MonoMethod* callOnMouseOverUI;
+    MonoMethod* callOnMouseEnterUI;
+    MonoMethod* callOnMouseExitUI;
+    MonoMethod* callOnMousePressedUI;
+    MonoMethod* callOnMouseJustPressedUI;
+    MonoMethod* callOnMouseJustReleasedUI;
 };
 
 struct EventManagerMethods

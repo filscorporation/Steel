@@ -22,20 +22,17 @@ public:
     static glm::vec2 GetMousePosition();
     static glm::vec2 GetMouseScrollDelta();
 
-    static UIEvent GetUIEvent();
-    static void PollEvents();
-    static void ReleaseAllEvents();
-    static void SendMouseCallbacks();
-
-private:
-    static void Init(GLFWwindow* window);
-
     static bool IsAnyKeyPressed();
     static bool IsAnyMouseButtonPressed();
     static bool IsAnyMouseButtonJustPressed();
     static bool IsAnyMouseButtonJustReleased();
 
-    static EntityID lastMouseOverCollider;
+    static UIEvent GetUIEvent();
+    static void PollEvents();
+    static void ReleaseAllEvents();
+
+private:
+    static void Init(GLFWwindow* window);
 
     friend class Screen;
 };

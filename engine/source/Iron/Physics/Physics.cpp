@@ -1,4 +1,5 @@
 #include "../Core/Log.h"
+#include "../Core/Input.h"
 #include "../Core/Application.h"
 #include "../Scene/Transformation.h"
 #include "BoxCollider.h"
@@ -8,6 +9,8 @@
 #include "PhysicsCore.h"
 
 PhysicsSystem* Physics::physicsSystem = nullptr;
+
+EntityID Physics::lastMouseOverCollider = NULL_ENTITY;
 
 void Physics::Init()
 {
@@ -86,6 +89,80 @@ void Physics::SendEvents()
                 scriptsAccessor.Get(rigidBodies[i].Owner).OnCollisionStay(contact.second);
             }
         }
+    }
+
+    Camera& camera = Application::Instance->GetCurrentScene()->GetMainCamera();
+    glm::vec2 worldMP = camera.ScreenToWorldPoint(Input::GetMousePosition());
+    auto hits = Physics::PointCast(worldMP);
+    if (hits.empty())
+    {
+        // Nothing mouse is over
+        if (lastMouseOverCollider != NULL_ENTITY)
+        {
+            // We had stored last object mouse was over, send mouse exit event
+            if (entitiesRegistry->HasComponent<ScriptComponent>(lastMouseOverCollider))
+                entitiesRegistry->GetComponent<ScriptComponent>(lastMouseOverCollider).OnMouseExit();
+
+            lastMouseOverCollider = NULL_ENTITY;
+        }
+
+        return;
+    }
+
+    // Pick the nearest by z object
+    float z, maxZ = entitiesRegistry->GetComponent<Transformation>(hits[0]).GetPosition().z;
+    int closestEntityID = 0;
+    for (size_t i = 0; i < hits.size(); i++)
+    {
+        z = entitiesRegistry->GetComponent<Transformation>(hits[i]).GetPosition().z;
+        if (z > maxZ)
+        {
+            maxZ = z;
+            closestEntityID = i;
+        }
+    }
+
+    // Mouse is over some object
+    if (lastMouseOverCollider != NULL_ENTITY)
+    {
+        // We had stored last object mouse was over
+        if (lastMouseOverCollider != hits[closestEntityID])
+        {
+            // Last object differs from new one, send exit to last, and enter to new
+            if (entitiesRegistry->HasComponent<ScriptComponent>(lastMouseOverCollider))
+                entitiesRegistry->GetComponent<ScriptComponent>(lastMouseOverCollider).OnMouseExit();
+
+            lastMouseOverCollider = hits[closestEntityID];
+
+            if (entitiesRegistry->HasComponent<ScriptComponent>(lastMouseOverCollider))
+                entitiesRegistry->GetComponent<ScriptComponent>(lastMouseOverCollider).OnMouseEnter();
+        }
+        else
+        {
+            // We are still over the same object as last frame, send him over event
+            if (entitiesRegistry->HasComponent<ScriptComponent>(lastMouseOverCollider))
+                entitiesRegistry->GetComponent<ScriptComponent>(lastMouseOverCollider).OnMouseOver();
+        }
+    }
+    else
+    {
+        // Nothing was stored, send enter to new one
+        lastMouseOverCollider = hits[closestEntityID];
+
+        if (entitiesRegistry->HasComponent<ScriptComponent>(lastMouseOverCollider))
+            entitiesRegistry->GetComponent<ScriptComponent>(lastMouseOverCollider).OnMouseEnter();
+    }
+
+    if (entitiesRegistry->HasComponent<ScriptComponent>(lastMouseOverCollider))
+    {
+        auto& sr = entitiesRegistry->GetComponent<ScriptComponent>(lastMouseOverCollider);
+
+        if (Input::IsAnyMouseButtonJustPressed())
+            sr.OnMouseJustPressed();
+        if (Input::IsAnyMouseButtonPressed())
+            sr.OnMousePressed();
+        if (Input::IsAnyMouseButtonJustReleased())
+            sr.OnMouseJustReleased();
     }
 }
 

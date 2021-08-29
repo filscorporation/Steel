@@ -95,5 +95,35 @@ namespace Iron
         {
             ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnMouseJustReleased();
         }
+        
+        private static void ComponentOnMouseOverUI(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnMouseOverUI();
+        }
+        
+        private static void ComponentOnMouseEnterUI(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnMouseEnterUI();
+        }
+        
+        private static void ComponentOnMouseExitUI(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnMouseExitUI();
+        }
+        
+        private static void ComponentOnMousePressedUI(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnMousePressedUI();
+        }
+        
+        private static void ComponentOnMouseJustPressedUI(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnMouseJustPressedUI();
+        }
+        
+        private static void ComponentOnMouseJustReleasedUI(IntPtr componentPtr)
+        {
+            ((ScriptComponent)GCHandle.FromIntPtr(componentPtr).Target)?.OnMouseJustReleasedUI();
+        }
     }
 }

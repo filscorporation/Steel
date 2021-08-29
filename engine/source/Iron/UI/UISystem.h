@@ -10,11 +10,17 @@
 #include "UIElements/UITabs.h"
 #include "UIElements/UILayoutGroup.h"
 
-class UISystem : public ComponentSystem<UIImage>, public ComponentSystem<UIButton>, public ComponentSystem<UIText>,
+class UISystem : public ComponentSystem<UIEventHandler>,
+        public ComponentSystem<UIImage>, public ComponentSystem<UIButton>, public ComponentSystem<UIText>,
         public ComponentSystem<UIInputField>, public ComponentSystem<UIClipping>, public ComponentSystem<UICheckBox>,
         public ComponentSystem<UITabs>, public ComponentSystem<UILayoutGroup>
 {
 public:
+    void OnComponentAdded(EntityID entityID, UIEventHandler& component) override;
+    void OnComponentRemoved(EntityID entityID, UIEventHandler& component) override;
+    void OnEntityEnabled(EntityID entityID, UIEventHandler& component) override;
+    void OnEntityDisabled(EntityID entityID, UIEventHandler& component) override;
+
     void OnComponentAdded(EntityID entityID, UIImage& component) override;
     void OnComponentRemoved(EntityID entityID, UIImage& component) override;
     void OnEntityEnabled(EntityID entityID, UIImage& component) override;

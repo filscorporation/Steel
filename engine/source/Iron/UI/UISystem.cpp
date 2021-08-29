@@ -4,6 +4,28 @@
 #include "../Core/Log.h"
 #include "../Scripting/ScriptingCore.h"
 
+void UISystem::OnComponentAdded(EntityID entityID, UIEventHandler& component)
+{
+    if (ComponentSystem<UIEventHandler>::Registry->HasComponent<ScriptComponent>(entityID))
+    {
+        component.EnableNotifyScripts();
+    }
+}
+
+void UISystem::OnComponentRemoved(EntityID entityID, UIEventHandler& component)
+{
+    if (ComponentSystem<UIEventHandler>::Registry->HasComponent<ScriptComponent>(entityID))
+    {
+        component.DisableNotifyScripts();
+    }
+}
+
+void UISystem::OnEntityEnabled(EntityID entityID, UIEventHandler& component)
+{ }
+
+void UISystem::OnEntityDisabled(EntityID entityID, UIEventHandler& component)
+{ }
+
 void UISystem::OnComponentAdded(EntityID entityID, UIImage& component)
 {
     if (!CheckRectTransformation(ComponentSystem<UIImage>::Registry, entityID))

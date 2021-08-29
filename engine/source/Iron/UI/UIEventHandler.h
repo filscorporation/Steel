@@ -24,6 +24,9 @@ public:
 
     void HandleEvent(const ComponentAccessor<RectTransformation>& rtAccessor, UIEvent& uiEvent);
 
+    void EnableNotifyScripts();
+    void DisableNotifyScripts();
+
     // Parameters, defined by UI element
     EventHandlerTypes::EventHandlerType Type = EventHandlerTypes::Normal;
     EntityID RectEntity = NULL_ENTITY;
@@ -34,4 +37,8 @@ public:
 private:
     bool lastFrameContains = false;
     bool isDragged = false;
+
+    bool notifyScripts = false;
+
+    void ScriptsCallback(UIEventTypes::UIEventType eventType, const UIEvent& uiEvent);
 };

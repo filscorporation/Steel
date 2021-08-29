@@ -88,5 +88,35 @@
         /// Called when mouse just got released while inside <see cref="Collider"/> attached to this entity
         /// </summary>
         public virtual void OnMouseJustReleased() { }
+        
+        /// <summary>
+        /// Called first frame when mouse entered UI event handler attached to this entity
+        /// </summary>
+        public virtual void OnMouseOverUI() { }
+        
+        /// <summary>
+        /// Called every frame while mouse stays in UI event handler attached to this entity
+        /// </summary>
+        public virtual void OnMouseEnterUI() { }
+        
+        /// <summary>
+        /// Called first frame when mouse exited UI event handler attached to this entity
+        /// </summary>
+        public virtual void OnMouseExitUI() { }
+        
+        /// <summary>
+        /// Called every frame while mouse stays pressed while inside UI event handler attached to this entity
+        /// </summary>
+        public virtual void OnMousePressedUI() { }
+        
+        /// <summary>
+        /// Called when mouse just got pressed while inside UI event handler attached to this entity
+        /// </summary>
+        public virtual void OnMouseJustPressedUI() { }
+        
+        /// <summary>
+        /// Called when mouse just got released while inside UI event handler attached to this entity
+        /// </summary>
+        public virtual void OnMouseJustReleasedUI() { }
     }
 }

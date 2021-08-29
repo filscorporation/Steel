@@ -1,5 +1,7 @@
 #include "UIEventHandler.h"
+#include "../Core/Log.h"
 #include "../Core/Time.h"
+#include "../Scripting/ScriptComponent.h"
 
 void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rtAccessor, UIEvent& uiEvent)
 {
@@ -25,12 +27,20 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
     }
     wasUsed = wasUsed || uiEvent.ClippingDepth != 0;
 
-    if (Type == EventHandlerTypes::ClippingOpen || Type == EventHandlerTypes::ClippingClose || EventCallback == nullptr)
+    if (Type == EventHandlerTypes::ClippingOpen || Type == EventHandlerTypes::ClippingClose
+        || (EventCallback == nullptr && !notifyScripts))
         return;
 
-    if (EventsMask & UIEventTypes::Any)
+    UIEventTypes::UIEventType eventsMask = EventsMask;
+    if (notifyScripts)
+        eventsMask = eventsMask | UIEventTypes::MouseEnter | UIEventTypes::MouseExit | UIEventTypes::MouseOver
+                | UIEventTypes::MousePressed | UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustReleased;
+
+    if (eventsMask & UIEventTypes::Any)
     {
-        EventCallback(Owner, UIEventTypes::Any, uiEvent);
+        if (EventCallback != nullptr)
+            EventCallback(Owner, UIEventTypes::Any, uiEvent);
+        ScriptsCallback(UIEventTypes::Any, uiEvent);
         return;
     }
 
@@ -44,19 +54,19 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
         if (!wasUsed && !lastFrameContains)
         {
             lastFrameContains = true;
-            if (EventsMask & UIEventTypes::MouseEnter)
+            if (eventsMask & UIEventTypes::MouseEnter)
             {
                 eventType = eventType | UIEventTypes::MouseEnter;
             }
         }
-        if (EventsMask & UIEventTypes::MouseOver)
+        if (eventsMask & UIEventTypes::MouseOver)
         {
             if (!wasUsed)
             {
                 eventType = eventType | UIEventTypes::MouseOver;
             }
         }
-        if (EventsMask & UIEventTypes::MouseJustPressed)
+        if (eventsMask & UIEventTypes::MouseJustPressed)
         {
             if (!wasUsed &&
                 (uiEvent.LeftMouseButtonState == ButtonStates::JustPressed || uiEvent.RightMouseButtonState == ButtonStates::JustPressed))
@@ -64,7 +74,7 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
                 eventType = eventType | UIEventTypes::MouseJustPressed;
             }
         }
-        if (EventsMask & UIEventTypes::MousePressed)
+        if (eventsMask & UIEventTypes::MousePressed)
         {
             if (!wasUsed &&
                 (uiEvent.LeftMouseButtonState == ButtonStates::IsHeld || uiEvent.RightMouseButtonState == ButtonStates::IsHeld))
@@ -72,7 +82,7 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
                 eventType = eventType | UIEventTypes::MousePressed;
             }
         }
-        if (EventsMask & UIEventTypes::MouseJustReleased)
+        if (eventsMask & UIEventTypes::MouseJustReleased)
         {
             if (!wasUsed &&
                 (uiEvent.LeftMouseButtonState == ButtonStates::JustReleased || uiEvent.RightMouseButtonState == ButtonStates::JustReleased))
@@ -83,7 +93,7 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
         if (!wasUsed && !isDragged && uiEvent.LeftMouseButtonState == ButtonStates::JustPressed)
         {
             isDragged = true;
-            if (EventsMask & UIEventTypes::MouseDragBegin)
+            if (eventsMask & UIEventTypes::MouseDragBegin)
             {
                 eventType = eventType | UIEventTypes::MouseDragBegin;
             }
@@ -94,7 +104,7 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
     if ((!contains || wasUsed) && lastFrameContains)
     {
         lastFrameContains = false;
-        if (EventsMask & UIEventTypes::MouseExit)
+        if (eventsMask & UIEventTypes::MouseExit)
         {
             eventType = eventType | UIEventTypes::MouseExit;
         }
@@ -102,52 +112,104 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
     if (isDragged && uiEvent.LeftMouseButtonState == ButtonStates::JustReleased)
     {
         isDragged = false;
-        if (EventsMask & UIEventTypes::MouseDragEnd)
+        if (eventsMask & UIEventTypes::MouseDragEnd)
         {
             eventType = eventType | UIEventTypes::MouseDragEnd;
         }
     }
-    if (isDragged && (EventsMask & UIEventTypes::MouseDrag))
+    if (isDragged && (eventsMask & UIEventTypes::MouseDrag))
     {
         eventType = eventType | UIEventTypes::MouseDrag;
     }
-    if (EventsMask & UIEventTypes::ScrollDelta)
+    if (eventsMask & UIEventTypes::ScrollDelta)
     {
         if (std::abs(uiEvent.ScrollDelta.x) > 0.001f && std::abs(uiEvent.ScrollDelta.y) > 0.001f)
         {
             eventType = eventType | UIEventTypes::ScrollDelta;
         }
     }
-    if (EventsMask & UIEventTypes::MouseJustPressedAnywhere)
+    if (eventsMask & UIEventTypes::MouseJustPressedAnywhere)
     {
         if (uiEvent.LeftMouseButtonState == ButtonStates::JustPressed || uiEvent.RightMouseButtonState == ButtonStates::JustPressed)
         {
             eventType = eventType | UIEventTypes::MouseJustPressedAnywhere;
         }
     }
-    if (EventsMask & UIEventTypes::MousePressedAnywhere)
+    if (eventsMask & UIEventTypes::MousePressedAnywhere)
     {
         if (uiEvent.LeftMouseButtonState == ButtonStates::IsHeld || uiEvent.RightMouseButtonState == ButtonStates::IsHeld)
         {
             eventType = eventType | UIEventTypes::MousePressedAnywhere;
         }
     }
-    if (EventsMask & UIEventTypes::MouseJustReleasedAnywhere)
+    if (eventsMask & UIEventTypes::MouseJustReleasedAnywhere)
     {
         if (uiEvent.LeftMouseButtonState == ButtonStates::JustReleased || uiEvent.RightMouseButtonState == ButtonStates::JustReleased)
         {
             eventType = eventType | UIEventTypes::MouseJustReleasedAnywhere;
         }
     }
-    if (EventsMask & UIEventTypes::KeyInput && uiEvent.AnyKey)
+    if (eventsMask & UIEventTypes::KeyInput && uiEvent.AnyKey)
     {
         eventType = eventType | UIEventTypes::KeyInput;
     }
-    if (EventsMask & UIEventTypes::TextInput && !uiEvent.InputString.empty())
+    if (eventsMask & UIEventTypes::TextInput && !uiEvent.InputString.empty())
     {
         eventType = eventType | UIEventTypes::TextInput;
     }
 
     if (eventType != 0)
-        EventCallback(Owner, eventType, uiEvent);
+    {
+        if (EventCallback != nullptr)
+            EventCallback(Owner, eventType, uiEvent);
+        ScriptsCallback(eventType, uiEvent);
+    }
+}
+
+void UIEventHandler::EnableNotifyScripts()
+{
+    notifyScripts = true;
+}
+
+void UIEventHandler::DisableNotifyScripts()
+{
+    notifyScripts = false;
+}
+
+void UIEventHandler::ScriptsCallback(UIEventTypes::UIEventType eventType, const UIEvent& uiEvent)
+{
+    if (!notifyScripts)
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (eventType & UIEventTypes::MouseEnter)
+    {
+        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
+            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseEnterUI();
+    }
+    if (eventType & UIEventTypes::MouseExit)
+    {
+        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
+            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseExitUI();
+    }
+    if (eventType & UIEventTypes::MouseOver)
+    {
+        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
+            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseOverUI();
+    }
+    if (eventType & UIEventTypes::MousePressed)
+    {
+        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
+            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMousePressedUI();
+    }
+    if (eventType & UIEventTypes::MouseJustPressed)
+    {
+        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
+            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseJustPressedUI();
+    }
+    if (eventType & UIEventTypes::MouseJustReleased)
+    {
+        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
+            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseJustReleasedUI();
+    }
 }

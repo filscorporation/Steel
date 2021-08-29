@@ -16,6 +16,7 @@ UILayer::UILayer(Scene* scene)
 {
     _scene = scene;
     uiSystem = new UISystem();
+    _scene->GetEntitiesRegistry()->RegisterSystem<UIEventHandler>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIText>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIImage>(uiSystem);
     _scene->GetEntitiesRegistry()->RegisterSystem<UIButton>(uiSystem);
@@ -28,6 +29,7 @@ UILayer::UILayer(Scene* scene)
 
 UILayer::~UILayer()
 {
+    _scene->GetEntitiesRegistry()->RemoveSystem<UIEventHandler>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIText>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIImage>();
     _scene->GetEntitiesRegistry()->RemoveSystem<UIButton>();

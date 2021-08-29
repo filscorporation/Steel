@@ -78,6 +78,12 @@ void ScriptingCore::LoadEventMethodsDescriptions(MonoImage* image)
     eventMethodsDescriptions[ScriptEventTypes::OnMousePressed] = mono_method_desc_new("*:OnMousePressed ()", true);
     eventMethodsDescriptions[ScriptEventTypes::OnMouseJustPressed] = mono_method_desc_new("*:OnMouseJustPressed ()", true);
     eventMethodsDescriptions[ScriptEventTypes::OnMouseJustReleased] = mono_method_desc_new("*:OnMouseJustReleased ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseOverUI] = mono_method_desc_new("*:OnMouseOverUI ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseEnterUI] = mono_method_desc_new("*:OnMouseEnterUI ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseExitUI] = mono_method_desc_new("*:OnMouseExitUI ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMousePressedUI] = mono_method_desc_new("*:OnMousePressedUI ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseJustPressedUI] = mono_method_desc_new("*:OnMouseJustPressedUI ()", true);
+    eventMethodsDescriptions[ScriptEventTypes::OnMouseJustReleasedUI] = mono_method_desc_new("*:OnMouseJustReleasedUI ()", true);
 }
 
 void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
@@ -104,6 +110,13 @@ void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
     EngineCalls.callOnMousePressed = mono_class_get_method_from_name(klass, "ComponentOnMousePressed", 1);
     EngineCalls.callOnMouseJustPressed = mono_class_get_method_from_name(klass, "ComponentOnMouseJustPressed", 1);
     EngineCalls.callOnMouseJustReleased = mono_class_get_method_from_name(klass, "ComponentOnMouseJustReleased", 1);
+
+    EngineCalls.callOnMouseOverUI = mono_class_get_method_from_name(klass, "ComponentOnMouseOverUI", 1);
+    EngineCalls.callOnMouseEnterUI = mono_class_get_method_from_name(klass, "ComponentOnMouseEnterUI", 1);
+    EngineCalls.callOnMouseExitUI = mono_class_get_method_from_name(klass, "ComponentOnMouseExitUI", 1);
+    EngineCalls.callOnMousePressedUI = mono_class_get_method_from_name(klass, "ComponentOnMousePressedUI", 1);
+    EngineCalls.callOnMouseJustPressedUI = mono_class_get_method_from_name(klass, "ComponentOnMouseJustPressedUI", 1);
+    EngineCalls.callOnMouseJustReleasedUI = mono_class_get_method_from_name(klass, "ComponentOnMouseJustReleasedUI", 1);
 }
 
 void ScriptingCore::LoadEventManagerMethods(MonoImage* image)

@@ -37,6 +37,13 @@ public:
     void OnMouseJustPressed();
     void OnMouseJustReleased();
 
+    void OnMouseOverUI();
+    void OnMouseEnterUI();
+    void OnMouseExitUI();
+    void OnMousePressedUI();
+    void OnMouseJustPressedUI();
+    void OnMouseJustReleasedUI();
+
     struct ScriptData
     {
         ScriptPointer Pointer;

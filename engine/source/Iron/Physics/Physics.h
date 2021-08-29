@@ -30,4 +30,6 @@ public:
 
 private:
     static PhysicsSystem* physicsSystem;
+
+    static EntityID lastMouseOverCollider;
 };
