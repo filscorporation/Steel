@@ -745,6 +745,12 @@ void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
     }
 }
 
+const char* ScriptingCore::ToString(MonoString* monoString)
+{
+    const char* result = mono_string_to_utf8(monoString);
+    return result ? result : "";
+}
+
 MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t>& inArray)
 {
     MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_uint32_class(), inArray.size());
@@ -823,7 +829,7 @@ void ScriptingCore::FromMonoStringArray(MonoArray* inArray, std::vector<std::str
 
     for (uint32_t i = 0; i < length; i++)
     {
-        outArray.emplace_back(mono_string_to_utf8(mono_array_get(inArray, MonoString*, i)));
+        outArray.emplace_back(ScriptingCore::ToString(mono_array_get(inArray, MonoString*, i)));
     }
 }
 

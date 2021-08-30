@@ -283,7 +283,7 @@ EntityID UILayer::CreateUIText()
 EntityID UILayer::CreateUIText(const char* text, const char* name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
-    _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity).SetText(text);
+    _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity).SetText(text ? text : "");
 
     return entity;
 }

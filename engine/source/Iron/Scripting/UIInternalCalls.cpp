@@ -274,7 +274,7 @@ void UIInternalCalls::UIText_SetText(EntityID entityID, MonoString* text)
 {
     GET_COMPONENT_OR_RETURN(UIText, )
 
-    component.SetText(mono_string_to_utf8(text));
+    component.SetText(ScriptingCore::ToString(text));
 }
 
 int UIInternalCalls::UIText_GetTextSize(EntityID entityID)
@@ -561,7 +561,7 @@ EntityID UIInternalCalls::UITabs_AddTab(EntityID entityID, MonoString* name)
 {
     GET_COMPONENT_OR_RETURN(UITabs, NULL_ENTITY)
 
-    return component.AddTab(mono_string_to_utf8(name));
+    return component.AddTab(ScriptingCore::ToString(name));
 }
 
 bool UIInternalCalls::UITabs_RemoveTab(EntityID entityID, int index)
@@ -592,12 +592,12 @@ EntityID UIInternalCalls::UI_CreateUIElement()
 
 EntityID UIInternalCalls::UI_CreateUIElement2(MonoString* name)
 {
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement(mono_string_to_utf8(name), NULL_ENTITY);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement(ScriptingCore::ToString(name), NULL_ENTITY);
 }
 
 EntityID UIInternalCalls::UI_CreateUIElement3(MonoString* name, EntityID parentEntityID)
 {
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement(mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement(ScriptingCore::ToString(name), parentEntityID);
 }
 
 EntityID UIInternalCalls::UI_CreateUIImage()
@@ -609,7 +609,7 @@ EntityID UIInternalCalls::UI_CreateUIImage2(ResourceID spriteID, MonoString* nam
 {
     Sprite* sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
 
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIImage(sprite, mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIImage(sprite, ScriptingCore::ToString(name), parentEntityID);
 }
 
 EntityID UIInternalCalls::UI_CreateUIButton()
@@ -621,7 +621,7 @@ EntityID UIInternalCalls::UI_CreateUIButton2(ResourceID spriteID, MonoString* na
 {
     Sprite* sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
 
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIButton(sprite, mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIButton(sprite, ScriptingCore::ToString(name), parentEntityID);
 }
 
 EntityID UIInternalCalls::UI_CreateUIText()
@@ -631,7 +631,7 @@ EntityID UIInternalCalls::UI_CreateUIText()
 
 EntityID UIInternalCalls::UI_CreateUIText2(MonoString* text, MonoString* name, EntityID parentEntityID)
 {
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIText(mono_string_to_utf8(text), mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIText(ScriptingCore::ToString(text), ScriptingCore::ToString(name), parentEntityID);
 }
 
 EntityID UIInternalCalls::UI_CreateUIInputField()
@@ -641,7 +641,7 @@ EntityID UIInternalCalls::UI_CreateUIInputField()
 
 EntityID UIInternalCalls::UI_CreateUIInputField2(MonoString* name, EntityID parentEntityID)
 {
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIInputField(mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIInputField(ScriptingCore::ToString(name), parentEntityID);
 }
 
 EntityID UIInternalCalls::UI_CreateUIClipping()
@@ -661,7 +661,7 @@ EntityID UIInternalCalls::UI_CreateUICheckBox()
 
 EntityID UIInternalCalls::UI_CreateUICheckBox2(MonoString* label, MonoString* name, EntityID parentEntityID)
 {
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUICheckBox(mono_string_to_utf8(label), mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUICheckBox(ScriptingCore::ToString(label), ScriptingCore::ToString(name), parentEntityID);
 }
 
 bool UIInternalCalls::UI_IsPointerOverUI()
@@ -679,7 +679,7 @@ EntityID UIInternalCalls::UI_CreateUITabs2(MonoArray* tabs, MonoString* name, En
     std::vector<std::string> tabsNames;
     ScriptingCore::FromMonoStringArray(tabs, tabsNames);
 
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUITabs(tabsNames, mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUITabs(tabsNames, ScriptingCore::ToString(name), parentEntityID);
 }
 
 EntityID UIInternalCalls::UI_CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type)
@@ -689,5 +689,5 @@ EntityID UIInternalCalls::UI_CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupTy
 
 EntityID UIInternalCalls::UI_CreateUILayoutGroup2(LayoutGroupTypes::LayoutGroupType type, MonoString* name, EntityID parentEntityID)
 {
-    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUILayoutGroup(type, mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUILayoutGroup(type, ScriptingCore::ToString(name), parentEntityID);
 }

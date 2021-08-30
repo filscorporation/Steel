@@ -48,6 +48,7 @@
         <Compile Include="Core\Coroutines\Coroutine.cs" />
         <Compile Include="Core\Coroutines\CoroutinesManager.cs" />
         <Compile Include="Core\Coroutines\WaitForSeconds.cs" />
+        <Compile Include="Core\Coroutines\WaitForSecondsUnscaled.cs" />
         <Compile Include="Core\Coroutines\WaitWhile.cs" />
         <Compile Include="Core\Debug.cs" />
         <Compile Include="Core\Input.cs" />

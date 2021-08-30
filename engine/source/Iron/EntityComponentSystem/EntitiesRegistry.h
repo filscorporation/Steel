@@ -311,11 +311,6 @@ public:
             entityStates[id] = entityStates[id] | EntityStates::IsActive;
             if (self)
                 entityStates[id] = entityStates[id] | EntityStates::IsActiveSelf;
-
-            for (auto pool : componentsMap)
-            {
-                pool.second->AfterEntitySetActive(entityID, id, active);
-            }
         }
         else
         {
@@ -330,11 +325,11 @@ public:
             entityStates[id] = entityStates[id] & ~EntityStates::IsActive;
             if (self)
                 entityStates[id] = entityStates[id] & ~EntityStates::IsActiveSelf;
+        }
 
-            for (auto pool : componentsMap)
-            {
-                pool.second->AfterEntitySetActive(entityID, id, active);
-            }
+        for (auto pool : componentsMap)
+        {
+            pool.second->AfterEntitySetActive(entityID, id, active);
         }
     }
 
@@ -398,8 +393,8 @@ public:
             return 0;
         }
 
-        return ((ComponentsPoolWrapper<T>*)componentsMap[typeID])->Storage.Size()
-            + ((ComponentsPoolWrapper<T>*)componentsMap[typeID])->InactiveStorage.Size();
+        auto pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
+        return pool->Storage.Size() + pool->InactiveStorage.Size();
     }
 
     template <typename T>

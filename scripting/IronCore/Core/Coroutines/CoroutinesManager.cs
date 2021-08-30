@@ -54,6 +54,11 @@ namespace Iron
                     if (waitForSeconds.Duration > 0)
                         return true;
                     break;
+                case WaitForSecondsUnscaled waitForSecondsUnscaled:
+                    waitForSecondsUnscaled.Duration -= deltaTime / Time.TimeScale;
+                    if (waitForSecondsUnscaled.Duration > 0)
+                        return true;
+                    break;
                 case WaitWhile waitWhile:
                     if (waitWhile.Predicate())
                         return true;

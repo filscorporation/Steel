@@ -33,7 +33,12 @@ namespace Iron
             get => GetFullscreen_Internal();
             set => SetFullscreen_Internal(value);
         }
-        
+
+        /// <summary>
+        /// Is screen minimized
+        /// </summary>
+        public static bool IsMinimized => GetIsMinimized_Internal();
+
         /// <summary>
         /// Screen culling color
         /// </summary>
@@ -60,6 +65,9 @@ namespace Iron
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetFullscreen_Internal(bool fullscreen);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool GetIsMinimized_Internal();
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Color GetColor_Internal();

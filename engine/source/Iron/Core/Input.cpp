@@ -203,13 +203,19 @@ void Input::ReleaseAllEvents()
     for (auto& key : pressedKeys)
     {
         if (key == ButtonStates::JustPressed || key == ButtonStates::IsHeld)
+        {
             key = ButtonStates::JustReleased;
+            keyIsDirty = true;
+        }
     }
 
     for (auto& mouse : pressedMouse)
     {
         if (mouse == ButtonStates::JustPressed || mouse == ButtonStates::IsHeld)
+        {
             mouse = ButtonStates::JustReleased;
+            mouseIsDirty = true;
+        }
     }
 }
 

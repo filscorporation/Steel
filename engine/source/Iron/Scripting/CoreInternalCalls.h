@@ -72,6 +72,7 @@ namespace CoreInternalCalls
     void Screen_SetHeight(int height);
     bool Screen_GetFullscreen();
     void Screen_SetFullscreen(bool fullscreen);
+    bool Screen_GetIsMinimized();
     glm::vec4 Screen_GetColor();
     void Screen_SetColor(glm::vec4 color);
 

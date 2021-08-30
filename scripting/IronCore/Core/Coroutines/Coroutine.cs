@@ -34,6 +34,19 @@ namespace Iron
             
             action?.Invoke();
         }
+
+        /// <summary>
+        /// Coroutine from delayed action
+        /// </summary>
+        /// <param name="action">Action to call in coroutine</param>
+        /// <param name="delay">Delay in seconds to wait</param>
+        /// <returns>IEnumerator to pass in StartCoroutine</returns>
+        public static IEnumerator WaitForSecondsUnscaled(Action action, float delay)
+        {
+            yield return new WaitForSecondsUnscaled(delay);
+            
+            action?.Invoke();
+        }
         
         /// <summary>
         /// Coroutine that delays action while predicate is true

@@ -74,19 +74,19 @@ bool CoreInternalCalls::Input_IsMouseJustReleased(int code)
 
 ResourceID CoreInternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {
-    auto image = Application::Instance->GetResourcesManager()->LoadImage(mono_string_to_utf8(path));
+    auto image = Application::Instance->GetResourcesManager()->LoadImage(ScriptingCore::ToString(path));
     return image == nullptr ? NULL_RESOURCE : image->ID;
 }
 
 EntityID CoreInternalCalls::ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll)
 {
-    auto data = Application::Instance->GetResourcesManager()->LoadAsepriteData(mono_string_to_utf8(path), loopAll);
+    auto data = Application::Instance->GetResourcesManager()->LoadAsepriteData(ScriptingCore::ToString(path), loopAll);
     return data == nullptr ? NULL_RESOURCE : data->ID;
 }
 
 ResourceID CoreInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
 {
-    auto track = Application::Instance->GetResourcesManager()->LoadAudioTrack(mono_string_to_utf8(path));
+    auto track = Application::Instance->GetResourcesManager()->LoadAudioTrack(ScriptingCore::ToString(path));
     return track == nullptr ? NULL_RESOURCE : track->ID;
 }
 
@@ -94,9 +94,9 @@ ResourceID CoreInternalCalls::ResourcesManager_LoadShader(MonoString* vsPath, Mo
 {
     // TODO: move path concat
     std::string fullVSPathString = Application::Instance->GetResourcesManager()->GetResourcesPath();
-    fullVSPathString += mono_string_to_utf8(vsPath);
+    fullVSPathString += ScriptingCore::ToString(vsPath);
     std::string fullFSPathString = Application::Instance->GetResourcesManager()->GetResourcesPath();
-    fullFSPathString += mono_string_to_utf8(fsPath);
+    fullFSPathString += ScriptingCore::ToString(fsPath);
 
     auto shader = Shader::FromFilePaths(fullVSPathString.c_str(), fullFSPathString.c_str());
     if (shader == nullptr)
@@ -263,7 +263,7 @@ void CoreInternalCalls::Animation_SetName(ResourceID animationID, MonoString* na
     if (animation == nullptr)
         return;
 
-    animation->Name = mono_string_to_utf8(name);
+    animation->Name = ScriptingCore::ToString(name);
 }
 
 bool CoreInternalCalls::Animation_GetLoop(ResourceID animationID)
@@ -405,6 +405,11 @@ void CoreInternalCalls::Screen_SetFullscreen(bool fullscreen)
     Screen::SetFullscreen(fullscreen);
 }
 
+bool CoreInternalCalls::Screen_GetIsMinimized()
+{
+    return Screen::GetIsMinimized();
+}
+
 glm::vec4 CoreInternalCalls::Screen_GetColor()
 {
     return glm::vec4(Screen::GetColor(), 1.0f);
@@ -417,22 +422,22 @@ void CoreInternalCalls::Screen_SetColor(glm::vec4 color)
 
 void CoreInternalCalls::Log_LogDebug(MonoString* message)
 {
-    Log::LogDebug(mono_string_to_utf8(message));
+    Log::LogDebug(ScriptingCore::ToString(message));
 }
 
 void CoreInternalCalls::Log_LogInfo(MonoString* message)
 {
-    Log::LogInfo(mono_string_to_utf8(message));
+    Log::LogInfo(ScriptingCore::ToString(message));
 }
 
 void CoreInternalCalls::Log_LogWarning(MonoString* message)
 {
-    Log::LogWarning(mono_string_to_utf8(message));
+    Log::LogWarning(ScriptingCore::ToString(message));
 }
 
 void CoreInternalCalls::Log_LogError(MonoString* message)
 {
-    Log::LogError(mono_string_to_utf8(message));
+    Log::LogError(ScriptingCore::ToString(message));
 }
 
 void CoreInternalCalls::Debug_EnableDebugInfoWindow()

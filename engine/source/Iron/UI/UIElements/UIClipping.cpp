@@ -16,12 +16,7 @@ void UIClipping::Init(EntitiesRegistry* entitiesRegistry)
     {
         clippingQuads.push_back(entitiesRegistry->CreateNewEntity());
         auto& qr = entitiesRegistry->AddComponent<UIQuadRenderer>(clippingQuads[i]);
-        qr.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
-        qr.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
-        qr.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
-        qr.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
         qr.SetDefaultQuad();
-        qr.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
         qr.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
         qr.CustomOwner = Owner;
         // First two clipping quads for opaque pass, last ones for transparent

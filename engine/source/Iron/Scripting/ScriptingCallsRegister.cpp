@@ -35,6 +35,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Iron.Screen::SetHeight_Internal", (void*)CoreInternalCalls::Screen_SetHeight);
     mono_add_internal_call("Iron.Screen::GetFullscreen_Internal", (void*)CoreInternalCalls::Screen_GetFullscreen);
     mono_add_internal_call("Iron.Screen::SetFullscreen_Internal", (void*)CoreInternalCalls::Screen_SetFullscreen);
+    mono_add_internal_call("Iron.Screen::GetIsMinimized_Internal", (void*)CoreInternalCalls::Screen_GetIsMinimized);
     mono_add_internal_call("Iron.Screen::GetColor_Internal", (void*)CoreInternalCalls::Screen_GetColor);
     mono_add_internal_call("Iron.Screen::SetColor_Internal", (void*)CoreInternalCalls::Screen_SetColor);
 

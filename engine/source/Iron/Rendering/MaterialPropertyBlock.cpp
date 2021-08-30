@@ -52,7 +52,7 @@ template<class K, class V>
 std::size_t MapHash(const std::map<K, V>& value)
 {
     std::size_t seed = value.size();
-    for(auto& pair : value)
+    for (auto& pair : value)
     {
         HashCombine(seed, pair.first);
         HashCombine(seed, pair.second);
@@ -64,7 +64,7 @@ template<class K>
 std::size_t MapHashMat4(const std::map<K, const float*>& value)
 {
     std::size_t seed = value.size();
-    for(auto& pair : value)
+    for (auto& pair : value)
     {
         HashCombine(seed, pair.first);
         HashCombineMat4(seed, pair.second);

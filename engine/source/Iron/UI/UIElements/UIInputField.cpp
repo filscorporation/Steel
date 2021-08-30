@@ -25,7 +25,6 @@ void UIInputField::Init(UIEventHandler& eventHandler)
 void UIInputField::Rebuild(UILayer* layer, RectTransformation& transformation)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    bool sortingOrderDirty = layer->NeedRebuildSortingOrder();
     if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
     {
         if (drawCursor)
@@ -56,20 +55,23 @@ void UIInputField::Rebuild(UILayer* layer, RectTransformation& transformation)
     }
     bool otherDirty = uiTextRT.DidTransformationChange() || uiText.IsTextDirty() || transformation.DidTransformationChange();
     float dz = 1.0f / (float)layer->GetLayerThickness();
+    bool cursorRebuilt = false, selectionRebuilt = false;
     if (otherDirty || cursorDirty)
     {
-        sortingOrderDirty = false;
+        cursorRebuilt = true;
         RebuildCursor(uiText, uiTextRT, dz);
     }
     if (otherDirty || selectionDirty)
     {
-        sortingOrderDirty = false;
+        selectionRebuilt = true;
         RebuildSelection(uiText, uiTextRT, dz);
     }
-    if (sortingOrderDirty)
+    if (layer->NeedRebuildSortingOrder())
     {
-        UpdateCursorSortingOrder(uiTextRT, dz);
-        UpdateSelectionSortingOrder(uiTextRT, dz);
+        if (!cursorRebuilt)
+            UpdateCursorSortingOrder(uiTextRT, dz);
+        if (!selectionRebuilt)
+            UpdateSelectionSortingOrder(uiTextRT, dz);
     }
 
     cursorDirty = false;

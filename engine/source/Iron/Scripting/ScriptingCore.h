@@ -121,6 +121,8 @@ public:
     static void CallMethod(ScriptPointer scriptPointer, MonoMethod* method, EntityID param);
     static void FindAndCallEntryPoint(MonoImage* image);
 
+    static const char* ToString(MonoString* monoString);
+
     static MonoArray* ToMonoUInt32Array(const std::vector<uint32_t>& inArray);
     static MonoArray* ToMonoIntPtrArray(const std::vector<intptr_t>& inArray);
     static MonoArray* ToMonoStringArray(const std::vector<std::string>& inArray);

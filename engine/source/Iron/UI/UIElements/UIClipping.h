@@ -10,7 +10,7 @@ public:
     explicit UIClipping(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
     void Init(EntitiesRegistry* entitiesRegistry);
-    void Rebuild(UILayer *layer, RectTransformation &transformation, bool sortingOrderDirty);
+    void Rebuild(UILayer* layer, RectTransformation& transformation, bool sortingOrderDirty);
 
     void OnRemoved(EntitiesRegistry* entitiesRegistry);
     void OnEnabled(EntitiesRegistry* entitiesRegistry);

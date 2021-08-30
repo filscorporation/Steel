@@ -15,6 +15,7 @@ public:
     static void SetHeight(int width);
     static bool GetFullscreen();
     static void SetFullscreen(bool fullscreen);
+    static bool GetIsMinimized();
     static glm::vec3 GetColor();
     static void SetColor(glm::vec3 color);
     static glm::mat4 GetUIViewProjection();
@@ -40,6 +41,7 @@ private:
     static int _xPosition, _yPosition;
     static glm::vec3 _color;
     static bool _fullscreen;
+    static bool _isMinimized;
     static bool _doubleBuffer;
     static bool isInResizeCallback;
     static glm::mat4 _viewProjection;

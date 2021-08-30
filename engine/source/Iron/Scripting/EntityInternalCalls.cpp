@@ -13,12 +13,12 @@ EntityID EntityInternalCalls::Entity_CreateNewEntity()
 
 EntityID EntityInternalCalls::Entity_CreateNewEntity2(MonoString* name)
 {
-    return Application::Instance->GetCurrentScene()->CreateEntity(mono_string_to_utf8(name), NULL_ENTITY);
+    return Application::Instance->GetCurrentScene()->CreateEntity(ScriptingCore::ToString(name), NULL_ENTITY);
 }
 
 EntityID EntityInternalCalls::Entity_CreateNewEntity3(MonoString* name, EntityID parentEntityID)
 {
-    return Application::Instance->GetCurrentScene()->CreateEntity(mono_string_to_utf8(name), parentEntityID);
+    return Application::Instance->GetCurrentScene()->CreateEntity(ScriptingCore::ToString(name), parentEntityID);
 }
 
 bool EntityInternalCalls::Entity_DestroyEntity(EntityID id)
@@ -154,7 +154,7 @@ MonoString* EntityInternalCalls::Entity_GetName(EntityID id)
 
 void EntityInternalCalls::Entity_SetName(EntityID id, MonoString* name)
 {
-    AddComponentS<NameComponent>(id).Name = name == nullptr ? "" : mono_string_to_utf8(name);
+    AddComponentS<NameComponent>(id).Name = ScriptingCore::ToString(name);
 }
 
 MonoArray* EntityInternalCalls::Component_FindAllOfType(void* type)

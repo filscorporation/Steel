@@ -238,7 +238,7 @@ void ComponentsInternalCalls::Animator_PlayAnimation2(EntityID entityID, MonoStr
 {
     GET_COMPONENT_OR_RETURN(Animator, )
 
-    component.Play(mono_string_to_utf8(animationName));
+    component.Play(ScriptingCore::ToString(animationName));
 }
 
 void ComponentsInternalCalls::Animator_Play(EntityID entityID)

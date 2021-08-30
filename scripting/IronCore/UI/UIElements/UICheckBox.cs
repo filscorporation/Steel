@@ -8,7 +8,7 @@ namespace Iron
     public class UICheckBox : UIComponent
     {
         /// <summary>
-        /// Callback to call when button gets clicked by mouse buttons
+        /// Callback to call when value is changed
         /// </summary>
         public CallbackList OnValueChanged
         {

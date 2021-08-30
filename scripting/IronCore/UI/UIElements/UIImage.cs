@@ -48,7 +48,7 @@ namespace Iron
         }
         
         /// <summary>
-        /// Material properties, that applied just for this object (returned object is copy, and shouldn't be changed)
+        /// Material properties, that applied just for this entity (returned object is copy, and shouldn't be changed)
         /// </summary>
         public MaterialPropertyBlock CustomMaterialProperties
         {

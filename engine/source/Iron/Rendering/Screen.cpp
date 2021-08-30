@@ -15,6 +15,7 @@ int Screen::_xPosition, Screen::_yPosition;
 glm::vec3 Screen::_color;
 glm::mat4 Screen::_viewProjection = glm::mat4(1.0f);
 bool Screen::_fullscreen;
+bool Screen::_isMinimized = false;
 bool Screen::_doubleBuffer = true;
 bool Screen::isInResizeCallback = false;
 
@@ -102,6 +103,11 @@ void Screen::SetFullscreen(bool fullscreen)
     EnterCallback();
     Apply();
     ExitCallback();
+}
+
+bool Screen::GetIsMinimized()
+{
+    return _isMinimized;
 }
 
 glm::vec3 Screen::GetColor()
@@ -219,6 +225,8 @@ void Screen::UpdateSize()
             _height = tempHeight;
             _xPosition = tempX;
             _yPosition = tempY;
+
+            _isMinimized = _width == 0 && _height == 0;
         }
         glViewport(0, 0, tempWidth, tempHeight);
 
