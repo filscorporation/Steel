@@ -1,9 +1,9 @@
 ﻿namespace Iron
 {
     /// <summary>
-    /// Function used in stencil test to compare with reference value
+    /// Function used in stencil/depth test to compare with reference value
     /// </summary>
-    public enum StencilFunction
+    public enum ComparisonFunction
     {
         Never,
         Less,

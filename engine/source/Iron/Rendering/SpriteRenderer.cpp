@@ -31,6 +31,7 @@ Material* SpriteRenderer::GetMaterial()
 void SpriteRenderer::SetCustomProperties(const MaterialPropertyBlock& properties)
 {
     _customProperties = properties;
+    _customProperties.UpdateHash();
 
     if (_image == nullptr || _material == nullptr)
         return;
@@ -47,6 +48,8 @@ const MaterialPropertyBlock& SpriteRenderer::GetCustomProperties()
 
 void SpriteRenderer::SetImage(Sprite* image)
 {
+    _customProperties.UpdateHash();
+
     if (image != nullptr && _material == nullptr)
         _material = Application::Instance->GetResourcesManager()->DefaultSpriteMaterial();
 

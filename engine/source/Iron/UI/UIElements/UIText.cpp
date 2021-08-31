@@ -123,7 +123,7 @@ void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, boo
                 letterRenderer.Color = _color;
                 letterRenderer.RenderMaterial = _material;
                 letterRenderer.CustomProperties.SetTexture(MAIN_TEX, atlas.TextureID);
-                letterRenderer.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+                letterRenderer.CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
                 letterRenderer.Queue = RenderingQueue::Opaque;
                 letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
                 letterRenderer.TextureCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);
@@ -327,7 +327,7 @@ void UIText::SetClippingLevel(short clippingLevel)
     for (auto& letterID : letters)
     {
         if (letterID == NULL_ENTITY) continue;
-        registry->GetComponent<UIQuadRenderer>(letterID).CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+        registry->GetComponent<UIQuadRenderer>(letterID).CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
     }
 }
 

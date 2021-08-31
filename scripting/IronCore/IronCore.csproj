@@ -83,7 +83,7 @@
         <Compile Include="Rendering\Shader.cs" />
         <Compile Include="Rendering\Sprite.cs" />
         <Compile Include="Rendering\SpriteRenderer.cs" />
-        <Compile Include="Rendering\StencilFunction.cs" />
+        <Compile Include="Rendering\ComparisonFunction.cs" />
         <Compile Include="Rendering\StencilOperation.cs" />
         <Compile Include="Resources\AsepriteData.cs" />
         <Compile Include="Resources\ResourcesManager.cs" />

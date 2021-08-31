@@ -121,6 +121,7 @@ void Renderer::PrepareUIRender()
     // Set camera transformation
     currentViewProjection = Screen::GetUIViewProjection();
     ClearDepth();
+    ClearStencil();
 }
 
 void Renderer::Draw(const QuadRenderer& quad)

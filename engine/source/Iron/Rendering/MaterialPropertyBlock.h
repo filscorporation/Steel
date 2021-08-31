@@ -23,9 +23,9 @@ namespace StencilOperations
     };
 }
 
-namespace StencilFunctions
+namespace ComparisonFunctions
 {
-    enum StencilFunction
+    enum ComparisonFunction
     {
         Never,
         Less,
@@ -51,7 +51,9 @@ public:
     void SetColor(const std::string& name, const glm::vec4& value);
     void SetMat4(const std::string& name, const float* value);
 
-    void SetStencilFunc(StencilFunctions::StencilFunction func, short ref, short mask);
+    void SetDepthMask(bool mask);
+    void SetDepthFunc(ComparisonFunctions::ComparisonFunction func);
+    void SetStencilFunc(ComparisonFunctions::ComparisonFunction func, short ref, short mask);
     void SetStencilMask(short mask);
     void SetStencilOperation(StencilOperations::StencilOperation fail, StencilOperations::StencilOperation zfail, StencilOperations::StencilOperation zpass);
 
@@ -65,8 +67,10 @@ private:
     std::map<std::string, uint32_t> textureProperties;
     std::map<std::string, glm::vec4> colorProperties;
     std::map<std::string, const float*> mat4Properties;
+    bool depthMask = true;
+    ComparisonFunctions::ComparisonFunction depthFunc = ComparisonFunctions::Less;
     short stencilMask = 255;
-    StencilFunctions::StencilFunction stencilFunction = StencilFunctions::Always;
+    ComparisonFunctions::ComparisonFunction stencilFunction = ComparisonFunctions::Always;
     short stencilFunctionRef = 0;
     short stencilFunctionMask = 255;
     StencilOperations::StencilOperation stencilFailOperation = StencilOperations::Keep;

@@ -9,22 +9,21 @@ namespace UIEventTypes
 {
     enum UIEventType
     {
-        Any                         = 1 << 0,
-        MouseEnter                  = 1 << 1,
-        MouseExit                   = 1 << 2,
-        MouseOver                   = 1 << 3,
-        MouseJustPressed            = 1 << 4,
-        MousePressed                = 1 << 5,
-        MouseJustReleased           = 1 << 6,
-        MouseJustPressedAnywhere    = 1 << 7,
-        MousePressedAnywhere        = 1 << 8,
-        MouseJustReleasedAnywhere   = 1 << 9,
-        MouseDragBegin              = 1 << 10,
-        MouseDrag                   = 1 << 11,
-        MouseDragEnd                = 1 << 12,
-        ScrollDelta                 = 1 << 13,
-        KeyInput                    = 1 << 14,
-        TextInput                   = 1 << 15,
+        MouseEnter                = 1 << 0,
+        MouseExit                 = 1 << 1,
+        MouseOver                 = 1 << 2,
+        MouseJustPressed          = 1 << 3,
+        MousePressed              = 1 << 4,
+        MouseJustReleased         = 1 << 5,
+        MouseJustPressedAnywhere  = 1 << 6,
+        MousePressedAnywhere      = 1 << 7,
+        MouseJustReleasedAnywhere = 1 << 8,
+        MouseDragBegin            = 1 << 9,
+        MouseDrag                 = 1 << 10,
+        MouseDragEnd              = 1 << 11,
+        ScrollDelta               = 1 << 12,
+        KeyInput                  = 1 << 13,
+        TextInput                 = 1 << 14,
     };
 
     inline UIEventType operator|(UIEventType a, UIEventType b)

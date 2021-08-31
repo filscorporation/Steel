@@ -22,6 +22,8 @@ void MaterialPropertyBlock::Apply(Shader* shader) const
     for (auto& property : mat4Properties)
         OpenGLAPI::SetUniformMat4F(shader->GetUniformLocation(property.first), property.second);
 
+    OpenGLAPI::SetDepthMask(depthMask);
+    OpenGLAPI::SetDepthFunc(depthFunc);
     OpenGLAPI::SetStencilMask(stencilMask);
     OpenGLAPI::SetStencilFunc(stencilFunction, stencilFunctionRef, stencilFunctionMask);
     OpenGLAPI::SetStencilOperation(stencilFailOperation, stencilZFailOperation, stencilZPassOperation);
@@ -80,6 +82,8 @@ std::size_t MaterialPropertyBlock::Hash(const MaterialPropertyBlock& value)
     HashCombine(seed, MapHash(value.textureProperties));
     HashCombine(seed, MapHash(value.colorProperties));
     HashCombine(seed, MapHashMat4(value.mat4Properties));
+    HashCombine(seed, value.depthMask);
+    HashCombine(seed, value.depthFunc);
     HashCombine(seed, value.stencilMask);
     HashCombine(seed, value.stencilFunction);
     HashCombine(seed, value.stencilFunctionRef);
@@ -131,7 +135,19 @@ void MaterialPropertyBlock::SetMat4(const std::string& name, const float* value)
     UpdateHash();
 }
 
-void MaterialPropertyBlock::SetStencilFunc(StencilFunctions::StencilFunction func, short ref, short mask)
+void MaterialPropertyBlock::SetDepthMask(bool mask)
+{
+    depthMask = mask;
+    UpdateHash();
+}
+
+void MaterialPropertyBlock::SetDepthFunc(ComparisonFunctions::ComparisonFunction func)
+{
+    depthFunc = func;
+    UpdateHash();
+}
+
+void MaterialPropertyBlock::SetStencilFunc(ComparisonFunctions::ComparisonFunction func, short ref, short mask)
 {
     stencilFunction = func;
     stencilFunctionRef = ref;

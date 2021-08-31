@@ -53,6 +53,8 @@ void MaterialPropertyBlockInternal::FromMaterialPropertyBlock(const MaterialProp
     colorPropertiesKeys = ScriptingCore::ToMonoStringArray(colorKeys);
     colorPropertiesValues = ScriptingCore::ToMonoDataTypeArray(colorValues, 1);
 
+    depthMask = properties.depthMask;
+    depthFunction = properties.depthFunc;
     stencilMask = properties.stencilMask;
     stencilFunction = properties.stencilFunction;
     stencilFunctionRef = properties.stencilFunctionRef;
@@ -92,6 +94,8 @@ void MaterialPropertyBlockInternal::ToMaterialPropertyBlock(MaterialPropertyBloc
     for (uint32_t i = 0; i < colorKeys.size(); ++i)
         outProperties.SetColor(colorKeys[i], colorValues[i]);
 
+    outProperties.depthMask = depthMask;
+    outProperties.depthFunc = depthFunction;
     outProperties.stencilMask = stencilMask;
     outProperties.stencilFunction = stencilFunction;
     outProperties.stencilFunctionRef = stencilFunctionRef;

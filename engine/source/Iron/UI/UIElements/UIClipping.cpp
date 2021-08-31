@@ -22,8 +22,10 @@ void UIClipping::Init(EntitiesRegistry* entitiesRegistry)
         // First two clipping quads for opaque pass, last ones for transparent
         qr.Queue = i > 1 ? RenderingQueue::Transparent : RenderingQueue::Opaque;
         // One clipping quad per pass increments stencil value, other - decrements
-        StencilOperations::StencilOperation op = i == 0 || i == 2 ? StencilOperations::Increment : StencilOperations::Decrement;
+        StencilOperations::StencilOperation op = i == 0 || i == 2 ? StencilOperations::Decrement : StencilOperations::Increment;
         qr.CustomProperties.SetStencilOperation(StencilOperations::Keep, op, op);
+        // Clipping planes should not write to depth buffer
+        qr.CustomProperties.SetDepthMask(false);
     }
 
     openingEH = entitiesRegistry->CreateNewEntity();

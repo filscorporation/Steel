@@ -39,7 +39,9 @@ namespace OpenGLAPI
     void ClearStencil();
     void SetPolygonMode(PolygonMode mode);
 
-    void SetStencilFunc(StencilFunctions::StencilFunction func, short ref, short mask);
+    void SetDepthMask(bool mask);
+    void SetDepthFunc(ComparisonFunctions::ComparisonFunction func);
+    void SetStencilFunc(ComparisonFunctions::ComparisonFunction func, short ref, short mask);
     void SetStencilMask(short mask);
     void SetStencilOperation(StencilOperations::StencilOperation fail, StencilOperations::StencilOperation zfail, StencilOperations::StencilOperation zpass);
 

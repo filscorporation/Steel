@@ -14,15 +14,17 @@ namespace Iron
         internal Dictionary<string, uint> textureProperties;
         internal Dictionary<string, Color> colorProperties;
         
+        internal bool depthMask;
+        internal ComparisonFunction depthFunction;
         internal short stencilMask;
-        internal StencilFunction stencilFunction;
+        internal ComparisonFunction stencilFunction;
         internal short stencilFunctionRef;
         internal short stencilFunctionMask;
         internal StencilOperation stencilFailOperation;
         internal StencilOperation stencilZFailOperation;
         internal StencilOperation stencilZPassOperation;
 
-        internal bool stencilInitialized;
+        internal bool valuesInitialized;
         
         /// <summary>
         /// Set float uniform
@@ -113,15 +115,39 @@ namespace Iron
         }
 
         /// <summary>
+        /// Enable or disable writing to the depth buffer
+        /// </summary>
+        /// <param name="mask">Mask. Default is true</param>
+        public void SetDepthMask(bool mask)
+        {
+            if (!valuesInitialized)
+                SetDefaultValues();
+
+            depthMask = mask;
+        }
+
+        /// <summary>
+        /// Sets depth test comparison function
+        /// </summary>
+        /// <param name="func">Function used to compare with reference value. Default is <see cref="ComparisonFunction.Less"/></param>
+        public void SetDepthFunc(ComparisonFunction func)
+        {
+            if (!valuesInitialized)
+                SetDefaultValues();
+
+            depthFunction = func;
+        }
+
+        /// <summary>
         /// Sets stencil test parameters
         /// </summary>
-        /// <param name="func">Function used to compare with reference value. Default is <see cref="StencilFunction.Always"/></param>
+        /// <param name="func">Function used to compare with reference value. Default is <see cref="ComparisonFunction.Always"/></param>
         /// <param name="refValue">Reference value. Default is all 0s</param>
         /// <param name="mask">Mask that is ANDed with both the reference value and the stored stencil value when the test is done. Default is all 1s</param>
-        public void SetStencilFunc(StencilFunction func, short refValue, short mask)
+        public void SetStencilFunc(ComparisonFunction func, short refValue, short mask)
         {
-            if (!stencilInitialized)
-                SetDefaultStencil();
+            if (!valuesInitialized)
+                SetDefaultValues();
 
             stencilFunction = func;
             stencilFunctionRef = refValue;
@@ -134,8 +160,8 @@ namespace Iron
         /// <param name="mask">Mask. Default is all 1s</param>
         public void SetStencilMask(short mask)
         {
-            if (!stencilInitialized)
-                SetDefaultStencil();
+            if (!valuesInitialized)
+                SetDefaultValues();
 
             stencilMask = mask;
         }
@@ -148,20 +174,23 @@ namespace Iron
         /// <param name="zPass">Action when both the stencil test and the depth test pass. Default is <see cref="StencilOperation.Keep"/></param>
         public void SetStencilOperation(StencilOperation fail, StencilOperation zFail, StencilOperation zPass)
         {
-            if (!stencilInitialized)
-                SetDefaultStencil();
+            if (!valuesInitialized)
+                SetDefaultValues();
 
             stencilFailOperation = fail;
             stencilZFailOperation = zFail;
             stencilZPassOperation = zPass;
         }
 
-        private void SetDefaultStencil()
+        private void SetDefaultValues()
         {
-            stencilInitialized = true;
+            valuesInitialized = true;
+
+            depthMask = true;
+            depthFunction = ComparisonFunction.Less;
             
             stencilMask = 255;
-            stencilFunction = StencilFunction.Always;
+            stencilFunction = ComparisonFunction.Always;
             stencilFunctionRef = 0;
             stencilFunctionMask = 255;
             stencilFailOperation = StencilOperation.Keep;
@@ -173,8 +202,8 @@ namespace Iron
         {
             MaterialPropertyBlock_Internal properties = new MaterialPropertyBlock_Internal();
             
-            if (!stencilInitialized)
-                SetDefaultStencil();
+            if (!valuesInitialized)
+                SetDefaultValues();
             
             properties.floatPropertiesKeys = floatProperties.Keys.ToArray();
             properties.floatPropertiesValues = floatProperties.Values.ToArray();
@@ -188,6 +217,8 @@ namespace Iron
             properties.colorPropertiesKeys = colorProperties.Keys.ToArray();
             properties.colorPropertiesValues = colorProperties.Values.ToArray();
             
+            properties.depthMask = depthMask;
+            properties.depthFunction = depthFunction;
             properties.stencilMask = stencilMask;
             properties.stencilFunction = stencilFunction;
             properties.stencilFunctionRef = stencilFunctionRef;
@@ -212,8 +243,10 @@ namespace Iron
         internal string[] colorPropertiesKeys;
         internal Color[] colorPropertiesValues;
         
+        internal bool depthMask;
+        internal ComparisonFunction depthFunction;
         internal short stencilMask;
-        internal StencilFunction stencilFunction;
+        internal ComparisonFunction stencilFunction;
         internal short stencilFunctionRef;
         internal short stencilFunctionMask;
         internal StencilOperation stencilFailOperation;
@@ -240,6 +273,8 @@ namespace Iron
             for (int i = 0; i < colorPropertiesKeys.Length; i++)
                 properties.colorProperties[colorPropertiesKeys[i]] = colorPropertiesValues[i];
             
+            properties.depthMask = depthMask;
+            properties.depthFunction = depthFunction;
             properties.stencilMask = stencilMask;
             properties.stencilFunction = stencilFunction;
             properties.stencilFunctionRef = stencilFunctionRef;
@@ -247,7 +282,7 @@ namespace Iron
             properties.stencilFailOperation = stencilFailOperation;
             properties.stencilZFailOperation = stencilZFailOperation;
             properties.stencilZPassOperation = stencilZPassOperation;
-            properties.stencilInitialized = true;
+            properties.valuesInitialized = true;
 
             return properties;
         }

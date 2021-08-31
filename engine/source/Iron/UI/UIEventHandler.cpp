@@ -36,14 +36,6 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
         eventsMask = eventsMask | UIEventTypes::MouseEnter | UIEventTypes::MouseExit | UIEventTypes::MouseOver
                 | UIEventTypes::MousePressed | UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustReleased;
 
-    if (eventsMask & UIEventTypes::Any)
-    {
-        if (EventCallback != nullptr)
-            EventCallback(Owner, UIEventTypes::Any, uiEvent);
-        ScriptsCallback(UIEventTypes::Any, uiEvent);
-        return;
-    }
-
     auto eventType = (UIEventTypes::UIEventType)0;
 
     // TODO: after contains should cast to sprite image (to ignore transparent places)

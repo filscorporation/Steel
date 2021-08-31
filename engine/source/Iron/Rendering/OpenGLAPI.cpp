@@ -51,6 +51,7 @@ void OpenGLAPI::ClearColor()
 void OpenGLAPI::ClearDepth()
 {
     glClear(GL_DEPTH_BUFFER_BIT);
+    glDepthMask(GL_TRUE);
 }
 
 void OpenGLAPI::ClearStencil()
@@ -76,25 +77,25 @@ void OpenGLAPI::SetPolygonMode(PolygonMode mode)
     glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(mode));
 }
 
-int GLStencilFunc(StencilFunctions::StencilFunction func)
+int GLComparisonFunc(ComparisonFunctions::ComparisonFunction func)
 {
     switch (func)
     {
-        case StencilFunctions::Never:
+        case ComparisonFunctions::Never:
             return GL_NEVER;
-        case StencilFunctions::Less:
+        case ComparisonFunctions::Less:
             return GL_LESS;
-        case StencilFunctions::LessEqual:
+        case ComparisonFunctions::LessEqual:
             return GL_LEQUAL;
-        case StencilFunctions::Greater:
+        case ComparisonFunctions::Greater:
             return GL_GREATER;
-        case StencilFunctions::GreaterEqual:
+        case ComparisonFunctions::GreaterEqual:
             return GL_GEQUAL;
-        case StencilFunctions::Equal:
+        case ComparisonFunctions::Equal:
             return GL_EQUAL;
-        case StencilFunctions::NotEqual:
+        case ComparisonFunctions::NotEqual:
             return GL_NOTEQUAL;
-        case StencilFunctions::Always:
+        case ComparisonFunctions::Always:
             return GL_ALWAYS;
     }
 
@@ -126,9 +127,19 @@ int GLStencilOperation(StencilOperations::StencilOperation op)
     return -1;
 }
 
-void OpenGLAPI::SetStencilFunc(StencilFunctions::StencilFunction func, short ref, short mask)
+void OpenGLAPI::SetDepthMask(bool mask)
 {
-    glStencilFunc(GLStencilFunc(func), ref, mask);
+    glDepthMask(mask);
+}
+
+void OpenGLAPI::SetDepthFunc(ComparisonFunctions::ComparisonFunction func)
+{
+    glDepthFunc(GLComparisonFunc(func));
+}
+
+void OpenGLAPI::SetStencilFunc(ComparisonFunctions::ComparisonFunction func, short ref, short mask)
+{
+    glStencilFunc(GLComparisonFunc(func), ref, mask);
 }
 
 void OpenGLAPI::SetStencilMask(short mask)

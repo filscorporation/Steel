@@ -125,19 +125,18 @@ void UILayer::Draw()
     // Draw
     auto uiRenderers = entitiesRegistry->GetComponentIterator<UIQuadRenderer>();
 
-    Renderer::SetDrawMode(DrawModes::Normal);
     // Opaque pass
-    for (int i = 0; i < uiRenderers.Size(); ++i)
+    for (int i = uiRenderers.Size() - 1; i >= 0; --i)
         if (uiRenderers[i].Queue == RenderingQueue::Opaque)
             Renderer::Draw((const QuadRenderer&)uiRenderers[i]);
     Renderer::EndBatch();
 
     Renderer::StartBatch();
-    Renderer::SetDrawMode(DrawModes::Normal);
     // Transparent pass
-    for (int i = uiRenderers.Size() - 1; i >= 0; --i)
+    for (int i = 0; i < uiRenderers.Size(); ++i)
         if (uiRenderers[i].Queue == RenderingQueue::Transparent)
             Renderer::Draw((const QuadRenderer&)uiRenderers[i]);
+    Renderer::EndBatch();
 
     // Refresh rect transformation
     auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();

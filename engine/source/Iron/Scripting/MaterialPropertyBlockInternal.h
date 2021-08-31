@@ -16,8 +16,10 @@ public:
     MonoArray* colorPropertiesKeys;
     MonoArray* colorPropertiesValues;
 
+    bool depthMask;
+    ComparisonFunctions::ComparisonFunction depthFunction;
     short stencilMask;
-    StencilFunctions::StencilFunction stencilFunction;
+    ComparisonFunctions::ComparisonFunction stencilFunction;
     short stencilFunctionRef;
     short stencilFunctionMask;
     StencilOperations::StencilOperation stencilFailOperation;

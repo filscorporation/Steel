@@ -72,6 +72,7 @@ Material* UIImage::GetMaterial()
 void UIImage::SetCustomProperties(const MaterialPropertyBlock& properties)
 {
     _customProperties = properties;
+    _customProperties.UpdateHash();
 
     if (_image == nullptr || _material == nullptr)
         return;
@@ -97,6 +98,8 @@ const MaterialPropertyBlock& UIImage::GetCustomProperties()
 
 void UIImage::SetImage(Sprite* image)
 {
+    _customProperties.UpdateHash();
+
     if (image != nullptr && _material == nullptr)
         _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
 
@@ -144,8 +147,9 @@ void UIImage::SetImage(Sprite* image)
                     auto& qr = registry->AddComponent<UIQuadRenderer>(_renderers[j * 3 + i]);
                     qr.CustomOwner = Owner;
                     qr.RenderMaterial = _material;
-                    qr.CustomProperties.SetTexture(MAIN_TEX, _image->TextureID);
-                    qr.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+                    _customProperties.SetTexture(MAIN_TEX, _image->TextureID);
+                    _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
+                    qr.CustomProperties = _customProperties;
                     qr.Color = _color;
                     qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
                     qr.TextureCoords[0] = glm::vec2(xtc[i + 1], ytc[j]);
@@ -180,8 +184,9 @@ void UIImage::SetImage(Sprite* image)
             qr.SetDefaultQuad();
             qr.Color = _color;
             qr.RenderMaterial = _material;
-            qr.CustomProperties.SetTexture(MAIN_TEX, _image->TextureID);
-            qr.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+            _customProperties.SetTexture(MAIN_TEX, _image->TextureID);
+            _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
+            qr.CustomProperties = _customProperties;
             qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
             qr.CustomOwner = Owner;
         }
@@ -259,12 +264,12 @@ void UIImage::SetClippingLevel(short clippingLevel)
         for (uint32_t _renderer : _renderers)
         {
             auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
-            qr.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+            qr.CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
         }
     }
     else
     {
         auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(Owner);
-        qr.CustomProperties.SetStencilFunc(StencilFunctions::Equal, _clippingLevel, 255);
+        qr.CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
     }
 }
