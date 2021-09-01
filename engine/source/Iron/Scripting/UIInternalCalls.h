@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 
+#include "MaterialPropertyBlockInternal.h"
 #include "../EntityComponentSystem/Entity.h"
 #include "../Resources/ResourceID.h"
 #include "../UI/UIElements/UIButton.h"

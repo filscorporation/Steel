@@ -1,5 +1,3 @@
-#pragma once
-
 #include "MaterialPropertyBlockInternal.h"
 #include "ScriptingCore.h"
 
