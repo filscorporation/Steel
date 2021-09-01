@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(Iron VERSION 0.1)
+project(Iron VERSION 0.2)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -ldl -lpthread -lm")
