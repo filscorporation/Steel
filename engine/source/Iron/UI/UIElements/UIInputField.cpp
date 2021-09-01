@@ -266,7 +266,6 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
     }
     if (IsSelected && eventType & UIEventTypes::TextInput)
     {
-        RemoveSelectedText(uiText);
         AddText(uiText, uiEvent.InputString);
     }
     if (IsSelected && eventType & UIEventTypes::KeyInput)
@@ -299,7 +298,6 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
         {
             if (multiline)
             {
-                RemoveSelectedText(uiText);
                 AddText(uiText, "\n");
             }
             else
@@ -382,7 +380,21 @@ void UIInputField::Disselect(UIText& uiText)
 
 void UIInputField::AddText(UIText& uiText, const std::string& text)
 {
-    std::string newText = uiText.GetText();
+    std::string newText;
+    if (selectionStart != selectionEnd)
+    {
+        // Remove selected text
+        uint32_t from = std::min(selectionStart, selectionEnd);
+        uint32_t len = std::abs((int)selectionStart - (int)selectionEnd);
+        newText = uiText.GetText().erase(from, len);
+        SetCursorPosition(from);
+        selectionEnd = from;
+        selectionStart = from;
+        cursorHorizontalOffset = -1;
+    }
+    else
+        newText = uiText.GetText();
+
     uint32_t offset = std::min(cursorPosition, (uint32_t)newText.size());
     newText.insert(offset, text);
 
@@ -583,7 +595,7 @@ void UIInputField::UpdateCursorSortingOrder(RectTransformation& uiTextRT, float 
 
 void UIInputField::SetSelection(uint32_t from, uint32_t to)
 {
-    if (from == selectionStart && to == selectionEnd)
+    if (drawSelection && from == selectionStart && to == selectionEnd)
         return;
 
     drawSelection = true;
@@ -622,12 +634,12 @@ void UIInputField::TryKeepSelection()
     }
     else
     {
-        CleanSelection();
+        DisableSelection();
         selectionStart = cursorPosition;
     }
 }
 
-void UIInputField::RemoveSelectedText(UIText &uiText)
+void UIInputField::RemoveSelectedText(UIText& uiText)
 {
     if (selectionStart == selectionEnd)
         return;
