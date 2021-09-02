@@ -12,7 +12,6 @@ namespace CoreInternalCalls
 {
     // Core
     void Application_Quit();
-    int Application_GetState();
     MonoString* Application_RuntimePath();
     MonoString* Application_DataPath();
 

@@ -44,7 +44,6 @@
         <Compile Include="Audio\AudioSource.cs" />
         <Compile Include="Audio\AudioTrack.cs" />
         <Compile Include="Core\Application.cs" />
-        <Compile Include="Core\ApplicationState.cs" />
         <Compile Include="Core\Coroutines\Coroutine.cs" />
         <Compile Include="Core\Coroutines\CoroutinesManager.cs" />
         <Compile Include="Core\Coroutines\WaitForSeconds.cs" />

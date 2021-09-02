@@ -7,7 +7,6 @@
 #include <unordered_map>
 
 #include "ScriptingCommon.h"
-#include "ScriptComponentSystem.h"
 #include "../EntityComponentSystem/Component.h"
 #include "../EntityComponentSystem/EntitiesRegistry.h"
 #include "../UI/CallbackType.h"
@@ -141,8 +140,6 @@ public:
     static CoroutinesManagerMethods CoroutinesManagerCalls;
 
 private:
-    static ScriptComponentSystem* scriptComponentSystem;
-
     static CachedData* cachedAPITypes;
     static std::vector<MonoClass*> cachedDataTypes;
     static std::unordered_map<MonoClass*, ScriptTypeInfo*> scriptsInfo;

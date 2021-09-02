@@ -3,20 +3,30 @@
 #include "NameComponent.h"
 #include "Hierarchy.h"
 #include "../Animation/Animator.h"
+#include "../Audio/AudioCore.h"
+#include "../Audio/AudioListener.h"
+#include "../Core/Input.h"
+#include "../Core/Time.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Rendering/QuadRenderer.h"
 #include "../Rendering/Renderer.h"
+#include "../Physics/Physics.h"
 #include "../Scene/TransformationSystem.h"
+#include "../Scripting/ScriptingSystem.h"
 #include "../UI/RectTransformation.h"
-
-int Scene::EntitiesWasCreated = 0;
 
 Scene::Scene()
 {
+    entitiesRegistry = new EntitiesRegistry();
+
+    Physics::CreatePhysicsScene(entitiesRegistry);
+    AudioCore::CreateAudioScene(entitiesRegistry);
+    ScriptingSystem::InitScene(entitiesRegistry);
+
     hierarchySystem = new HierarchySystem();
     transformationSystem = new TransformationSystem();
-    entitiesRegistry = new EntitiesRegistry();
     uiLayer = new UILayer(this);
+    uiLayer->LoadDefaultResources();
     entitiesRegistry->RegisterSystem<HierarchyNode>(hierarchySystem);
     entitiesRegistry->RegisterSystem<Transformation>(transformationSystem);
     entitiesRegistry->RegisterSystem<RectTransformation>(transformationSystem);
@@ -28,6 +38,10 @@ Scene::~Scene()
     delete entitiesRegistry;
     delete transformationSystem;
     delete hierarchySystem;
+
+    ScriptingSystem::TeminateScene();
+    AudioCore::DeleteAudioScene();
+    Physics::DeletePhysicsScene();
 }
 
 void Scene::CreateMainCamera()
@@ -36,11 +50,13 @@ void Scene::CreateMainCamera()
     auto& mainCamera = entitiesRegistry->AddComponent<Camera>(_mainCameraEntity);
     entitiesRegistry->GetComponent<Transformation>(_mainCameraEntity).SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     mainCamera.SetHeight(3.0f);
+
+    AudioCore::CreateAudioListener(_mainCameraEntity);
 }
 
-void Scene::LoadDefaultResources()
+Camera& Scene::GetMainCamera()
 {
-    uiLayer->LoadDefaultResources();
+    return entitiesRegistry->GetComponent<Camera>(_mainCameraEntity);
 }
 
 EntitiesRegistry* Scene::GetEntitiesRegistry()
@@ -87,8 +103,6 @@ EntityID Scene::CreateEntity(AsepriteData& data)
 
 EntityID Scene::CreateEmptyEntity()
 {
-    EntitiesWasCreated++;
-
     return entitiesRegistry->CreateNewEntity();
 }
 
@@ -97,14 +111,90 @@ void Scene::DestroyEntity(EntityID entity)
     entitiesToDelete.push_back(entity);
 }
 
-void Scene::DestroyAndRemoveEntity(EntityID entity)
+void Scene::Update()
 {
-    DestroyEntityInner(entity);
+    // Poll UI events
+    UIEvent uiEvent = Input::GetUIEvent();
+    uiLayer->PollEvent(uiEvent);
+
+    // Update scripts
+    auto scripts = entitiesRegistry->GetComponentIterator<ScriptComponent>();
+    int scriptsSize = scripts.Size();
+    for (int i = 0; i < scriptsSize; ++i)
+        if (scripts[i].IsAlive()) scripts[i].OnUpdate();
+
+    // Update coroutines
+    ScriptingSystem::UpdateCoroutines();
+
+    if (Time::FixedUpdate())
+    {
+        for (int i = 0; i < scriptsSize; ++i)
+            if (scripts[i].IsAlive()) scripts[i].OnFixedUpdate();
+
+        // Apply transformations to physics objects and then simulate
+        Physics::UpdatePhysicsTransformations();
+        Physics::Simulate(Time::FixedDeltaTime());
+        Physics::GetPhysicsTransformations();
+        Physics::SendEvents();
+    }
+
+    for (int i = 0; i < scriptsSize; ++i)
+        if (scripts[i].IsAlive()) scripts[i].OnLateUpdate();
+
+    // Update inner components
+    auto animators = entitiesRegistry->GetComponentIterator<Animator>();
+    int animatorsSize = animators.Size();
+    for (int i = 0; i < animatorsSize; ++i)
+        if (animators[i].IsAlive()) animators[i].OnUpdate();
+
+    auto audioSources = entitiesRegistry->GetComponentIterator<AudioSource>();
+    int audioSourcesSize = audioSources.Size();
+    for (int i = 0; i < audioSourcesSize; ++i)
+        if (audioSources[i].IsAlive()) audioSources[i].OnUpdate();
+
+    auto audioListeners = entitiesRegistry->GetComponentIterator<AudioListener>();
+    int audioListenersSize = audioListeners.Size();
+    for (int i = 0; i < audioListenersSize; ++i)
+        if (audioListeners[i].IsAlive()) audioListeners[i].OnUpdate();
+
+    // Update UI elements
+    uiLayer->Update();
+
+    // Clean destroyed entities
+    CleanDestroyedEntities();
+
+    // Sort hierarchy from parents to children and then apply transforms
+    SortByHierarchy();
+    UpdateGlobalTransformation();
+    SortByDrawOrder();
+    Renderer::OnBeforeRender(GetMainCamera());
+    RefreshTransformation();
+
+    Time::Update(); // TODO: should be independent from scene
 }
 
-void Scene::DestroyEntityInner(EntityID entity)
+void Scene::Draw()
 {
-    entitiesRegistry->DeleteEntity(entity);
+    Renderer::Clear(Screen::GetColor());
+
+    auto quadRenderers = entitiesRegistry->GetComponentIterator<QuadRenderer>();
+
+    // Opaque pass
+    for (int i = 0; i < quadRenderers.Size(); ++i)
+        if (quadRenderers[i].Queue == RenderingQueue::Opaque)
+            Renderer::Draw(quadRenderers[i]);
+
+    // Transparent pass
+    for (int i = quadRenderers.Size() - 1; i >=0; --i)
+        if (quadRenderers[i].Queue == RenderingQueue::Transparent)
+            Renderer::Draw(quadRenderers[i]);
+
+    // Clear depth buffer before rendering UI
+    Renderer::PrepareUIRender();
+    // Draw UI on top
+    uiLayer->Draw();
+
+    Renderer::OnAfterRender();
 }
 
 void Scene::SortByHierarchy()
@@ -160,21 +250,6 @@ void Scene::SortByDrawOrder()
     entitiesRegistry->SortComponents<QuadRenderer>(ZComparer);
 }
 
-void Scene::Draw()
-{
-    auto quadRenderers = entitiesRegistry->GetComponentIterator<QuadRenderer>();
-
-    // Opaque pass
-    for (int i = 0; i < quadRenderers.Size(); ++i)
-        if (quadRenderers[i].Queue == RenderingQueue::Opaque)
-            Renderer::Draw(quadRenderers[i]);
-
-    // Transparent pass
-    for (int i = quadRenderers.Size() - 1; i >=0; --i)
-        if (quadRenderers[i].Queue == RenderingQueue::Transparent)
-            Renderer::Draw(quadRenderers[i]);
-}
-
 void Scene::CleanDestroyedEntities()
 {
     for (auto entity : entitiesToDelete)
@@ -192,7 +267,12 @@ void Scene::CleanAllEntities()
     entitiesRegistry->CleanAllEntities();
 }
 
-Camera& Scene::GetMainCamera()
+void Scene::DestroyAndRemoveEntity(EntityID entity)
 {
-    return entitiesRegistry->GetComponent<Camera>(_mainCameraEntity);
+    DestroyEntityInner(entity);
+}
+
+void Scene::DestroyEntityInner(EntityID entity)
+{
+    entitiesRegistry->DeleteEntity(entity);
 }

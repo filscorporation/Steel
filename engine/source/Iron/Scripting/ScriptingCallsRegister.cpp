@@ -7,7 +7,6 @@
 void ScriptingCallsRegister::RegisterInternalCalls()
 {
     mono_add_internal_call("Iron.Application::Quit_Internal", (void*)CoreInternalCalls::Application_Quit);
-    mono_add_internal_call("Iron.Application::GetState_Internal", (void*)CoreInternalCalls::Application_GetState);
     mono_add_internal_call("Iron.Application::GetRuntimePath_Internal", (void*)CoreInternalCalls::Application_RuntimePath);
     mono_add_internal_call("Iron.Application::GetDataPath_Internal", (void*)CoreInternalCalls::Application_DataPath);
     mono_add_internal_call("Iron.Log::LogDebug_Internal", (void*)CoreInternalCalls::Log_LogDebug);

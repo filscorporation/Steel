@@ -22,5 +22,5 @@ private:
     static float fixedUpdateDeltaTime;
     static float fixedUpdateTimer;
 
-    friend Application;
+    friend Scene;
 };

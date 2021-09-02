@@ -1,22 +1,8 @@
 #pragma once
 
+#include "SceneManager.h"
 #include "../Scene/Scene.h"
 #include "../Resources/ResourcesManager.h"
-
-namespace ApplicationStates
-{
-    enum ApplicationState
-    {
-        Initializing,
-        EntryPoint,
-        PollEvents,
-        OnUpdate,
-        OnPhysicsUpdate,
-        OnLateUpdate,
-        OnRender,
-        CleaningDestroyedEntities,
-    };
-}
 
 struct ApplicationSettings
 {
@@ -32,21 +18,20 @@ class Application
 public:
     static Application* Instance;
 
-    Application(ApplicationSettings settings);
+    explicit Application(ApplicationSettings settings);
     void Run();
     void RunUpdate();
     void Quit();
-    ApplicationStates::ApplicationState State();
     ResourcesManager* GetResourcesManager();
+    SceneManager* GetSceneManager();
     Scene* GetCurrentScene();
     std::string GetRuntimePath();
     std::string GetDataPath();
 
 private:
     bool isRunning;
-    ApplicationStates::ApplicationState state;
-    ResourcesManager* resources;
-    Scene* scene;
+    ResourcesManager* resourcesManager;
+    SceneManager* sceneManager;
 
     void Init(ApplicationSettings settings);
     void Terminate();

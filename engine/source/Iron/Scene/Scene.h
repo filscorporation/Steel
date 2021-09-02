@@ -19,26 +19,19 @@ public:
     UILayer* GetUILayer();
 
     Scene();
-    ~Scene();
+    ~Scene() override;
+
     void CreateMainCamera();
-    void LoadDefaultResources();
+    Camera& GetMainCamera();
+
     EntityID CreateEntity();
     EntityID CreateEntity(const char* name, EntityID parent);
     EntityID CreateEntity(AsepriteData& data);
     EntityID CreateEmptyEntity();
     void DestroyEntity(EntityID entity);
 
-    void SortByHierarchy();
-    void UpdateGlobalTransformation();
-    void RefreshTransformation();
-    void SortByDrawOrder();
+    void Update();
     void Draw();
-    void CleanDestroyedEntities();
-    void CleanAllEntities();
-
-    Camera& GetMainCamera();
-
-    static int EntitiesWasCreated;
 
 private:
     HierarchySystem* hierarchySystem;
@@ -47,7 +40,14 @@ private:
     EntitiesRegistry* entitiesRegistry;
     UILayer* uiLayer;
     std::list<EntityID> entitiesToDelete;
-    EntityID _mainCameraEntity;
+    EntityID _mainCameraEntity = NULL_ENTITY;
+
+    void SortByHierarchy();
+    void UpdateGlobalTransformation();
+    void RefreshTransformation();
+    void SortByDrawOrder();
+    void CleanDestroyedEntities();
+    void CleanAllEntities();
     void DestroyAndRemoveEntity(EntityID entity);
     void DestroyEntityInner(EntityID entity);
 };

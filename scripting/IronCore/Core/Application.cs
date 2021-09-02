@@ -8,11 +8,6 @@ namespace Iron
     public static class Application
     {
         /// <summary>
-        /// Application current execution state
-        /// </summary>
-        public static ApplicationState State => GetState_Internal();
-
-        /// <summary>
         /// Path where application executable is
         /// </summary>
         public static string RuntimePath => GetRuntimePath_Internal();
@@ -32,9 +27,6 @@ namespace Iron
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Quit_Internal();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern ApplicationState GetState_Internal();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string GetRuntimePath_Internal();

@@ -13,11 +13,6 @@ void CoreInternalCalls::Application_Quit()
     Application::Instance->Quit();
 }
 
-int CoreInternalCalls::Application_GetState()
-{
-    return Application::Instance->State();
-}
-
 MonoString* CoreInternalCalls::Application_RuntimePath()
 {
     return mono_string_new(mono_domain_get(), Application::Instance->GetRuntimePath().c_str());

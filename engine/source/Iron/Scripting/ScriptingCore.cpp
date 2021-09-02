@@ -30,15 +30,10 @@ std::vector<MonoClass*> ScriptingCore::cachedDataTypes;
 std::unordered_map<MonoClass*, ScriptTypeInfo*> ScriptingCore::scriptsInfo;
 std::unordered_map<ScriptEventTypes::ScriptEventType, MonoMethodDesc*> ScriptingCore::eventMethodsDescriptions;
 MonoClass* ScriptingCore::baseScriptClass = nullptr;
-ScriptComponentSystem* ScriptingCore::scriptComponentSystem;
 Component nullComponent = Component(NULL_ENTITY);
 
 void ScriptingCore::Init(MonoImage* image)
 {
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    scriptComponentSystem = new ScriptComponentSystem();
-    registry->RegisterSystem<ScriptComponent>(scriptComponentSystem);
-
     LoadEventMethodsDescriptions(image);
     LoadEngineCallsMethods(image);
     LoadEventManagerMethods(image);
@@ -55,7 +50,6 @@ void ScriptingCore::Terminate()
     for (auto info : scriptsInfo)
         delete info.second;
     delete cachedAPITypes;
-    delete scriptComponentSystem;
 }
 
 void ScriptingCore::LoadEventMethodsDescriptions(MonoImage* image)

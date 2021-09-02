@@ -12,20 +12,23 @@ PhysicsSystem* Physics::physicsSystem = nullptr;
 
 EntityID Physics::lastMouseOverCollider = NULL_ENTITY;
 
-void Physics::Init()
+void Physics::CreatePhysicsScene(EntitiesRegistry* entitiesRegistry)
 {
     PhysicsCore::CreateWorld();
 
     physicsSystem = new PhysicsSystem();
-    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<RigidBody>(physicsSystem);
-    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<BoxCollider>(physicsSystem);
-    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<CircleCollider>(physicsSystem);
+    entitiesRegistry->RegisterSystem<RigidBody>(physicsSystem);
+    entitiesRegistry->RegisterSystem<BoxCollider>(physicsSystem);
+    entitiesRegistry->RegisterSystem<CircleCollider>(physicsSystem);
 
     Log::LogDebug("Physics initialized");
 }
 
-void Physics::Terminate()
+void Physics::DeletePhysicsScene()
 {
+    if (physicsSystem == nullptr)
+        Log::LogError("Deleting physics scene that was not created");
+
     delete physicsSystem;
 
     PhysicsCore::DeleteWorld();

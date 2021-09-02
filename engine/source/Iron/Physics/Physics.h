@@ -17,8 +17,8 @@ struct RayCastHit
 class Physics
 {
 public:
-    static void Init();
-    static void Terminate();
+    static void CreatePhysicsScene(EntitiesRegistry* entitiesRegistry);
+    static void DeletePhysicsScene();
     static void UpdatePhysicsTransformations();
     static void Simulate(float deltaTime);
     static void GetPhysicsTransformations();

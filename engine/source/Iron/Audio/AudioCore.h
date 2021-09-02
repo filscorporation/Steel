@@ -9,8 +9,11 @@ class AudioCore
 {
 public:
     static bool Initialized();
-    static void Init(EntityID listenerEntity);
+    static void Init();
     static void Terminate();
+    static void CreateAudioScene(EntitiesRegistry* entitiesRegistry);
+    static void CreateAudioListener(EntityID listenerEntity);
+    static void DeleteAudioScene();
     static bool CheckForErrors();
 
     static void SetListenerPosition(glm::vec3 position);

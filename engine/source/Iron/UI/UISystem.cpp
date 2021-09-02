@@ -3,6 +3,7 @@
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 #include "../Scripting/ScriptingCore.h"
+#include "../Scripting/ScriptComponent.h"
 
 void UISystem::OnComponentAdded(EntityID entityID, UIEventHandler& component)
 {

@@ -92,7 +92,8 @@ set(SOURCE_FILES
         source/Iron/Scripting/MaterialPropertyBlockInternal.cpp source/Iron/UI/UIElements/UIClipping.cpp source/Iron/UI/UIElements/UIClipping.h
         source/Iron/UI/UIElements/UICheckBox.cpp source/Iron/UI/UIElements/UICheckBox.h
         source/Iron/UI/UIElements/UITabs.cpp source/Iron/UI/UIElements/UITabs.h source/Iron/UI/UIElements/UILayoutGroup.cpp
-        source/Iron/UI/UIElements/UILayoutGroup.h source/Iron/UI/UIElements/UILayoutElement.h source/Iron/UI/UIElements/LayoutGroupTypes.h)
+        source/Iron/UI/UIElements/UILayoutGroup.h source/Iron/UI/UIElements/UILayoutElement.h source/Iron/UI/UIElements/LayoutGroupTypes.h
+        source/Iron/Core/SceneManager.cpp source/Iron/Core/SceneManager.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

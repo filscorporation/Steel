@@ -31,7 +31,7 @@ bool AudioCore::AssertInitialized()
     return false;
 }
 
-void AudioCore::Init(EntityID listenerEntity)
+void AudioCore::Init()
 {
     if (Initialized())
     {
@@ -66,14 +66,6 @@ void AudioCore::Init(EntityID listenerEntity)
         return;
     }
 
-    audioSystem = new AudioSystem();
-    Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->RegisterSystem<AudioSource>(audioSystem);
-
-    AddComponentS<AudioListener>(listenerEntity);
-    SetListenerPosition(GetComponentS<Transformation>(listenerEntity).GetPosition());
-    SetListenerOrientation(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
-    SetListenerVolume(1.0f);
-
     Log::LogDebug("Audio system initialized");
 }
 
@@ -82,11 +74,40 @@ void AudioCore::Terminate()
     if (AssertInitialized())
         return;
 
-    delete audioSystem;
-
     alcMakeContextCurrent(nullptr);
     alcDestroyContext(context);
     alcCloseDevice(device);
+}
+
+void AudioCore::CreateAudioScene(EntitiesRegistry* entitiesRegistry)
+{
+    if (AssertInitialized())
+        return;
+
+    audioSystem = new AudioSystem();
+    entitiesRegistry->RegisterSystem<AudioSource>(audioSystem);
+}
+
+void AudioCore::CreateAudioListener(EntityID listenerEntity)
+{
+    if (AssertInitialized())
+        return;
+
+    AddComponentS<AudioListener>(listenerEntity);
+    SetListenerPosition(GetComponentS<Transformation>(listenerEntity).GetPosition());
+    SetListenerOrientation(glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
+    SetListenerVolume(1.0f);
+}
+
+void AudioCore::DeleteAudioScene()
+{
+    if (AssertInitialized())
+        return;
+
+    if (audioSystem == nullptr)
+        Log::LogError("Deleting audio scene that was not created");
+
+    delete audioSystem;
 }
 
 bool AudioCore::CheckForErrors()
