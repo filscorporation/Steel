@@ -10,6 +10,7 @@ GLFWwindow* _window;
 bool needToUpdateViewport = false;
 bool screenSizeDirty = false;
 
+Framebuffer* Screen::_framebuffer = nullptr;
 int Screen::_width, Screen::_height;
 int Screen::_xPosition, Screen::_yPosition;
 glm::vec3 Screen::_color;
@@ -23,6 +24,11 @@ bool Screen::isInResizeCallback = false;
 // (possible solution is to separate poll_events and rendering in different threads)
 void ResizeCallback(GLFWwindow* window, int cx, int cy);
 void PositionCallback(GLFWwindow* window, int cx, int cy);
+
+Framebuffer* Screen::ScreenFramebuffer()
+{
+    return _framebuffer;
+}
 
 void Screen::Apply()
 {
@@ -181,6 +187,8 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool 
 
     UpdateUIViewProjection();
 
+    _framebuffer = new Framebuffer();
+
     Log::LogDebug("Initialized screen with size {0}:{1}", _width, _height);
 
     Input::Init(_window);
@@ -253,6 +261,8 @@ bool Screen::WindowShouldClose()
 
 void Screen::Terminate()
 {
+    delete _framebuffer;
+
     glfwDestroyWindow(_window);
     glfwTerminate();
 }

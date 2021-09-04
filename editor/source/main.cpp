@@ -1,10 +1,12 @@
 #include <Iron.h>
 
+#include "EditorApplication.h"
+
 int main()
 {
-    // Create application with default settings
+    // Create editor application
     ApplicationSettings settings = ApplicationSettings();
-    Application app = Application(settings);
+    EditorApplication app = EditorApplication(settings);
 
     // Run application main loop
     app.Run();

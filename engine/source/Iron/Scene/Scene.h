@@ -4,6 +4,7 @@
 
 #include "../EntityComponentSystem/EntitiesRegistry.h"
 #include "../Rendering/Camera.h"
+#include "../Rendering/Framebuffer.h"
 #include "../Resources/AsepriteData.h"
 #include "../UI/UILayer.h"
 #include "HierarchySystem.h"
@@ -18,7 +19,7 @@ public:
     EntitiesRegistry* GetEntitiesRegistry();
     UILayer* GetUILayer();
 
-    Scene();
+    explicit Scene(bool initSystems = true);
     ~Scene() override;
 
     void CreateMainCamera();
@@ -31,9 +32,10 @@ public:
     void DestroyEntity(EntityID entity);
 
     void Update();
-    void Draw();
+    void Draw(Framebuffer* framebuffer);
 
 private:
+    bool systemsInitialized = false;
     HierarchySystem* hierarchySystem;
     TransformationSystem* transformationSystem;
 

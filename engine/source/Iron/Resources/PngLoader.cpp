@@ -8,13 +8,10 @@ Sprite* PngLoader::LoadImage(const char* filePath)
 {
     int width, height, channels;
     unsigned char* imageData = stbi_load(filePath, &width, &height, &channels, 4);
-    uint32_t texture = OpenGLAPI::GenerateTexture(imageData, width, height, OpenGLAPI::Nearest);
+    Texture* texture = Texture::CreateImageTexture(imageData, (uint32_t)width, (uint32_t)height);
 
-    auto image = new Sprite();
-    image->TextureID = texture;
+    auto image = new Sprite(texture);
     image->Path = filePath;
-    image->Width = (uint32_t)width;
-    image->Height = (uint32_t)height;
     image->IsTransparent = channels == 4 && IsImageTransparent(imageData, width, height);
 
     stbi_image_free(imageData);

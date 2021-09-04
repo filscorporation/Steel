@@ -6,9 +6,6 @@ int main()
     ApplicationSettings settings = ApplicationSettings();
     Application app = Application(settings);
 
-    // Enable debug window
-    Debug::EnableDebugWindow();
-
     // Run application main loop
     app.Run();
 

@@ -526,7 +526,7 @@ void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT, f
         auto& cursorRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(cursor);
         cursorRenderer.Color = uiText.GetColor();
         cursorRenderer.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
-        cursorRenderer.CustomProperties.SetTexture(MAIN_TEX, cursorSprite->TextureID);
+        cursorRenderer.CustomProperties.SetTexture(MAIN_TEX, cursorSprite->SpriteTexture->GetTextureID());
         cursorRenderer.Queue = RenderingQueue::Opaque;
         cursorRenderer.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
         cursorRenderer.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
@@ -727,7 +727,7 @@ EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& 
     auto& blockRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(entity);
     blockRenderer.Color = selectionColor;
     blockRenderer.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
-    blockRenderer.CustomProperties.SetTexture(MAIN_TEX, pixelSprite->TextureID);
+    blockRenderer.CustomProperties.SetTexture(MAIN_TEX, pixelSprite->SpriteTexture->GetTextureID());
     blockRenderer.Queue = RenderingQueue::Opaque;
     blockRenderer.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
     blockRenderer.TextureCoords[1] = glm::vec2(1.0f, 1.0f);

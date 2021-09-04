@@ -26,6 +26,9 @@ public:
     uint32_t GetImageTileIndex();
     void SetClippingLevel(short clippingLevel);
 
+    // Will flip UVs upside down by Y (used for framebuffer texture)
+    bool FlipImage = false;
+
 protected:
     Sprite* _image = nullptr;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);

@@ -1,4 +1,20 @@
 #include "Sprite.h"
+#include "OpenGLAPI.h"
+
+Sprite::Sprite(Texture* texture)
+{
+    SpriteTexture = texture;
+}
+
+Sprite::~Sprite()
+{
+    if (SpriteTexture != nullptr)
+    {
+        OpenGLAPI::DeleteTexture(SpriteTexture->GetTextureID());
+        delete SpriteTexture;
+        SpriteTexture = nullptr;
+    }
+}
 
 void Sprite::SetAsNormal()
 {
@@ -49,9 +65,12 @@ void Sprite::GetTexCoord(uint32_t tileIndex, glm::vec2* texCoords) const
         return;
     }
 
-    float tw = (float)TileWidth / (float)Width;
-    float th = (float)TileHeight / (float)Height;
-    int numPerRow = Width / TileWidth;
+    if (SpriteTexture == nullptr)
+        return;
+
+    float tw = (float)TileWidth / (float)SpriteTexture->GetWidth();
+    float th = (float)TileHeight / (float)SpriteTexture->GetHeight();
+    int numPerRow = (int)SpriteTexture->GetWidth() / TileWidth;
     float tx = (float)(tileIndex % numPerRow) * tw;
     float ty = ((float)tileIndex / (float)numPerRow) * th;
 
@@ -63,12 +82,16 @@ void Sprite::GetTexCoord(uint32_t tileIndex, glm::vec2* texCoords) const
 
 glm::vec3 Sprite::GetRealWorldSize() const
 {
-    return glm::vec3((float)Width / (float)PixelsPerUnit, (float)Height / (float)PixelsPerUnit, 1.0f);
+    if (SpriteTexture == nullptr)
+        return {};
+    return {(float)SpriteTexture->GetWidth() / (float)PixelsPerUnit, (float)SpriteTexture->GetHeight() / (float)PixelsPerUnit, 1.0f};
 }
 
 int Sprite::TilesCount() const
 {
-    return IsSpriteSheet ? Width / TileWidth * Height / TileHeight : 1;
+    if (SpriteTexture == nullptr)
+        return {};
+    return IsSpriteSheet ? (int)SpriteTexture->GetWidth() / TileWidth * (int)SpriteTexture->GetHeight() / TileHeight : 1;
 }
 
 std::string Sprite::GetName() const

@@ -32,4 +32,5 @@ public:
 
     void SetDefaultQuad();
     void SetDefaultQuad(glm::vec2 pivot);
+    void FlipTextureCoords();
 };

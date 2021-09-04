@@ -44,14 +44,16 @@ void Application::Init(ApplicationSettings settings)
     Renderer::Init();
     AudioCore::Init();
 
-    resourcesManager = new ResourcesManager();
-    resourcesManager->LoadDefaultResources();
+    AppContext = new ApplicationContext();
+    CurrentContext = AppContext;
 
-    sceneManager = new SceneManager();
-    sceneManager->SetActiveScene(sceneManager->CreateNewScene());
-    sceneManager->GetActiveScene()->CreateMainCamera();
+    AppContext->Resources = new ResourcesManager();
+    AppContext->Resources->LoadDefaultResources();
 
-    Debug::Init();
+    AppContext->Scenes = new SceneManager();
+    AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene());
+
+    AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
     Log::LogDebug("Application initialized");
 }
@@ -60,11 +62,12 @@ void Application::Run()
 {
     Log::LogDebug("Running application");
 
-    isRunning = true;
+    IsRunning = true;
 
+    CurrentContext = AppContext;
     ScriptingSystem::CallEntryPoint();
 
-    while (isRunning)
+    while (IsRunning)
     {
         RunUpdate();
     }
@@ -74,34 +77,33 @@ void Application::Run()
 
 void Application::RunUpdate()
 {
-    if (!isRunning)
+    if (!IsRunning)
         return; // When updated not from Run()
 
-    Input::PollEvents();
+    // Set scene we will update and render
+    CurrentContext = AppContext;
 
+    Input::PollEvents();
     Screen::UpdateSize();
 
     // Update scene
-    sceneManager->GetActiveScene()->Update();
+    CurrentContext->Scenes->GetActiveScene()->Update();
 
     // Render scene
-    sceneManager->GetActiveScene()->Draw();
-
-    // Update debug info
-    //Debug::Update(); TODO
+    CurrentContext->Scenes->GetActiveScene()->Draw(Screen::ScreenFramebuffer());
 
     Screen::SwapBuffers();
 
     if (Screen::WindowShouldClose())
-        isRunning = false;
+        IsRunning = false;
 }
 
 void Application::Terminate()
 {
-    Debug::Terminate();
-
-    delete sceneManager;
-    delete resourcesManager;
+    CurrentContext = AppContext;
+    delete AppContext->Scenes;
+    delete AppContext->Resources;
+    delete AppContext;
 
     AudioCore::Terminate();
     Renderer::Terminate();
@@ -111,23 +113,22 @@ void Application::Terminate()
 
 void Application::Quit()
 {
-    isRunning = false;
+    IsRunning = false;
 }
 
 ResourcesManager* Application::GetResourcesManager()
 {
-    return resourcesManager;
+    return CurrentContext->Resources;
 }
 
 SceneManager* Application::GetSceneManager()
 {
-    return sceneManager;
+    return CurrentContext->Scenes;
 }
 
 Scene* Application::GetCurrentScene()
 {
-    // TODO: probably remove
-    return sceneManager->GetActiveScene();
+    return CurrentContext->Scenes->GetActiveScene();
 }
 
 std::string Application::GetRuntimePath()
@@ -149,5 +150,5 @@ std::string Application::GetRuntimePath()
 
 std::string Application::GetDataPath()
 {
-    return GetRuntimePath() + "\\" + resourcesManager->GetResourcesPath();
+    return GetRuntimePath() + "\\" + AppContext->Resources->GetResourcesPath();
 }

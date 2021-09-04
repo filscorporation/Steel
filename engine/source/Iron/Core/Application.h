@@ -13,6 +13,13 @@ struct ApplicationSettings
     bool DoubleBuffer = false;
 };
 
+struct ApplicationContext
+{
+    ResourcesManager* Resources;
+    SceneManager* Scenes;
+    // TODO: time and sceen context
+};
+
 class Application
 {
 public:
@@ -20,19 +27,21 @@ public:
 
     explicit Application(ApplicationSettings settings);
     void Run();
-    void RunUpdate();
+    virtual void RunUpdate();
     void Quit();
+
     ResourcesManager* GetResourcesManager();
     SceneManager* GetSceneManager();
     Scene* GetCurrentScene();
+
     std::string GetRuntimePath();
     std::string GetDataPath();
 
-private:
-    bool isRunning;
-    ResourcesManager* resourcesManager;
-    SceneManager* sceneManager;
+protected:
+    bool IsRunning;
+    ApplicationContext* CurrentContext = nullptr;
+    ApplicationContext* AppContext = nullptr;
 
     void Init(ApplicationSettings settings);
-    void Terminate();
+    virtual void Terminate();
 };

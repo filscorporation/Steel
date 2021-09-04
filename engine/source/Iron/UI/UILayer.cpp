@@ -337,8 +337,8 @@ EntityID UILayer::CreateUICheckBox()
 
 EntityID UILayer::CreateUICheckBox(const char* label, const char* name, EntityID parent)
 {
-    float boxSize = (float)UIResources.DefaultCheckBoxSprite->Height * 2;
-    float markSize = (float)UIResources.DefaultCheckMarkSprite->Height * 2;
+    float boxSize = (float)UIResources.DefaultCheckBoxSprite->SpriteTexture->GetHeight() * 2;
+    float markSize = (float)UIResources.DefaultCheckMarkSprite->SpriteTexture->GetHeight() * 2;
 
     auto entity = CreateUIElement(name, parent);
     auto& checkBox = _scene->GetEntitiesRegistry()->AddComponent<UICheckBox>(entity);

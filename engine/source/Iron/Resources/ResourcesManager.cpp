@@ -29,7 +29,6 @@ ResourcesManager::~ResourcesManager()
 {
     for (auto image : images)
     {
-        OpenGLAPI::DeleteTexture(image.second->TextureID);
         delete image.second;
     }
 
@@ -174,7 +173,6 @@ void ResourcesManager::UnloadImage(ResourceID imageID)
     if (sprite == nullptr)
         return;
 
-    OpenGLAPI::DeleteTexture(sprite->TextureID);
     images.erase(imageID);
     FreeResourceID(imageID);
     delete sprite;

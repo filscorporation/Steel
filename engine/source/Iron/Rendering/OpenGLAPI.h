@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "MaterialPropertyBlock.h"
+#include "Texture.h"
 
 namespace OpenGLAPI
 {
@@ -71,10 +72,19 @@ namespace OpenGLAPI
     void DrawTriangles(int count);
 
     uint32_t GenerateTexture(unsigned char* imageData, uint32_t width, uint32_t height, TextureFiltering filtering);
+    uint32_t GenerateColorAttachmentTexture(uint32_t width, uint32_t height);
+    uint32_t GenerateDSAttachmentTexture(uint32_t width, uint32_t height);
     uint32_t BeginGenerateTexture(uint32_t width, uint32_t height);
     void SetTextureSubImage(unsigned char* imageData, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
     void EndGenerateTexture();
     void DeleteTexture(uint32_t textureID);
     void BindTexture(uint32_t textureID, uint32_t textureSlot);
     void UnbindTexture();
+
+    uint32_t CreateFramebuffer();
+    void DeleteFramebuffer(uint32_t fbID);
+    bool FramebufferComplete();
+    void BindFramebuffer(uint32_t fbID);
+    void SetFramebufferColorAttachment(uint32_t textureID);
+    void SetFramebufferDSAttachment(uint32_t textureID);
 }

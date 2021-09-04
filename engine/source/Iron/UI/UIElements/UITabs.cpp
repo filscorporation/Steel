@@ -9,8 +9,8 @@ void UITabs::Init(EntitiesRegistry* entitiesRegistry)
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
     tabOpenedSprite = layer->UIResources.DefaultTabOpenedSprite;
     tabClosedSprite = layer->UIResources.DefaultTabClosedSprite;
-    buttonWidth = tabOpenedSprite == nullptr ? 0 : tabOpenedSprite->Width;
-    buttonHeight = tabOpenedSprite == nullptr ? 0 : tabOpenedSprite->Height;
+    buttonWidth = tabOpenedSprite == nullptr ? 0 : tabOpenedSprite->SpriteTexture->GetWidth();
+    buttonHeight = tabOpenedSprite == nullptr ? 0 : tabOpenedSprite->SpriteTexture->GetHeight();
 
     content = layer->CreateUIElement("Tabs content", Owner);
     auto& contentRT = entitiesRegistry->GetComponent<RectTransformation>(content);

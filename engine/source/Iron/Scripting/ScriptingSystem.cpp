@@ -121,7 +121,7 @@ void ScriptingSystem::InitScene(EntitiesRegistry* entitiesRegistry)
     entitiesRegistry->RegisterSystem<ScriptComponent>(scriptComponentSystem);
 }
 
-void ScriptingSystem::TeminateScene()
+void ScriptingSystem::TerminateScene()
 {
     delete scriptComponentSystem;
 }

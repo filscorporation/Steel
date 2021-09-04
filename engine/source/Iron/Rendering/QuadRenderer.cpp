@@ -16,3 +16,9 @@ void QuadRenderer::SetDefaultQuad(glm::vec2 pivot)
     DefaultVertices[2] = glm::vec4(0.0f - pivot.x, 1.0f - pivot.y, 0.0f, 1.0f);
     DefaultVertices[3] = glm::vec4(0.0f - pivot.x, 0.0f - pivot.y, 0.0f, 1.0f);
 }
+
+void QuadRenderer::FlipTextureCoords()
+{
+    std::swap(TextureCoords[0], TextureCoords[1]);
+    std::swap(TextureCoords[2], TextureCoords[3]);
+}

@@ -15,13 +15,17 @@
 #include "../Scripting/ScriptingSystem.h"
 #include "../UI/RectTransformation.h"
 
-Scene::Scene()
+Scene::Scene(bool initSystems)
 {
     entitiesRegistry = new EntitiesRegistry();
 
-    Physics::CreatePhysicsScene(entitiesRegistry);
-    AudioCore::CreateAudioScene(entitiesRegistry);
-    ScriptingSystem::InitScene(entitiesRegistry);
+    if (initSystems)
+    {
+        Physics::CreatePhysicsScene(entitiesRegistry);
+        AudioCore::CreateAudioScene(entitiesRegistry);
+        ScriptingSystem::InitScene(entitiesRegistry);
+        systemsInitialized = true;
+    }
 
     hierarchySystem = new HierarchySystem();
     transformationSystem = new TransformationSystem();
@@ -39,9 +43,12 @@ Scene::~Scene()
     delete transformationSystem;
     delete hierarchySystem;
 
-    ScriptingSystem::TeminateScene();
-    AudioCore::DeleteAudioScene();
-    Physics::DeletePhysicsScene();
+    if (systemsInitialized)
+    {
+        ScriptingSystem::TerminateScene();
+        AudioCore::DeleteAudioScene();
+        Physics::DeletePhysicsScene();
+    }
 }
 
 void Scene::CreateMainCamera()
@@ -124,9 +131,10 @@ void Scene::Update()
         if (scripts[i].IsAlive()) scripts[i].OnUpdate();
 
     // Update coroutines
-    ScriptingSystem::UpdateCoroutines();
+    if (systemsInitialized)
+        ScriptingSystem::UpdateCoroutines();
 
-    if (Time::FixedUpdate())
+    if (systemsInitialized && Time::FixedUpdate())
     {
         for (int i = 0; i < scriptsSize; ++i)
             if (scripts[i].IsAlive()) scripts[i].OnFixedUpdate();
@@ -173,8 +181,9 @@ void Scene::Update()
     Time::Update(); // TODO: should be independent from scene
 }
 
-void Scene::Draw()
+void Scene::Draw(Framebuffer* framebuffer)
 {
+    framebuffer->Bind();
     Renderer::Clear(Screen::GetColor());
 
     auto quadRenderers = entitiesRegistry->GetComponentIterator<QuadRenderer>();
@@ -195,6 +204,7 @@ void Scene::Draw()
     uiLayer->Draw();
 
     Renderer::OnAfterRender();
+    framebuffer->Unbind();
 }
 
 void Scene::SortByHierarchy()

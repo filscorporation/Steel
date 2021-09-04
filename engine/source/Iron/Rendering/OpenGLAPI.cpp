@@ -302,6 +302,32 @@ uint32_t OpenGLAPI::GenerateTexture(unsigned char* imageData, uint32_t width, ui
     return textureID;
 }
 
+uint32_t OpenGLAPI::GenerateColorAttachmentTexture(uint32_t width, uint32_t height)
+{
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLint)width, (GLint)height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    EndGenerateTexture();
+
+    return textureID;
+}
+
+uint32_t OpenGLAPI::GenerateDSAttachmentTexture(uint32_t width, uint32_t height)
+{
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, (GLint)width, (GLint)height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+
+    EndGenerateTexture();
+
+    return textureID;
+}
+
 void OpenGLAPI::DeleteTexture(uint32_t textureID)
 {
     glDeleteTextures(1, &textureID);
@@ -343,4 +369,40 @@ void OpenGLAPI::BindTexture(uint32_t textureID, uint32_t textureSlot)
 void OpenGLAPI::UnbindTexture()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+uint32_t OpenGLAPI::CreateFramebuffer()
+{
+    uint32_t fbo;
+    glGenFramebuffers(1, &fbo);
+    return fbo;
+}
+
+void OpenGLAPI::DeleteFramebuffer(uint32_t fbID)
+{
+    glDeleteFramebuffers(1, &fbID);
+}
+
+bool OpenGLAPI::FramebufferComplete()
+{
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+}
+
+void OpenGLAPI::BindFramebuffer(uint32_t fbID)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, fbID);
+}
+
+void OpenGLAPI::SetFramebufferColorAttachment(uint32_t textureID)
+{
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
+    UnbindTexture();
+}
+
+void OpenGLAPI::SetFramebufferDSAttachment(uint32_t textureID)
+{
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
+    UnbindTexture();
 }

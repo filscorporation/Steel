@@ -103,12 +103,12 @@ void UIImage::SetImage(Sprite* image)
     if (image != nullptr && _material == nullptr)
         _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
 
-    bool wasNull = _image == nullptr;
+    bool wasNull = _image == nullptr || _image->SpriteTexture == nullptr;
     _image = image;
 
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& transformation = registry->GetComponent<RectTransformation>(Owner);
-    if (_image == nullptr)
+    if (_image == nullptr || _image->SpriteTexture == nullptr)
     {
         if (!wasNull)
         {
@@ -129,10 +129,10 @@ void UIImage::SetImage(Sprite* image)
                     _renderers[i] = registry->CreateNewEntity();
             }
 
-            float xtc[4] = { 0.0f, (float)_image->SliceLeftOffset / (float)_image->Width,
-                             1.0f - (float)_image->SliceRightOffset / (float)_image->Width, 1.0f };
-            float ytc[4] = { 0.0f, (float)_image->SliceBottomOffset / (float)_image->Height,
-                             1.0f - (float)_image->SliceTopOffset / (float)_image->Height, 1.0f };
+            float xtc[4] = { 0.0f, (float)_image->SliceLeftOffset / (float)_image->SpriteTexture->GetWidth(),
+                             1.0f - (float)_image->SliceRightOffset / (float)_image->SpriteTexture->GetWidth(), 1.0f };
+            float ytc[4] = { 0.0f, (float)_image->SliceBottomOffset / (float)_image->SpriteTexture->GetHeight(),
+                             1.0f - (float)_image->SliceTopOffset / (float)_image->SpriteTexture->GetHeight(), 1.0f };
 
             float k = (float)_image->PixelsPerUnit / (float)UILayer::Current()->PixelsPerUnit;
             float xvs[4] = { 0.0f, (float)_image->SliceLeftOffset * k / (float)Screen::GetWidth(),
@@ -147,7 +147,7 @@ void UIImage::SetImage(Sprite* image)
                     auto& qr = registry->AddComponent<UIQuadRenderer>(_renderers[j * 3 + i]);
                     qr.CustomOwner = Owner;
                     qr.RenderMaterial = _material;
-                    _customProperties.SetTexture(MAIN_TEX, _image->TextureID);
+                    _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
                     _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
                     qr.CustomProperties = _customProperties;
                     qr.Color = _color;
@@ -156,6 +156,8 @@ void UIImage::SetImage(Sprite* image)
                     qr.TextureCoords[1] = glm::vec2(xtc[i + 1], ytc[j + 1]);
                     qr.TextureCoords[2] = glm::vec2(xtc[i], ytc[j]);
                     qr.TextureCoords[3] = glm::vec2(xtc[i], ytc[j + 1]);
+                    if (FlipImage)
+                        qr.FlipTextureCoords();
                     qr.DefaultVertices[0] = glm::vec4(xvs[i + 1] - 0.5f, yvs[j] - 0.5f, 0.0f, 1.0f);
                     qr.DefaultVertices[1] = glm::vec4(xvs[i + 1] - 0.5f, yvs[j + 1] - 0.5f, 0.0f, 1.0f);
                     qr.DefaultVertices[2] = glm::vec4(xvs[i] - 0.5f, yvs[j] - 0.5f, 0.0f, 1.0f);
@@ -181,10 +183,12 @@ void UIImage::SetImage(Sprite* image)
                 qr.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
                 qr.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
             }
+            if (FlipImage)
+                qr.FlipTextureCoords();
             qr.SetDefaultQuad();
             qr.Color = _color;
             qr.RenderMaterial = _material;
-            _customProperties.SetTexture(MAIN_TEX, _image->TextureID);
+            _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
             _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
             qr.CustomProperties = _customProperties;
             qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;

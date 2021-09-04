@@ -7,15 +7,17 @@
 #include <glm/vec3.hpp>
 
 #include "../Resources/ResourceID.h"
+#include "../Rendering/Texture.h"
 
 struct Sprite
 {
 public:
+    explicit Sprite(Texture* texture);
+    ~Sprite();
+
     ResourceID ID;
     const char* Path;
-    uint32_t TextureID;
-    uint32_t Width;
-    uint32_t Height;
+    Texture* SpriteTexture = nullptr;
     int PixelsPerUnit = 32;
     glm::vec2 Pivot = { 0.5f, 0.5f };
     bool IsTransparent;

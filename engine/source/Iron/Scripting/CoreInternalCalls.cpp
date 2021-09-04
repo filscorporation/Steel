@@ -148,19 +148,19 @@ void CoreInternalCalls::Sprite_SetAs9Sliced2(ResourceID spriteID, int offsetTop,
 uint32_t CoreInternalCalls::Sprite_GetTextureID(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
-    return image == nullptr ? 0 : image->TextureID;
+    return image == nullptr || image->SpriteTexture == nullptr ? 0 : image->SpriteTexture->GetTextureID();
 }
 
 int CoreInternalCalls::Sprite_GetWidth(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
-    return image == nullptr ? 0 : image->Width;
+    return image == nullptr || image->SpriteTexture == nullptr ? 0 : (int)image->SpriteTexture->GetWidth();
 }
 
 int CoreInternalCalls::Sprite_GetHeight(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
-    return image == nullptr ? 0 : image->Height;
+    return image == nullptr || image->SpriteTexture == nullptr ? 0 : (int)image->SpriteTexture->GetHeight();
 }
 
 int CoreInternalCalls::Sprite_GetPixelsPerUnit(ResourceID spriteID)

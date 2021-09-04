@@ -2,6 +2,8 @@
 
 #include "glm/glm.hpp"
 
+#include "Framebuffer.h"
+
 class Application;
 
 #define UI_MAX_DISTANCE 1.0f
@@ -9,6 +11,7 @@ class Application;
 class Screen
 {
 public:
+    static Framebuffer* ScreenFramebuffer();
     static int GetWidth();
     static void SetWidth(int width);
     static int GetHeight();
@@ -37,6 +40,7 @@ private:
 
     static void UpdateUIViewProjection();
 
+    static Framebuffer* _framebuffer;
     static int _width, _height;
     static int _xPosition, _yPosition;
     static glm::vec3 _color;

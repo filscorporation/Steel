@@ -167,12 +167,9 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
     chunkSizeLeft = 0;
 
     Fill(fullImageData, width, height, (unsigned char*)imageData, celWidth, celHeight, celX, celY);
-    uint32_t texture = OpenGLAPI::GenerateTexture(fullImageData, width, height, OpenGLAPI::Nearest);
+    Texture* texture = Texture::CreateImageTexture(fullImageData, (uint32_t)width, (uint32_t)height);
 
-    auto image = new Sprite();
-    image->TextureID = texture;
-    image->Width = width;
-    image->Height = height;
+    auto image = new Sprite(texture);
     image->IsTransparent = IsImageTransparent(fullImageData, width, height);
 
     Application::Instance->GetResourcesManager()->AddImage(image);
