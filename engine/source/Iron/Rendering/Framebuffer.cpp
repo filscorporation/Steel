@@ -43,6 +43,34 @@ Framebuffer::~Framebuffer()
     }
 }
 
+void Framebuffer::Resize(uint32_t width, uint32_t height)
+{
+    if (colorAttachment != nullptr)
+    {
+        OpenGLAPI::DeleteTexture(colorAttachment->GetTextureID());
+        delete colorAttachment;
+    }
+    if (depthStencilAttachment != nullptr)
+    {
+        OpenGLAPI::DeleteTexture(depthStencilAttachment->GetTextureID());
+        delete depthStencilAttachment;
+    }
+
+    OpenGLAPI::BindFramebuffer(framebufferID);
+
+    colorAttachment = Texture::CreateColorAttachment(width, height);
+    OpenGLAPI::SetFramebufferColorAttachment(colorAttachment->GetTextureID());
+
+    depthStencilAttachment = Texture::CreateDSAttachment(width, height);
+    OpenGLAPI::SetFramebufferDSAttachment(depthStencilAttachment->GetTextureID());
+
+    if (!OpenGLAPI::FramebufferComplete())
+    {
+        Log::LogError("Framebuffer status is not complete");
+    }
+    Unbind();
+}
+
 void Framebuffer::Bind() const
 {
     OpenGLAPI::BindFramebuffer(framebufferID);

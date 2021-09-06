@@ -5,9 +5,10 @@ SceneManager::~SceneManager()
     delete activeScene;
 }
 
-Scene* SceneManager::CreateNewScene(bool initSystems)
+Scene* SceneManager::CreateNewScene()
 {
-    auto scene = new Scene(initSystems);
+    auto scene = new Scene();
+    scene->InitSystems();
 
     return scene;
 }

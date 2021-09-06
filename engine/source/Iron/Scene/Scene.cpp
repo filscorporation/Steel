@@ -6,6 +6,7 @@
 #include "../Audio/AudioCore.h"
 #include "../Audio/AudioListener.h"
 #include "../Core/Input.h"
+#include "../Core/Log.h"
 #include "../Core/Time.h"
 #include "../Rendering/SpriteRenderer.h"
 #include "../Rendering/QuadRenderer.h"
@@ -15,25 +16,14 @@
 #include "../Scripting/ScriptingSystem.h"
 #include "../UI/RectTransformation.h"
 
-Scene::Scene(bool initSystems)
+Scene::Scene()
 {
     entitiesRegistry = new EntitiesRegistry();
 
-    if (initSystems)
-    {
-        Physics::CreatePhysicsScene(entitiesRegistry);
-        AudioCore::CreateAudioScene(entitiesRegistry);
-        ScriptingSystem::InitScene(entitiesRegistry);
-        systemsInitialized = true;
-    }
-
-    hierarchySystem = new HierarchySystem();
-    transformationSystem = new TransformationSystem();
     uiLayer = new UILayer(this);
     uiLayer->LoadDefaultResources();
-    entitiesRegistry->RegisterSystem<HierarchyNode>(hierarchySystem);
-    entitiesRegistry->RegisterSystem<Transformation>(transformationSystem);
-    entitiesRegistry->RegisterSystem<RectTransformation>(transformationSystem);
+
+    RegisterSystems();
 }
 
 Scene::~Scene()
@@ -49,6 +39,23 @@ Scene::~Scene()
         AudioCore::DeleteAudioScene();
         Physics::DeletePhysicsScene();
     }
+}
+
+void Scene::RegisterSystems()
+{
+    hierarchySystem = new HierarchySystem();
+    transformationSystem = new TransformationSystem();
+    entitiesRegistry->RegisterSystem<HierarchyNode>(hierarchySystem);
+    entitiesRegistry->RegisterSystem<Transformation>(transformationSystem);
+    entitiesRegistry->RegisterSystem<RectTransformation>(transformationSystem);
+}
+
+void Scene::InitSystems()
+{
+    Physics::CreatePhysicsScene(entitiesRegistry);
+    AudioCore::CreateAudioScene(entitiesRegistry);
+    ScriptingSystem::InitScene(entitiesRegistry);
+    systemsInitialized = true;
 }
 
 void Scene::CreateMainCamera()
@@ -124,6 +131,8 @@ void Scene::Update()
     UIEvent uiEvent = Input::GetUIEvent();
     uiLayer->PollEvent(uiEvent);
 
+    BeforeUpdate();
+
     // Update scripts
     auto scripts = entitiesRegistry->GetComponentIterator<ScriptComponent>();
     int scriptsSize = scripts.Size();
@@ -168,23 +177,32 @@ void Scene::Update()
     // Update UI elements
     uiLayer->Update();
 
+    AfterUpdate();
+
     // Clean destroyed entities
     CleanDestroyedEntities();
+}
 
+void Scene::PrepareDraw()
+{
     // Sort hierarchy from parents to children and then apply transforms
     SortByHierarchy();
     UpdateGlobalTransformation();
     SortByDrawOrder();
     Renderer::OnBeforeRender(GetMainCamera());
     RefreshTransformation();
+    // Rebuild UI layer elements
+    uiLayer->PrepareDraw();
 
-    Time::Update(); // TODO: should be independent from scene
+    AfterPrepareDraw();
 }
 
 void Scene::Draw(Framebuffer* framebuffer)
 {
     framebuffer->Bind();
     Renderer::Clear(Screen::GetColor());
+
+    BeforeDraw();
 
     auto quadRenderers = entitiesRegistry->GetComponentIterator<QuadRenderer>();
 
@@ -202,6 +220,8 @@ void Scene::Draw(Framebuffer* framebuffer)
     Renderer::PrepareUIRender();
     // Draw UI on top
     uiLayer->Draw();
+
+    AfterDraw();
 
     Renderer::OnAfterRender();
     framebuffer->Unbind();

@@ -17,6 +17,7 @@ public:
 
     void LoadDefaultResources();
     void Update();
+    void PrepareDraw();
     void Draw();
     void PollEvent(UIEvent& uiEvent);
 
@@ -54,7 +55,7 @@ public:
 
     struct UIResourcesStorage
     {
-        Sprite* DefaultInputFieldSprite = nullptr;
+        Sprite* DefaultFrameSprite = nullptr;
         Sprite* DefaultPixelSprite = nullptr;
         Sprite* DefaultCheckBoxSprite = nullptr;
         Sprite* DefaultCheckMarkSprite = nullptr;

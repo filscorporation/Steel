@@ -17,7 +17,6 @@ struct ApplicationContext
 {
     ResourcesManager* Resources;
     SceneManager* Scenes;
-    // TODO: time and sceen context
 };
 
 class Application

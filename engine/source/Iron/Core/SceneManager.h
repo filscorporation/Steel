@@ -7,7 +7,7 @@ class SceneManager
 public:
     ~SceneManager();
 
-    Scene* CreateNewScene(bool initSystems = true);
+    Scene* CreateNewScene();
     Scene* GetActiveScene();
     void SetActiveScene(Scene* scene);
     Scene* GetScene(const std::string& sceneName);

@@ -1,6 +1,6 @@
 #include <Iron.h>
 
-#include "EditorApplication.h"
+#include "EditorCore/EditorApplication.h"
 
 int main()
 {

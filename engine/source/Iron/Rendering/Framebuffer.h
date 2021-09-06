@@ -11,6 +11,8 @@ public:
     Framebuffer();
     ~Framebuffer();
 
+    void Resize(uint32_t width, uint32_t height);
+
     void Bind() const;
     void Unbind();
 

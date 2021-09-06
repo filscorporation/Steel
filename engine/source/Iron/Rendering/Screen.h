@@ -30,6 +30,10 @@ public:
     static bool WindowShouldClose();
     static void Terminate();
 
+    static void StartEmulate(int width, int height);
+    static void StopEmulate();
+    static glm::vec2 GetRealSize();
+
     static void EnterCallback();
     static void ExitCallback();
     static bool IsInCallback();
@@ -38,7 +42,7 @@ private:
     static void Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer);
     static void Apply();
 
-    static void UpdateUIViewProjection();
+    static void UpdateUIViewProjection(int width, int height);
 
     static Framebuffer* _framebuffer;
     static int _width, _height;
@@ -49,6 +53,9 @@ private:
     static bool _doubleBuffer;
     static bool isInResizeCallback;
     static glm::mat4 _viewProjection;
+    static bool _isEmulated;
+
+    static int _fakeWidth, _fakeHeight;
 
     friend class Application;
 };

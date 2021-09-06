@@ -44,8 +44,8 @@ UILayer::~UILayer()
 void UILayer::LoadDefaultResources()
 {
     auto resourcesManager = Application::Instance->GetResourcesManager();
-    UIResources.DefaultInputFieldSprite = resourcesManager->LoadImage("debug_button.png", true);
-    UIResources.DefaultInputFieldSprite->SetAsSliced(6);
+    UIResources.DefaultFrameSprite = resourcesManager->LoadImage("frame.png", true);
+    UIResources.DefaultFrameSprite->SetAsSliced(6);
     UIResources.DefaultPixelSprite = resourcesManager->LoadImage("pixel.png", true);
     UIResources.DefaultCheckBoxSprite = resourcesManager->LoadImage("check_box.png", true);
     UIResources.DefaultCheckMarkSprite = resourcesManager->LoadImage("check_mark.png", true);
@@ -66,9 +66,8 @@ void UILayer::Update()
     _updateQueue.Condense();
 }
 
-void UILayer::Draw()
+void UILayer::PrepareDraw()
 {
-    // Prepare to draw
     auto entitiesRegistry = _scene->GetEntitiesRegistry();
     // TODO: support non default thickness
     _layerThickness = entitiesRegistry->GetComponentsCount<RectTransformation>() + 1;
@@ -110,6 +109,11 @@ void UILayer::Draw()
     auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
     for (auto& uiIF : uiIFs)
         uiIF.Rebuild(this, rtAccessor.Get(uiIF.Owner));
+}
+
+void UILayer::Draw()
+{
+    auto entitiesRegistry = _scene->GetEntitiesRegistry();
 
     // After rebuilding text we need to condense renderers list to not wait for the next frame
     entitiesRegistry->ClearRemoved<UIQuadRenderer>();
@@ -296,7 +300,7 @@ EntityID UILayer::CreateUIInputField(const char* name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
     auto& uiImage = _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity);
-    uiImage.SetImage(UIResources.DefaultInputFieldSprite);
+    uiImage.SetImage(UIResources.DefaultFrameSprite);
     auto& inputField = _scene->GetEntitiesRegistry()->AddComponent<UIInputField>(entity);
     inputField.SetTargetImage(uiImage.Owner);
 

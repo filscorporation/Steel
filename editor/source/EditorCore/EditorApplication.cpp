@@ -1,6 +1,6 @@
 #include "EditorApplication.h"
-
-#undef LoadImage
+#include "EditorScene.h"
+#include "EditorBuilder.h"
 
 EditorApplication::EditorApplication(ApplicationSettings settings) : Application(settings)
 {
@@ -16,10 +16,15 @@ void EditorApplication::Init()
     EditorContext->Resources->LoadDefaultResources();
 
     EditorContext->Scenes = new SceneManager();
-    EditorContext->Scenes->SetActiveScene(EditorContext->Scenes->CreateNewScene(false));
+    auto editorScene = new EditorScene();
+    EditorContext->Scenes->SetActiveScene(editorScene);
 
     EditorContext->Scenes->GetActiveScene()->CreateMainCamera();
     ApplicationFramebuffer = new Framebuffer(Screen::GetWidth(), Screen::GetHeight());
+    ApplicationWidth = Screen::GetWidth();
+    ApplicationHeight = Screen::GetHeight();
+
+    EditorBuilder::BuildLayout(editorScene);
 }
 
 void EditorApplication::RunUpdate()
@@ -27,22 +32,37 @@ void EditorApplication::RunUpdate()
     if (!IsRunning)
         return; // When updated not from Run()
 
-    // Set scene we will update and render
-    CurrentContext = AppContext;
-
     Input::PollEvents();
     Screen::UpdateSize();
 
+    // Update editor scene
+    CurrentContext = EditorContext;
+    CurrentContext->Scenes->GetActiveScene()->Update();
+    CurrentContext->Scenes->GetActiveScene()->PrepareDraw();
+
+    // Set scene we will update and render into framebuffer
+    CurrentContext = AppContext;
+
+    Screen::StartEmulate(ApplicationWidth, ApplicationHeight);
+    Input::InputOffset = { ApplicationX, ApplicationY };
+    Input::InputWindowSize = { ApplicationWindowWidth, ApplicationWindowHeight };
+
     if (IsPlaying)
+    {
         CurrentContext->Scenes->GetActiveScene()->Update();
+    }
+    CurrentContext->Scenes->GetActiveScene()->PrepareDraw();
     CurrentContext->Scenes->GetActiveScene()->Draw(ApplicationFramebuffer);
 
-    // Now update and render editor scene
-    CurrentContext = EditorContext;
+    Screen::StopEmulate();
+    Input::InputOffset = { 0.0f, 0.0f };
+    Input::InputWindowSize = { Screen::GetWidth(), Screen::GetHeight() };
 
-    CurrentContext->Scenes->GetActiveScene()->Update();
+    // Now render editor
+    CurrentContext = EditorContext;
     CurrentContext->Scenes->GetActiveScene()->Draw(Screen::ScreenFramebuffer());
 
+    Time::Update();
     Screen::SwapBuffers();
 
     if (Screen::WindowShouldClose())
@@ -55,6 +75,8 @@ void EditorApplication::Terminate()
     delete EditorContext->Scenes;
     delete EditorContext->Resources;
     delete EditorContext;
+
+    delete ApplicationFramebuffer;
 
     Application::Terminate();
 }

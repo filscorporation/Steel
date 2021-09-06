@@ -5,6 +5,9 @@
 class Time
 {
 public:
+    static void Update();
+    static bool FixedUpdate();
+
     static float DeltaTime();
     static float UnscaledDeltaTime();
     static uint64_t FrameCount();
@@ -12,8 +15,6 @@ public:
     // TODO: apply to sound
     static float TimeScale;
 private:
-    static void Update();
-    static bool FixedUpdate();
 
     static float lastFrameTime;
     static float deltaTime;
@@ -21,6 +22,4 @@ private:
 
     static float fixedUpdateDeltaTime;
     static float fixedUpdateTimer;
-
-    friend Scene;
 };

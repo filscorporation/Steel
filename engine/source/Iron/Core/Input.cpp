@@ -19,6 +19,9 @@ bool keyIsDirty = false;
 bool mouseIsDirty = false;
 bool scrollDeltaIsDirty = false;
 
+glm::vec2 Input::InputOffset = glm::vec2(0.0f, 0.0f);
+glm::vec2 Input::InputWindowSize = glm::vec2(0.0f, 0.0f);
+
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     int ikey = (KeyCodes::KeyCode)key;
@@ -58,11 +61,11 @@ void MouseCallback(GLFWwindow* window, int button, int action, int mods)
 
 void CursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 {
-    lastMousePosition = mousePosition;
+    lastMousePosition = Input::GetMousePosition();
 
     mousePosition.x = (float)xPos;
     // GLFW coordinate system is upside down by Y-axis
-    mousePosition.y = (float)Screen::GetHeight() - (float)yPos;
+    mousePosition.y = (float)Screen::GetRealSize().y - (float)yPos;
 }
 
 void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
@@ -123,7 +126,7 @@ bool Input::IsMouseButtonJustReleased(MouseCodes::MouseCode button)
 
 glm::vec2 Input::GetMousePosition()
 {
-    return mousePosition;
+    return (mousePosition - InputOffset) / InputWindowSize * glm::vec2(Screen::GetWidth(), Screen::GetHeight());
 }
 
 glm::vec2 Input::GetMouseScrollDelta()
@@ -164,8 +167,8 @@ UIEvent Input::GetUIEvent()
     // Input can only fill event data, event type flags will be calculated by event handlers
     UIEvent uiEvent{};
     uiEvent.Used = false;
-    uiEvent.MousePosition = mousePosition;
-    uiEvent.MouseDelta = mousePosition - lastMousePosition;
+    uiEvent.MousePosition = GetMousePosition();
+    uiEvent.MouseDelta = GetMousePosition() - lastMousePosition;
     uiEvent.ScrollDelta = mouseScrollDelta;
     uiEvent.LeftMouseButtonState = pressedMouse[MouseCodes::ButtonLeft];
     uiEvent.RightMouseButtonState = pressedMouse[MouseCodes::ButtonRight];

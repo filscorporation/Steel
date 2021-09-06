@@ -90,8 +90,13 @@ void Application::RunUpdate()
     CurrentContext->Scenes->GetActiveScene()->Update();
 
     // Render scene
+    CurrentContext->Scenes->GetActiveScene()->PrepareDraw();
     CurrentContext->Scenes->GetActiveScene()->Draw(Screen::ScreenFramebuffer());
 
+    Input::InputOffset = { 0.0f, 0.0f };
+    Input::InputWindowSize = {Screen::GetWidth(), Screen::GetHeight() };
+
+    Time::Update();
     Screen::SwapBuffers();
 
     if (Screen::WindowShouldClose())

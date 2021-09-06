@@ -9,7 +9,9 @@ endif()
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(SOURCE_FILES source/main.cpp source/EditorApplication.cpp source/EditorApplication.h)
+set(SOURCE_FILES source/main.cpp source/EditorCore/EditorApplication.cpp source/EditorCore/EditorApplication.h
+        source/EditorCore/EditorScene.cpp source/EditorCore/EditorScene.h source/UI/AppView.cpp source/UI/AppView.h
+        source/EditorCore/EditorBuilder.cpp source/EditorCore/EditorBuilder.h)
 
 # iron
 include_directories(../engine/source)

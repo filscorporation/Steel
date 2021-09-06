@@ -10,6 +10,12 @@ public:
     void RunUpdate() override;
 
     bool IsPlaying = true;
+    int ApplicationX = 0;
+    int ApplicationY = 0;
+    int ApplicationWidth = 0;
+    int ApplicationHeight = 0;
+    int ApplicationWindowWidth = 0;
+    int ApplicationWindowHeight = 0;
     Framebuffer* ApplicationFramebuffer = nullptr;
     ApplicationContext* EditorContext = nullptr;
 
