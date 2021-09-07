@@ -4,6 +4,18 @@
 #include "../Scene/Scene.h"
 #include "../Resources/ResourcesManager.h"
 
+struct ScreenParameters
+{
+    bool CanResize;
+    int Width;
+    int Height;
+    int ResolutionX;
+    int ResolutionY;
+    int OffsetX;
+    int OffsetY;
+    glm::vec3 Color;
+};
+
 struct ApplicationSettings
 {
     int ScreenWidth = 800;
@@ -17,18 +29,22 @@ struct ApplicationContext
 {
     ResourcesManager* Resources;
     SceneManager* Scenes;
+    ScreenParameters ScreenParameters;
 };
 
 class Application
 {
 public:
     static Application* Instance;
+    static const ApplicationContext* Context();
 
-    explicit Application(ApplicationSettings settings);
+    Application();
+    virtual void Init(ApplicationSettings settings);
     void Run();
     virtual void RunUpdate();
     void Quit();
 
+    ScreenParameters& ScreenParametersForUpdate();
     ResourcesManager* GetResourcesManager();
     SceneManager* GetSceneManager();
     Scene* GetCurrentScene();
@@ -37,10 +53,12 @@ public:
     std::string GetDataPath();
 
 protected:
+    bool IsInitialized = false;
     bool IsRunning;
     ApplicationContext* CurrentContext = nullptr;
     ApplicationContext* AppContext = nullptr;
 
-    void Init(ApplicationSettings settings);
     virtual void Terminate();
+    void InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer);
+    ApplicationContext* CreateContext(ApplicationSettings settings);
 };

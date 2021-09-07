@@ -4,8 +4,6 @@
 
 #include "Framebuffer.h"
 
-class Application;
-
 #define UI_MAX_DISTANCE 1.0f
 
 class Screen
@@ -30,9 +28,8 @@ public:
     static bool WindowShouldClose();
     static void Terminate();
 
-    static void StartEmulate(int width, int height);
-    static void StopEmulate();
-    static glm::vec2 GetRealSize();
+    static glm::vec2 Transform(const glm::vec2& position);
+    static float InvertY(float y);
 
     static void EnterCallback();
     static void ExitCallback();
@@ -45,17 +42,12 @@ private:
     static void UpdateUIViewProjection(int width, int height);
 
     static Framebuffer* _framebuffer;
-    static int _width, _height;
     static int _xPosition, _yPosition;
-    static glm::vec3 _color;
     static bool _fullscreen;
     static bool _isMinimized;
     static bool _doubleBuffer;
     static bool isInResizeCallback;
     static glm::mat4 _viewProjection;
-    static bool _isEmulated;
-
-    static int _fakeWidth, _fakeHeight;
 
     friend class Application;
 };

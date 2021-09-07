@@ -1,13 +1,6 @@
 #include <GLFW/glfw3.h>
 
 #include "Input.h"
-#include "ButtonStates.h"
-#include "../Core/Application.h"
-#include "../Physics/Physics.h"
-#include "../Scripting/ScriptComponent.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scene/Transformation.h"
-#include "Log.h"
 
 ButtonStates::ButtonState pressedKeys[MAX_KEY_CODE + 1];
 ButtonStates::ButtonState pressedMouse[MAX_MOUSE_CODE + 1];
@@ -18,9 +11,6 @@ glm::vec2 mouseScrollDelta;
 bool keyIsDirty = false;
 bool mouseIsDirty = false;
 bool scrollDeltaIsDirty = false;
-
-glm::vec2 Input::InputOffset = glm::vec2(0.0f, 0.0f);
-glm::vec2 Input::InputWindowSize = glm::vec2(0.0f, 0.0f);
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -65,7 +55,7 @@ void CursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 
     mousePosition.x = (float)xPos;
     // GLFW coordinate system is upside down by Y-axis
-    mousePosition.y = (float)Screen::GetRealSize().y - (float)yPos;
+    mousePosition.y = Screen::InvertY((float)yPos);
 }
 
 void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
@@ -126,7 +116,7 @@ bool Input::IsMouseButtonJustReleased(MouseCodes::MouseCode button)
 
 glm::vec2 Input::GetMousePosition()
 {
-    return (mousePosition - InputOffset) / InputWindowSize * glm::vec2(Screen::GetWidth(), Screen::GetHeight());
+    return Screen::Transform(mousePosition);
 }
 
 glm::vec2 Input::GetMouseScrollDelta()

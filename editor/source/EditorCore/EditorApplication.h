@@ -2,24 +2,33 @@
 
 #include <Iron.h>
 
+namespace EditorStates
+{
+    enum EditorState
+    {
+        Stopped,
+        Playing,
+        Paused,
+        Step,
+    };
+}
+
 class EditorApplication : public Application
 {
 public:
-    explicit EditorApplication(ApplicationSettings settings);
+    EditorApplication() : Application() {}
 
+    void Init(ApplicationSettings settings) override;
     void RunUpdate() override;
 
-    bool IsPlaying = true;
-    int ApplicationX = 0;
-    int ApplicationY = 0;
-    int ApplicationWidth = 0;
-    int ApplicationHeight = 0;
-    int ApplicationWindowWidth = 0;
-    int ApplicationWindowHeight = 0;
+    EditorStates::EditorState State = EditorStates::Stopped;
     Framebuffer* ApplicationFramebuffer = nullptr;
     ApplicationContext* EditorContext = nullptr;
 
 private:
-    void Init();
     void Terminate() override;
+
+    ApplicationContext* GetAppContext();
+
+    friend class AppView;
 };

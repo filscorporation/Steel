@@ -21,45 +21,73 @@
 
 Application* Application::Instance;
 
-Application::Application(ApplicationSettings settings)
+const ApplicationContext* Application::Context()
+{
+    return Instance->CurrentContext;
+}
+
+Application::Application()
 {
 #ifdef DISTRIBUTE_BUILD
     FreeConsole();
 #endif
 
     Instance = this;
-
-    Init(settings);
 }
 
 void Application::Init(ApplicationSettings settings)
 {
+    InitSystems(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer);
+    AppContext = CreateContext(settings);
+    AppContext->Scenes->GetActiveScene()->CreateMainCamera();
+
+    IsInitialized = true;
+    Log::LogDebug("Application initialized");
+}
+
+void Application::InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer)
+{
     Log::Init();
-    Log::LogDebug("Running in {0}", GetRuntimePath());
 
     Random::Init();
-    Screen::Init(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer);
+    Screen::Init(width, height, color, fullscreen, doubleBuffer);
 
     ScriptingSystem::Init();
     Renderer::Init();
     AudioCore::Init();
+}
 
-    AppContext = new ApplicationContext();
-    CurrentContext = AppContext;
+ApplicationContext* Application::CreateContext(ApplicationSettings settings)
+{
+    auto context = new ApplicationContext();
+    CurrentContext = context;
 
-    AppContext->Resources = new ResourcesManager();
-    AppContext->Resources->LoadDefaultResources();
+    context->ScreenParameters.CanResize = true;
+    context->ScreenParameters.Width = settings.ScreenWidth;
+    context->ScreenParameters.Height = settings.ScreenHeight;
+    context->ScreenParameters.ResolutionX = settings.ScreenWidth;
+    context->ScreenParameters.ResolutionY = settings.ScreenHeight;
+    context->ScreenParameters.OffsetX = 0;
+    context->ScreenParameters.OffsetY = 0;
+    context->ScreenParameters.Color = settings.ScreenColor;
 
-    AppContext->Scenes = new SceneManager();
-    AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene());
+    context->Resources = new ResourcesManager();
+    context->Resources->LoadDefaultResources();
 
-    AppContext->Scenes->GetActiveScene()->CreateMainCamera();
+    context->Scenes = new SceneManager();
+    context->Scenes->SetActiveScene(context->Scenes->CreateNewScene());
 
-    Log::LogDebug("Application initialized");
+    return context;
 }
 
 void Application::Run()
 {
+    if (!IsInitialized)
+    {
+        std::cout << "ERROR: APPLICATION IS NOT INITIALIZED" << std::endl;
+        return;
+    }
+
     Log::LogDebug("Running application");
 
     IsRunning = true;
@@ -93,9 +121,6 @@ void Application::RunUpdate()
     CurrentContext->Scenes->GetActiveScene()->PrepareDraw();
     CurrentContext->Scenes->GetActiveScene()->Draw(Screen::ScreenFramebuffer());
 
-    Input::InputOffset = { 0.0f, 0.0f };
-    Input::InputWindowSize = {Screen::GetWidth(), Screen::GetHeight() };
-
     Time::Update();
     Screen::SwapBuffers();
 
@@ -119,6 +144,11 @@ void Application::Terminate()
 void Application::Quit()
 {
     IsRunning = false;
+}
+
+ScreenParameters& Application::ScreenParametersForUpdate()
+{
+    return CurrentContext->ScreenParameters;
 }
 
 ResourcesManager* Application::GetResourcesManager()

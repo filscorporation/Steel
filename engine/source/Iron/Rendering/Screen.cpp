@@ -11,16 +11,12 @@ bool needToUpdateViewport = false;
 bool screenSizeDirty = false;
 
 Framebuffer* Screen::_framebuffer = nullptr;
-int Screen::_width, Screen::_height;
 int Screen::_xPosition, Screen::_yPosition;
-glm::vec3 Screen::_color;
 glm::mat4 Screen::_viewProjection = glm::mat4(1.0f);
 bool Screen::_fullscreen;
 bool Screen::_isMinimized = false;
 bool Screen::_doubleBuffer = true;
 bool Screen::isInResizeCallback = false;
-bool Screen::_isEmulated = false;
-int Screen::_fakeWidth, Screen::_fakeHeight;
 
 // TODO: currently window will not update if you held it still
 // (possible solution is to separate poll_events and rendering in different threads)
@@ -43,7 +39,9 @@ void Screen::Apply()
     }
     else
     {
-        glfwSetWindowMonitor(_window, nullptr, _xPosition, _yPosition, _width, _height, 0);
+        glfwSetWindowMonitor(_window, nullptr, _xPosition, _yPosition,
+                             Application::Context()->ScreenParameters.Width,
+                             Application::Context()->ScreenParameters.Height, 0);
     }
 
     needToUpdateViewport = true;
@@ -51,9 +49,6 @@ void Screen::Apply()
 
 int Screen::GetWidth()
 {
-    if (_isEmulated)
-        return _fakeWidth;
-
     if (_fullscreen)
     {
         int tempWidth, tempHeight;
@@ -62,15 +57,16 @@ int Screen::GetWidth()
         return tempWidth;
     }
 
-    return _width;
+    return Application::Context()->ScreenParameters.ResolutionX;
 }
 
 void Screen::SetWidth(int width)
 {
-    if (_width == width)
+    if (!Application::Context()->ScreenParameters.CanResize || Application::Context()->ScreenParameters.Width == width)
         return;
 
-    _width = width;
+    Application::Instance->ScreenParametersForUpdate().Width = width;
+    Application::Instance->ScreenParametersForUpdate().ResolutionX = width;
     EnterCallback();
     Apply();
     ExitCallback();
@@ -78,9 +74,6 @@ void Screen::SetWidth(int width)
 
 int Screen::GetHeight()
 {
-    if (_isEmulated)
-        return _fakeHeight;
-
     if (_fullscreen)
     {
         int tempWidth, tempHeight;
@@ -89,15 +82,16 @@ int Screen::GetHeight()
         return tempHeight;
     }
 
-    return _height;
+    return Application::Context()->ScreenParameters.ResolutionY;
 }
 
 void Screen::SetHeight(int height)
 {
-    if (_height == height)
+    if (!Application::Context()->ScreenParameters.CanResize || Application::Context()->ScreenParameters.Height == height)
         return;
 
-    _height = height;
+    Application::Instance->ScreenParametersForUpdate().Height = height;
+    Application::Instance->ScreenParametersForUpdate().ResolutionY = height;
     EnterCallback();
     Apply();
     ExitCallback();
@@ -110,7 +104,7 @@ bool Screen::GetFullscreen()
 
 void Screen::SetFullscreen(bool fullscreen)
 {
-    if (_fullscreen == fullscreen)
+    if (!Application::Context()->ScreenParameters.CanResize || _fullscreen == fullscreen)
         return;
 
     _fullscreen = fullscreen;
@@ -126,15 +120,15 @@ bool Screen::GetIsMinimized()
 
 glm::vec3 Screen::GetColor()
 {
-    return _color;
+    return Application::Context()->ScreenParameters.Color;
 }
 
 void Screen::SetColor(glm::vec3 color)
 {
-    if (_color == color)
+    if (Application::Context()->ScreenParameters.Color == color)
         return;
 
-    _color = color;
+    Application::Instance->ScreenParametersForUpdate().Color = color;
 }
 
 glm::mat4 Screen::GetUIViewProjection()
@@ -162,7 +156,6 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool 
 {
     _fullscreen = fullscreen;
     _doubleBuffer = doubleBuffer;
-    _color = color;
 
     if (!glfwInit())
     {
@@ -187,17 +180,17 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool 
     glfwMakeContextCurrent(_window);
 
     glfwGetWindowPos(_window, &_xPosition, &_yPosition);
-    glfwGetFramebufferSize(_window, &_width, &_height);
-    glViewport(0, 0, _width, _height);
+    glfwGetFramebufferSize(_window, &width, &height);
+    glViewport(0, 0, width, height);
 
     glfwSetWindowSizeCallback(_window, ResizeCallback);
     glfwSetWindowPosCallback(_window, PositionCallback);
 
-    UpdateUIViewProjection(_width, _height);
+    UpdateUIViewProjection(width, height);
 
     _framebuffer = new Framebuffer();
 
-    Log::LogDebug("Initialized screen with size {0}:{1}", _width, _height);
+    Log::LogDebug("Initialized screen with size {0}:{1}", width, height);
 
     Input::Init(_window);
 }
@@ -228,6 +221,9 @@ void PositionCallback(GLFWwindow* window, int cx, int cy)
 
 void Screen::UpdateSize()
 {
+    if (!Application::Context()->ScreenParameters.CanResize)
+        return;
+
     if (needToUpdateViewport)
     {
         needToUpdateViewport = false;
@@ -237,17 +233,19 @@ void Screen::UpdateSize()
         glfwGetWindowPos(_window, &tempX, &tempY);
         if (!_fullscreen)
         {
-            _width = tempWidth;
-            _height = tempHeight;
+            Application::Instance->ScreenParametersForUpdate().Width = tempWidth;
+            Application::Instance->ScreenParametersForUpdate().Height = tempHeight;
             _xPosition = tempX;
             _yPosition = tempY;
 
-            _isMinimized = _width == 0 && _height == 0;
+            _isMinimized = Application::Context()->ScreenParameters.Width == 0 && Application::Context()->ScreenParameters.Height == 0;
         }
+        Application::Instance->ScreenParametersForUpdate().ResolutionX = Application::Context()->ScreenParameters.Width;
+        Application::Instance->ScreenParametersForUpdate().ResolutionY = Application::Context()->ScreenParameters.Height;
         glViewport(0, 0, tempWidth, tempHeight);
 
         Input::ReleaseAllEvents();
-        UpdateUIViewProjection(_width, _height);
+        UpdateUIViewProjection(Application::Context()->ScreenParameters.Width, Application::Context()->ScreenParameters.Height);
         Application::Instance->GetCurrentScene()->GetMainCamera().UpdateSize();
     }
 }
@@ -275,33 +273,18 @@ void Screen::Terminate()
     glfwTerminate();
 }
 
-void Screen::StartEmulate(int width, int height)
+glm::vec2 Screen::Transform(const glm::vec2& position)
 {
-    _fakeWidth = width;
-    _fakeHeight = height;
-    glViewport(0, 0, _fakeWidth, _fakeHeight);
-    UpdateUIViewProjection(_fakeWidth, _fakeHeight);
-    _isEmulated = true;
+    return (position - glm::vec2(Application::Context()->ScreenParameters.OffsetX, Application::Context()->ScreenParameters.OffsetY))
+        / glm::vec2(Application::Context()->ScreenParameters.Width, Application::Context()->ScreenParameters.Height)
+        * glm::vec2(Screen::GetWidth(), Screen::GetHeight());
 }
 
-void Screen::StopEmulate()
+float Screen::InvertY(float y)
 {
-    glViewport(0, 0, _width, _height);
-    UpdateUIViewProjection(_width, _height);
-    _isEmulated = false;
-}
-
-glm::vec2 Screen::GetRealSize()
-{
-    if (_fullscreen)
-    {
-        int tempWidth, tempHeight;
-        glfwGetFramebufferSize(_window, &tempWidth, &tempHeight);
-
-        return { tempWidth, tempHeight };
-    }
-
-    return { _width, _height };
+    int tempWidth, tempHeight;
+    glfwGetFramebufferSize(_window, &tempWidth, &tempHeight);
+    return (float)tempHeight - y;
 }
 
 bool Screen::IsInCallback()

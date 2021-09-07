@@ -6,7 +6,8 @@ int main()
 {
     // Create editor application
     ApplicationSettings settings = ApplicationSettings();
-    EditorApplication app = EditorApplication(settings);
+    EditorApplication app = EditorApplication();
+    app.Init(settings);
 
     // Run application main loop
     app.Run();

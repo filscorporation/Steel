@@ -4,7 +4,8 @@ int main()
 {
     // Create application with default settings
     ApplicationSettings settings = ApplicationSettings();
-    Application app = Application(settings);
+    Application app = Application();
+    app.Init(settings);
 
     // Run application main loop
     app.Run();

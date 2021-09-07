@@ -7,9 +7,6 @@
 
 void EditorBuilder::BuildLayout(EditorScene* editorScene)
 {
-    Screen::SetWidth(1400);
-    Screen::SetHeight(800);
-
     auto entitiesRegistry = editorScene->GetEntitiesRegistry();
     auto uiLayer = editorScene->GetUILayer();
 

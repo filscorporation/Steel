@@ -31,9 +31,6 @@ public:
     static void PollEvents();
     static void ReleaseAllEvents();
 
-    static glm::vec2 InputOffset;
-    static glm::vec2 InputWindowSize;
-
 private:
     static void Init(GLFWwindow* window);
 

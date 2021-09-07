@@ -21,6 +21,13 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
 
 void AppView::Update(EntitiesRegistry* entitiesRegistry)
 {
+    if (Input::IsKeyJustPressed(KeyCodes::Space))
+    {
+        // TODO: temp
+        auto editor = (EditorApplication*)Application::Instance;
+        editor->State = editor->State == EditorStates::Paused ? EditorStates::Playing : EditorStates::Paused;
+    }
+
     auto& viewRT = entitiesRegistry->GetComponent<RectTransformation>(Owner);
     if (viewRT.DidSizeChange())
     {
@@ -28,12 +35,13 @@ void AppView::Update(EntitiesRegistry* entitiesRegistry)
         auto& image = entitiesRegistry->GetComponent<UIImage>(appViewImageEntity);
         auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
 
-        editor->ApplicationWidth = (int)rt.GetRealSizeCached().x; // TODO: can be independent app size
-        editor->ApplicationHeight = (int)rt.GetRealSizeCached().y;
-        editor->ApplicationWindowWidth = (int)rt.GetRealSizeCached().x;
-        editor->ApplicationWindowHeight = (int)rt.GetRealSizeCached().y;
-        editor->ApplicationX = (int)(rt.GetRealPositionCached().x - (float)editor->ApplicationWidth * 0.5f);
-        editor->ApplicationY = (int)(rt.GetRealPositionCached().y - (float)editor->ApplicationHeight * 0.5f);
+        auto& screenParameters = editor->GetAppContext()->SceenParameters;
+        screenParameters.ResolutionX = (int)rt.GetRealSizeCached().x; // TODO: can be independent app size
+        screenParameters.ResolutionY = (int)rt.GetRealSizeCached().y;
+        screenParameters.Width = (int)rt.GetRealSizeCached().x;
+        screenParameters.Height = (int)rt.GetRealSizeCached().y;
+        screenParameters.OffsetX = (int)(rt.GetRealPositionCached().x - (float)screenParameters.Width * 0.5f);
+        screenParameters.OffsetY = (int)(rt.GetRealPositionCached().y - (float)screenParameters.Height * 0.5f);
 
         image.GetImage()->SpriteTexture = nullptr;
         delete image.GetImage();
