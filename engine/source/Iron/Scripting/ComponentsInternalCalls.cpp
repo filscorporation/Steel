@@ -186,7 +186,7 @@ void ComponentsInternalCalls::SpriteRenderer_SetSprite(EntityID entityID, Resour
 {
     GET_COMPONENT_OR_RETURN(SpriteRenderer, )
 
-    component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
+    component.SetImage(Application::Instance->GetResourcesManager()->GetSprite(spriteID));
 }
 
 ResourceID ComponentsInternalCalls::SpriteRenderer_GetMaterial(EntityID entityID)

@@ -25,6 +25,7 @@ public:
     explicit UIInputField(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { }
 
     void Init(UIEventHandler& eventHandler);
+    void Update();
     void Rebuild(UILayer* layer, RectTransformation& transformation);
 
     void SetTargetText(EntityID targetID);

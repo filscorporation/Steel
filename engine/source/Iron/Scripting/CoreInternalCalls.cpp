@@ -69,7 +69,7 @@ bool CoreInternalCalls::Input_IsMouseJustReleased(int code)
 
 ResourceID CoreInternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {
-    auto image = Application::Instance->GetResourcesManager()->LoadImage(ScriptingCore::ToString(path));
+    auto image = Application::Instance->GetResourcesManager()->LoadSprite(ScriptingCore::ToString(path));
     return image == nullptr ? NULL_RESOURCE : image->ID;
 }
 
@@ -119,66 +119,66 @@ float CoreInternalCalls::AudioTrack_GetLength(ResourceID audioTrackID)
 
 void CoreInternalCalls::Sprite_SetAsNormal(ResourceID spriteID)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
         image->SetAsNormal();
 }
 
 void CoreInternalCalls::Sprite_SetAsSpriteSheet(ResourceID spriteID, int tileWidth, int tileHeight)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
         image->SetAsSpriteSheet(tileWidth, tileHeight);
 }
 
 void CoreInternalCalls::Sprite_SetAs9Sliced(ResourceID spriteID, int offset)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
         image->SetAsSliced(offset);
 }
 
 void CoreInternalCalls::Sprite_SetAs9Sliced2(ResourceID spriteID, int offsetTop, int offsetBottom, int offsetLeft, int offsetRight)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
         image->SetAsSliced(offsetTop, offsetBottom, offsetLeft, offsetRight);
 }
 
 uint32_t CoreInternalCalls::Sprite_GetTextureID(ResourceID spriteID)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     return image == nullptr || image->SpriteTexture == nullptr ? 0 : image->SpriteTexture->GetTextureID();
 }
 
 int CoreInternalCalls::Sprite_GetWidth(ResourceID spriteID)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     return image == nullptr || image->SpriteTexture == nullptr ? 0 : (int)image->SpriteTexture->GetWidth();
 }
 
 int CoreInternalCalls::Sprite_GetHeight(ResourceID spriteID)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     return image == nullptr || image->SpriteTexture == nullptr ? 0 : (int)image->SpriteTexture->GetHeight();
 }
 
 int CoreInternalCalls::Sprite_GetPixelsPerUnit(ResourceID spriteID)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     return image == nullptr ? 0 : image->PixelsPerUnit;
 }
 
 void CoreInternalCalls::Sprite_SetPixelsPerUnit(ResourceID spriteID, int pixelsPerUnit)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
         image->PixelsPerUnit = pixelsPerUnit;
 }
 
 void CoreInternalCalls::Sprite_GetPivot(EntityID spriteID, glm::vec2* pivot)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
     {
         pivot->x = image->Pivot.x;
@@ -188,7 +188,7 @@ void CoreInternalCalls::Sprite_GetPivot(EntityID spriteID, glm::vec2* pivot)
 
 void CoreInternalCalls::Sprite_SetPivot(EntityID spriteID, glm::vec2* pivot)
 {
-    auto image = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
     {
         image->Pivot.x = pivot->x;
@@ -198,7 +198,7 @@ void CoreInternalCalls::Sprite_SetPivot(EntityID spriteID, glm::vec2* pivot)
 
 ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, float length)
 {
-    auto sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    auto sprite = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (sprite == nullptr)
         return NULL_RESOURCE;
 
@@ -217,7 +217,7 @@ ResourceID CoreInternalCalls::Animation_FromSprites(MonoArray* spritesIDs, float
     sprites.reserve(ids.size());
     for (auto id : ids)
     {
-        sprites.push_back(Application::Instance->GetResourcesManager()->GetImage(id));
+        sprites.push_back(Application::Instance->GetResourcesManager()->GetSprite(id));
     }
     auto animation = new Animation(sprites, length);
     Application::Instance->GetResourcesManager()->AddAnimation(animation);

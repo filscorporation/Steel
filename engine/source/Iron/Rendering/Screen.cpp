@@ -12,8 +12,8 @@ bool screenSizeDirty = false;
 
 Framebuffer* Screen::_framebuffer = nullptr;
 int Screen::_xPosition, Screen::_yPosition;
+int Screen::_widthBackup, Screen::_heightBackup;
 glm::mat4 Screen::_viewProjection = glm::mat4(1.0f);
-bool Screen::_fullscreen;
 bool Screen::_isMinimized = false;
 bool Screen::_doubleBuffer = true;
 bool Screen::isInResizeCallback = false;
@@ -30,15 +30,25 @@ Framebuffer* Screen::ScreenFramebuffer()
 
 void Screen::Apply()
 {
-    if (_fullscreen)
+    if (Application::Context()->ScreenParameters.Fullscreen)
     {
         glfwGetWindowPos(_window, &_xPosition, &_yPosition);
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
         glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, 0);
+        _widthBackup = Application::Context()->ScreenParameters.Width;
+        _heightBackup = Application::Context()->ScreenParameters.Height;
+        Application::Instance->ScreenParametersForUpdate().Width = mode->width;
+        Application::Instance->ScreenParametersForUpdate().Height = mode->height;
+        Application::Instance->ScreenParametersForUpdate().ResolutionX = mode->width;
+        Application::Instance->ScreenParametersForUpdate().ResolutionY = mode->height;
     }
     else
     {
+        Application::Instance->ScreenParametersForUpdate().Width = _widthBackup;
+        Application::Instance->ScreenParametersForUpdate().Height = _heightBackup;
+        Application::Instance->ScreenParametersForUpdate().ResolutionX = _widthBackup;
+        Application::Instance->ScreenParametersForUpdate().ResolutionY = _heightBackup;
         glfwSetWindowMonitor(_window, nullptr, _xPosition, _yPosition,
                              Application::Context()->ScreenParameters.Width,
                              Application::Context()->ScreenParameters.Height, 0);
@@ -49,7 +59,7 @@ void Screen::Apply()
 
 int Screen::GetWidth()
 {
-    if (_fullscreen)
+    if (Application::Context()->ScreenParameters.Fullscreen)
     {
         int tempWidth, tempHeight;
         glfwGetFramebufferSize(_window, &tempWidth, &tempHeight);
@@ -65,6 +75,7 @@ void Screen::SetWidth(int width)
     if (!Application::Context()->ScreenParameters.CanResize || Application::Context()->ScreenParameters.Width == width)
         return;
 
+    screenSizeDirty = true;
     Application::Instance->ScreenParametersForUpdate().Width = width;
     Application::Instance->ScreenParametersForUpdate().ResolutionX = width;
     EnterCallback();
@@ -74,7 +85,7 @@ void Screen::SetWidth(int width)
 
 int Screen::GetHeight()
 {
-    if (_fullscreen)
+    if (Application::Context()->ScreenParameters.Fullscreen)
     {
         int tempWidth, tempHeight;
         glfwGetFramebufferSize(_window, &tempWidth, &tempHeight);
@@ -90,6 +101,7 @@ void Screen::SetHeight(int height)
     if (!Application::Context()->ScreenParameters.CanResize || Application::Context()->ScreenParameters.Height == height)
         return;
 
+    screenSizeDirty = true;
     Application::Instance->ScreenParametersForUpdate().Height = height;
     Application::Instance->ScreenParametersForUpdate().ResolutionY = height;
     EnterCallback();
@@ -99,15 +111,16 @@ void Screen::SetHeight(int height)
 
 bool Screen::GetFullscreen()
 {
-    return _fullscreen;
+    return Application::Context()->ScreenParameters.Fullscreen;
 }
 
 void Screen::SetFullscreen(bool fullscreen)
 {
-    if (!Application::Context()->ScreenParameters.CanResize || _fullscreen == fullscreen)
+    if (!Application::Context()->ScreenParameters.CanResize || Application::Context()->ScreenParameters.Fullscreen == fullscreen)
         return;
 
-    _fullscreen = fullscreen;
+    screenSizeDirty = true;
+    Application::Instance->ScreenParametersForUpdate().Fullscreen = fullscreen;
     EnterCallback();
     Apply();
     ExitCallback();
@@ -154,7 +167,6 @@ void Screen::UpdateUIViewProjection(int width, int height)
 
 void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer)
 {
-    _fullscreen = fullscreen;
     _doubleBuffer = doubleBuffer;
 
     if (!glfwInit())
@@ -167,7 +179,7 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-    if (_fullscreen)
+    if (fullscreen)
     {
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -231,7 +243,7 @@ void Screen::UpdateSize()
         int tempX, tempY;
         glfwGetFramebufferSize(_window, &tempWidth, &tempHeight);
         glfwGetWindowPos(_window, &tempX, &tempY);
-        if (!_fullscreen)
+        if (!Application::Context()->ScreenParameters.Fullscreen)
         {
             Application::Instance->ScreenParametersForUpdate().Width = tempWidth;
             Application::Instance->ScreenParametersForUpdate().Height = tempHeight;

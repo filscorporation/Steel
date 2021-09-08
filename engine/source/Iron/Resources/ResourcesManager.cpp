@@ -27,9 +27,14 @@ ResourcesManager::ResourcesManager()
 
 ResourcesManager::~ResourcesManager()
 {
-    for (auto image : images)
+    for (auto sprite : sprites)
     {
-        delete image.second;
+        delete sprite.second;
+    }
+
+    for (auto texture : textures)
+    {
+        delete texture.second;
     }
 
     for (auto audioTrack : audioTracks)
@@ -97,7 +102,7 @@ const char* ResourcesManager::GetResourcesPath()
     return RESOURCES_PATH;
 }
 
-Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
+Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
 {
     std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
     fullPathString += filePath;
@@ -118,7 +123,7 @@ Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
         if (image == nullptr)
             return nullptr;
 
-        AddImage(image);
+        AddSprite(image);
     }
     else if (extension == "aseprite")
     {
@@ -147,35 +152,66 @@ Sprite* ResourcesManager::LoadImage(const char* filePath, bool engineResource)
     return image;
 }
 
-void ResourcesManager::AddImage(Sprite* image)
+void ResourcesManager::AddSprite(Sprite* sprite)
 {
-    image->ID = GetNextResourceID();
-    images[image->ID] = image;
+    sprite->ID = GetNextResourceID();
+    sprites[sprite->ID] = sprite;
 }
 
-Sprite* ResourcesManager::GetImage(ResourceID imageID)
+Sprite* ResourcesManager::GetSprite(ResourceID imageID)
 {
     if (imageID == NULL_RESOURCE)
         return nullptr;
 
-    if (images.find(imageID) == images.end())
+    if (sprites.find(imageID) == sprites.end())
     {
         Log::LogError("Image {0} does not exist", imageID);
         return nullptr;
     }
 
-    return images[imageID];
+    return sprites[imageID];
 }
 
-void ResourcesManager::UnloadImage(ResourceID imageID)
+void ResourcesManager::UnloadSprite(ResourceID imageID)
 {
-    auto sprite = GetImage(imageID);
+    auto sprite = GetSprite(imageID);
     if (sprite == nullptr)
         return;
 
-    images.erase(imageID);
+    sprites.erase(imageID);
     FreeResourceID(imageID);
     delete sprite;
+}
+
+void ResourcesManager::AddTexture(Texture* texture)
+{
+    texture->ID = GetNextResourceID();
+    textures[texture->ID] = texture;
+}
+
+Texture* ResourcesManager::GetTexture(ResourceID textureID)
+{
+    if (textureID == NULL_RESOURCE)
+        return nullptr;
+
+    if (textures.find(textureID) == textures.end())
+    {
+        Log::LogError("Texture {0} does not exist", textureID);
+        return nullptr;
+    }
+
+    return textures[textureID];
+}
+
+void ResourcesManager::UnloadTexture(ResourceID textureID)
+{
+    auto texture = GetTexture(textureID);
+    if (texture == nullptr)
+        return;
+
+    textures.erase(textureID);
+    FreeResourceID(textureID);
+    delete texture;
 }
 
 AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loopAll)

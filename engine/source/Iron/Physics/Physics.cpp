@@ -96,7 +96,7 @@ void Physics::SendEvents()
 
     Camera& camera = Application::Instance->GetCurrentScene()->GetMainCamera();
     glm::vec2 worldMP = camera.ScreenToWorldPoint(Input::GetMousePosition());
-    auto hits = Physics::PointCast(worldMP);
+    auto hits = PointCast(worldMP);
     if (hits.empty())
     {
         // Nothing mouse is over

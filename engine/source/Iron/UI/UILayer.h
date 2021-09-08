@@ -15,10 +15,12 @@ public:
     explicit UILayer(Scene* scene);
     ~UILayer();
 
-    void LoadDefaultResources();
     void Update();
-    void PrepareDraw();
+    void Rebuild();
     void Draw();
+    void Refresh();
+
+    void LoadDefaultResources();
     void PollEvent(UIEvent& uiEvent);
 
     bool IsPointerOverUI() const;

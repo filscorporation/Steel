@@ -34,8 +34,8 @@ void DebugInfoWindow::Create()
     auto scene = Application::Instance->GetCurrentScene();
     auto registry = scene->GetEntitiesRegistry();
 
-    auto windowSprite = resources->LoadImage("debug_panel.png", true);
-    auto buttonSprite = resources->LoadImage("debug_button.png", true);
+    auto windowSprite = resources->LoadSprite("debug_panel.png", true);
+    auto buttonSprite = resources->LoadSprite("debug_button.png", true);
 
     {
         debugWindowEntity = scene->GetUILayer()->CreateUIImage(windowSprite, "Debug window", NULL_ENTITY);

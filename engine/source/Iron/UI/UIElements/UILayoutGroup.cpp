@@ -95,6 +95,8 @@ void UILayoutGroup::Rebuild(UILayer* layer, RectTransformation& transformation)
         elementRT.SetPivot(glm::vec2(0.0f, 0.0f));
         elementRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         elementRT.SetAnchorMax(glm::vec2(0.0f, 0.0f));
+        elementRT.SetOffsetMin(glm::vec2(0.0f, 0.0f));
+        elementRT.SetOffsetMax(glm::vec2(0.0f, 0.0f));
         elementRT.SetAnchoredPosition(_type == LayoutGroupTypes::Horizontal
             ? glm::vec2(offset, 0.0f) : glm::vec2(0.0f, offset));
         elementRT.SetSize(_type == LayoutGroupTypes::Horizontal

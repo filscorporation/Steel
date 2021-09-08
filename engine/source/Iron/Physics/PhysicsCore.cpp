@@ -65,7 +65,7 @@ void PhysicsCore::Simulate(float deltaTime)
     world->Step(deltaTime, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 }
 
-b2World *PhysicsCore::GetWorld()
+b2World* PhysicsCore::GetWorld()
 {
     return world;
 }

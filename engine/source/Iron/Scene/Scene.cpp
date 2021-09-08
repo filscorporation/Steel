@@ -192,7 +192,7 @@ void Scene::PrepareDraw()
     Renderer::OnBeforeRender(GetMainCamera());
     RefreshTransformation();
     // Rebuild UI layer elements
-    uiLayer->PrepareDraw();
+    uiLayer->Rebuild();
 
     AfterPrepareDraw();
 }
@@ -220,6 +220,7 @@ void Scene::Draw(Framebuffer* framebuffer)
     Renderer::PrepareUIRender();
     // Draw UI on top
     uiLayer->Draw();
+    uiLayer->Refresh();
 
     AfterDraw();
 

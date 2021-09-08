@@ -2,9 +2,16 @@
 
 #include <cstdint>
 
+#include "../Resources/ResourceID.h"
+
 class Texture
 {
 public:
+    explicit Texture();
+    ~Texture();
+
+    ResourceID ID;
+
     static Texture* CreateImageTexture(unsigned char* imageData, uint32_t width, uint32_t height);
     static Texture* CreateColorAttachment(uint32_t width, uint32_t height);
     static Texture* CreateDSAttachment(uint32_t width, uint32_t height);
@@ -14,7 +21,7 @@ public:
     uint32_t GetHeight() const;
 
 private:
-    uint32_t _textureID;
+    uint32_t _textureID = 0;
     uint32_t _width = 0;
     uint32_t _height = 0;
 };

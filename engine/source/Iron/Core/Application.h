@@ -7,6 +7,7 @@
 struct ScreenParameters
 {
     bool CanResize;
+    bool Fullscreen;
     int Width;
     int Height;
     int ResolutionX;

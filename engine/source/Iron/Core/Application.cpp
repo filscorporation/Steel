@@ -63,6 +63,7 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     CurrentContext = context;
 
     context->ScreenParameters.CanResize = true;
+    context->ScreenParameters.Fullscreen = settings.Fullscreen;
     context->ScreenParameters.Width = settings.ScreenWidth;
     context->ScreenParameters.Height = settings.ScreenHeight;
     context->ScreenParameters.ResolutionX = settings.ScreenWidth;

@@ -8,10 +8,9 @@ void EditorApplication::Init(ApplicationSettings settings)
 
     // Application
     AppContext = CreateContext(settings);
-    AppContext->SceenParameters.CanResize = false;
+    AppContext->ScreenParameters.CanResize = false;
+    AppContext->ScreenParameters.Fullscreen = false;
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
-
-    ApplicationFramebuffer = new Framebuffer(AppContext->SceenParameters.ResolutionX, AppContext->SceenParameters.ResolutionY);
 
     // Editor
     State = EditorStates::Playing;
@@ -19,14 +18,15 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext = new ApplicationContext();
     CurrentContext = EditorContext;
 
-    EditorContext->SceenParameters.CanResize = true;
-    EditorContext->SceenParameters.Width = 1400;
-    EditorContext->SceenParameters.Height = 800;
-    EditorContext->SceenParameters.ResolutionX = 1400;
-    EditorContext->SceenParameters.ResolutionY = 800;
-    EditorContext->SceenParameters.OffsetX = 0;
-    EditorContext->SceenParameters.OffsetY = 0;
-    EditorContext->SceenParameters.Color = glm::vec3(0.0f, 0.0f, 0.0f);
+    EditorContext->ScreenParameters.CanResize = true;
+    EditorContext->ScreenParameters.Fullscreen = false;
+    EditorContext->ScreenParameters.Width = 1400;
+    EditorContext->ScreenParameters.Height = 800;
+    EditorContext->ScreenParameters.ResolutionX = 1400;
+    EditorContext->ScreenParameters.ResolutionY = 800;
+    EditorContext->ScreenParameters.OffsetX = 0;
+    EditorContext->ScreenParameters.OffsetY = 0;
+    EditorContext->ScreenParameters.Color = glm::vec3(0.0f, 0.0f, 0.0f);
 
     EditorContext->Resources = new ResourcesManager();
     EditorContext->Resources->LoadDefaultResources();
@@ -34,6 +34,8 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext->Scenes = new SceneManager();
     auto editorScene = new EditorScene();
     EditorContext->Scenes->SetActiveScene(editorScene);
+
+    ApplicationFramebuffer = new Framebuffer(AppContext->ScreenParameters.ResolutionX, AppContext->ScreenParameters.ResolutionY);
 
     EditorContext->Scenes->GetActiveScene()->CreateMainCamera();
 
@@ -81,12 +83,12 @@ void EditorApplication::RunUpdate()
 
 void EditorApplication::Terminate()
 {
+    delete ApplicationFramebuffer;
+
     CurrentContext = EditorContext;
     delete EditorContext->Scenes;
     delete EditorContext->Resources;
     delete EditorContext;
-
-    delete ApplicationFramebuffer;
 
     Application::Terminate();
 }

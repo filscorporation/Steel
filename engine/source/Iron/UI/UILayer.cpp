@@ -44,29 +44,35 @@ UILayer::~UILayer()
 void UILayer::LoadDefaultResources()
 {
     auto resourcesManager = Application::Instance->GetResourcesManager();
-    UIResources.DefaultFrameSprite = resourcesManager->LoadImage("frame.png", true);
+    UIResources.DefaultFrameSprite = resourcesManager->LoadSprite("frame.png", true);
     UIResources.DefaultFrameSprite->SetAsSliced(6);
-    UIResources.DefaultPixelSprite = resourcesManager->LoadImage("pixel.png", true);
-    UIResources.DefaultCheckBoxSprite = resourcesManager->LoadImage("check_box.png", true);
-    UIResources.DefaultCheckMarkSprite = resourcesManager->LoadImage("check_mark.png", true);
-    UIResources.DefaultTabOpenedSprite = resourcesManager->LoadImage("tab_opened.png", true);
-    UIResources.DefaultTabClosedSprite = resourcesManager->LoadImage("tab_closed.png", true);
+    UIResources.DefaultPixelSprite = resourcesManager->LoadSprite("pixel.png", true);
+    UIResources.DefaultCheckBoxSprite = resourcesManager->LoadSprite("check_box.png", true);
+    UIResources.DefaultCheckMarkSprite = resourcesManager->LoadSprite("check_mark.png", true);
+    UIResources.DefaultTabOpenedSprite = resourcesManager->LoadSprite("tab_opened.png", true);
+    UIResources.DefaultTabClosedSprite = resourcesManager->LoadSprite("tab_closed.png", true);
 }
 
 void UILayer::Update()
 {
-    if (_updateQueue.Size() == 0)
-        return;
+    auto entitiesRegistry = _scene->GetEntitiesRegistry();
 
-    for (int i = _updateQueue.Size() - 1; i >= 0; --i)
+    if (_updateQueue.Size() != 0)
     {
-        if (!_updateQueue[i].Callback(_updateQueue[i].Owner))
-            _updateQueue.Remove(EntitiesRegistry::EntityIDGetID(_updateQueue[i].Owner));
+        for (int i = _updateQueue.Size() - 1; i >= 0; --i)
+        {
+            if (!_updateQueue[i].Callback(_updateQueue[i].Owner))
+                _updateQueue.Remove(EntitiesRegistry::EntityIDGetID(_updateQueue[i].Owner));
+        }
+        _updateQueue.Condense();
     }
-    _updateQueue.Condense();
+
+    auto uiInputFields = entitiesRegistry->GetComponentIterator<UIInputField>();
+    for (auto& uiInputField : uiInputFields)
+        uiInputField.Update();
 }
 
-void UILayer::PrepareDraw()
+void UILayer::Rebuild()
 {
     auto entitiesRegistry = _scene->GetEntitiesRegistry();
     // TODO: support non default thickness
@@ -141,6 +147,11 @@ void UILayer::Draw()
         if (uiRenderers[i].Queue == RenderingQueue::Transparent)
             Renderer::Draw((const QuadRenderer&)uiRenderers[i]);
     Renderer::EndBatch();
+}
+
+void UILayer::Refresh()
+{
+    auto entitiesRegistry = _scene->GetEntitiesRegistry();
 
     // Refresh rect transformation
     auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();

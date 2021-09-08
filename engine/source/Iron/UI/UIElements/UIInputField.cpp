@@ -22,6 +22,12 @@ void UIInputField::Init(UIEventHandler& eventHandler)
     UIInteractable::Init(UpdateTransition);
 }
 
+void UIInputField::Update()
+{
+    if (drawCursor)
+        UpdateCursorBlink();
+}
+
 void UIInputField::Rebuild(UILayer* layer, RectTransformation& transformation)
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
@@ -39,9 +45,6 @@ void UIInputField::Rebuild(UILayer* layer, RectTransformation& transformation)
         }
         return;
     }
-
-    if (drawCursor)
-        UpdateCursorBlink();
 
     auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
     auto& uiTextRT = entitiesRegistry->GetComponent<RectTransformation>(_targetText);

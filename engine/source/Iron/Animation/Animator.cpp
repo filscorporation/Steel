@@ -95,7 +95,7 @@ void ApplyFrame(EntityID entity, Keyframe keyframe)
             if (keyframe.SpriteID == NULL_RESOURCE)
                 sr.SetImage(nullptr);
             else
-                sr.SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
+                sr.SetImage(Application::Instance->GetResourcesManager()->GetSprite(keyframe.SpriteID));
         }
 
         sr.SetImageTileIndex(keyframe.TileIndex);
@@ -109,7 +109,7 @@ void ApplyFrame(EntityID entity, Keyframe keyframe)
             if (keyframe.SpriteID == NULL_RESOURCE)
                 iui.SetImage(nullptr);
             else
-                iui.SetImage(Application::Instance->GetResourcesManager()->GetImage(keyframe.SpriteID));
+                iui.SetImage(Application::Instance->GetResourcesManager()->GetSprite(keyframe.SpriteID));
         }
 
         iui.SetImageTileIndex(keyframe.TileIndex);

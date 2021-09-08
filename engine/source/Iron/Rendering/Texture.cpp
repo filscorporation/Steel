@@ -1,6 +1,17 @@
 #include "Texture.h"
 #include "OpenGLAPI.h"
 
+Texture::Texture()
+{
+
+}
+
+Texture::~Texture()
+{
+    if (ID != NULL_RESOURCE)
+        OpenGLAPI::DeleteTexture(_textureID);
+}
+
 Texture* Texture::CreateImageTexture(unsigned char *imageData, uint32_t width, uint32_t height)
 {
     auto texture = new Texture();

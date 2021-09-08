@@ -8,12 +8,7 @@ Sprite::Sprite(Texture* texture)
 
 Sprite::~Sprite()
 {
-    if (SpriteTexture != nullptr)
-    {
-        OpenGLAPI::DeleteTexture(SpriteTexture->GetTextureID());
-        delete SpriteTexture;
-        SpriteTexture = nullptr;
-    }
+
 }
 
 void Sprite::SetAsNormal()

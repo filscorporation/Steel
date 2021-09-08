@@ -35,7 +35,7 @@ void AppView::Update(EntitiesRegistry* entitiesRegistry)
         auto& image = entitiesRegistry->GetComponent<UIImage>(appViewImageEntity);
         auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
 
-        auto& screenParameters = editor->GetAppContext()->SceenParameters;
+        auto& screenParameters = editor->GetAppContext()->ScreenParameters;
         screenParameters.ResolutionX = (int)rt.GetRealSizeCached().x; // TODO: can be independent app size
         screenParameters.ResolutionY = (int)rt.GetRealSizeCached().y;
         screenParameters.Width = (int)rt.GetRealSizeCached().x;

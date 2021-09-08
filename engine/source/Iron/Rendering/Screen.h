@@ -43,7 +43,7 @@ private:
 
     static Framebuffer* _framebuffer;
     static int _xPosition, _yPosition;
-    static bool _fullscreen;
+    static int _widthBackup, _heightBackup;
     static bool _isMinimized;
     static bool _doubleBuffer;
     static bool isInResizeCallback;

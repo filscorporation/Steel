@@ -45,7 +45,7 @@ bool UIInteractable::UpdateTransition()
             image.SetColor(Math::Lerp(startingTransitionData.ToColor(), targetTransitionData.ToColor(), t));
             break;
         case TransitionTypes::SpriteChange:
-            image.SetImage(Application::Instance->GetResourcesManager()->GetImage(targetTransitionData.Value));
+            image.SetImage(Application::Instance->GetResourcesManager()->GetSprite(targetTransitionData.Value));
             isInTransition = false;
             transitionProgress = 0.0f;
             break;

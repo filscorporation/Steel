@@ -159,7 +159,7 @@ void UIInternalCalls::UIImage_SetSprite(EntityID entityID, ResourceID spriteID)
 {
     GET_COMPONENT_OR_RETURN(UIImage, )
 
-    component.SetImage(Application::Instance->GetResourcesManager()->GetImage(spriteID));
+    component.SetImage(Application::Instance->GetResourcesManager()->GetSprite(spriteID));
 }
 
 ResourceID UIInternalCalls::UIImage_GetMaterial(EntityID entityID)
@@ -607,7 +607,7 @@ EntityID UIInternalCalls::UI_CreateUIImage()
 
 EntityID UIInternalCalls::UI_CreateUIImage2(ResourceID spriteID, MonoString* name, EntityID parentEntityID)
 {
-    Sprite* sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    Sprite* sprite = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
 
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIImage(sprite, ScriptingCore::ToString(name), parentEntityID);
 }
@@ -619,7 +619,7 @@ EntityID UIInternalCalls::UI_CreateUIButton()
 
 EntityID UIInternalCalls::UI_CreateUIButton2(ResourceID spriteID, MonoString* name, EntityID parentEntityID)
 {
-    Sprite* sprite = Application::Instance->GetResourcesManager()->GetImage(spriteID);
+    Sprite* sprite = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
 
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIButton(sprite, ScriptingCore::ToString(name), parentEntityID);
 }
