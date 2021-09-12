@@ -20,6 +20,8 @@ public:
 
 private:
 
+    uint32_t _width, _height;
+
     uint32_t framebufferID;
     Texture* colorAttachment = nullptr;
     Texture* depthStencilAttachment = nullptr;

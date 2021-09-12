@@ -34,19 +34,20 @@ void AppView::Update(EntitiesRegistry* entitiesRegistry)
         auto editor = (EditorApplication*)Application::Instance;
         auto& image = entitiesRegistry->GetComponent<UIImage>(appViewImageEntity);
         auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
+        glm::vec2 rectSize = rt.GetRealSizeCached();
 
         auto& screenParameters = editor->GetAppContext()->ScreenParameters;
-        screenParameters.ResolutionX = (int)rt.GetRealSizeCached().x; // TODO: can be independent app size
-        screenParameters.ResolutionY = (int)rt.GetRealSizeCached().y;
-        screenParameters.Width = (int)rt.GetRealSizeCached().x;
-        screenParameters.Height = (int)rt.GetRealSizeCached().y;
+        screenParameters.ResolutionX = (int)rectSize.x; // TODO: can be independent app size
+        screenParameters.ResolutionY = (int)rectSize.y;
+        screenParameters.Width = (int)rectSize.x;
+        screenParameters.Height = (int)rectSize.y;
         screenParameters.OffsetX = (int)(rt.GetRealPositionCached().x - (float)screenParameters.Width * 0.5f);
         screenParameters.OffsetY = (int)(rt.GetRealPositionCached().y - (float)screenParameters.Height * 0.5f);
 
-        image.GetImage()->SpriteTexture = nullptr;
         delete image.GetImage();
 
-        editor->ApplicationFramebuffer->Resize((uint32_t)rt.GetRealSizeCached().x, (uint32_t)rt.GetRealSizeCached().y);
+        // TODO: fix bug when sprite renderers do not get draw on resize
+        editor->ApplicationFramebuffer->Resize((uint32_t)screenParameters.ResolutionX, (uint32_t)screenParameters.ResolutionY);
 
         auto sprite = new Sprite(editor->ApplicationFramebuffer->GetColorAttachment());
         image.FlipImage = true;

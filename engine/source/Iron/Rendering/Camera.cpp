@@ -83,6 +83,9 @@ void Camera::UpdateSize()
 
 glm::mat4 Camera::GetViewProjection()
 {
+    if (Screen::IsScreenSizeDirty())
+        UpdateSize();
+
     if (IsCameraDirty() || GetComponentS<Transformation>(Owner).DidTransformationChange())
     {
         SetCameraDirty(false);
@@ -113,17 +116,17 @@ bool Camera::IsCameraDirty() const
 glm::vec2 Camera::ScreenToWorldPoint(glm::vec2 screenPoint)
 {
     auto position = GetComponentS<Transformation>(Owner).GetPosition();
-    return glm::vec2(
+    return {
             _width * (screenPoint.x / float(Screen::GetWidth()) - 0.5) + position.x,
             _height * (screenPoint.y / float(Screen::GetHeight()) - 0.5) + position.y
-    );
+    };
 }
 
 glm::vec2 Camera::WorldToScreenPoint(glm::vec2 worldPoint)
 {
     auto position = GetComponentS<Transformation>(Owner).GetPosition();
-    return glm::vec2(
+    return {
             ((worldPoint.x - position.x) / _width + 0.5f) * float(Screen::GetWidth()),
             ((worldPoint.y - position.y) / _height + 0.5f) * float(Screen::GetHeight())
-    );
+    };
 }

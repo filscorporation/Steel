@@ -189,10 +189,10 @@ void Scene::PrepareDraw()
     SortByHierarchy();
     UpdateGlobalTransformation();
     SortByDrawOrder();
-    Renderer::OnBeforeRender(GetMainCamera());
     RefreshTransformation();
     // Rebuild UI layer elements
     uiLayer->Rebuild();
+    //uiLayer->Refresh(); TODO: should be there
 
     AfterPrepareDraw();
 }
@@ -203,6 +203,8 @@ void Scene::Draw(Framebuffer* framebuffer)
     Renderer::Clear(Screen::GetColor());
 
     BeforeDraw();
+
+    Renderer::OnBeforeRender(GetMainCamera());
 
     auto quadRenderers = entitiesRegistry->GetComponentIterator<QuadRenderer>();
 

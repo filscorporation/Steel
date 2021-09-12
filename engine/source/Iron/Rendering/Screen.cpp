@@ -2,6 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Screen.h"
+#include "OpenGLAPI.h"
 #include "../Core/Application.h"
 #include "../Core/Input.h"
 #include "../Core/Log.h"
@@ -13,7 +14,6 @@ bool screenSizeDirty = false;
 Framebuffer* Screen::_framebuffer = nullptr;
 int Screen::_xPosition, Screen::_yPosition;
 int Screen::_widthBackup, Screen::_heightBackup;
-glm::mat4 Screen::_viewProjection = glm::mat4(1.0f);
 bool Screen::_isMinimized = false;
 bool Screen::_doubleBuffer = true;
 bool Screen::isInResizeCallback = false;
@@ -146,23 +146,16 @@ void Screen::SetColor(glm::vec3 color)
 
 glm::mat4 Screen::GetUIViewProjection()
 {
-    return _viewProjection;
+    return glm::ortho(
+            0.0f, (float)Application::Context()->ScreenParameters.ResolutionX,
+            0.0f, (float)Application::Context()->ScreenParameters.ResolutionY,
+            -1.0f, UI_MAX_DISTANCE
+    );
 }
 
 bool Screen::IsScreenSizeDirty()
 {
     return screenSizeDirty;
-}
-
-void Screen::UpdateUIViewProjection(int width, int height)
-{
-    glm::mat4 projection = glm::ortho(
-            0.0f, (float)width,
-            0.0f, (float)height,
-            -1.0f, UI_MAX_DISTANCE
-    );
-
-    _viewProjection = projection;
 }
 
 void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer)
@@ -193,12 +186,9 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool 
 
     glfwGetWindowPos(_window, &_xPosition, &_yPosition);
     glfwGetFramebufferSize(_window, &width, &height);
-    glViewport(0, 0, width, height);
 
     glfwSetWindowSizeCallback(_window, ResizeCallback);
     glfwSetWindowPosCallback(_window, PositionCallback);
-
-    UpdateUIViewProjection(width, height);
 
     _framebuffer = new Framebuffer();
 
@@ -254,11 +244,8 @@ void Screen::UpdateSize()
         }
         Application::Instance->ScreenParametersForUpdate().ResolutionX = Application::Context()->ScreenParameters.Width;
         Application::Instance->ScreenParametersForUpdate().ResolutionY = Application::Context()->ScreenParameters.Height;
-        glViewport(0, 0, tempWidth, tempHeight);
 
         Input::ReleaseAllEvents();
-        UpdateUIViewProjection(Application::Context()->ScreenParameters.Width, Application::Context()->ScreenParameters.Height);
-        Application::Instance->GetCurrentScene()->GetMainCamera().UpdateSize();
     }
 }
 

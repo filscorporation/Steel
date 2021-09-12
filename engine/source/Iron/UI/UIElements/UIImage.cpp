@@ -22,11 +22,12 @@ void UIImage::UpdateRenderer(RectTransformation& transformation, bool transforma
 
     if (_image->IsSliced)
     {
+        glm::vec2 size = transformation.GetRealSizeCached();
         float k = (float)_image->PixelsPerUnit / (float)UILayer::Current()->PixelsPerUnit;
-        float xvs[4] = { 0.0f, (float)_image->SliceLeftOffset * k / transformation.GetSize().x,
-                         1.0f - (float)_image->SliceRightOffset * k / transformation.GetSize().x, 1.0f };
-        float yvs[4] = { 0.0f, (float)_image->SliceBottomOffset * k / transformation.GetSize().y,
-                         1.0f - (float)_image->SliceTopOffset * k / transformation.GetSize().y, 1.0f };
+        float xvs[4] = { 0.0f, (float)_image->SliceLeftOffset * k / size.x,
+                         1.0f - (float)_image->SliceRightOffset * k / size.x, 1.0f };
+        float yvs[4] = { 0.0f, (float)_image->SliceBottomOffset * k / size.y,
+                         1.0f - (float)_image->SliceTopOffset * k / size.y, 1.0f };
 
         for (int n = 0; n < _renderers.size(); ++n)
         {

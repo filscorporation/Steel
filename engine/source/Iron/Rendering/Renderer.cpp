@@ -31,7 +31,7 @@ void Renderer::Init()
 {
     Log::LogDebug("Begin renderer init");
 
-    if(!OpenGLAPI::Init())
+    if (!OpenGLAPI::Init())
     {
         Log::LogError("Error loading OpenGL");
         return;

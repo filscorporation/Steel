@@ -115,11 +115,6 @@ void UILayer::Rebuild()
     auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
     for (auto& uiIF : uiIFs)
         uiIF.Rebuild(this, rtAccessor.Get(uiIF.Owner));
-}
-
-void UILayer::Draw()
-{
-    auto entitiesRegistry = _scene->GetEntitiesRegistry();
 
     // After rebuilding text we need to condense renderers list to not wait for the next frame
     entitiesRegistry->ClearRemoved<UIQuadRenderer>();
@@ -131,6 +126,11 @@ void UILayer::Draw()
         { return a.SortingOrder < b.SortingOrder; }
     } SOComparer;
     entitiesRegistry->SortComponents<UIQuadRenderer>(SOComparer);
+}
+
+void UILayer::Draw()
+{
+    auto entitiesRegistry = _scene->GetEntitiesRegistry();
 
     // Draw
     auto uiRenderers = entitiesRegistry->GetComponentIterator<UIQuadRenderer>();

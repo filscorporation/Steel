@@ -77,6 +77,11 @@ void OpenGLAPI::SetPolygonMode(PolygonMode mode)
     glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(mode));
 }
 
+void OpenGLAPI::SetViewport(int x, int y, int width, int height)
+{
+    glViewport(x, y, width, height);
+}
+
 int GLComparisonFunc(ComparisonFunctions::ComparisonFunction func)
 {
     switch (func)

@@ -39,15 +39,12 @@ private:
     static void Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer);
     static void Apply();
 
-    static void UpdateUIViewProjection(int width, int height);
-
     static Framebuffer* _framebuffer;
     static int _xPosition, _yPosition;
     static int _widthBackup, _heightBackup;
     static bool _isMinimized;
     static bool _doubleBuffer;
     static bool isInResizeCallback;
-    static glm::mat4 _viewProjection;
 
     friend class Application;
 };

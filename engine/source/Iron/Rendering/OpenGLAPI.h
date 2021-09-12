@@ -39,6 +39,7 @@ namespace OpenGLAPI
     void ClearDepth();
     void ClearStencil();
     void SetPolygonMode(PolygonMode mode);
+    void SetViewport(int x, int y, int width, int height);
 
     void SetDepthMask(bool mask);
     void SetDepthFunc(ComparisonFunctions::ComparisonFunction func);

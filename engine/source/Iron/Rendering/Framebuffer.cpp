@@ -7,6 +7,9 @@
 
 Framebuffer::Framebuffer(uint32_t width, uint32_t height)
 {
+    _width = width;
+    _height = height;
+
     framebufferID = OpenGLAPI::CreateFramebuffer();
     OpenGLAPI::BindFramebuffer(framebufferID);
 
@@ -42,6 +45,9 @@ Framebuffer::~Framebuffer()
 
 void Framebuffer::Resize(uint32_t width, uint32_t height)
 {
+    _width = width;
+    _height = height;
+
     if (colorAttachment != nullptr)
         Application::Context()->Resources->UnloadTexture(colorAttachment->ID);
     if (depthStencilAttachment != nullptr)
@@ -67,6 +73,10 @@ void Framebuffer::Resize(uint32_t width, uint32_t height)
 void Framebuffer::Bind() const
 {
     OpenGLAPI::BindFramebuffer(framebufferID);
+    if (framebufferID == DEFAULT_FRAMEBUFER_ID)
+        OpenGLAPI::SetViewport(0, 0, Application::Context()->ScreenParameters.Width, Application::Context()->ScreenParameters.Height);
+    else
+        OpenGLAPI::SetViewport(0, 0, (int)_width, (int)_height);
 }
 
 void Framebuffer::Unbind()
