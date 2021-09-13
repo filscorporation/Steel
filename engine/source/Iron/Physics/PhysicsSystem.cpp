@@ -16,6 +16,7 @@ void PhysicsSystem::OnComponentRemoved(EntityID entityID, RigidBody& component)
 
     PhysicsCore::GetWorld()->DestroyBody(component.info->Body);
     delete component.info;
+    component.info = nullptr;
 }
 
 void PhysicsSystem::OnEntityEnabled(EntityID entityID, RigidBody& component)
@@ -33,6 +34,7 @@ void PhysicsSystem::OnEntityDisabled(EntityID entityID, RigidBody& component)
 
     PhysicsCore::GetWorld()->DestroyBody(component.info->Body);
     delete component.info;
+    component.info = nullptr;
 }
 
 void PhysicsSystem::OnComponentAdded(EntityID entityID, BoxCollider& component)

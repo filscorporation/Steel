@@ -35,6 +35,7 @@ namespace OpenGLAPI
     void EnableBlend();
     void DisableBlend();
     void SetClearColor(float r, float g, float b, float a);
+    void ClearAll();
     void ClearColor();
     void ClearDepth();
     void ClearStencil();

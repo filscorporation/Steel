@@ -43,6 +43,12 @@ void OpenGLAPI::SetClearColor(float r, float g, float b, float a)
     glClearColor(r, g, b, a);
 }
 
+void OpenGLAPI::ClearAll()
+{
+    glDepthMask(GL_TRUE);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
 void OpenGLAPI::ClearColor()
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -50,8 +56,8 @@ void OpenGLAPI::ClearColor()
 
 void OpenGLAPI::ClearDepth()
 {
-    glClear(GL_DEPTH_BUFFER_BIT);
     glDepthMask(GL_TRUE);
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void OpenGLAPI::ClearStencil()

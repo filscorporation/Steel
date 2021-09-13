@@ -9,7 +9,7 @@
 
 GLFWwindow* _window;
 bool needToUpdateViewport = false;
-bool screenSizeDirty = false;
+bool screenSizeDirty = true;
 
 Framebuffer* Screen::_framebuffer = nullptr;
 int Screen::_xPosition, Screen::_yPosition;
