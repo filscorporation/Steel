@@ -74,7 +74,7 @@ void Framebuffer::Bind() const
 {
     OpenGLAPI::BindFramebuffer(framebufferID);
     if (framebufferID == DEFAULT_FRAMEBUFER_ID)
-        OpenGLAPI::SetViewport(0, 0, Application::Context()->ScreenParameters.Width, Application::Context()->ScreenParameters.Height);
+        OpenGLAPI::SetViewport(0, 0, Application::Context()->ScreenParams.Width, Application::Context()->ScreenParams.Height);
     else
         OpenGLAPI::SetViewport(0, 0, (int)_width, (int)_height);
 }

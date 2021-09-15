@@ -12,5 +12,7 @@ public:
     void Update(EntitiesRegistry* entitiesRegistry);
 
 private:
+    EntityID tabEntity = NULL_ENTITY;
+    EntityID statsEntity = NULL_ENTITY;
     EntityID appViewImageEntity = NULL_ENTITY;
 };

@@ -7,7 +7,7 @@
 #include "TransitionInfo.h"
 #include "UIEvent.h"
 
-typedef std::function<bool(EntityID)> UpdateIntaractable;
+typedef std::function<bool(EntityID)> UpdateInteractable;
 
 class UIInteractable : public UIComponent
 {
@@ -23,7 +23,7 @@ public:
     bool GetInteractable() const;
 
 protected:
-    void Init(UpdateIntaractable callback);
+    void Init(UpdateInteractable callback);
     void PlayTransition(TransitionData data);
     void StopTransition();
     bool UpdateTransition();
@@ -36,7 +36,7 @@ protected:
 private:
     EntityID _targetImage = NULL_ENTITY;
 
-    UpdateIntaractable updateCallback = nullptr;
+    UpdateInteractable updateCallback = nullptr;
     bool isInTransition = false;
     bool startingDataInitialized = false;
     TransitionData startingTransitionData {};

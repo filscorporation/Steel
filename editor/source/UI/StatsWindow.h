@@ -1,20 +1,17 @@
 #pragma once
 
-#include "../EntityComponentSystem/Entity.h"
-#include "../UI/UIElements/UIText.h"
+#include <Iron/EntityComponentSystem/Entity.h>
+#include <Iron/UI/UIComponent.h>
 
-class DebugInfoWindow
+class StatsWindow : public UIComponent
 {
 public:
-    DebugInfoWindow();
+    explicit StatsWindow(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    void Enable() const;
-    void Disable() const;
+    void Init();
     void UpdateInfo();
 
 private:
-    void Create();
-
     int GetFPS();
     float lastFPS = 0.0f;
 

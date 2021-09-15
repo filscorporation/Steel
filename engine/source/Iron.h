@@ -7,7 +7,6 @@
 #include "Iron/Core/Log.h"
 #include "Iron/Core/Time.h"
 #include "Iron/Core/Input.h"
-#include "Iron/Debug/Debug.h"
 #include "Iron/EntityComponentSystem/EntitiesRegistry.h"
 #include "Iron/EntityComponentSystem/Entity.h"
 #include "Iron/EntityComponentSystem/Component.h"

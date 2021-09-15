@@ -26,18 +26,25 @@ struct ApplicationSettings
     bool DoubleBuffer = false;
 };
 
+struct ApplicationStats
+{
+    int DrawCalls = 0;
+    int VerticesCount = 0;
+};
+
 struct ApplicationContext
 {
-    ResourcesManager* Resources;
-    SceneManager* Scenes;
-    ScreenParameters ScreenParameters;
+    ResourcesManager* Resources = nullptr;
+    SceneManager* Scenes = nullptr;
+    ScreenParameters ScreenParams {};
+    ApplicationStats Stats {};
 };
 
 class Application
 {
 public:
     static Application* Instance;
-    static const ApplicationContext* Context();
+    static ApplicationContext* Context();
 
     Application();
     virtual void Init(ApplicationSettings settings);

@@ -190,6 +190,9 @@ void Scene::PrepareDraw()
     UpdateGlobalTransformation();
     SortByDrawOrder();
     RefreshTransformation();
+
+    BeforeRebuildUI();
+
     // Rebuild UI layer elements
     uiLayer->Rebuild();
     //uiLayer->Refresh(); TODO: should be there

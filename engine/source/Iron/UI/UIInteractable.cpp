@@ -4,7 +4,7 @@
 #include "../Core/Log.h"
 #include "../Core/Time.h"
 
-void UIInteractable::Init(UpdateIntaractable callback)
+void UIInteractable::Init(UpdateInteractable callback)
 {
     updateCallback = callback;
     CurrentTransitionsInfo.TransitionType = TransitionTypes::ColorShift;

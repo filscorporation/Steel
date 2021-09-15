@@ -36,9 +36,6 @@ public:
 
     static bool DrawWireframe;
 
-    static int DrawCallsStats;
-    static int VerticesStats;
-
 private:
 
     // Renderer state

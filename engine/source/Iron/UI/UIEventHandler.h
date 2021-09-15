@@ -22,6 +22,7 @@ class UIEventHandler : public Component
 public:
     explicit UIEventHandler(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
+    void Update(EntitiesRegistry* entitiesRegistry, RectTransformation& rectTransformation);
     void HandleEvent(const ComponentAccessor<RectTransformation>& rtAccessor, UIEvent& uiEvent);
 
     void EnableNotifyScripts();

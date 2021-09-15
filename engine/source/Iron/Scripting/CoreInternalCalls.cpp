@@ -3,7 +3,6 @@
 #include "../Core/Input.h"
 #include "../Core/Log.h"
 #include "../Core/Time.h"
-#include "../Debug/Debug.h"
 #include "../Physics/Physics.h"
 #include "../Math/Random.h"
 #include "../Math/PerlinNoise.h"
@@ -433,16 +432,6 @@ void CoreInternalCalls::Log_LogWarning(MonoString* message)
 void CoreInternalCalls::Log_LogError(MonoString* message)
 {
     Log::LogError(ScriptingCore::ToString(message));
-}
-
-void CoreInternalCalls::Debug_EnableDebugInfoWindow()
-{
-    Debug::EnableDebugWindow();
-}
-
-void CoreInternalCalls::Debug_DisableDebugInfoWindow()
-{
-    Debug::DisableDebugWindow();
 }
 
 void CoreInternalCalls::Physics_Simulate(float deltaTime)

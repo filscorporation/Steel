@@ -48,6 +48,7 @@ void UILayer::LoadDefaultResources()
     UIResources.DefaultFrameSprite->SetAsSliced(6);
     UIResources.DefaultPixelSprite = resourcesManager->LoadSprite("pixel.png", true);
     UIResources.DefaultCheckBoxSprite = resourcesManager->LoadSprite("check_box.png", true);
+    UIResources.DefaultCheckBoxSprite->SetAsSliced(2);
     UIResources.DefaultCheckMarkSprite = resourcesManager->LoadSprite("check_mark.png", true);
     UIResources.DefaultTabOpenedSprite = resourcesManager->LoadSprite("tab_opened.png", true);
     UIResources.DefaultTabClosedSprite = resourcesManager->LoadSprite("tab_closed.png", true);
@@ -82,6 +83,7 @@ void UILayer::Rebuild()
     auto hierarchyNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
     auto rtAccessor = entitiesRegistry->GetComponentAccessor<RectTransformation>();
     // Components to apply changed transformation
+    auto ehAccessor = entitiesRegistry->GetComponentAccessor<UIEventHandler>();
     auto imageAccessor = entitiesRegistry->GetComponentAccessor<UIImage>();
     auto textAccessor = entitiesRegistry->GetComponentAccessor<UIText>();
     auto hlAccessor = entitiesRegistry->GetComponentAccessor<UILayoutGroup>();
@@ -93,6 +95,8 @@ void UILayer::Rebuild()
             rt.UpdateTransformation(this, rtAccessor, hierarchyNode);
 
             bool transformationDirty = rt.DidTransformationChange();
+            if ((transformationDirty || _rebuildSortingOrder) && ehAccessor.Has(hierarchyNode.Owner))
+                ehAccessor.Get(hierarchyNode.Owner).Update(entitiesRegistry, rt);
             if ((transformationDirty || _rebuildSortingOrder) && imageAccessor.Has(hierarchyNode.Owner))
                 imageAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt, transformationDirty, _rebuildSortingOrder);
             if (textAccessor.Has(hierarchyNode.Owner))
@@ -185,7 +189,7 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     _isPointerOverUI = uiEvent.Used;
 }
 
-void UILayer::AddToUpdateQueue(EntityID entityID, UpdateIntaractable callback)
+void UILayer::AddToUpdateQueue(EntityID entityID, UpdateInteractable callback)
 {
     auto id = EntitiesRegistry::EntityIDGetID(entityID);
     if (!_updateQueue.Has(id))
@@ -352,8 +356,8 @@ EntityID UILayer::CreateUICheckBox()
 
 EntityID UILayer::CreateUICheckBox(const char* label, const char* name, EntityID parent)
 {
-    float boxSize = (float)UIResources.DefaultCheckBoxSprite->SpriteTexture->GetHeight() * 2;
-    float markSize = (float)UIResources.DefaultCheckMarkSprite->SpriteTexture->GetHeight() * 2;
+    float boxSize = 18;
+    float markSize = 14;
 
     auto entity = CreateUIElement(name, parent);
     auto& checkBox = _scene->GetEntitiesRegistry()->AddComponent<UICheckBox>(entity);

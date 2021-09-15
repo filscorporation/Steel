@@ -81,7 +81,6 @@ set(SOURCE_FILES
         source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h source/Iron/Scene/HierarchySystem.cpp
         source/Iron/Scene/HierarchySystem.h source/Iron/Scene/TransformationSystem.cpp source/Iron/Scene/TransformationSystem.h
         source/Iron/UI/UISystem.cpp source/Iron/UI/UISystem.h source/Iron/Scripting/ScriptComponentSystem.cpp source/Iron/Scripting/ScriptComponentSystem.h
-        source/Iron/Debug/Debug.cpp source/Iron/Debug/Debug.h source/Iron/Debug/DebugInfoWindow.cpp source/Iron/Debug/DebugInfoWindow.h
         source/Iron/Resources/PngLoader.cpp source/Iron/Resources/PngLoader.h source/Iron/Rendering/OpenGLAPI.cpp source/Iron/Rendering/OpenGLAPI.h
         source/Iron/Resources/AsepriteLoader.cpp source/Iron/Resources/AsepriteLoader.h source/Iron/Resources/AsepriteData.h
         source/Iron/Resources/FileLoader.cpp source/Iron/Resources/FileLoader.h source/Iron/Rendering/QuadRenderer.cpp source/Iron/Rendering/QuadRenderer.h

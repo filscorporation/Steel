@@ -9,5 +9,6 @@ public:
     ~EditorScene() override = default;
 
 protected:
+    void BeforeRebuildUI() override;
     void AfterPrepareDraw() override;
 };

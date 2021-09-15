@@ -54,9 +54,6 @@ void UIImage::UpdateRenderer(RectTransformation& transformation, bool transforma
             qr.Vertices[i] = matrix * qr.DefaultVertices[i];
         qr.SortingOrder = sortingOrder;
     }
-
-    if (registry->HasComponent<UIEventHandler>(Owner))
-        registry->GetComponent<UIEventHandler>(Owner).SortingOrder = sortingOrder;
 }
 
 void UIImage::SetMaterial(Material* material)

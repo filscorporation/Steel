@@ -13,7 +13,6 @@
 #include "Time.h"
 #include "../Audio/AudioCore.h"
 #include "../Animation/Animator.h"
-#include "../Debug/Debug.h"
 #include "../Math/Random.h"
 #include "../Physics/Physics.h"
 #include "../Rendering/Renderer.h"
@@ -21,7 +20,7 @@
 
 Application* Application::Instance;
 
-const ApplicationContext* Application::Context()
+ApplicationContext* Application::Context()
 {
     return Instance->CurrentContext;
 }
@@ -62,15 +61,15 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     auto context = new ApplicationContext();
     CurrentContext = context;
 
-    context->ScreenParameters.CanResize = true;
-    context->ScreenParameters.Fullscreen = settings.Fullscreen;
-    context->ScreenParameters.Width = settings.ScreenWidth;
-    context->ScreenParameters.Height = settings.ScreenHeight;
-    context->ScreenParameters.ResolutionX = settings.ScreenWidth;
-    context->ScreenParameters.ResolutionY = settings.ScreenHeight;
-    context->ScreenParameters.OffsetX = 0;
-    context->ScreenParameters.OffsetY = 0;
-    context->ScreenParameters.Color = settings.ScreenColor;
+    context->ScreenParams.CanResize = true;
+    context->ScreenParams.Fullscreen = settings.Fullscreen;
+    context->ScreenParams.Width = settings.ScreenWidth;
+    context->ScreenParams.Height = settings.ScreenHeight;
+    context->ScreenParams.ResolutionX = settings.ScreenWidth;
+    context->ScreenParams.ResolutionY = settings.ScreenHeight;
+    context->ScreenParams.OffsetX = 0;
+    context->ScreenParams.OffsetY = 0;
+    context->ScreenParams.Color = settings.ScreenColor;
 
     context->Resources = new ResourcesManager();
     context->Resources->LoadDefaultResources();
@@ -149,7 +148,7 @@ void Application::Quit()
 
 ScreenParameters& Application::ScreenParametersForUpdate()
 {
-    return CurrentContext->ScreenParameters;
+    return CurrentContext->ScreenParams;
 }
 
 ResourcesManager* Application::GetResourcesManager()

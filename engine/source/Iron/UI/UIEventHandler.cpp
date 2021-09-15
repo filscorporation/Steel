@@ -3,6 +3,11 @@
 #include "../Core/Time.h"
 #include "../Scripting/ScriptComponent.h"
 
+void UIEventHandler::Update(EntitiesRegistry* entitiesRegistry, RectTransformation& rectTransformation)
+{
+    SortingOrder = entitiesRegistry->GetComponent<RectTransformation>(Owner).GetSortingOrder();
+}
+
 void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rtAccessor, UIEvent& uiEvent)
 {
     auto& rectTransformation = rtAccessor.Get(RectEntity == NULL_ENTITY ? Owner : RectEntity);

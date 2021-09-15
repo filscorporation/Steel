@@ -8,8 +8,8 @@ void EditorApplication::Init(ApplicationSettings settings)
 
     // Application
     AppContext = CreateContext(settings);
-    AppContext->ScreenParameters.CanResize = false;
-    AppContext->ScreenParameters.Fullscreen = false;
+    AppContext->ScreenParams.CanResize = false;
+    AppContext->ScreenParams.Fullscreen = false;
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
     // Editor
@@ -18,15 +18,15 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext = new ApplicationContext();
     CurrentContext = EditorContext;
 
-    EditorContext->ScreenParameters.CanResize = true;
-    EditorContext->ScreenParameters.Fullscreen = false;
-    EditorContext->ScreenParameters.Width = 1400;
-    EditorContext->ScreenParameters.Height = 800;
-    EditorContext->ScreenParameters.ResolutionX = 1400;
-    EditorContext->ScreenParameters.ResolutionY = 800;
-    EditorContext->ScreenParameters.OffsetX = 0;
-    EditorContext->ScreenParameters.OffsetY = 0;
-    EditorContext->ScreenParameters.Color = glm::vec3(0.0f, 0.0f, 0.0f);
+    EditorContext->ScreenParams.CanResize = true;
+    EditorContext->ScreenParams.Fullscreen = false;
+    EditorContext->ScreenParams.Width = 1400;
+    EditorContext->ScreenParams.Height = 800;
+    EditorContext->ScreenParams.ResolutionX = 1400;
+    EditorContext->ScreenParams.ResolutionY = 800;
+    EditorContext->ScreenParams.OffsetX = 0;
+    EditorContext->ScreenParams.OffsetY = 0;
+    EditorContext->ScreenParams.Color = glm::vec3(0.0f, 0.0f, 0.0f);
 
     EditorContext->Resources = new ResourcesManager();
     EditorContext->Resources->LoadDefaultResources();
@@ -35,7 +35,7 @@ void EditorApplication::Init(ApplicationSettings settings)
     auto editorScene = new EditorScene();
     EditorContext->Scenes->SetActiveScene(editorScene);
 
-    ApplicationFramebuffer = new Framebuffer(AppContext->ScreenParameters.ResolutionX, AppContext->ScreenParameters.ResolutionY);
+    ApplicationFramebuffer = new Framebuffer(AppContext->ScreenParams.ResolutionX, AppContext->ScreenParams.ResolutionY);
 
     EditorContext->Scenes->GetActiveScene()->CreateMainCamera();
 

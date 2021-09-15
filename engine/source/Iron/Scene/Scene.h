@@ -46,6 +46,7 @@ protected:
     // Methods to expand scene update and draw process
     virtual void BeforeUpdate() { };
     virtual void AfterUpdate() { };
+    virtual void BeforeRebuildUI() { };
     virtual void AfterPrepareDraw() { };
     virtual void BeforeDraw() { };
     virtual void AfterDraw() { };

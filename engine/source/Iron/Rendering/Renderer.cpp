@@ -22,8 +22,6 @@ ResourceID Renderer::lastMaterial = NULL_RESOURCE;
 std::vector<Shader*> Renderer::shadersUsed;
 DrawModes::DrawMode Renderer::currentDrawMode = DrawModes::Normal;
 bool Renderer::DrawWireframe = false;
-int Renderer::DrawCallsStats = 0;
-int Renderer::VerticesStats = 0;
 
 using namespace OpenGLAPI;
 
@@ -90,8 +88,8 @@ void Renderer::OnBeforeRender(Camera& camera)
     // Start first batch
     StartBatch();
 
-    DrawCallsStats = 0;
-    VerticesStats = 0;
+    Application::Context()->Stats.DrawCalls = 0;
+    Application::Context()->Stats.VerticesCount = 0;
 }
 
 void Renderer::OnAfterRender()
@@ -166,7 +164,7 @@ void Renderer::Draw(const QuadRenderer& quad)
     }
 
     renderCallsCount++;
-    VerticesStats += 4;
+    Application::Context()->Stats.VerticesCount += 4;
 
     if (renderCallsCount >= MAX_RENDER_CALLS)
     {
@@ -200,7 +198,7 @@ void Renderer::EndBatch()
     if (renderCallsCount == 0)
         return;
 
-    DrawCallsStats ++;
+    Application::Context()->Stats.DrawCalls ++;
     DrawBatchedData();
 
     // TODO: move to different pass

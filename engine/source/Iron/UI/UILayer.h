@@ -31,7 +31,7 @@ public:
     void SetSortingOrderDirty();
     bool NeedRebuildSortingOrder() const;
 
-    void AddToUpdateQueue(EntityID entityID, UpdateIntaractable callback);
+    void AddToUpdateQueue(EntityID entityID, UpdateInteractable callback);
     void RemoveFromUpdateQueue(EntityID entityID);
 
     EntityID CreateUIElement();
@@ -76,12 +76,12 @@ private:
 
     struct InteractableCallback
     {
-        InteractableCallback(UpdateIntaractable callback, EntityID owner)
+        InteractableCallback(UpdateInteractable callback, EntityID owner)
         {
             Callback = callback;
             Owner = owner;
         }
-        UpdateIntaractable Callback;
+        UpdateInteractable Callback;
         EntityID Owner;
     };
     SparseDataSet<InteractableCallback> _updateQueue;
