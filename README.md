@@ -1,6 +1,6 @@
-# Iron Engine
+# Steel Engine
 
-Iron is a 2D OpenSource C++ Engine with C# scripting support.
+Steel is a 2D OpenSource C++ Engine with C# scripting support.
 
 ## Current features
 * Windows and Linux support
@@ -14,11 +14,11 @@ Iron is a 2D OpenSource C++ Engine with C# scripting support.
 * Full support of C# scripting with documented API (using Mono)
 
 ## Project structure
-* application - contains base C++ executable project that builds application powered by Iron Engine
+* application - contains base C++ executable project that builds application powered by Steel Engine
 * editor - contains engine editor project (WIP)
 * engine - contains engine sources that can be compiled into library
 * examples - contains example projects
-* scripting - contains projects to compile scripts dll. IronCore is used to expose engine API to custom scripts, IronCustom is a custom scripts project template
+* scripting - contains projects to compile scripts dll. SteelCore is used to expose engine API to custom scripts, SteelCustom is a custom scripts project template
 * tests - contains autotests for various engine systems
 
 ## Installation
@@ -27,8 +27,8 @@ Project requires Mono to be installed (https://www.mono-project.com/docs/getting
 #### Supported platforms
 Windows and Linux are currently supported. On windows for now it can only be compiled with VS compiler.
 #### Building project
-* Build IronCore C# project (scripting/IronCore)
-* Build IronCustom C# project (scripting/IronCustom)
+* Build SteelCore C# project (scripting/SteelCore)
+* Build SteelCustom C# project (scripting/SteelCustom)
 * Build Application executable (application)
 * Run Application
 #### Distribution build
@@ -36,6 +36,6 @@ There is currently an option in CMakeLists to enable distribution build. It will
 #### Release configuration
 Engine performance will drastically increase if built in release configuration.
 
-## Developing with Iron Engine
-Scripting API is very similar to Unity. Some basic examples can be found in scripting/IronCustom/GameManager.cs and projects examples.
-To create your own application logic expand IronCustom project: create ScriptingComponents inheritors, override event functions and initialize starting scene members in GameManager.EntryPoint() method. Application resources loaded with ResourcesManager will be searched in application/resources folder.
+## Developing with Steel Engine
+Scripting API is very similar to Unity. Some basic examples can be found in scripting/SteelCustom/GameManager.cs and projects examples.
+To create your own application logic expand SteelCustom project: create ScriptingComponents inheritors, override event functions and initialize starting scene members in GameManager.EntryPoint() method. Application resources loaded with ResourcesManager will be searched in application/resources folder.
