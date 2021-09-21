@@ -1,6 +1,6 @@
-﻿using Iron;
+﻿using Steel;
 
-namespace IronCustom
+namespace SteelCustom
 {
     public class GameManager
     {
