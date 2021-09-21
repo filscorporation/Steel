@@ -46,6 +46,10 @@ public:
     void OnRemoved();
     void OnDisabled();
 
+    static bool IsInt(const std::string& text, int& value);
+    static bool IsFloat(const std::string& text, float& value);
+    static int IsNotAlNum(char c);
+
     InputFieldSubmitCallback SubmitCallback = nullptr;
 
 private:

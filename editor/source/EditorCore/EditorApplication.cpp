@@ -49,7 +49,7 @@ void EditorApplication::RunUpdate()
     if (!IsRunning)
         return; // When updated not from Run()
 
-    CurrentContext = EditorContext;
+    SwitchContext(EditorContext);
 
     Input::PollEvents();
     Screen::UpdateSize();
@@ -59,7 +59,7 @@ void EditorApplication::RunUpdate()
     CurrentContext->Scenes->GetActiveScene()->PrepareDraw();
 
     // Set scene we will update and render into framebuffer
-    CurrentContext = AppContext;
+    SwitchContext(AppContext);
 
     if (State == EditorStates::Playing || State == EditorStates::Step)
     {
@@ -71,7 +71,7 @@ void EditorApplication::RunUpdate()
     CurrentContext->Scenes->GetActiveScene()->Draw(ApplicationFramebuffer);
 
     // Now render editor
-    CurrentContext = EditorContext;
+    SwitchContext(EditorContext);
     CurrentContext->Scenes->GetActiveScene()->Draw(Screen::ScreenFramebuffer());
 
     Time::Update();
@@ -85,7 +85,7 @@ void EditorApplication::Terminate()
 {
     delete ApplicationFramebuffer;
 
-    CurrentContext = EditorContext;
+    SwitchContext(EditorContext);
     delete EditorContext->Scenes;
     delete EditorContext->Resources;
     delete EditorContext;

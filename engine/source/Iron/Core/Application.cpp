@@ -65,11 +65,15 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     context->ScreenParams.Fullscreen = settings.Fullscreen;
     context->ScreenParams.Width = settings.ScreenWidth;
     context->ScreenParams.Height = settings.ScreenHeight;
+    context->ScreenParams.WidthBackup = settings.ScreenWidth;
+    context->ScreenParams.HeightBackup = settings.ScreenHeight;
+    context->ScreenParams.AutoResolution = true;
     context->ScreenParams.ResolutionX = settings.ScreenWidth;
     context->ScreenParams.ResolutionY = settings.ScreenHeight;
     context->ScreenParams.OffsetX = 0;
     context->ScreenParams.OffsetY = 0;
     context->ScreenParams.Color = settings.ScreenColor;
+    context->ScreenParams.IsDirty = false;
 
     context->Resources = new ResourcesManager();
     context->Resources->LoadDefaultResources();
@@ -92,7 +96,7 @@ void Application::Run()
 
     IsRunning = true;
 
-    CurrentContext = AppContext;
+    SwitchContext(AppContext);
     ScriptingSystem::CallEntryPoint();
 
     while (IsRunning)
@@ -109,7 +113,7 @@ void Application::RunUpdate()
         return; // When updated not from Run()
 
     // Set scene we will update and render
-    CurrentContext = AppContext;
+    SwitchContext(AppContext);
 
     Input::PollEvents();
     Screen::UpdateSize();
@@ -130,7 +134,7 @@ void Application::RunUpdate()
 
 void Application::Terminate()
 {
-    CurrentContext = AppContext;
+    SwitchContext(AppContext);
     delete AppContext->Scenes;
     delete AppContext->Resources;
     delete AppContext;
@@ -186,4 +190,17 @@ std::string Application::GetRuntimePath()
 std::string Application::GetDataPath()
 {
     return GetRuntimePath() + "\\" + AppContext->Resources->GetResourcesPath();
+}
+
+void Application::SwitchContext(ApplicationContext* context)
+{
+    CurrentContext = context;
+    if (CurrentContext->ScreenParams.IsDirty)
+    {
+        Screen::SetScreenSizeDirty();
+        Screen::EnterCallback();
+        Screen::Apply();
+        Screen::ExitCallback();
+        CurrentContext->ScreenParams.IsDirty = false;
+    }
 }

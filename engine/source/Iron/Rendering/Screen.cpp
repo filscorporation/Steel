@@ -13,7 +13,6 @@ bool screenSizeDirty = true;
 
 Framebuffer* Screen::_framebuffer = nullptr;
 int Screen::_xPosition, Screen::_yPosition;
-int Screen::_widthBackup, Screen::_heightBackup;
 bool Screen::_isMinimized = false;
 bool Screen::_doubleBuffer = true;
 bool Screen::isInResizeCallback = false;
@@ -36,23 +35,32 @@ void Screen::Apply()
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
         glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, 0);
-        _widthBackup = Application::Context()->ScreenParams.Width;
-        _heightBackup = Application::Context()->ScreenParams.Height;
+        Application::Context()->ScreenParams.WidthBackup = Application::Context()->ScreenParams.Width;
+        Application::Context()->ScreenParams.HeightBackup = Application::Context()->ScreenParams.Height;
         Application::Context()->ScreenParams.Width = mode->width;
         Application::Context()->ScreenParams.Width = mode->width;
         Application::Context()->ScreenParams.Height = mode->height;
-        Application::Context()->ScreenParams.ResolutionX = mode->width;
-        Application::Context()->ScreenParams.ResolutionY = mode->height;
+        if (Application::Context()->ScreenParams.AutoResolution)
+        {
+            Application::Context()->ScreenParams.ResolutionX = mode->width;
+            Application::Context()->ScreenParams.ResolutionY = mode->height;
+        }
     }
     else
     {
-        Application::Context()->ScreenParams.Width = _widthBackup;
-        Application::Context()->ScreenParams.Height = _heightBackup;
-        Application::Context()->ScreenParams.ResolutionX = _widthBackup;
-        Application::Context()->ScreenParams.ResolutionY = _heightBackup;
-        glfwSetWindowMonitor(_window, nullptr, _xPosition, _yPosition,
-                             Application::Context()->ScreenParams.Width,
-                             Application::Context()->ScreenParams.Height, 0);
+        Application::Context()->ScreenParams.Width = Application::Context()->ScreenParams.WidthBackup;
+        Application::Context()->ScreenParams.Height = Application::Context()->ScreenParams.HeightBackup;
+        if (Application::Context()->ScreenParams.AutoResolution)
+        {
+            Application::Context()->ScreenParams.ResolutionX = Application::Context()->ScreenParams.WidthBackup;
+            Application::Context()->ScreenParams.ResolutionY = Application::Context()->ScreenParams.HeightBackup;
+        }
+        if (Application::Context()->ScreenParams.CanResize)
+        {
+            glfwSetWindowMonitor(_window, nullptr, _xPosition, _yPosition,
+                                 Application::Context()->ScreenParams.Width,
+                                 Application::Context()->ScreenParams.Height, 0);
+        }
     }
 
     needToUpdateViewport = true;
@@ -78,6 +86,7 @@ void Screen::SetWidth(int width)
 
     screenSizeDirty = true;
     Application::Context()->ScreenParams.Width = width;
+    Application::Context()->ScreenParams.WidthBackup = width;
     Application::Context()->ScreenParams.ResolutionX = width;
     EnterCallback();
     Apply();
@@ -104,6 +113,7 @@ void Screen::SetHeight(int height)
 
     screenSizeDirty = true;
     Application::Context()->ScreenParams.Height = height;
+    Application::Context()->ScreenParams.HeightBackup = height;
     Application::Context()->ScreenParams.ResolutionY = height;
     EnterCallback();
     Apply();
@@ -157,6 +167,11 @@ glm::mat4 Screen::GetUIViewProjection()
 bool Screen::IsScreenSizeDirty()
 {
     return screenSizeDirty;
+}
+
+void Screen::SetScreenSizeDirty()
+{
+    screenSizeDirty = true;
 }
 
 void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer)

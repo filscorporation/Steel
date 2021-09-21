@@ -20,8 +20,6 @@ glm::mat4 Renderer::currentViewProjection;
 size_t Renderer::lastPropertyBlockHash = 0;
 ResourceID Renderer::lastMaterial = NULL_RESOURCE;
 std::vector<Shader*> Renderer::shadersUsed;
-DrawModes::DrawMode Renderer::currentDrawMode = DrawModes::Normal;
-bool Renderer::DrawWireframe = false;
 
 using namespace OpenGLAPI;
 
@@ -82,8 +80,6 @@ void Renderer::OnBeforeRender(Camera& camera)
 {
     // Set camera transformation
     currentViewProjection = camera.GetViewProjection();
-
-    SetDrawMode(DrawModes::Normal);
 
     // Start first batch
     StartBatch();
@@ -176,18 +172,6 @@ void Renderer::Draw(const QuadRenderer& quad)
     }
 }
 
-void Renderer::SetDrawMode(DrawModes::DrawMode drawMode)
-{
-    // TODO: not implemented
-    return;
-
-    if (currentDrawMode == drawMode)
-        return;
-
-    currentDrawMode = drawMode;
-    //SetUniformInteger(drawModeUniform, (int)currentDrawMode);
-}
-
 void Renderer::StartBatch()
 {
     renderCallsCount = 0;
@@ -202,7 +186,7 @@ void Renderer::EndBatch()
     DrawBatchedData();
 
     // TODO: move to different pass
-    if (DrawWireframe)
+    /*if (DrawWireframe)
     {
         // Wireframe mode
         auto drawModeBackup = currentDrawMode;
@@ -217,7 +201,7 @@ void Renderer::EndBatch()
         EnableDepthTest();
 
         SetDrawMode(drawModeBackup);
-    }
+    }*/
 }
 
 void Renderer::DrawBatchedData()

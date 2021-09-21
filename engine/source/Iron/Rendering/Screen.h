@@ -22,6 +22,7 @@ public:
     static glm::mat4 GetUIViewProjection();
 
     static bool IsScreenSizeDirty();
+    static void SetScreenSizeDirty();
 
     static void UpdateSize();
     static void SwapBuffers();
@@ -41,7 +42,6 @@ private:
 
     static Framebuffer* _framebuffer;
     static int _xPosition, _yPosition;
-    static int _widthBackup, _heightBackup;
     static bool _isMinimized;
     static bool _doubleBuffer;
     static bool isInResizeCallback;

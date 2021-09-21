@@ -23,6 +23,7 @@
 #include "Iron/UI/UIElements/UICheckBox.h"
 #include "Iron/UI/UIElements/UIClipping.h"
 #include "Iron/UI/UIElements/UIImage.h"
+#include "Iron/UI/UIElements/UIInputField.h"
 #include "Iron/UI/UIElements/UILayoutGroup.h"
 #include "Iron/UI/UIElements/UIText.h"
 #include "Iron/UI/UIElements/UITabs.h"

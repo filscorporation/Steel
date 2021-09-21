@@ -8,13 +8,13 @@ struct ScreenParameters
 {
     bool CanResize;
     bool Fullscreen;
-    int Width;
-    int Height;
-    int ResolutionX;
-    int ResolutionY;
-    int OffsetX;
-    int OffsetY;
+    int Width, Height;
+    int WidthBackup, HeightBackup;
+    bool AutoResolution;
+    int ResolutionX, ResolutionY;
+    int OffsetX, OffsetY;
     glm::vec3 Color;
+    bool IsDirty;
 };
 
 struct ApplicationSettings
@@ -69,4 +69,5 @@ protected:
     virtual void Terminate();
     void InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer);
     ApplicationContext* CreateContext(ApplicationSettings settings);
+    void SwitchContext(ApplicationContext* context);
 };

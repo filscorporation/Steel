@@ -10,9 +10,16 @@ public:
 
     void Init(EntitiesRegistry* entitiesRegistry);
     void Update(EntitiesRegistry* entitiesRegistry);
-
 private:
+
+    void UpdateResolutionInfo(EntitiesRegistry* entitiesRegistry) const;
     EntityID tabEntity = NULL_ENTITY;
     EntityID statsEntity = NULL_ENTITY;
     EntityID appViewImageEntity = NULL_ENTITY;
+
+    EntityID autoCBEntity = NULL_ENTITY;
+    EntityID xFieldEntity = NULL_ENTITY;
+    EntityID yFieldEntity = NULL_ENTITY;
+    EntityID xTextEntity = NULL_ENTITY;
+    EntityID yTextEntity = NULL_ENTITY;
 };

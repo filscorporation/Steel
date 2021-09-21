@@ -448,6 +448,9 @@ uint32_t UIText::GetLetterPositionLineDown(uint32_t currentPosition, float& horO
 
 void UIText::GetLinesIndices(uint32_t from, uint32_t to, std::vector<std::tuple<uint32_t, uint32_t>>& indices)
 {
+    if (lettersDimensions.size() < to)
+        return;
+
     // TODO: probably should just be cached with letters origins
     uint32_t lastY = lettersDimensions[from].y;
     uint32_t lastIndex = from;

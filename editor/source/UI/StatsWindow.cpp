@@ -2,7 +2,6 @@
 #include "../EditorCore/EditorApplication.h"
 
 #include <Iron.h>
-#include <Iron/Rendering/Renderer.h>
 
 void StatsWindow::UpdateInfo()
 {
@@ -96,48 +95,6 @@ void StatsWindow::Init()
         verticesCounterRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         verticesCounterRT.SetSize(glm::vec2(100, 20));
         verticesCounterRT.SetAnchoredPosition(glm::vec2(-50 - 2, -y - 20 * 0.5f));
-    }
-
-    y += 20;
-
-    {
-        auto labelEntity = scene->GetUILayer()->CreateUIText("Wireframe mode", "Wireframe Mode label", Owner);
-        auto& labelText = registry->GetComponent<UIText>(labelEntity);
-        labelText.SetTextSize(16);
-        labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        auto& labelRT = registry->GetComponent<RectTransformation>(labelEntity);
-        labelRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
-        labelRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
-        labelRT.SetSize(glm::vec2(120, 20));
-        labelRT.SetAnchoredPosition(glm::vec2(60 + xOffset, -y - 20 * 0.5f));
-    }
-    {
-        auto buttonEntity = scene->GetUILayer()->CreateUIButton(frameSprite, "Wireframe Mode button", Owner);
-        auto& button = registry->GetComponent<UIButton>(buttonEntity);
-        auto& buttonRT = registry->GetComponent<RectTransformation>(buttonEntity);
-        buttonRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
-        buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        buttonRT.SetSize(glm::vec2(80, 20));
-        buttonRT.SetAnchoredPosition(glm::vec2(-40 - 2, -y - 20 * 0.5f));
-
-        EntityID wireframeModeStatusEntity = scene->GetUILayer()->CreateUIText("Disabled", "Wireframe Mode status", buttonEntity);
-        auto& labelText = registry->GetComponent<UIText>(wireframeModeStatusEntity);
-        labelText.SetTextSize(16);
-        labelText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        labelText.SetTextAlignment(AlignmentTypes::CenterMiddle);
-        auto& labelRT = registry->GetComponent<RectTransformation>(wireframeModeStatusEntity);
-        labelRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-        labelRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-
-        button.Callback = [wireframeModeStatusEntity](EntityID entityID)
-        {
-            auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-            Renderer::DrawWireframe = !Renderer::DrawWireframe;
-            if (Renderer::DrawWireframe)
-                registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText("Enabled");
-            else
-                registry->GetComponent<UIText>(wireframeModeStatusEntity).SetText("Disabled");
-        };
     }
 }
 

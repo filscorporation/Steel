@@ -35,7 +35,6 @@ public:
     void Update();
     void PrepareDraw();
     void Draw(Framebuffer* framebuffer);
-    void Refresh();
 
 protected:
     EntitiesRegistry* entitiesRegistry;

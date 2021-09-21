@@ -420,21 +420,21 @@ int UIInputField::SetText(UIText& uiText, std::string& text)
     return diff;
 }
 
-bool IsInt(const std::string& text, int& value)
+bool UIInputField::IsInt(const std::string& text, int& value)
 {
     std::istringstream iss(text);
     iss >> std::noskipws >> value;
     return iss.eof() && !iss.fail();
 }
 
-bool IsFloat(const std::string& text, float& value)
+bool UIInputField::IsFloat(const std::string& text, float& value)
 {
     std::istringstream iss(text);
     iss >> std::noskipws >> value;
     return iss.eof() && !iss.fail();
 }
 
-int IsNotAlNum(char c)
+int UIInputField::IsNotAlNum(char c)
 {
     return !std::isalnum(c);
 }
