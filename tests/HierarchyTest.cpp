@@ -1,5 +1,5 @@
 #include "TestsSetUp.h"
-#include "Iron/Scene/Hierarchy.h"
+#include "Steel/Scene/Hierarchy.h"
 
 TEST(HierarchyTest, Creation)
 {

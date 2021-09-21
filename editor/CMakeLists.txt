@@ -13,7 +13,7 @@ set(SOURCE_FILES source/main.cpp source/EditorCore/EditorApplication.cpp source/
         source/EditorCore/EditorScene.cpp source/EditorCore/EditorScene.h source/UI/AppView.cpp source/UI/AppView.h
         source/EditorCore/EditorBuilder.cpp source/EditorCore/EditorBuilder.h source/UI/StatsWindow.cpp source/UI/StatsWindow.h)
 
-# iron
+# steel
 include_directories(../engine/source)
 
 # project target
@@ -25,9 +25,9 @@ include_directories(../engine/includes/glm)
 # spdlog
 include_directories(../engine/includes/spdlog/include)
 
-# iron
+# steel
 add_subdirectory(../engine ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} EXCLUDE_FROM_ALL)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Iron)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Steel)
 
 # copy precompiled libs to output
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD

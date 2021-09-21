@@ -1,7 +1,7 @@
 #include "StatsWindow.h"
 #include "../EditorCore/EditorApplication.h"
 
-#include <Iron.h>
+#include <Steel.h>
 
 void StatsWindow::UpdateInfo()
 {

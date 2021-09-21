@@ -22,10 +22,10 @@ set(TESTS_FILES ApplicationTest.cpp SparseSetTest.cpp SparseDataSetTest.cpp Enti
 add_executable(RunAutoTests ${TESTS_PROJECT_SOURCES} ${TESTS_FILES})
 target_link_libraries(RunAutoTests gtest gtest_main)
 
-# iron
+# steel
 add_subdirectory(../engine ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} EXCLUDE_FROM_ALL)
 include_directories(../engine/source)
-target_link_libraries(RunAutoTests Iron)
+target_link_libraries(RunAutoTests Steel)
 
 # glm
 include_directories(../engine/includes/glm)

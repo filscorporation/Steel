@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(Iron VERSION 0.2)
+project(Steel VERSION 0.2)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -ldl -lpthread -lm")
@@ -34,66 +34,66 @@ set(ZLIB_FILES includes/zlib/zlib.h includes/zlib/adler32.c includes/zlib/compre
 set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
         ${GLAD_FILES} ${ZLIB_FILES}
-        source/Iron/Rendering/Shader.h source/Iron/Rendering/Shader.cpp source/Iron/Core/Application.cpp
-        source/Iron/Core/Application.h source/Iron/Core/Input.cpp source/Iron/Core/Input.h source/Iron/Core/KeyCodes.h
-        source/Iron/Core/MouseCodes.h source/Iron.h source/Iron/EntityComponentSystem/Component.cpp
-        source/Iron/EntityComponentSystem/Component.h source/Iron/Rendering/SpriteRenderer.cpp
-        source/Iron/Rendering/SpriteRenderer.h source/Iron/Scene/Scene.cpp source/Iron/Scene/Scene.h
-        source/Iron/Scene/Transformation.cpp source/Iron/Scene/Transformation.h source/Iron/Core/Log.cpp
-        source/Iron/Core/Log.h source/Iron/Rendering/Camera.cpp source/Iron/Rendering/Camera.h source/Iron/Core/Time.cpp
-        source/Iron/Core/Time.h source/Iron/Rendering/Screen.cpp source/Iron/Rendering/Screen.h
-        source/Iron/Resources/ResourcesManager.cpp source/Iron/Resources/ResourcesManager.h source/Iron/Rendering/Renderer.cpp
-        source/Iron/Rendering/Renderer.h source/Iron/Animation/Animator.cpp source/Iron/Animation/Animator.h
-        source/Iron/Animation/Animation.cpp source/Iron/Animation/Animation.h source/Iron/Rendering/Sprite.cpp
-        source/Iron/Rendering/Sprite.h source/Iron/Audio/AudioTrack.cpp source/Iron/Audio/AudioTrack.h
-        source/Iron/Audio/AudioSource.cpp source/Iron/Audio/AudioSource.h source/Iron/Audio/AudioListener.cpp
-        source/Iron/Audio/AudioListener.h source/Iron/Audio/AudioCore.cpp source/Iron/Audio/AudioCore.h
-        source/Iron/Audio/WavLoader.cpp source/Iron/Audio/WavLoader.h source/Iron/Physics/PhysicsCore.cpp
-        source/Iron/Physics/PhysicsCore.h source/Iron/Physics/Collider.cpp source/Iron/Physics/Collider.h
-        source/Iron/Physics/BoxCollider.cpp source/Iron/Physics/BoxCollider.h source/Iron/Physics/RigidBody.cpp
-        source/Iron/Physics/RigidBody.h source/Iron/Physics/PhysicsInfo.h source/Iron/Scripting/ScriptingSystem.cpp
-        source/Iron/Scripting/ScriptingSystem.h source/Iron/Scripting/CoreInternalCalls.h
-        source/Iron/Scripting/CoreInternalCalls.cpp source/Iron/Math/Random.cpp source/Iron/Math/Random.h
-        source/Iron/Scripting/ScriptComponent.cpp source/Iron/Scripting/ScriptComponent.h
-        source/Iron/Scripting/ScriptingCore.cpp source/Iron/Scripting/ScriptingCore.h
-        source/Iron/Scripting/EntityInternalCalls.cpp source/Iron/Scripting/EntityInternalCalls.h
-        source/Iron/Scripting/ComponentsInternalCalls.cpp source/Iron/Scripting/ComponentsInternalCalls.h
-        source/Iron/Scripting/ScriptingCallsRegister.cpp source/Iron/Scripting/ScriptingCallsRegister.h
-        source/Iron/Rendering/BuiltInShaders.h source/Iron/Physics/Physics.cpp source/Iron/Physics/Physics.h
-        source/Iron/Physics/PhysicsContactListener.cpp source/Iron/Physics/PhysicsContactListener.h
-        source/Iron/Physics/Collision.h source/Iron/UI/RectTransformation.cpp source/Iron/UI/RectTransformation.h
-        source/Iron/UI/UIComponent.cpp source/Iron/UI/UIComponent.h
-        source/Iron/UI/UIElements/UIImage.cpp source/Iron/UI/UIElements/UIImage.h
-        source/Iron/Scripting/UIInternalCalls.cpp source/Iron/Scripting/UIInternalCalls.h
-        source/Iron/EntityComponentSystem/EntitiesRegistry.h source/Iron/EntityComponentSystem/Entity.h
-        source/Iron/Scene/NameComponent.cpp source/Iron/Scene/NameComponent.h source/Iron/Scene/SceneHelper.h
-        source/Iron/Scene/SceneHelper.h source/Iron/Scripting/InternalCallsCommon.h source/Iron/Resources/ResourceID.h
-        source/Iron/EntityComponentSystem/SparseDataSet.h source/Iron/EntityComponentSystem/ComponentSystem.h
-        source/Iron/Physics/PhysicsSystem.cpp source/Iron/Physics/PhysicsSystem.h source/Iron/Audio/AudioSystem.cpp
-        source/Iron/Audio/AudioSystem.h source/Iron/Physics/CircleCollider.cpp source/Iron/Physics/CircleCollider.h
-        source/Iron/Scene/HierarchyNode.cpp source/Iron/Scene/HierarchyNode.h source/Iron/Scene/Hierarchy.h
-        source/Iron/Scene/Hierarchy.cpp source/Iron/Rendering/RendererData.h source/Iron/UI/UILayer.cpp source/Iron/UI/UILayer.h
-        source/Iron/UI/UIEventHandler.cpp source/Iron/UI/UIEventHandler.h source/Iron/UI/UIEvent.h source/Iron/Core/ButtonStates.h
-        source/Iron/UI/UIElements/UIButton.cpp source/Iron/UI/UIElements/UIButton.h source/Iron/UI/UIElements/UIText.cpp source/Iron/UI/UIElements/UIText.h
-        source/Iron/UI/Font.cpp source/Iron/UI/Font.h
-        source/Iron/UI/FontManager.cpp source/Iron/UI/FontManager.h
-        source/Iron/EntityComponentSystem/SparseSet.h source/Iron/Math/Math.h
-        source/Iron/Math/PerlinNoise.cpp source/Iron/Math/PerlinNoise.h source/Iron/Scene/HierarchySystem.cpp
-        source/Iron/Scene/HierarchySystem.h source/Iron/Scene/TransformationSystem.cpp source/Iron/Scene/TransformationSystem.h
-        source/Iron/UI/UISystem.cpp source/Iron/UI/UISystem.h source/Iron/Scripting/ScriptComponentSystem.cpp source/Iron/Scripting/ScriptComponentSystem.h
-        source/Iron/Resources/PngLoader.cpp source/Iron/Resources/PngLoader.h source/Iron/Rendering/OpenGLAPI.cpp source/Iron/Rendering/OpenGLAPI.h
-        source/Iron/Resources/AsepriteLoader.cpp source/Iron/Resources/AsepriteLoader.h source/Iron/Resources/AsepriteData.h
-        source/Iron/Resources/FileLoader.cpp source/Iron/Resources/FileLoader.h source/Iron/Rendering/QuadRenderer.cpp source/Iron/Rendering/QuadRenderer.h
-        source/Iron/UI/UIQuadRenderer.cpp source/Iron/UI/UIQuadRenderer.h source/Iron/Scripting/ScriptingCommon.h source/Iron/UI/UIElements/UIInputField.cpp
-        source/Iron/UI/UIElements/UIInputField.h source/Iron/UI/TransitionInfo.h source/Iron/UI/UIInteractable.cpp source/Iron/UI/UIInteractable.h
-        source/Iron/UI/CallbackType.h source/Iron/Scene/HierarchyParent.h source/Iron/Rendering/Material.cpp source/Iron/Rendering/Material.h
-        source/Iron/Rendering/MaterialPropertyBlock.cpp source/Iron/Rendering/MaterialPropertyBlock.h source/Iron/Scripting/MaterialPropertyBlockInternal.h
-        source/Iron/Scripting/MaterialPropertyBlockInternal.cpp source/Iron/UI/UIElements/UIClipping.cpp source/Iron/UI/UIElements/UIClipping.h
-        source/Iron/UI/UIElements/UICheckBox.cpp source/Iron/UI/UIElements/UICheckBox.h
-        source/Iron/UI/UIElements/UITabs.cpp source/Iron/UI/UIElements/UITabs.h source/Iron/UI/UIElements/UILayoutGroup.cpp
-        source/Iron/UI/UIElements/UILayoutGroup.h source/Iron/UI/UIElements/UILayoutElement.h source/Iron/UI/UIElements/LayoutGroupTypes.h
-        source/Iron/Core/SceneManager.cpp source/Iron/Core/SceneManager.h source/Iron/Rendering/Framebuffer.cpp source/Iron/Rendering/Framebuffer.h
-        source/Iron/Rendering/Texture.cpp source/Iron/Rendering/Texture.h)
+        source/Steel/Rendering/Shader.h source/Steel/Rendering/Shader.cpp source/Steel/Core/Application.cpp
+        source/Steel/Core/Application.h source/Steel/Core/Input.cpp source/Steel/Core/Input.h source/Steel/Core/KeyCodes.h
+        source/Steel/Core/MouseCodes.h source/Steel.h source/Steel/EntityComponentSystem/Component.cpp
+        source/Steel/EntityComponentSystem/Component.h source/Steel/Rendering/SpriteRenderer.cpp
+        source/Steel/Rendering/SpriteRenderer.h source/Steel/Scene/Scene.cpp source/Steel/Scene/Scene.h
+        source/Steel/Scene/Transformation.cpp source/Steel/Scene/Transformation.h source/Steel/Core/Log.cpp
+        source/Steel/Core/Log.h source/Steel/Rendering/Camera.cpp source/Steel/Rendering/Camera.h source/Steel/Core/Time.cpp
+        source/Steel/Core/Time.h source/Steel/Rendering/Screen.cpp source/Steel/Rendering/Screen.h
+        source/Steel/Resources/ResourcesManager.cpp source/Steel/Resources/ResourcesManager.h source/Steel/Rendering/Renderer.cpp
+        source/Steel/Rendering/Renderer.h source/Steel/Animation/Animator.cpp source/Steel/Animation/Animator.h
+        source/Steel/Animation/Animation.cpp source/Steel/Animation/Animation.h source/Steel/Rendering/Sprite.cpp
+        source/Steel/Rendering/Sprite.h source/Steel/Audio/AudioTrack.cpp source/Steel/Audio/AudioTrack.h
+        source/Steel/Audio/AudioSource.cpp source/Steel/Audio/AudioSource.h source/Steel/Audio/AudioListener.cpp
+        source/Steel/Audio/AudioListener.h source/Steel/Audio/AudioCore.cpp source/Steel/Audio/AudioCore.h
+        source/Steel/Audio/WavLoader.cpp source/Steel/Audio/WavLoader.h source/Steel/Physics/PhysicsCore.cpp
+        source/Steel/Physics/PhysicsCore.h source/Steel/Physics/Collider.cpp source/Steel/Physics/Collider.h
+        source/Steel/Physics/BoxCollider.cpp source/Steel/Physics/BoxCollider.h source/Steel/Physics/RigidBody.cpp
+        source/Steel/Physics/RigidBody.h source/Steel/Physics/PhysicsInfo.h source/Steel/Scripting/ScriptingSystem.cpp
+        source/Steel/Scripting/ScriptingSystem.h source/Steel/Scripting/CoreInternalCalls.h
+        source/Steel/Scripting/CoreInternalCalls.cpp source/Steel/Math/Random.cpp source/Steel/Math/Random.h
+        source/Steel/Scripting/ScriptComponent.cpp source/Steel/Scripting/ScriptComponent.h
+        source/Steel/Scripting/ScriptingCore.cpp source/Steel/Scripting/ScriptingCore.h
+        source/Steel/Scripting/EntityInternalCalls.cpp source/Steel/Scripting/EntityInternalCalls.h
+        source/Steel/Scripting/ComponentsInternalCalls.cpp source/Steel/Scripting/ComponentsInternalCalls.h
+        source/Steel/Scripting/ScriptingCallsRegister.cpp source/Steel/Scripting/ScriptingCallsRegister.h
+        source/Steel/Rendering/BuiltInShaders.h source/Steel/Physics/Physics.cpp source/Steel/Physics/Physics.h
+        source/Steel/Physics/PhysicsContactListener.cpp source/Steel/Physics/PhysicsContactListener.h
+        source/Steel/Physics/Collision.h source/Steel/UI/RectTransformation.cpp source/Steel/UI/RectTransformation.h
+        source/Steel/UI/UIComponent.cpp source/Steel/UI/UIComponent.h
+        source/Steel/UI/UIElements/UIImage.cpp source/Steel/UI/UIElements/UIImage.h
+        source/Steel/Scripting/UIInternalCalls.cpp source/Steel/Scripting/UIInternalCalls.h
+        source/Steel/EntityComponentSystem/EntitiesRegistry.h source/Steel/EntityComponentSystem/Entity.h
+        source/Steel/Scene/NameComponent.cpp source/Steel/Scene/NameComponent.h source/Steel/Scene/SceneHelper.h
+        source/Steel/Scene/SceneHelper.h source/Steel/Scripting/InternalCallsCommon.h source/Steel/Resources/ResourceID.h
+        source/Steel/EntityComponentSystem/SparseDataSet.h source/Steel/EntityComponentSystem/ComponentSystem.h
+        source/Steel/Physics/PhysicsSystem.cpp source/Steel/Physics/PhysicsSystem.h source/Steel/Audio/AudioSystem.cpp
+        source/Steel/Audio/AudioSystem.h source/Steel/Physics/CircleCollider.cpp source/Steel/Physics/CircleCollider.h
+        source/Steel/Scene/HierarchyNode.cpp source/Steel/Scene/HierarchyNode.h source/Steel/Scene/Hierarchy.h
+        source/Steel/Scene/Hierarchy.cpp source/Steel/Rendering/RendererData.h source/Steel/UI/UILayer.cpp source/Steel/UI/UILayer.h
+        source/Steel/UI/UIEventHandler.cpp source/Steel/UI/UIEventHandler.h source/Steel/UI/UIEvent.h source/Steel/Core/ButtonStates.h
+        source/Steel/UI/UIElements/UIButton.cpp source/Steel/UI/UIElements/UIButton.h source/Steel/UI/UIElements/UIText.cpp source/Steel/UI/UIElements/UIText.h
+        source/Steel/UI/Font.cpp source/Steel/UI/Font.h
+        source/Steel/UI/FontManager.cpp source/Steel/UI/FontManager.h
+        source/Steel/EntityComponentSystem/SparseSet.h source/Steel/Math/Math.h
+        source/Steel/Math/PerlinNoise.cpp source/Steel/Math/PerlinNoise.h source/Steel/Scene/HierarchySystem.cpp
+        source/Steel/Scene/HierarchySystem.h source/Steel/Scene/TransformationSystem.cpp source/Steel/Scene/TransformationSystem.h
+        source/Steel/UI/UISystem.cpp source/Steel/UI/UISystem.h source/Steel/Scripting/ScriptComponentSystem.cpp source/Steel/Scripting/ScriptComponentSystem.h
+        source/Steel/Resources/PngLoader.cpp source/Steel/Resources/PngLoader.h source/Steel/Rendering/OpenGLAPI.cpp source/Steel/Rendering/OpenGLAPI.h
+        source/Steel/Resources/AsepriteLoader.cpp source/Steel/Resources/AsepriteLoader.h source/Steel/Resources/AsepriteData.h
+        source/Steel/Resources/FileLoader.cpp source/Steel/Resources/FileLoader.h source/Steel/Rendering/QuadRenderer.cpp source/Steel/Rendering/QuadRenderer.h
+        source/Steel/UI/UIQuadRenderer.cpp source/Steel/UI/UIQuadRenderer.h source/Steel/Scripting/ScriptingCommon.h source/Steel/UI/UIElements/UIInputField.cpp
+        source/Steel/UI/UIElements/UIInputField.h source/Steel/UI/TransitionInfo.h source/Steel/UI/UIInteractable.cpp source/Steel/UI/UIInteractable.h
+        source/Steel/UI/CallbackType.h source/Steel/Scene/HierarchyParent.h source/Steel/Rendering/Material.cpp source/Steel/Rendering/Material.h
+        source/Steel/Rendering/MaterialPropertyBlock.cpp source/Steel/Rendering/MaterialPropertyBlock.h source/Steel/Scripting/MaterialPropertyBlockInternal.h
+        source/Steel/Scripting/MaterialPropertyBlockInternal.cpp source/Steel/UI/UIElements/UIClipping.cpp source/Steel/UI/UIElements/UIClipping.h
+        source/Steel/UI/UIElements/UICheckBox.cpp source/Steel/UI/UIElements/UICheckBox.h
+        source/Steel/UI/UIElements/UITabs.cpp source/Steel/UI/UIElements/UITabs.h source/Steel/UI/UIElements/UILayoutGroup.cpp
+        source/Steel/UI/UIElements/UILayoutGroup.h source/Steel/UI/UIElements/UILayoutElement.h source/Steel/UI/UIElements/LayoutGroupTypes.h
+        source/Steel/Core/SceneManager.cpp source/Steel/Core/SceneManager.h source/Steel/Rendering/Framebuffer.cpp source/Steel/Rendering/Framebuffer.h
+        source/Steel/Rendering/Texture.cpp source/Steel/Rendering/Texture.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -115,18 +115,18 @@ set_property(TARGET OpenAL PROPERTY FOLDER ${INCLUDE_FOLDER})
 set_property(TARGET openal-info PROPERTY FOLDER ${INCLUDE_FOLDER})
 
 # project target
-add_library(Iron ${SOURCE_FILES})
-set_target_properties(Iron PROPERTIES COMPILE_DEFINITIONS BUILDER_STATIC_DEFINE)
+add_library(Steel ${SOURCE_FILES})
+set_target_properties(Steel PROPERTIES COMPILE_DEFINITIONS BUILDER_STATIC_DEFINE)
 
 # copy precompiled libs to output
-add_custom_command(TARGET Iron POST_BUILD
+add_custom_command(TARGET Steel POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PROJECT_SOURCE_DIR}/includes/dll/
         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/)
 
 # opengl
 find_package(OpenGL REQUIRED)
-target_link_libraries(Iron PRIVATE ${OPENGL_LIBRARIES})
+target_link_libraries(Steel PRIVATE ${OPENGL_LIBRARIES})
 
 # stb
 include_directories(includes)
@@ -139,16 +139,16 @@ include_directories(includes/zlib)
 
 # glfw
 add_subdirectory(includes/glfw EXCLUDE_FROM_ALL)
-target_link_libraries(Iron PRIVATE glfw)
+target_link_libraries(Steel PRIVATE glfw)
 
 # glm
 add_subdirectory(includes/glm EXCLUDE_FROM_ALL)
 include_directories(includes/glm)
-target_link_libraries(Iron PRIVATE glm)
+target_link_libraries(Steel PRIVATE glm)
 
 # openal
-target_include_directories(Iron PRIVATE ${ALSOFT_HEADERS_DIR})
-target_link_libraries(Iron PRIVATE OpenAL)
+target_include_directories(Steel PRIVATE ${ALSOFT_HEADERS_DIR})
+target_link_libraries(Steel PRIVATE OpenAL)
 
 if (UNIX AND NOT APPLE)
     set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
@@ -161,20 +161,20 @@ endif ()
 
 # box2d
 add_subdirectory(includes/box2d EXCLUDE_FROM_ALL)
-target_link_libraries(Iron PRIVATE box2d)
+target_link_libraries(Steel PRIVATE box2d)
 
 # mono
 include_directories(includes/mono/include)
-target_link_libraries(Iron PRIVATE ${MONO_NAME})
+target_link_libraries(Steel PRIVATE ${MONO_NAME})
 
 # freetype
 add_subdirectory(includes/freetype2 EXCLUDE_FROM_ALL)
 include_directories(includes/freetype2/include)
-target_link_libraries(Iron PRIVATE freetype)
+target_link_libraries(Steel PRIVATE freetype)
 
 # spdlog
 add_subdirectory(includes/spdlog EXCLUDE_FROM_ALL)
 include_directories(includes/spdlog/include)
-target_link_libraries(Iron PRIVATE spdlog)
+target_link_libraries(Steel PRIVATE spdlog)
 
-target_compile_definitions(Iron PRIVATE)
+target_compile_definitions(Steel PRIVATE)

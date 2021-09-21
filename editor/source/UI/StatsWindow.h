@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Iron/EntityComponentSystem/Entity.h>
-#include <Iron/UI/UIComponent.h>
+#include <Steel/EntityComponentSystem/Entity.h>
+#include <Steel/UI/UIComponent.h>
 
 class StatsWindow : public UIComponent
 {

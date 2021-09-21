@@ -2,10 +2,10 @@
 .idea/
 cmake-build-debug/
 cmake-build-release/
-scripting/IronCore/obj
-scripting/IronCore/bin
-scripting/IronCustom/obj
-scripting/IronCustom/bin
+scripting/SteelCore/obj
+scripting/SteelCore/bin
+scripting/SteelCustom/obj
+scripting/SteelCustom/bin
 
 # User files
 *.user

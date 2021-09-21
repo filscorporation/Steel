@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Iron/UI/UIComponent.h>
-#include <Iron/EntityComponentSystem/EntitiesRegistry.h>
+#include <Steel/UI/UIComponent.h>
+#include <Steel/EntityComponentSystem/EntitiesRegistry.h>
 
 class AppView : public UIComponent
 {
