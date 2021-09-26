@@ -4,13 +4,25 @@
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
 
-void UIButton::Init(UIEventHandler& eventHandler)
+bool UIButton::Validate(EntitiesRegistry* entitiesRegistry)
 {
+    return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
+}
+
+void UIButton::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    auto& eventHandler = entitiesRegistry->AddComponent<UIEventHandler>(Owner);
     eventHandler.EventCallback = UIButton::HandleEvent;
     eventHandler.EventsMask = UIEventTypes::MouseEnter | UIEventTypes::MouseExit
-                    | UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustReleased;
+                              | UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustReleased;
 
     UIInteractable::Init(UpdateTransition);
+}
+
+void UIButton::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    StopTransition();
+    ScriptingCore::CallEventMethod(Owner, CallbackTypes::ButtonClick, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
 }
 
 void UIButton::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)

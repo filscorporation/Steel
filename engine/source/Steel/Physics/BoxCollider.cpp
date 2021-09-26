@@ -6,6 +6,18 @@
 #include "BoxCollider.h"
 #include "PhysicsInfo.h"
 
+void BoxCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    info = new BoxCollider::BoxColliderInfo();
+    info->BoxShape = new b2PolygonShape();
+    SetSizeAutomatically();
+}
+
+void BoxCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    delete info;
+}
+
 void BoxCollider::SetSizeAutomatically()
 {
     glm::vec2 size;

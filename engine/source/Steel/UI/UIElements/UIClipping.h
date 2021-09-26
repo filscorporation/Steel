@@ -9,12 +9,13 @@ class UIClipping : public UIComponent
 public:
     explicit UIClipping(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    void Init(EntitiesRegistry* entitiesRegistry);
-    void Rebuild(UILayer* layer, RectTransformation& transformation, bool sortingOrderDirty);
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
+    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
-    void OnRemoved(EntitiesRegistry* entitiesRegistry);
-    void OnEnabled(EntitiesRegistry* entitiesRegistry);
-    void OnDisabled(EntitiesRegistry* entitiesRegistry);
+    void Rebuild(UILayer* layer, RectTransformation& transformation, bool sortingOrderDirty);
 
     bool WasRemoved() const;
 
@@ -28,5 +29,6 @@ private:
     // This is used to prevent clippling recalculation process initiated by this element to count it in
     bool wasRemoved = false;
 
+    void InitCaps(EntitiesRegistry* entitiesRegistry);
     void ClearCaps(EntitiesRegistry* entitiesRegistry);
 };

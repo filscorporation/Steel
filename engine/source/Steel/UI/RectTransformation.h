@@ -16,7 +16,10 @@
 class RectTransformation : public Component
 {
 public:
-    explicit RectTransformation(EntityID ownerEntityID);
+    explicit RectTransformation(EntityID ownerEntityID) : Component(ownerEntityID) { };
+
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
 
     glm::vec2 GetAnchorMin() const;
     void SetAnchorMin(const glm::vec2& anchor);

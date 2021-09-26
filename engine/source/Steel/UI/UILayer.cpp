@@ -1,11 +1,10 @@
 #include "UILayer.h"
 #include "UIElements/UIButton.h"
-#include "UIElements/UIInputField.h"
 #include "UIElements/UIClipping.h"
 #include "UIElements/UICheckBox.h"
+#include "UIElements/UIInputField.h"
 #include "UIElements/UILayoutGroup.h"
 #include "UIElements/UITabs.h"
-#include "UISystem.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 #include "../Rendering/Renderer.h"
@@ -15,30 +14,6 @@
 UILayer::UILayer(Scene* scene)
 {
     _scene = scene;
-    uiSystem = new UISystem();
-    _scene->GetEntitiesRegistry()->RegisterSystem<UIEventHandler>(uiSystem);
-    _scene->GetEntitiesRegistry()->RegisterSystem<UIText>(uiSystem);
-    _scene->GetEntitiesRegistry()->RegisterSystem<UIImage>(uiSystem);
-    _scene->GetEntitiesRegistry()->RegisterSystem<UIButton>(uiSystem);
-    _scene->GetEntitiesRegistry()->RegisterSystem<UIInputField>(uiSystem);
-    _scene->GetEntitiesRegistry()->RegisterSystem<UIClipping>(uiSystem);
-    _scene->GetEntitiesRegistry()->RegisterSystem<UICheckBox>(uiSystem);
-    _scene->GetEntitiesRegistry()->RegisterSystem<UITabs>(uiSystem);
-    _scene->GetEntitiesRegistry()->RegisterSystem<UILayoutGroup>(uiSystem);
-}
-
-UILayer::~UILayer()
-{
-    _scene->GetEntitiesRegistry()->RemoveSystem<UIEventHandler>();
-    _scene->GetEntitiesRegistry()->RemoveSystem<UIText>();
-    _scene->GetEntitiesRegistry()->RemoveSystem<UIImage>();
-    _scene->GetEntitiesRegistry()->RemoveSystem<UIButton>();
-    _scene->GetEntitiesRegistry()->RemoveSystem<UIInputField>();
-    _scene->GetEntitiesRegistry()->RemoveSystem<UIClipping>();
-    _scene->GetEntitiesRegistry()->RemoveSystem<UICheckBox>();
-    _scene->GetEntitiesRegistry()->RemoveSystem<UITabs>();
-    _scene->GetEntitiesRegistry()->RemoveSystem<UILayoutGroup>();
-    delete uiSystem;
 }
 
 void UILayer::LoadDefaultResources()
@@ -69,8 +44,8 @@ void UILayer::Update()
     }
 
     auto uiInputFields = entitiesRegistry->GetComponentIterator<UIInputField>();
-    for (auto& uiInputField : uiInputFields)
-        uiInputField.Update();
+    for (int i = 0; i < uiInputFields.Size(); ++i)
+        uiInputFields[i].Update();
 }
 
 void UILayer::Rebuild()
@@ -112,13 +87,13 @@ void UILayer::Rebuild()
 
     // Clipping requires element thickness to be calculated (for closing cap)
     auto uiClippings = entitiesRegistry->GetComponentIterator<UIClipping>();
-    for (auto& uiClipping : uiClippings)
-        uiClipping.Rebuild(this, rtAccessor.Get(uiClipping.Owner), _rebuildSortingOrder);
+    for (int i = 0; i < uiClippings.Size(); ++i)
+        uiClippings[i].Rebuild(this, rtAccessor.Get(uiClippings[i].Owner), _rebuildSortingOrder);
 
     // Input fields requires target text to be updated
     auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
-    for (auto& uiIF : uiIFs)
-        uiIF.Rebuild(this, rtAccessor.Get(uiIF.Owner));
+    for (int i = 0; i < uiIFs.Size(); ++i)
+        uiIFs[i].Rebuild(this, rtAccessor.Get(uiIFs[i].Owner));
 
     // After rebuilding text we need to condense renderers list to not wait for the next frame
     entitiesRegistry->ClearRemoved<UIQuadRenderer>();
@@ -159,11 +134,11 @@ void UILayer::Refresh()
 
     // Refresh rect transformation
     auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
-    for (auto& rt : rectTransformations)
-        rt.RefreshTransformation();
+    for (int i = 0; i < rectTransformations.Size(); ++i)
+        rectTransformations[i].RefreshTransformation();
     auto uiTexts = entitiesRegistry->GetComponentIterator<UIText>();
-    for (auto& uiText : uiTexts)
-        uiText.Refresh();
+    for (int i = 0; i < uiTexts.Size(); ++i)
+        uiTexts[i].Refresh();
     _currentHierarchyIndex = 0;
     _rebuildSortingOrder = false;
 }

@@ -36,7 +36,12 @@ class UIText : public UIComponent
 public:
     explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 
-    void Init(EntitiesRegistry* entitiesRegistry);
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
+    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
+
     void Rebuild(UILayer* layer, RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
     void Refresh();
 
@@ -98,6 +103,4 @@ private:
 
     std::vector<EntityID> letters;
     std::vector<glm::ivec3> lettersDimensions;
-
-    friend class UISystem;
 };

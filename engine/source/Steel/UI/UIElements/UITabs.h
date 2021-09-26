@@ -21,7 +21,8 @@ class UITabs : public UIComponent
 public:
     explicit UITabs(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    void Init(EntitiesRegistry* entitiesRegistry);
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
 
     EntityID GetTab(int index);
     int GetTabsCount();

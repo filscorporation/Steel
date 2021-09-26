@@ -16,7 +16,9 @@ class UIButton : public UIInteractable
 public:
     explicit UIButton(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { };
 
-    void Init(UIEventHandler& eventHandler);
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
 
     ButtonCallback Callback = nullptr;
 
@@ -24,6 +26,4 @@ private:
     static void HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     static bool UpdateTransition(EntityID entityID);
-
-    friend class UISystem;
 };

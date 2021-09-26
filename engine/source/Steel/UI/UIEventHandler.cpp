@@ -3,6 +3,22 @@
 #include "../Core/Time.h"
 #include "../Scripting/ScriptComponent.h"
 
+void UIEventHandler::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
+    {
+        EnableNotifyScripts();
+    }
+}
+
+void UIEventHandler::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
+    {
+        DisableNotifyScripts();
+    }
+}
+
 void UIEventHandler::Update(EntitiesRegistry* entitiesRegistry, RectTransformation& rectTransformation)
 {
     SortingOrder = entitiesRegistry->GetComponent<RectTransformation>(Owner).GetSortingOrder();

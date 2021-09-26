@@ -1,6 +1,6 @@
 #include "TestsSetUp.h"
 #include "Steel/Scene/Hierarchy.h"
-#include "common/TestComponent1.h"
+#include "common/TestComponent2.h"
 
 TEST(ActivationTest, Initialization)
 {
@@ -120,10 +120,10 @@ TEST(ActivationTest, InsideIteration)
     for (int i = 0; i < 5; ++i)
     {
         entities[i] = scene->CreateEntity();
-        registry->AddComponent<TestComponent1>(entities[i]).IntegerValue = i;
+        registry->AddComponent<TestComponent2>(entities[i]).IntegerValue = i;
     }
-    auto iterator = registry->GetComponentIterator<TestComponent1>();
-    auto accessor = registry->GetComponentAccessor<TestComponent1>();
+    auto iterator = registry->GetComponentIterator<TestComponent2>();
+    auto accessor = registry->GetComponentAccessor<TestComponent2>();
     for (int i = 0; i < iterator.Size(); ++i)
     {
         EXPECT_TRUE(accessor.Has(entities[i]));

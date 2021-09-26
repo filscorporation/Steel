@@ -7,7 +7,6 @@
 #include "../Rendering/Framebuffer.h"
 #include "../Resources/AsepriteData.h"
 #include "../UI/UILayer.h"
-#include "HierarchySystem.h"
 #include "HierarchyParent.h"
 
 class UILayer;
@@ -41,8 +40,6 @@ protected:
     EntitiesRegistry* entitiesRegistry;
     UILayer* uiLayer;
 
-    void RegisterSystems();
-
     // Methods to expand scene update and draw process
     virtual void BeforeUpdate() { };
     virtual void AfterUpdate() { };
@@ -53,8 +50,6 @@ protected:
 
 private:
     bool systemsInitialized = false;
-    HierarchySystem* hierarchySystem;
-    TransformationSystem* transformationSystem;
     std::list<EntityID> entitiesToDelete;
     EntityID _mainCameraEntity = NULL_ENTITY;
 

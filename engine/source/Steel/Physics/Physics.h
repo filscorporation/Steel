@@ -4,7 +4,6 @@
 #include <glm/vec2.hpp>
 
 #include "../EntityComponentSystem/Entity.h"
-#include "PhysicsSystem.h"
 #include "Collision.h"
 
 struct RayCastHit
@@ -29,7 +28,5 @@ public:
     static std::vector<RayCastHit> LineCast(glm::vec2 pointA, glm::vec2 pointB);
 
 private:
-    static PhysicsSystem* physicsSystem;
-
     static EntityID lastMouseOverCollider;
 };

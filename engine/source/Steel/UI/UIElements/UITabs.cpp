@@ -4,7 +4,12 @@
 #include "../../Core/Application.h"
 #include "../../Core/Log.h"
 
-void UITabs::Init(EntitiesRegistry* entitiesRegistry)
+bool UITabs::Validate(EntitiesRegistry* entitiesRegistry)
+{
+    return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
+}
+
+void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
     tabOpenedSprite = layer->UIResources.DefaultTabOpenedSprite;

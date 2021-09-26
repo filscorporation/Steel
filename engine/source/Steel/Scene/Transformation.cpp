@@ -5,12 +5,20 @@
 
 #define TRANSFORM_EPS 0.000001f
 
-Transformation::Transformation(EntityID ownerEntityID) : Component(ownerEntityID)
+bool Transformation::Validate(EntitiesRegistry* entitiesRegistry)
 {
-    if (HasComponentS<RectTransformation>(ownerEntityID))
+    if (entitiesRegistry->HasComponent<RectTransformation>(Owner))
     {
         Log::LogError("Adding Transformation to object with RectTransformation will lead to undefined behaviour.");
+        return false;
     }
+
+    return Component::Validate(entitiesRegistry);
+}
+
+void Transformation::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    SetTransformationChanged(true);
 }
 
 glm::vec3 Transformation::GetPosition()

@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "../EntityComponentSystem/Entity.h"
-#include "AudioSystem.h"
+#include "../EntityComponentSystem/EntitiesRegistry.h"
 
 class AudioCore
 {
@@ -30,6 +30,4 @@ public:
 
 private:
     static bool AssertInitialized();
-
-    static AudioSystem* audioSystem;
 };

@@ -10,6 +10,9 @@ class CircleCollider : public Component
 public:
     explicit CircleCollider(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+
     void SetSizeAutomatically();
     float GetRadius() const;
     void SetRadius(float radius);
@@ -19,5 +22,4 @@ private:
     float _radius = 0.0f;
 
     friend class RigidBody;
-    friend class PhysicsSystem;
 };

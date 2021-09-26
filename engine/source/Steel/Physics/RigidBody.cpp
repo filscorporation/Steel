@@ -8,6 +8,39 @@
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
+void RigidBody::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    info = new RigidBody::RigidBodyInfo();
+}
+
+void RigidBody::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    if (info == nullptr)
+        return;
+
+    PhysicsCore::GetWorld()->DestroyBody(info->Body);
+    delete info;
+    info = nullptr;
+}
+
+void RigidBody::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    info = new RigidBody::RigidBodyInfo();
+    auto typeBackup = _type;
+    _type = RigidBodyTypes::None;
+    SetType(typeBackup);
+}
+
+void RigidBody::OnDisabled(EntitiesRegistry* entitiesRegistry)
+{
+    if (info == nullptr)
+        return;
+
+    PhysicsCore::GetWorld()->DestroyBody(info->Body);
+    delete info;
+    info = nullptr;
+}
+
 void RigidBody::SetDynamic()
 {
     b2BodyDef groundBodyDef;

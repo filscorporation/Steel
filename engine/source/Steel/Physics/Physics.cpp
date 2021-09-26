@@ -5,10 +5,7 @@
 #include "BoxCollider.h"
 #include "CircleCollider.h"
 #include "Physics.h"
-#include "PhysicsSystem.h"
 #include "PhysicsCore.h"
-
-PhysicsSystem* Physics::physicsSystem = nullptr;
 
 EntityID Physics::lastMouseOverCollider = NULL_ENTITY;
 
@@ -16,21 +13,11 @@ void Physics::CreatePhysicsScene(EntitiesRegistry* entitiesRegistry)
 {
     PhysicsCore::CreateWorld();
 
-    physicsSystem = new PhysicsSystem();
-    entitiesRegistry->RegisterSystem<RigidBody>(physicsSystem);
-    entitiesRegistry->RegisterSystem<BoxCollider>(physicsSystem);
-    entitiesRegistry->RegisterSystem<CircleCollider>(physicsSystem);
-
     Log::LogDebug("Physics initialized");
 }
 
 void Physics::DeletePhysicsScene()
 {
-    if (physicsSystem == nullptr)
-        Log::LogError("Deleting physics scene that was not created");
-
-    delete physicsSystem;
-
     PhysicsCore::DeleteWorld();
 }
 

@@ -6,6 +6,18 @@
 #include "CircleCollider.h"
 #include "PhysicsInfo.h"
 
+void CircleCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    info = new CircleCollider::CircleColliderInfo();
+    info->CircleShape = new b2CircleShape();
+    SetSizeAutomatically();
+}
+
+void CircleCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    delete info;
+}
+
 void CircleCollider::SetSizeAutomatically()
 {
     glm::vec2 size;

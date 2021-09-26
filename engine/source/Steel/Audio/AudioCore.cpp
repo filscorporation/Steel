@@ -13,8 +13,6 @@ const float VOLUME_MULTIPLIER = 32.0f;
 ALCdevice* device = nullptr;
 ALCcontext* context = nullptr;
 
-AudioSystem* AudioCore::audioSystem = nullptr;
-
 bool AudioCore::Initialized()
 {
     return context != nullptr;
@@ -83,9 +81,6 @@ void AudioCore::CreateAudioScene(EntitiesRegistry* entitiesRegistry)
 {
     if (AssertInitialized())
         return;
-
-    audioSystem = new AudioSystem();
-    entitiesRegistry->RegisterSystem<AudioSource>(audioSystem);
 }
 
 void AudioCore::CreateAudioListener(EntityID listenerEntity)
@@ -103,11 +98,6 @@ void AudioCore::DeleteAudioScene()
 {
     if (AssertInitialized())
         return;
-
-    if (audioSystem == nullptr)
-        Log::LogError("Deleting audio scene that was not created");
-
-    delete audioSystem;
 }
 
 bool AudioCore::CheckForErrors()

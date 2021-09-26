@@ -28,7 +28,6 @@ public:
     void SetFarClippingPlane(float distance);
     CameraResizeModes::CameraResizeMode GetResizeMode();
     void SetResizeMode(CameraResizeModes::CameraResizeMode resizeMode);
-    void UpdateSize();
 
     glm::vec2 ScreenToWorldPoint(glm::vec2 screenPoint);
     glm::vec2 WorldToScreenPoint(glm::vec2 worldPoint);
@@ -44,6 +43,7 @@ private:
 
     glm::mat4 viewProjection;
 
+    void UpdateSize();
     void SetCameraDirty(bool dirty);
     bool IsCameraDirty() const;
     bool dirtyCamera = true;

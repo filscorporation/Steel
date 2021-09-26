@@ -1,7 +1,6 @@
 #include "TestsSetUp.h"
 #include "common/TestComponent1.h"
 #include "common/TestComponent2.h"
-#include "common/TestComponent1System.h"
 
 TEST(EntitiesRegistryTest, Entities)
 {
@@ -142,21 +141,15 @@ TEST(EntitiesRegistryTest, ComponentSystems)
 {
     EntitiesRegistry registry;
 
-    TestComponent1System system;
-    registry.RegisterSystem<TestComponent1>(&system);
-    registry.RemoveSystem<TestComponent1>();
     EntityID entityID = registry.CreateNewEntity();
     registry.AddComponent<TestComponent1>(entityID);
-    EXPECT_EQ(registry.GetComponent<TestComponent1>(entityID).IntegerValue, 0);
+    EXPECT_EQ(registry.GetComponent<TestComponent1>(entityID).IntegerValue, 7);
 
-    registry.RegisterSystem<TestComponent1>(&system);
     EntityID entityID1 = registry.CreateNewEntity();
     registry.AddComponent<TestComponent1>(entityID1);
     EXPECT_EQ(registry.GetComponent<TestComponent1>(entityID1).IntegerValue, 7);
     registry.DeleteEntity(entityID);
     registry.RemoveComponent<TestComponent1>(entityID1);
-    EXPECT_EQ(system.CatchAdded, 1);
-    EXPECT_EQ(system.CatchRemoved, 2);
 
     entityID = registry.CreateNewEntity();
     registry.AddComponent<TestComponent1>(entityID);
@@ -168,8 +161,6 @@ TEST(EntitiesRegistryTest, ComponentSystems)
     registry.EntitySetActive(entityID, true, true);
     EXPECT_EQ(registry.GetComponent<TestComponent1>(entityID).IntegerValue, 11);
     EXPECT_EQ(registry.GetComponent<TestComponent1>(entityID1).IntegerValue, 4);
-    EXPECT_EQ(system.CatchEnabled, 1);
-    EXPECT_EQ(system.CatchDisabled, 1);
 }
 
 TEST(EntitiesRegistryTest, Iterator)

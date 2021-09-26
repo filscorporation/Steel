@@ -4,6 +4,26 @@
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
+void AudioSource::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    sourceID = AudioCore::CreateSource();
+}
+
+void AudioSource::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    AudioCore::DeleteSource(sourceID);
+}
+
+void AudioSource::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    sourceID = AudioCore::CreateSource();
+}
+
+void AudioSource::OnDisabled(EntitiesRegistry* entitiesRegistry)
+{
+    AudioCore::DeleteSource(sourceID);
+}
+
 void AudioSource::OnUpdate()
 {
     auto& transform = GetComponentS<Transformation>(Owner);

@@ -63,22 +63,22 @@ void Camera::SetResizeMode(CameraResizeModes::CameraResizeMode resizeMode)
     UpdateSize();
 }
 
-void Camera::UpdateSize()
+glm::vec2 Camera::ScreenToWorldPoint(glm::vec2 screenPoint)
 {
-    switch (_resizeMode)
-    {
-        case CameraResizeModes::KeepHeight:
-            _width = _height * (float)Screen::GetWidth() / (float)Screen::GetHeight();
-            break;
-        case CameraResizeModes::KeepWidth:
-            _height = _width * (float)Screen::GetHeight() / (float)Screen::GetWidth();
-            break;
-        case CameraResizeModes::Stretch:
-            // Do nothing
-            return;
-    }
+    auto position = GetComponentS<Transformation>(Owner).GetPosition();
+    return {
+            _width * (screenPoint.x / float(Screen::GetWidth()) - 0.5) + position.x,
+            _height * (screenPoint.y / float(Screen::GetHeight()) - 0.5) + position.y
+    };
+}
 
-    SetCameraDirty(true);
+glm::vec2 Camera::WorldToScreenPoint(glm::vec2 worldPoint)
+{
+    auto position = GetComponentS<Transformation>(Owner).GetPosition();
+    return {
+            ((worldPoint.x - position.x) / _width + 0.5f) * float(Screen::GetWidth()),
+            ((worldPoint.y - position.y) / _height + 0.5f) * float(Screen::GetHeight())
+    };
 }
 
 glm::mat4 Camera::GetViewProjection()
@@ -103,6 +103,24 @@ glm::mat4 Camera::GetViewProjection()
     return viewProjection;
 }
 
+void Camera::UpdateSize()
+{
+    switch (_resizeMode)
+    {
+        case CameraResizeModes::KeepHeight:
+            _width = _height * (float)Screen::GetWidth() / (float)Screen::GetHeight();
+            break;
+        case CameraResizeModes::KeepWidth:
+            _height = _width * (float)Screen::GetHeight() / (float)Screen::GetWidth();
+            break;
+        case CameraResizeModes::Stretch:
+            // Do nothing
+            return;
+    }
+
+    SetCameraDirty(true);
+}
+
 void Camera::SetCameraDirty(bool dirty)
 {
     dirtyCamera = dirty;
@@ -111,22 +129,4 @@ void Camera::SetCameraDirty(bool dirty)
 bool Camera::IsCameraDirty() const
 {
     return dirtyCamera;
-}
-
-glm::vec2 Camera::ScreenToWorldPoint(glm::vec2 screenPoint)
-{
-    auto position = GetComponentS<Transformation>(Owner).GetPosition();
-    return {
-            _width * (screenPoint.x / float(Screen::GetWidth()) - 0.5) + position.x,
-            _height * (screenPoint.y / float(Screen::GetHeight()) - 0.5) + position.y
-    };
-}
-
-glm::vec2 Camera::WorldToScreenPoint(glm::vec2 worldPoint)
-{
-    auto position = GetComponentS<Transformation>(Owner).GetPosition();
-    return {
-            ((worldPoint.x - position.x) / _width + 0.5f) * float(Screen::GetWidth()),
-            ((worldPoint.y - position.y) / _height + 0.5f) * float(Screen::GetHeight())
-    };
 }

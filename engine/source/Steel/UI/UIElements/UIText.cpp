@@ -7,9 +7,30 @@
 #include "../../Scene/Hierarchy.h"
 #include "../UIQuadRenderer.h"
 
-void UIText::Init(EntitiesRegistry* entitiesRegistry)
+bool UIText::Validate(EntitiesRegistry* entitiesRegistry)
 {
+    return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
+}
+
+void UIText::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    _font = Application::Instance->GetResourcesManager()->DefaultFont();
     _clippingLevel = GetClippingLevelUpwards(entitiesRegistry, Owner);
+}
+
+void UIText::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    ForeachLetterDelete(entitiesRegistry, letters.size());
+}
+
+void UIText::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    ForeachLetterSetActive(entitiesRegistry, true);
+}
+
+void UIText::OnDisabled(EntitiesRegistry* entitiesRegistry)
+{
+    ForeachLetterSetActive(entitiesRegistry, false);
 }
 
 void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, bool transformationDirty, bool sortingOrderDirty)

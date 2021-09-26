@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.3)
 project(Steel VERSION 0.2)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -ldl -lpthread -lm")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP -std=c++11 -pthread -ldl -lpthread -lm")
 endif()
 
 if (${CMAKE_BUILD_TYPE} MATCHES Debug)
@@ -68,9 +68,8 @@ set(SOURCE_FILES
         source/Steel/EntityComponentSystem/EntitiesRegistry.h source/Steel/EntityComponentSystem/Entity.h
         source/Steel/Scene/NameComponent.cpp source/Steel/Scene/NameComponent.h source/Steel/Scene/SceneHelper.h
         source/Steel/Scene/SceneHelper.h source/Steel/Scripting/InternalCallsCommon.h source/Steel/Resources/ResourceID.h
-        source/Steel/EntityComponentSystem/SparseDataSet.h source/Steel/EntityComponentSystem/ComponentSystem.h
-        source/Steel/Physics/PhysicsSystem.cpp source/Steel/Physics/PhysicsSystem.h source/Steel/Audio/AudioSystem.cpp
-        source/Steel/Audio/AudioSystem.h source/Steel/Physics/CircleCollider.cpp source/Steel/Physics/CircleCollider.h
+        source/Steel/EntityComponentSystem/SparseDataSet.h
+        source/Steel/Physics/CircleCollider.cpp source/Steel/Physics/CircleCollider.h
         source/Steel/Scene/HierarchyNode.cpp source/Steel/Scene/HierarchyNode.h source/Steel/Scene/Hierarchy.h
         source/Steel/Scene/Hierarchy.cpp source/Steel/Rendering/RendererData.h source/Steel/UI/UILayer.cpp source/Steel/UI/UILayer.h
         source/Steel/UI/UIEventHandler.cpp source/Steel/UI/UIEventHandler.h source/Steel/UI/UIEvent.h source/Steel/Core/ButtonStates.h
@@ -78,9 +77,7 @@ set(SOURCE_FILES
         source/Steel/UI/Font.cpp source/Steel/UI/Font.h
         source/Steel/UI/FontManager.cpp source/Steel/UI/FontManager.h
         source/Steel/EntityComponentSystem/SparseSet.h source/Steel/Math/Math.h
-        source/Steel/Math/PerlinNoise.cpp source/Steel/Math/PerlinNoise.h source/Steel/Scene/HierarchySystem.cpp
-        source/Steel/Scene/HierarchySystem.h source/Steel/Scene/TransformationSystem.cpp source/Steel/Scene/TransformationSystem.h
-        source/Steel/UI/UISystem.cpp source/Steel/UI/UISystem.h source/Steel/Scripting/ScriptComponentSystem.cpp source/Steel/Scripting/ScriptComponentSystem.h
+        source/Steel/Math/PerlinNoise.cpp source/Steel/Math/PerlinNoise.h
         source/Steel/Resources/PngLoader.cpp source/Steel/Resources/PngLoader.h source/Steel/Rendering/OpenGLAPI.cpp source/Steel/Rendering/OpenGLAPI.h
         source/Steel/Resources/AsepriteLoader.cpp source/Steel/Resources/AsepriteLoader.h source/Steel/Resources/AsepriteData.h
         source/Steel/Resources/FileLoader.cpp source/Steel/Resources/FileLoader.h source/Steel/Rendering/QuadRenderer.cpp source/Steel/Rendering/QuadRenderer.h

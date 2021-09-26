@@ -10,6 +10,9 @@ class BoxCollider : public Component
 public:
     explicit BoxCollider(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+
     void SetSizeAutomatically();
     glm::vec2 GetSize() const;
     void SetSize(glm::vec2 size);
@@ -19,5 +22,4 @@ private:
     glm::vec2 _size = glm::vec2(0.0f);
 
     friend class RigidBody;
-    friend class PhysicsSystem;
 };

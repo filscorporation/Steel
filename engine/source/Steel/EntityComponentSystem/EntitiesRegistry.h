@@ -8,7 +8,6 @@
 
 #include "Entity.h"
 #include "SparseDataSet.h"
-#include "ComponentSystem.h"
 
 #define ENTITY_ID_MASK 0xFFFFFu
 #define ENTITY_VERSION_MASK 0xFFFu
@@ -25,6 +24,7 @@ using ComponentsPool = SparseDataSet<T>;
 class ComponentsPoolWrapperBase
 {
 public:
+    explicit ComponentsPoolWrapperBase(EntitiesRegistry* entitiesRegistry) { _entitiesRegistry = entitiesRegistry; }
     virtual ~ComponentsPoolWrapperBase() = default;
 
     virtual void ClearRemoved() = 0;
@@ -32,8 +32,12 @@ public:
     virtual bool MoveFromInactiveToActive(EntityID entityID, EntityID id) = 0;
 
     virtual void BeforeDeleteByEntityID(EntityID entityID, EntityID id) = 0;
+    virtual void BeforeDeleteAll() = 0;
     virtual void DeleteByEntityID(EntityID entityID, EntityID id) = 0;
     virtual void AfterEntitySetActive(EntityID entityID, EntityID id, bool isActive) = 0;
+
+protected:
+    EntitiesRegistry* _entitiesRegistry = nullptr;
 };
 
 // Wrapper around ComponentsPool
@@ -43,22 +47,9 @@ class ComponentsPoolWrapper : public ComponentsPoolWrapperBase
 public:
     ComponentsPool<T> Storage;
     ComponentsPool<T> InactiveStorage;
-    ComponentSystem<T>* System = nullptr;
 
-    ~ComponentsPoolWrapper()
-    {
-        if (System != nullptr)
-        {
-            for (auto& component : Storage)
-            {
-                System->OnComponentRemoved(component.Owner, component);
-            }
-            for (auto& component : InactiveStorage)
-            {
-                System->OnComponentRemoved(component.Owner, component);
-            }
-        }
-    }
+    explicit ComponentsPoolWrapper(EntitiesRegistry* entitiesRegistry) : ComponentsPoolWrapperBase(entitiesRegistry) { }
+    ~ComponentsPoolWrapper() override = default;;
 
     void ClearRemoved() override
     {
@@ -90,18 +81,25 @@ public:
 
     void BeforeDeleteByEntityID(EntityID entityID, EntityID id) override
     {
-        if (System == nullptr)
-            return;
-
         if (Storage.Has(id))
         {
-            auto& component = Storage.Get(id);
-            System->OnComponentRemoved(entityID, component);
+            Storage.Get(id).OnRemoved(_entitiesRegistry);
         }
         if (InactiveStorage.Has(id))
         {
-            auto& component = InactiveStorage.Get(id);
-            System->OnComponentRemoved(entityID, component);
+            InactiveStorage.Get(id).OnRemoved(_entitiesRegistry);
+        }
+    }
+
+    void BeforeDeleteAll() override
+    {
+        for (auto& component : Storage)
+        {
+            component.OnRemoved(_entitiesRegistry);
+        }
+        for (auto& component : InactiveStorage)
+        {
+            component.OnRemoved(_entitiesRegistry);
         }
     }
 
@@ -115,21 +113,16 @@ public:
 
     void AfterEntitySetActive(EntityID entityID, EntityID id, bool isActive) override
     {
-        if (System == nullptr)
-            return;
-
         if (!(isActive && Storage.Has(id) || !isActive && InactiveStorage.Has(id)))
             return;
 
         if (isActive)
         {
-            auto& component = Storage.Get(id);
-            System->OnEntityEnabled(entityID, component);
+            Storage.Get(id).OnEnabled(_entitiesRegistry);
         }
         else
         {
-            auto& component = InactiveStorage.Get(id);
-            System->OnEntityDisabled(entityID, component);
+            InactiveStorage.Get(id).OnDisabled(_entitiesRegistry);
         }
     }
 };
@@ -176,47 +169,9 @@ public:
         CleanAllEntities();
     };
 
-    template<typename T>
-    void RegisterSystem(ComponentSystem<T>* system)
+    bool IsCleared() const
     {
-        auto typeID = TYPE_ID(T);
-
-        ComponentsPoolWrapper<T>* pool;
-        if (componentsMap.find(typeID) == componentsMap.end())
-        {
-            pool = new ComponentsPoolWrapper<T>();
-            componentsMap[typeID] = pool;
-        }
-        else
-        {
-            pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
-        }
-
-        pool->System = system;
-        system->Registry = this;
-    }
-
-    template<typename T>
-    bool RemoveSystem()
-    {
-        auto typeID = TYPE_ID(T);
-
-        ComponentsPoolWrapper<T>* pool;
-        if (componentsMap.find(typeID) == componentsMap.end())
-        {
-            return false;
-        }
-        else
-        {
-            pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
-        }
-
-        if (pool->System == nullptr)
-            return false;
-
-        pool->System = nullptr;
-
-        return true;
+        return isCleared;
     }
 
 private:
@@ -291,7 +246,7 @@ public:
 
     void EntitySetActive(EntityID entityID, bool active, bool self)
     {
-        if (isCleared || !EntityExists(entityID))
+        if (!EntityExists(entityID))
             return;
 
         auto id = EntityIDGetID(entityID);
@@ -340,9 +295,6 @@ public:
 
     void DeleteEntity(EntityID entityID)
     {
-        if (isCleared)
-            return;
-
         if (!EntityExists(entityID))
             return;
 
@@ -369,6 +321,10 @@ public:
 
     void CleanAllEntities()
     {
+        for (auto poolPair : componentsMap)
+        {
+            poolPair.second->BeforeDeleteAll();
+        }
         for (auto poolPair : componentsMap)
         {
             delete poolPair.second;
@@ -487,7 +443,7 @@ public:
         ComponentsPoolWrapper<T>* pool;
         if (componentsMap.find(typeID) == componentsMap.end())
         {
-            pool = new ComponentsPoolWrapper<T>();
+            pool = new ComponentsPoolWrapper<T>(this);
             componentsMap[typeID] = pool;
         }
         else
@@ -504,8 +460,17 @@ public:
         auto& component = entityStates[id] & EntityStates::IsActive
                 ? pool->Storage.Add(id, entityID)
                 : pool->InactiveStorage.Add(id, entityID);
-        if (pool->System != nullptr)
-            pool->System->OnComponentAdded(entityID, component);
+        if (!component.Validate(this))
+        {
+            if (entityStates[id] & EntityStates::IsActive)
+                pool->Storage.Remove(id);
+            else
+                pool->InactiveStorage.Remove(id);
+        }
+        else
+        {
+            component.OnCreated(this);
+        }
 
         return component;
     }
@@ -513,9 +478,6 @@ public:
     template<class T>
     bool HasComponent(EntityID entityID)
     {
-        if (isCleared)
-            return false;
-
         auto typeID = TYPE_ID(T);
         EntityID id = EntityIDGetID(entityID);
 
@@ -543,9 +505,6 @@ public:
     template<class T>
     bool RemoveComponent(EntityID entityID)
     {
-        if (isCleared)
-            return false;
-
         auto typeID = TYPE_ID(T);
         EntityID id = EntityIDGetID(entityID);
 
@@ -558,11 +517,9 @@ public:
                 return false;
 
             bool active = entityStates[id] & EntityStates::IsActive;
-            if (pool->System != nullptr)
-            {
-                auto& component = active ? pool->Storage.Get(id) : pool->InactiveStorage.Get(id);
-                pool->System->OnComponentRemoved(entityID, component);
-            }
+            auto& component = active ? pool->Storage.Get(id) : pool->InactiveStorage.Get(id);
+            component.OnRemoved(this);
+
             if (active)
                 pool->Storage.Remove(id);
             else

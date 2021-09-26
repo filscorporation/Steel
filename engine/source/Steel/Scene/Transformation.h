@@ -13,7 +13,10 @@
 class Transformation : public Component
 {
 public:
-    explicit Transformation(EntityID ownerEntityID);
+    explicit Transformation(EntityID ownerEntityID) : Component(ownerEntityID) { };
+
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
 
     virtual glm::vec3 GetPosition();
     virtual void SetPosition(const glm::vec3& position);

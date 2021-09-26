@@ -24,7 +24,11 @@ class UIInputField : public UIInteractable
 public:
     explicit UIInputField(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { }
 
-    void Init(UIEventHandler& eventHandler);
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
+
     void Update();
     void Rebuild(UILayer* layer, RectTransformation& transformation);
 
@@ -42,9 +46,6 @@ public:
     TextTypes::TextType GetTextType() const;
     void SetSelectionColor(glm::vec4 color);
     glm::vec4 GetSelectionColor() const;
-
-    void OnRemoved();
-    void OnDisabled();
 
     static bool IsInt(const std::string& text, int& value);
     static bool IsFloat(const std::string& text, float& value);

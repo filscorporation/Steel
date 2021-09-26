@@ -2,17 +2,24 @@
 #include "../Rendering/Screen.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
-#include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
 #define TRANSFORM_EPS 0.000001f
 
-RectTransformation::RectTransformation(EntityID ownerEntityID) : Component(ownerEntityID)
+bool RectTransformation::Validate(EntitiesRegistry* entitiesRegistry)
 {
-    if (HasComponentS<Transformation>(ownerEntityID))
+    if (entitiesRegistry->HasComponent<Transformation>(Owner))
     {
-        Log::LogError("Adding Transformation to objects with RectTransformation will lead to undefined behaviour.");
+        Log::LogError("Adding RectTransformation to objects with Transformation will lead to undefined behaviour.");
+        return false;
     }
+
+    return Component::Validate(entitiesRegistry);
+}
+
+void RectTransformation::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    SetTransformationChanged(true);
 }
 
 glm::vec2 RectTransformation::GetAnchorMin() const

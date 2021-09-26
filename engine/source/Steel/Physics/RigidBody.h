@@ -24,6 +24,11 @@ class RigidBody : public Component
 public:
     explicit RigidBody(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
+    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
+
     void SetDynamic();
     void SetStatic();
     void SetKinematic();
@@ -75,6 +80,4 @@ private:
 
     void SetAutoFixture();
     bool AssertInitialized();
-
-    friend class PhysicsSystem;
 };

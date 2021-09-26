@@ -8,10 +8,13 @@ class AppView : public UIComponent
 public:
     explicit AppView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
+
     void Init(EntitiesRegistry* entitiesRegistry);
     void Update(EntitiesRegistry* entitiesRegistry);
 private:
 
+    void UpdateView(EntitiesRegistry* entitiesRegistry) const;
     void UpdateResolutionInfo(EntitiesRegistry* entitiesRegistry) const;
     EntityID tabEntity = NULL_ENTITY;
     EntityID statsEntity = NULL_ENTITY;

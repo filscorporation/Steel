@@ -11,7 +11,12 @@ class UIImage : public UIComponent
 public:
     explicit UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    void Init(EntitiesRegistry* entitiesRegistry);
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
+    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
+
     void UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
 
     void SetMaterial(Material* material);
@@ -38,6 +43,4 @@ protected:
 
     uint32_t currentImageTileIndex = 0;
     std::vector<EntityID> _renderers;
-
-    friend class UISystem;
 };

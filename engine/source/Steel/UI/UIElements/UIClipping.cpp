@@ -6,7 +6,36 @@
 
 #define SO_OFFSET 0.1f
 
-void UIClipping::Init(EntitiesRegistry* entitiesRegistry)
+bool UIClipping::Validate(EntitiesRegistry* entitiesRegistry)
+{
+    return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
+}
+
+void UIClipping::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    entitiesRegistry->AddComponent<UIEventHandler>(Owner);
+    InitCaps(entitiesRegistry);
+}
+
+void UIClipping::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    ClearCaps(entitiesRegistry);
+
+    wasRemoved = true;
+    UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));
+}
+
+void UIClipping::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    InitCaps(entitiesRegistry);
+}
+
+void UIClipping::OnDisabled(EntitiesRegistry* entitiesRegistry)
+{
+    ClearCaps(entitiesRegistry);
+}
+
+void UIClipping::InitCaps(EntitiesRegistry* entitiesRegistry)
 {
     ClippingLevel = GetClippingLevelUpwards(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner).ParentNode);
     ClippingLevel++;
@@ -67,24 +96,6 @@ void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, boo
     entitiesRegistry->GetComponent<UIEventHandler>(openingEH).SortingOrder = sortingOrder - dz * SO_OFFSET;
     // Closing event handler cap
     entitiesRegistry->GetComponent<UIEventHandler>(closingEH).SortingOrder = sortingOrder + dz * (thickness + SO_OFFSET);
-}
-
-void UIClipping::OnRemoved(EntitiesRegistry* entitiesRegistry)
-{
-    ClearCaps(entitiesRegistry);
-
-    wasRemoved = true;
-    UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));
-}
-
-void UIClipping::OnEnabled(EntitiesRegistry* entitiesRegistry)
-{
-    Init(entitiesRegistry);
-}
-
-void UIClipping::OnDisabled(EntitiesRegistry* entitiesRegistry)
-{
-    ClearCaps(entitiesRegistry);
 }
 
 bool UIClipping::WasRemoved() const

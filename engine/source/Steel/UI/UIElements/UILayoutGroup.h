@@ -12,7 +12,9 @@ class UILayoutGroup : public UIComponent, public ILayoutElement
 public:
     explicit UILayoutGroup(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    void Init(UIEventHandler& eventHandler);
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+
     void Rebuild(UILayer* layer, RectTransformation& transformation);
 
     LayoutElementInfo GetInfo() override;

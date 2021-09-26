@@ -2,6 +2,37 @@
 
 #include "ScriptComponent.h"
 #include "ScriptingCore.h"
+#include "../UI/UIEventHandler.h"
+
+void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    if (entitiesRegistry->HasComponent<UIEventHandler>(Owner))
+    {
+        entitiesRegistry->GetComponent<UIEventHandler>(Owner).EnableNotifyScripts();
+    }
+}
+
+void ScriptComponent::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    if (entitiesRegistry->HasComponent<UIEventHandler>(Owner))
+    {
+        entitiesRegistry->GetComponent<UIEventHandler>(Owner).DisableNotifyScripts();
+    }
+
+    OnDestroy();
+    for (auto script : Scripts)
+        ScriptingCore::FreeScriptHandle(script.Pointer);
+}
+
+void ScriptComponent::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    OnEnabled();
+}
+
+void ScriptComponent::OnDisabled(EntitiesRegistry* entitiesRegistry)
+{
+    OnDisabled();
+}
 
 bool ScriptComponent::HasScriptType(ScriptTypeInfo* typeInfo)
 {

@@ -4,6 +4,7 @@
 #include "Hierarchy.h"
 #include "../Animation/Animator.h"
 #include "../Audio/AudioCore.h"
+#include "../Audio/AudioSource.h"
 #include "../Audio/AudioListener.h"
 #include "../Core/Input.h"
 #include "../Core/Log.h"
@@ -12,7 +13,6 @@
 #include "../Rendering/QuadRenderer.h"
 #include "../Rendering/Renderer.h"
 #include "../Physics/Physics.h"
-#include "../Scene/TransformationSystem.h"
 #include "../Scripting/ScriptingSystem.h"
 #include "../UI/RectTransformation.h"
 
@@ -22,39 +22,24 @@ Scene::Scene()
 
     uiLayer = new UILayer(this);
     uiLayer->LoadDefaultResources();
-
-    RegisterSystems();
 }
 
 Scene::~Scene()
 {
     delete uiLayer;
     delete entitiesRegistry;
-    delete transformationSystem;
-    delete hierarchySystem;
 
     if (systemsInitialized)
     {
-        ScriptingSystem::TerminateScene();
         AudioCore::DeleteAudioScene();
         Physics::DeletePhysicsScene();
     }
-}
-
-void Scene::RegisterSystems()
-{
-    hierarchySystem = new HierarchySystem();
-    transformationSystem = new TransformationSystem();
-    entitiesRegistry->RegisterSystem<HierarchyNode>(hierarchySystem);
-    entitiesRegistry->RegisterSystem<Transformation>(transformationSystem);
-    entitiesRegistry->RegisterSystem<RectTransformation>(transformationSystem);
 }
 
 void Scene::InitSystems()
 {
     Physics::CreatePhysicsScene(entitiesRegistry);
     AudioCore::CreateAudioScene(entitiesRegistry);
-    ScriptingSystem::InitScene(entitiesRegistry);
     systemsInitialized = true;
 }
 

@@ -13,6 +13,11 @@ class ScriptComponent : public Component
 public:
     explicit ScriptComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
+    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
+
     void AddScript(ScriptPointer scriptPointer, ScriptTypeInfo* typeInfo);
     bool HasScriptType(ScriptTypeInfo* typeInfo);
     ScriptPointer GetScriptPointer(ScriptTypeInfo* typeInfo);

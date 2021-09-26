@@ -7,13 +7,11 @@
 #include "UIElements/LayoutGroupTypes.h"
 
 class Scene;
-class UISystem;
 
 class UILayer
 {
 public:
     explicit UILayer(Scene* scene);
-    ~UILayer();
 
     void Update();
     void Rebuild();
@@ -85,6 +83,4 @@ private:
         EntityID Owner;
     };
     SparseDataSet<InteractableCallback> _updateQueue;
-
-    UISystem* uiSystem;
 };

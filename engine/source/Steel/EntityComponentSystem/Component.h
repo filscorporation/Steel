@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "Entity.h"
+#include "EntitiesRegistry.h"
 
 class Component
 {
@@ -12,5 +13,11 @@ public:
 
     bool IsAlive() const;
 
-    EntityID Owner;
+    virtual bool Validate(EntitiesRegistry* entitiesRegistry) { return true; }
+    virtual void OnCreated(EntitiesRegistry* entitiesRegistry) { }
+    virtual void OnRemoved(EntitiesRegistry* entitiesRegistry) { }
+    virtual void OnEnabled(EntitiesRegistry* entitiesRegistry) { }
+    virtual void OnDisabled(EntitiesRegistry* entitiesRegistry) { }
+
+    EntityID Owner = NULL_ENTITY;
 };

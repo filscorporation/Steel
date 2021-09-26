@@ -4,12 +4,24 @@
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
 
-void UICheckBox::Init(UIEventHandler& eventHandler)
+bool UICheckBox::Validate(EntitiesRegistry* entitiesRegistry)
 {
+    return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
+}
+
+void UICheckBox::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    auto& eventHandler = entitiesRegistry->AddComponent<UIEventHandler>(Owner);
     eventHandler.EventCallback = UICheckBox::HandleEvent;
     eventHandler.EventsMask = UIEventTypes::MouseEnter | UIEventTypes::MouseExit | UIEventTypes::MouseJustPressed;
 
     UIInteractable::Init(UpdateTransition);
+}
+
+void UICheckBox::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    StopTransition();
+    ScriptingCore::CallEventMethod(Owner, CallbackTypes::CheckBoxChangeValue, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
 }
 
 bool UICheckBox::GetValue() const

@@ -8,6 +8,10 @@ class AudioSource : public Component
 public:
     explicit AudioSource(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
+    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
     void OnUpdate();
 
     void Play(AudioTrack* audioTrack);
@@ -18,7 +22,7 @@ public:
     void SetVolume(float volume);
 
 private:
-    uint32_t sourceID;
+    uint32_t sourceID = 0;
     float sourceVolume = 1.0f;
     bool sourceIsLoop = false;
     ResourceID currentTrackID = NULL_RESOURCE;

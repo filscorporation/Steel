@@ -7,6 +7,12 @@
 
 #undef LoadImage
 
+void AppView::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    UpdateView(entitiesRegistry);
+    UpdateResolutionInfo(entitiesRegistry);
+}
+
 void AppView::Init(EntitiesRegistry* entitiesRegistry)
 {
     auto editor = (EditorApplication*)Application::Instance;
@@ -84,7 +90,7 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
                     if (UIInputField::IsInt(text, value))
                     {
                         auto editor = (EditorApplication*)Application::Instance;
-                        editor->GetAppContext()->ScreenParams.ResolutionX= glm::clamp(value, 0, 10000);
+                        editor->GetAppContext()->ScreenParams.ResolutionX = glm::clamp(value, 0, 10000);
                         editor->GetAppContext()->ScreenParams.IsDirty = true;
                     }
                 };
@@ -182,37 +188,43 @@ void AppView::Update(EntitiesRegistry* entitiesRegistry)
     auto& viewRT = entitiesRegistry->GetComponent<RectTransformation>(Owner);
     if (viewRT.DidSizeChange() || editor->GetAppContext()->ScreenParams.IsDirty)
     {
-        auto& image = entitiesRegistry->GetComponent<UIImage>(appViewImageEntity);
-        auto& rt = entitiesRegistry->GetComponent<RectTransformation>(appViewImageEntity);
-        glm::vec2 rectSize = rt.GetRealSizeCached();
-
-        auto& screenParameters = editor->GetAppContext()->ScreenParams;
-        if (editor->GetAppContext()->ScreenParams.AutoResolution)
-        {
-            editor->GetAppContext()->ScreenParams.ResolutionX = (int)rectSize.x;
-            editor->GetAppContext()->ScreenParams.ResolutionY = (int)rectSize.y;
-            editor->GetAppContext()->ScreenParams.IsDirty = true;
-        }
-        screenParameters.Width = (int)rectSize.x;
-        screenParameters.Height = (int)rectSize.y;
-        screenParameters.WidthBackup = (int)rectSize.x;
-        screenParameters.HeightBackup = (int)rectSize.y;
-        screenParameters.OffsetX = (int)(rt.GetRealPositionCached().x - (float)screenParameters.Width * 0.5f);
-        screenParameters.OffsetY = (int)(rt.GetRealPositionCached().y - (float)screenParameters.Height * 0.5f);
-
-        delete image.GetImage();
-
-        editor->ApplicationFramebuffer->Resize((uint32_t)screenParameters.ResolutionX, (uint32_t)screenParameters.ResolutionY);
-
-        auto sprite = new Sprite(editor->ApplicationFramebuffer->GetColorAttachment());
-        image.FlipImage = true;
-        image.SetImage(sprite);
+        UpdateView(entitiesRegistry);
     }
 
     if (Screen::IsScreenSizeDirty() || editor->GetAppContext()->ScreenParams.IsDirty)
     {
         UpdateResolutionInfo(entitiesRegistry);
     }
+}
+
+void AppView::UpdateView(EntitiesRegistry* entitiesRegistry) const
+{
+    auto editor = (EditorApplication*)Application::Instance;
+    auto& image = entitiesRegistry->GetComponent<UIImage>(appViewImageEntity);
+    auto& rt = entitiesRegistry->GetComponent<RectTransformation>(appViewImageEntity);
+    glm::vec2 rectSize = rt.GetRealSizeCached();
+
+    auto& screenParameters = editor->GetAppContext()->ScreenParams;
+    if (editor->GetAppContext()->ScreenParams.AutoResolution)
+    {
+        editor->GetAppContext()->ScreenParams.ResolutionX = (int)rectSize.x;
+        editor->GetAppContext()->ScreenParams.ResolutionY = (int)rectSize.y;
+        editor->GetAppContext()->ScreenParams.IsDirty = true;
+    }
+    screenParameters.Width = (int)rectSize.x;
+    screenParameters.Height = (int)rectSize.y;
+    screenParameters.WidthBackup = (int)rectSize.x;
+    screenParameters.HeightBackup = (int)rectSize.y;
+    screenParameters.OffsetX = (int)(rt.GetRealPositionCached().x - (float)screenParameters.Width * 0.5f);
+    screenParameters.OffsetY = (int)(rt.GetRealPositionCached().y - (float)screenParameters.Height * 0.5f);
+
+    delete image.GetImage();
+
+    editor->ApplicationFramebuffer->Resize((uint32_t)screenParameters.ResolutionX, (uint32_t)screenParameters.ResolutionY);
+
+    auto sprite = new Sprite(editor->ApplicationFramebuffer->GetColorAttachment());
+    image.FlipImage = true;
+    image.SetImage(sprite);
 }
 
 void AppView::UpdateResolutionInfo(EntitiesRegistry* entitiesRegistry) const

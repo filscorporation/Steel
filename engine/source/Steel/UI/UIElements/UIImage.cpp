@@ -6,9 +6,34 @@
 #include "../../Scene/SceneHelper.h"
 #include "../../Rendering/Screen.h"
 
-void UIImage::Init(EntitiesRegistry* entitiesRegistry)
+bool UIImage::Validate(EntitiesRegistry* entitiesRegistry)
 {
+    return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
+}
+
+void UIImage::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    entitiesRegistry->AddComponent<UIEventHandler>(Owner);
     _clippingLevel = GetClippingLevelUpwards(entitiesRegistry, Owner);
+}
+
+void UIImage::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    for (auto qrID : _renderers)
+        entitiesRegistry->DeleteEntity(qrID);
+    _renderers.clear();
+}
+
+void UIImage::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    for (auto qrID : _renderers)
+        entitiesRegistry->EntitySetActive(qrID, true, false);
+}
+
+void UIImage::OnDisabled(EntitiesRegistry* entitiesRegistry)
+{
+    for (auto qrID : _renderers)
+        entitiesRegistry->EntitySetActive(qrID, false, false);
 }
 
 void UIImage::UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty)

@@ -15,8 +15,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 set(TESTS_PROJECT_SOURCES main.cpp TestsSetUp.h TestsSetUp.cpp)
 set(TESTS_FILES ApplicationTest.cpp SparseSetTest.cpp SparseDataSetTest.cpp EntitiesRegistryTest.cpp common/TestComponent1.cpp
-        common/TestComponent1.h common/TestComponent2.cpp common/TestComponent2.h common/TestComponent1System.cpp
-        common/TestComponent1System.h HierarchyTest.cpp ActivationTest.cpp)
+        common/TestComponent1.h common/TestComponent2.cpp common/TestComponent2.h HierarchyTest.cpp ActivationTest.cpp)
 
 # target
 add_executable(RunAutoTests ${TESTS_PROJECT_SOURCES} ${TESTS_FILES})

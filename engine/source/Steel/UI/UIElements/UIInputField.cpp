@@ -11,15 +11,43 @@
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
 
-void UIInputField::Init(UIEventHandler& eventHandler)
+bool UIInputField::Validate(EntitiesRegistry* entitiesRegistry)
 {
+    return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
+}
+
+void UIInputField::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    auto& eventHandler = entitiesRegistry->AddComponent<UIEventHandler>(Owner);
     eventHandler.EventCallback = UIInputField::HandleEvent;
     eventHandler.EventsMask = UIEventTypes::TextInput | UIEventTypes::KeyInput |
-            UIEventTypes::MouseEnter | UIEventTypes::MouseExit | UIEventTypes::MouseJustPressed |
-            UIEventTypes::MouseDragBegin | UIEventTypes::MouseDrag | UIEventTypes::MouseDragEnd |
-            UIEventTypes::MouseJustPressedAnywhere;
+                              UIEventTypes::MouseEnter | UIEventTypes::MouseExit | UIEventTypes::MouseJustPressed |
+                              UIEventTypes::MouseDragBegin | UIEventTypes::MouseDrag | UIEventTypes::MouseDragEnd |
+                              UIEventTypes::MouseJustPressedAnywhere;
 
     UIInteractable::Init(UpdateTransition);
+}
+
+void UIInputField::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    if (cursor != NULL_ENTITY)
+        entitiesRegistry->DeleteEntity(cursor);
+    cursor = NULL_ENTITY;
+    for (auto& selectionEntity : selectionEntites)
+        entitiesRegistry->DeleteEntity(selectionEntity);
+    selectionEntites.clear();
+
+    StopTransition();
+    ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
+    ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldEndEdit, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
+}
+
+void UIInputField::OnDisabled(EntitiesRegistry* entitiesRegistry)
+{
+    if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
+        return;
+    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
+    Disselect(uiText);
 }
 
 void UIInputField::Update()
@@ -177,26 +205,6 @@ void UIInputField::SetSelectionColor(glm::vec4 color)
 glm::vec4 UIInputField::GetSelectionColor() const
 {
     return selectionColor;
-}
-
-void UIInputField::OnRemoved()
-{
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (cursor != NULL_ENTITY)
-        entitiesRegistry->DeleteEntity(cursor);
-    cursor = NULL_ENTITY;
-    for (auto& selectionEntity : selectionEntites)
-        entitiesRegistry->DeleteEntity(selectionEntity);
-    selectionEntites.clear();
-}
-
-void UIInputField::OnDisabled()
-{
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
-        return;
-    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
-    Disselect(uiText);
 }
 
 void UIInputField::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)

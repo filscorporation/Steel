@@ -1,6 +1,6 @@
 #include "ScriptingCore.h"
+#include "ScriptComponent.h"
 #include "ScriptingCallsRegister.h"
-#include "ScriptComponentSystem.h"
 #include "../Animation/Animator.h"
 #include "../Audio/AudioListener.h"
 #include "../Audio/AudioSource.h"

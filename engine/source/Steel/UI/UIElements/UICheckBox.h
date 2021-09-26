@@ -16,7 +16,10 @@ class UICheckBox : public UIInteractable
 public:
     explicit UICheckBox(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { };
 
-    void Init(UIEventHandler& eventHandler);
+    bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+
     bool GetValue() const;
     void SetValue(bool value);
 

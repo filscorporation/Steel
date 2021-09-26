@@ -27,7 +27,6 @@ MonoImage* coreAssemblyImage;
 MonoImage* customAssemblyImage;
 
 bool ScriptingSystem::isInitialized = false;
-ScriptComponentSystem* ScriptingSystem::scriptComponentSystem;
 
 inline bool FileExists(const char* fileName)
 {
@@ -113,17 +112,6 @@ void ScriptingSystem::Terminate()
 
     ScriptingCore::Terminate();
     mono_jit_cleanup(domain);
-}
-
-void ScriptingSystem::InitScene(EntitiesRegistry* entitiesRegistry)
-{
-    scriptComponentSystem = new ScriptComponentSystem();
-    entitiesRegistry->RegisterSystem<ScriptComponent>(scriptComponentSystem);
-}
-
-void ScriptingSystem::TerminateScene()
-{
-    delete scriptComponentSystem;
 }
 
 void ScriptingSystem::CallEntryPoint()

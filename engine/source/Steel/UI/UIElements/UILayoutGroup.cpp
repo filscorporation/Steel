@@ -9,8 +9,20 @@
     ? (ILayoutElement&)entitiesRegistry->GetComponent<UILayoutElement>(m_id) \
     : (ILayoutElement&)entitiesRegistry->AddComponent<UILayoutElement>(m_id)) \
 
-void UILayoutGroup::Init(UIEventHandler& eventHandler)
+bool UILayoutGroup::Validate(EntitiesRegistry* entitiesRegistry)
 {
+    return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
+}
+
+void UILayoutGroup::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    if (entitiesRegistry->HasComponent<UILayoutElement>(Owner))
+    {
+        Log::LogWarning("UILayoutElement component will be replaced with UILayoutGroup");
+        entitiesRegistry->RemoveComponent<UILayoutElement>(Owner);
+    }
+    entitiesRegistry->AddComponent<UIEventHandler>(Owner);
+
     // TODO: bind event handler to layout elements resizing
 }
 

@@ -7,7 +7,6 @@
 #include "PhysicsContactListener.h"
 #include "Physics.h"
 #include "RigidBody.h"
-#include "../EntityComponentSystem/ComponentSystem.h"
 
 class PhysicsCore
 {
