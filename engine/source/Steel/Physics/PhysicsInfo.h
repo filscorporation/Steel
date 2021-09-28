@@ -9,6 +9,7 @@
 struct RigidBody::RigidBodyInfo
 {
     b2Body* Body;
+    b2Fixture* Fixture;
 };
 
 struct BoxCollider::BoxColliderInfo

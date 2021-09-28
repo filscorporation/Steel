@@ -20,6 +20,8 @@ using ComponentTypeID = std::type_index;
 template <typename T>
 using ComponentsPool = SparseDataSet<T>;
 
+class EntitiesRegistry;
+
 // Base class to store components pool
 class ComponentsPoolWrapperBase
 {

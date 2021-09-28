@@ -126,7 +126,7 @@ void RigidBody::SetAutoFixture()
         fixtureDef.density = 1;
         fixtureDef.friction = _friction;
         fixtureDef.restitution = _restitution;
-        info->Body->CreateFixture(&fixtureDef);
+        info->Fixture = info->Body->CreateFixture(&fixtureDef);
     }
     if (HasComponentS<CircleCollider>(Owner))
     {
@@ -136,7 +136,7 @@ void RigidBody::SetAutoFixture()
         fixtureDef.density = 1;
         fixtureDef.friction = _friction;
         fixtureDef.restitution = _restitution;
-        info->Body->CreateFixture(&fixtureDef);
+        info->Fixture = info->Body->CreateFixture(&fixtureDef);
     }
 
     SetMassInner();
@@ -157,6 +157,15 @@ void RigidBody::SetMass(float mass)
 void RigidBody::SetMassInner()
 {
     b2MassData massData;
+    if (info->Fixture == nullptr)
+    {
+        massData.I = 0.0f;
+        massData.center = { 0.0, 0.0f };
+    }
+    else
+    {
+        info->Fixture->GetMassData(&massData);
+    }
     massData.mass = _mass;
     info->Body->SetMassData(&massData);
     info->Body->ResetMassData();
