@@ -218,13 +218,14 @@ void AppView::UpdateView(EntitiesRegistry* entitiesRegistry) const
     screenParameters.OffsetX = (int)(rt.GetRealPositionCached().x - (float)screenParameters.Width * 0.5f);
     screenParameters.OffsetY = (int)(rt.GetRealPositionCached().y - (float)screenParameters.Height * 0.5f);
 
-    delete image.GetImage();
-
     editor->ApplicationFramebuffer->Resize((uint32_t)screenParameters.ResolutionX, (uint32_t)screenParameters.ResolutionY);
 
     auto sprite = new Sprite(editor->ApplicationFramebuffer->GetColorAttachment());
     image.FlipImage = true;
+
+    auto oldImage = image.GetImage();
     image.SetImage(sprite);
+    delete oldImage;
 }
 
 void AppView::UpdateResolutionInfo(EntitiesRegistry* entitiesRegistry) const

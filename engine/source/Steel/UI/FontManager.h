@@ -13,5 +13,5 @@ public:
 
     static Font* FontFromPath(const char* fontPath);
 private:
-    static bool _isInitialized;
+    static int _isInitialized;
 };

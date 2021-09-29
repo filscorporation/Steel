@@ -15,6 +15,8 @@ void BoxCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void BoxCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
+    if (info != nullptr)
+        delete info->BoxShape;
     delete info;
 }
 

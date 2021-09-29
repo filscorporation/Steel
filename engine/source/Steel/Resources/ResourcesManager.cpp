@@ -67,6 +67,8 @@ ResourcesManager::~ResourcesManager()
     {
         delete material.second;
     }
+
+    FontManager::Terminate();
 }
 
 void ResourcesManager::LoadDefaultResources()

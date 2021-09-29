@@ -85,6 +85,7 @@ EntityID HierarchyView::CreateNodeUIElement(EntitiesRegistry* entitiesRegistry, 
     EntityID buttonEntity = layer->CreateUIButton(layer->UIResources.DefaultFrameSprite, "Node", parentEntity);
     auto& button = entitiesRegistry->GetComponent<UIButton>(buttonEntity);
     auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(buttonEntity);
+    buttonRT.SetParallelHierarchy(true);
     buttonRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
     buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
     buttonRT.SetOffsetMin(glm::vec2(OFFSET + STYLE_BUTTON_H * nodeHN.HierarchyDepth, 0.0f));
@@ -97,10 +98,11 @@ EntityID HierarchyView::CreateNodeUIElement(EntitiesRegistry* entitiesRegistry, 
     auto& text = entitiesRegistry->GetComponent<UIText>(textEntity);
     text.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     auto& textRT = entitiesRegistry->GetComponent<RectTransformation>(textEntity);
+    textRT.SetParallelHierarchy(true);
     textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
     textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
     textRT.SetOffsetMin(glm::vec2(8.0f, 2.0f));
     textRT.SetOffsetMax(glm::vec2(8.0f, 2.0f));
 
-    return 0;
+    return buttonEntity;
 }

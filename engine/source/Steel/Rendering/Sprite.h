@@ -20,7 +20,7 @@ public:
     Texture* SpriteTexture = nullptr;
     int PixelsPerUnit = 32;
     glm::vec2 Pivot = { 0.5f, 0.5f };
-    bool IsTransparent;
+    bool IsTransparent = false;
 
     bool IsSpriteSheet = false;
     int TileWidth;

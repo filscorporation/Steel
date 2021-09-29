@@ -50,6 +50,8 @@ public:
     uint32_t GetCurrentHierarchyIndex() const;
     uint32_t GetChildrenThickness() const;
     void IncreaseCurrentThickness(uint32_t thickness);
+    bool GetParallelHierarchy() const;
+    void SetParallelHierarchy(bool isParallel);
 
     // Did anything in transformation change in this frame
     bool DidTransformationChange() const;

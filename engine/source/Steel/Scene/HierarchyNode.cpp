@@ -44,8 +44,9 @@ void HierarchyNode::OnDisabled(EntitiesRegistry* entitiesRegistry)
         return;
     lock = true;
 
+    EntityID ownerBackup = Owner;
     SetActiveRecursively(entitiesRegistry, (*this), false);
-    if (entitiesRegistry->HasComponent<RectTransformation>(Owner))
+    if (entitiesRegistry->HasComponent<RectTransformation>(ownerBackup))
         Application::Instance->GetCurrentScene()->GetUILayer()->SetSortingOrderDirty();
 
     lock = false;

@@ -4,29 +4,40 @@
 #include "FontManager.h"
 #include "../Core/Log.h"
 
-bool FontManager::_isInitialized = false;
+int FontManager::_isInitialized = 0;
 
 static FT_Library FreeTypeLibrary;
 
 void FontManager::Init()
 {
+    if (_isInitialized)
+    {
+        _isInitialized++;
+        return;
+    }
+
     if (FT_Init_FreeType(&FreeTypeLibrary))
     {
         Log::LogError("Could not init FreeType library");
         return;
     }
 
-    _isInitialized = true;
+    _isInitialized++;
 }
 
 void FontManager::Terminate()
 {
-    FT_Done_FreeType(FreeTypeLibrary);
+    if (_isInitialized)
+    {
+        _isInitialized--;
+        if (_isInitialized == 0)
+            FT_Done_FreeType(FreeTypeLibrary);
+    }
 }
 
 bool FontManager::IsInitialized()
 {
-    return _isInitialized;
+    return _isInitialized > 0;
 }
 
 Font* FontManager::FontFromPath(const char* fontPath)

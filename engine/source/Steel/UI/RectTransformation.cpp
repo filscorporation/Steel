@@ -219,6 +219,16 @@ void RectTransformation::IncreaseCurrentThickness(uint32_t thickness)
         _currentThickness += thickness;
 }
 
+bool RectTransformation::GetParallelHierarchy() const
+{
+    return _parallelHierarchy;
+}
+
+void RectTransformation::SetParallelHierarchy(bool isParallel)
+{
+    _parallelHierarchy = isParallel;
+}
+
 bool RectTransformation::Contains(const glm::vec2& point) const
 {
     // TODO: does not use rotation
