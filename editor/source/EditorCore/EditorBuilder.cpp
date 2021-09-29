@@ -1,5 +1,6 @@
 #include "EditorBuilder.h"
 #include "../UI/AppView.h"
+#include "../UI/HierarchyView.h"
 
 #include <Steel.h>
 
@@ -96,8 +97,8 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         auto& hierarchyViewRT = entitiesRegistry->GetComponent<RectTransformation>(hierarchyViewEntity);
         hierarchyViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         hierarchyViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        auto& hierarchyImage = entitiesRegistry->AddComponent<UIImage>(hierarchyViewEntity);
-        hierarchyImage.SetImage(uiLayer->UIResources.DefaultFrameSprite);
+        auto& hierarchyView = entitiesRegistry->AddComponent<HierarchyView>(hierarchyViewEntity);
+        hierarchyView.Init(entitiesRegistry);
     }
 
     // Application and scene views

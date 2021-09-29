@@ -46,6 +46,7 @@ void Scene::InitSystems()
 void Scene::CreateMainCamera()
 {
     _mainCameraEntity = CreateEntity();
+    entitiesRegistry->GetComponent<NameComponent>(_mainCameraEntity).Name = "Main camera";
     auto& mainCamera = entitiesRegistry->AddComponent<Camera>(_mainCameraEntity);
     entitiesRegistry->GetComponent<Transformation>(_mainCameraEntity).SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     mainCamera.SetHeight(3.0f);
@@ -202,7 +203,7 @@ void Scene::Draw(Framebuffer* framebuffer)
             Renderer::Draw(quadRenderers[i]);
 
     // Transparent pass
-    for (int i = quadRenderers.Size() - 1; i >=0; --i)
+    for (int i = quadRenderers.Size() - 1; i >= 0; --i)
         if (quadRenderers[i].Queue == RenderingQueue::Transparent)
             Renderer::Draw(quadRenderers[i]);
 
@@ -213,6 +214,11 @@ void Scene::Draw(Framebuffer* framebuffer)
     uiLayer->Refresh();
 
     AfterDraw();
+
+    // Refresh hierarchy nodes
+    auto nodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
+    for (int i = nodes.Size() - 1; i >= 0; --i)
+        nodes[i].IsDirty = false;
 
     Renderer::OnAfterRender();
     framebuffer->Unbind();

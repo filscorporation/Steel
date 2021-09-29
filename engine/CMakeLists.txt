@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.3)
 project(Steel VERSION 0.2)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP -std=c++11 -pthread -ldl -lpthread -lm")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -ldl -lpthread -lm")
 endif()
 
 if (${CMAKE_BUILD_TYPE} MATCHES Debug)

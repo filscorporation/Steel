@@ -1,6 +1,18 @@
 #include "EditorScene.h"
 #include "../UI/AppView.h"
+#include "../UI/HierarchyView.h"
 #include "../UI/StatsWindow.h"
+
+void EditorScene::AfterUpdate()
+{
+    Scene::AfterUpdate();
+
+    auto hierarchyViews = entitiesRegistry->GetComponentIterator<HierarchyView>();
+    for (int i = 0; i < hierarchyViews.Size(); ++i)
+    {
+        hierarchyViews[i].Update(entitiesRegistry);
+    }
+}
 
 void EditorScene::BeforeRebuildUI()
 {
