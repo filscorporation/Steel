@@ -117,6 +117,11 @@ void Scene::Update()
     UIEvent uiEvent = Input::GetUIEvent();
     uiLayer->PollEvent(uiEvent);
 
+    // Refresh hierarchy nodes
+    auto nodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
+    for (int i = nodes.Size() - 1; i >= 0; --i)
+        nodes[i].IsDirty = false;
+
     BeforeUpdate();
 
     // Update scripts
@@ -214,11 +219,6 @@ void Scene::Draw(Framebuffer* framebuffer)
     uiLayer->Refresh();
 
     AfterDraw();
-
-    // Refresh hierarchy nodes
-    auto nodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
-    for (int i = nodes.Size() - 1; i >= 0; --i)
-        nodes[i].IsDirty = false;
 
     Renderer::OnAfterRender();
     framebuffer->Unbind();

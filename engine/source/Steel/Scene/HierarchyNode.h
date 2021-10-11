@@ -21,5 +21,5 @@ public:
     EntityID PreviousNode = NULL_ENTITY;
     EntityID NextNode = NULL_ENTITY;
     EntityID ParentNode = NULL_ENTITY;
-    bool IsDirty = false;
+    bool IsDirty = true;
 };

@@ -15,6 +15,8 @@ void CircleCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void CircleCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
+    if (info != nullptr)
+        delete info->CircleShape;
     delete info;
 }
 

@@ -27,7 +27,8 @@ namespace NodeFlags
 struct HierarchyViewNode
 {
     NodeFlags::NodeFlag Flags = NodeFlags::Visible;
-    EntityID NodeEntity = NULL_ENTITY;
+    int Order = 0;
+    bool NodeDirty = false;
     EntityID UIElementEntity = NULL_ENTITY;
 };
 
@@ -42,10 +43,12 @@ public:
     void Update(EntitiesRegistry* entitiesRegistry);
 
 private:
-    EntityID parentEntity = NULL_ENTITY;
-    std::vector<HierarchyViewNode>* lastNodes = nullptr;
+    EntityID _parentEntity = NULL_ENTITY;
+    std::unordered_map<EntityID, HierarchyViewNode>* lastNodes = nullptr;
 
-    static void GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParent& parent, std::vector<HierarchyViewNode>* nodes);
+    static void GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParent& parent, std::unordered_map<EntityID, HierarchyViewNode>* nodes);
     static EntityID CreateNodeUIElement(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry, UILayer* layer,
-                                        EntityID parentEntity, const HierarchyViewNode& node, int index);
+                                        EntityID parentEntity, EntityID nodeEntity, const HierarchyViewNode& node);
+    static EntityID PositionNodeUIElement(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry,
+                                        EntityID nodeEntity, const HierarchyViewNode& node);
 };
