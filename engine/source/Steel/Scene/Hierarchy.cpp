@@ -63,7 +63,10 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     // Child already has a parent, we need to change links
     RemoveChildFromItsParent(registry, childNode, prevParent);
     if (childNode.ParentNode != NULL_ENTITY)
+    {
         UpdateThicknessUpwards(registry, childNode.ParentNode, -(int)childNode.Thickness);
+        registry->GetComponent<HierarchyNode>(childNode.ParentNode).IsDirty = true;
+    }
 
     HierarchyParent& hierarchyParent = parent == NULL_ENTITY
                                        ? (HierarchyParent&)(*Application::Instance->GetCurrentScene())
@@ -80,6 +83,7 @@ void LinkChildToParent(EntitiesRegistry* registry, EntityID child, EntityID pare
     {
         // Moving this child to another parent
         auto& parentNode = registry->GetComponent<HierarchyNode>(parent);
+        parentNode.IsDirty = true;
         childNode.ParentNode = parent;
         childNode.HierarchyDepth = parentNode.HierarchyDepth + 1;
         UpdateThicknessUpwards(registry, parentNode.Owner, (int)childNode.Thickness);
@@ -266,7 +270,7 @@ std::vector<EntityID> GetAllChildren(EntitiesRegistry* registry, EntityID parent
     if (parent == NULL_ENTITY)
     {
         Log::LogError("Can't get children for NULL entity");
-        return std::vector<EntityID>();
+        return {};
     }
 
     auto& parentNode = registry->GetComponent<HierarchyNode>(parent);
@@ -303,6 +307,7 @@ void SetActiveRecursively(EntitiesRegistry* registry, HierarchyNode& parentNode,
         if (registry->EntityGetState(currentNodeID) & EntityStates::IsActiveSelf)
         {
             // Recursively call for children
+            currentChildNode.IsDirty = true;
             SetActiveRecursively(registry, currentChildNode, active);
             registry->EntitySetActive(currentNodeID, active, false);
         }

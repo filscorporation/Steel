@@ -19,6 +19,7 @@ public:
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
 
     ButtonCallback Callback = nullptr;
 

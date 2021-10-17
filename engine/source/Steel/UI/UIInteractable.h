@@ -24,9 +24,10 @@ public:
 
 protected:
     void Init(UpdateInteractable callback);
-    void PlayTransition(TransitionData data);
+    void PlayTransition(TransitionStates::TransitionState state);
     void StopTransition();
     bool UpdateTransition();
+    void RestoreTransition();
 
     bool IsInteractable = true;
     bool IsHovered = false;
@@ -39,6 +40,7 @@ private:
     UpdateInteractable updateCallback = nullptr;
     bool isInTransition = false;
     bool startingDataInitialized = false;
+    TransitionStates::TransitionState currentState = TransitionStates::Normal;
     TransitionData startingTransitionData {};
     TransitionData targetTransitionData {};
     float transitionProgress = 0.0f;

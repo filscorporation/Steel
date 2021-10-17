@@ -1,12 +1,8 @@
 #include "HierarchyView.h"
+#include "HierarchyElement.h"
 #include "../EditorCore/EditorApplication.h"
-#include "../EditorCore/EditorBuilder.h"
 
 #include <Steel.h>
-#include <Steel/Scene/NameComponent.h>
-#include <Steel/Scene/HierarchyNode.h>
-
-#define OFFSET 3
 
 void HierarchyView::Init(EntitiesRegistry* entitiesRegistry)
 {
@@ -38,19 +34,49 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
         }
     }
 
+    bool deselect = Input::IsKeyJustPressed(KeyCodes::Escape);
+
     for (auto& node : *nodes)
     {
-        if (lastNodes == nullptr || node.second.NodeDirty)
+        if (lastNodes == nullptr || node.second.NodeDirty || lastNodes->find(node.first) == lastNodes->end())
+        {
             node.second.UIElementEntity = CreateNodeUIElement(entitiesRegistry, sceneRegistry, layer, _parentEntity, node.first, node.second);
+        }
         else
         {
+            if (lastNodes->find(node.first) == lastNodes->end())
+            {
+                int a = 0;
+            }
             node.second.UIElementEntity = (*lastNodes)[node.first].UIElementEntity;
-            PositionNodeUIElement(entitiesRegistry, sceneRegistry, node.first, node.second);
+            node.second.Flags = (*lastNodes)[node.first].Flags;
+            auto& hierarchyElement = entitiesRegistry->GetComponent<HierarchyElement>(node.second.UIElementEntity);
+            hierarchyElement.UpdatePosition(entitiesRegistry, sceneRegistry, node.first, node.second);
+
+            if (deselect && node.second.Flags & NodeFlags::Selected)
+            {
+                node.second.Flags = node.second.Flags & ~NodeFlags::Selected;
+                hierarchyElement.SetDefaultNodeStyle(entitiesRegistry);
+            }
         }
+        node.second.NodeDirty = false;
     }
 
     delete lastNodes;
     lastNodes = nodes;
+
+    if (Input::IsKeyJustPressed(KeyCodes::Delete))
+    {
+        editor->SwitchContext(editor->AppContext);
+        for (auto& node : *nodes)
+        {
+            if (node.second.Flags & NodeFlags::Selected)
+            {
+                appScene->DestroyEntity(node.first);
+            }
+        }
+        editor->SwitchContext(editor->EditorContext);
+    }
 }
 
 void HierarchyView::OnRemoved(EntitiesRegistry* entitiesRegistry)
@@ -69,12 +95,32 @@ void HierarchyView::GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParen
     for (uint32_t i = 0; i < childrenCount; ++i)
     {
         auto& currentChildNode = sceneRegistry->GetComponent<HierarchyNode>(currentNodeID);
+        bool recursive = true;
 
         (*nodes)[currentNodeID].Order = (int)(*nodes).size();
         (*nodes)[currentNodeID].NodeDirty = currentChildNode.IsDirty;
+        (*nodes)[currentNodeID].HasChildren = currentChildNode.ChildrenCount != 0;
 
-        // Recursively call for children
-        GetNodesData(sceneRegistry, (HierarchyParent&)currentChildNode, nodes);
+        if (lastNodes != nullptr && (*lastNodes).find(currentNodeID) != (*lastNodes).end())
+        {
+            (*nodes)[currentNodeID].Flags = (*lastNodes)[currentNodeID].Flags;
+
+            if ((*lastNodes)[currentNodeID].NodeDirty)
+                (*nodes)[currentNodeID].NodeDirty = true;
+            if (!((*lastNodes)[currentNodeID].Flags & NodeFlags::Expanded))
+                recursive = false;
+        }
+
+        if (sceneRegistry->EntityGetState(currentNodeID) & EntityStates::IsActive)
+            (*nodes)[currentNodeID].Flags = (*nodes)[currentNodeID].Flags | NodeFlags::Active;
+        else
+            (*nodes)[currentNodeID].Flags = (*nodes)[currentNodeID].Flags & ~NodeFlags::Active;
+
+        if (recursive)
+        {
+            // Recursively call for children
+            GetNodesData(sceneRegistry, (HierarchyParent&)currentChildNode, nodes);
+        }
 
         currentNodeID = currentChildNode.NextNode;
     }
@@ -83,46 +129,57 @@ void HierarchyView::GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParen
 EntityID HierarchyView::CreateNodeUIElement(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry,
                                             UILayer* layer, EntityID parentEntity, EntityID nodeEntity, const HierarchyViewNode& node)
 {
-    auto& nodeName = sceneRegistry->GetComponent<NameComponent>(nodeEntity);
-    auto& nodeHN = sceneRegistry->GetComponent<HierarchyNode>(nodeEntity);
+    EntityID elementEntity = layer->CreateUIElement("Node", parentEntity);
+    entitiesRegistry->AddComponent<HierarchyElement>(elementEntity).Init(entitiesRegistry, sceneRegistry, layer, (*this), nodeEntity, node);
 
-    EntityID buttonEntity = layer->CreateUIButton(layer->UIResources.DefaultFrameSprite, "Node", parentEntity);
-    auto& button = entitiesRegistry->GetComponent<UIButton>(buttonEntity);
-    auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(buttonEntity);
-    buttonRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
-    buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-    buttonRT.SetOffsetMin(glm::vec2(OFFSET + STYLE_BUTTON_H * nodeHN.HierarchyDepth, 0.0f));
-    buttonRT.SetOffsetMax(glm::vec2(OFFSET, 0.0f));
-    buttonRT.SetSize(glm::vec2(0.0f, STYLE_BUTTON_H));
-    buttonRT.SetPivot(glm::vec2(0.0f, 1.0f));
-    buttonRT.SetAnchoredPosition(glm::vec2(0.0f, -OFFSET - STYLE_BUTTON_H * node.Order));
-
-    EntityID textEntity = layer->CreateUIText(nodeName.Name, "Node", buttonEntity);
-    auto& text = entitiesRegistry->GetComponent<UIText>(textEntity);
-    text.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    auto& textRT = entitiesRegistry->GetComponent<RectTransformation>(textEntity);
-    textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-    textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-    textRT.SetOffsetMin(glm::vec2(8.0f, 2.0f));
-    textRT.SetOffsetMax(glm::vec2(8.0f, 2.0f));
-
-    return buttonEntity;
+    return elementEntity;
 }
 
-EntityID HierarchyView::PositionNodeUIElement(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry,
-                                              EntityID nodeEntity, const HierarchyViewNode& node)
+void HierarchyView::ElementClicked(EntityID elementID)
 {
-    auto& nodeHN = sceneRegistry->GetComponent<HierarchyNode>(nodeEntity);
+    bool additiveSelect = Input::IsKeyPressed(KeyCodes::LeftControl) || Input::IsKeyPressed(KeyCodes::RightControl);
 
-    auto& button = entitiesRegistry->GetComponent<UIButton>(node.UIElementEntity);
-    auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(node.UIElementEntity);
-    buttonRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
-    buttonRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-    buttonRT.SetOffsetMin(glm::vec2(OFFSET + STYLE_BUTTON_H * nodeHN.HierarchyDepth, 0.0f));
-    buttonRT.SetOffsetMax(glm::vec2(OFFSET, 0.0f));
-    buttonRT.SetSize(glm::vec2(0.0f, STYLE_BUTTON_H));
-    buttonRT.SetPivot(glm::vec2(0.0f, 1.0f));
-    buttonRT.SetAnchoredPosition(glm::vec2(0.0f, -OFFSET - STYLE_BUTTON_H * node.Order));
+    if (lastNodes != nullptr)
+    {
+        auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    return node.UIElementEntity;
+        for (auto& node : *lastNodes)
+        {
+            if (node.second.UIElementEntity == elementID)
+            {
+                if (!(node.second.Flags & NodeFlags::Selected))
+                {
+                    node.second.Flags = node.second.Flags | NodeFlags::Selected;
+                    registry->GetComponent<HierarchyElement>(node.second.UIElementEntity).SetSelectedNodeStyle(registry);
+                }
+            }
+            else
+            {
+                if (!additiveSelect && node.second.Flags & NodeFlags::Selected)
+                {
+                    // Deselect all others nodes
+                    node.second.Flags = node.second.Flags & ~NodeFlags::Selected;
+                    registry->GetComponent<HierarchyElement>(node.second.UIElementEntity).SetDefaultNodeStyle(registry);
+                }
+            }
+        }
+    }
+}
+
+void HierarchyView::ElementExpanded(EntityID elementID)
+{
+    if (lastNodes != nullptr)
+    {
+        for (auto& node : *lastNodes)
+        {
+            if (node.second.UIElementEntity == elementID)
+            {
+                if (node.second.Flags & NodeFlags::Expanded)
+                    node.second.Flags = node.second.Flags & ~NodeFlags::Expanded;
+                else
+                    node.second.Flags = node.second.Flags | NodeFlags::Expanded;
+                node.second.NodeDirty = true;
+            }
+        }
+    }
 }

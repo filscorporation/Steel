@@ -31,4 +31,5 @@ private:
     void Terminate() override;
 
     friend class AppView;
+    friend class HierarchyView;
 };

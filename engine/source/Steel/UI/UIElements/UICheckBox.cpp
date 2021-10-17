@@ -64,12 +64,12 @@ void UICheckBox::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& 
     if (eventType & UIEventTypes::MouseEnter)
     {
         IsHovered = true;
-        PlayTransition(CurrentTransitionsInfo.Hovered);
+        PlayTransition(TransitionStates::Hovered);
     }
     if (eventType & UIEventTypes::MouseExit)
     {
         IsHovered = false;
-        PlayTransition(CurrentTransitionsInfo.Normal);
+        PlayTransition(TransitionStates::Normal);
     }
     if (eventType & UIEventTypes::MouseJustPressed)
     {

@@ -113,14 +113,17 @@ void Scene::DestroyEntity(EntityID entity)
 
 void Scene::Update()
 {
-    // Poll UI events
-    UIEvent uiEvent = Input::GetUIEvent();
-    uiLayer->PollEvent(uiEvent);
-
     // Refresh hierarchy nodes
     auto nodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
     for (int i = nodes.Size() - 1; i >= 0; --i)
         nodes[i].IsDirty = false;
+    auto inactiveNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>(false);
+    for (int i = inactiveNodes.Size() - 1; i >= 0; --i)
+        inactiveNodes[i].IsDirty = false;
+
+    // Poll UI events
+    UIEvent uiEvent = Input::GetUIEvent();
+    uiLayer->PollEvent(uiEvent);
 
     BeforeUpdate();
 

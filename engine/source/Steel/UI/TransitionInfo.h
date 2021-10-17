@@ -13,16 +13,28 @@ namespace TransitionTypes
     };
 }
 
+namespace TransitionStates
+{
+    enum TransitionState
+    {
+        Normal,
+        Hovered,
+        Selected,
+        Clicked,
+        Disabled,
+    };
+}
+
 struct TransitionData
 {
     uint32_t Value;
 
     glm::vec4 ToColor() const
     {
-        return glm::vec4(Math::Clamp01((Value >> 24) / 255.0f),
-                         Math::Clamp01((Value << 8 >> 24) / 255.0f),
-                         Math::Clamp01((Value << 16 >> 24) / 255.0f),
-                         Math::Clamp01((Value << 24 >> 24) / 255.0f));
+        return {Math::Clamp01((Value >> 24) / 255.0f),
+                Math::Clamp01((Value << 8 >> 24) / 255.0f),
+                Math::Clamp01((Value << 16 >> 24) / 255.0f),
+                Math::Clamp01((Value << 24 >> 24) / 255.0f)};
     }
 
     void FromColor(glm::vec4 color)
@@ -34,6 +46,24 @@ struct TransitionData
 
 struct TransitionsInfo
 {
+    TransitionData Get(TransitionStates::TransitionState state) const
+    {
+        switch (state)
+        {
+            case TransitionStates::Normal:
+                return Normal;
+            case TransitionStates::Hovered:
+                return Hovered;
+            case TransitionStates::Selected:
+                return Selected;
+            case TransitionStates::Clicked:
+                return Clicked;
+            case TransitionStates::Disabled:
+                return Disabled;
+        }
+        return Normal;
+    }
+
     TransitionTypes::TransitionType TransitionType;
     float TransitionDuration;
     TransitionData Normal;

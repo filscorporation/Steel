@@ -21,6 +21,9 @@ void UIInteractable::Init(UpdateInteractable callback)
 
 bool UIInteractable::UpdateTransition()
 {
+    if (!isInTransition)
+        return false;
+
     transitionProgress += Time::UnscaledDeltaTime();
     bool needInit = !startingDataInitialized;
     startingDataInitialized = true;
@@ -71,6 +74,8 @@ bool UIInteractable::UpdateTransition()
 void UIInteractable::SetTransitionsInfo(TransitionsInfo info)
 {
     CurrentTransitionsInfo = info;
+
+    RestoreTransition();
 }
 
 TransitionsInfo UIInteractable::GetTransitionsInfo() const
@@ -96,7 +101,7 @@ void UIInteractable::SetInteractable(bool interactable)
     IsInteractable = interactable;
     IsHovered = false;
 
-    PlayTransition(IsInteractable ? (IsHovered ? CurrentTransitionsInfo.Hovered : CurrentTransitionsInfo.Normal) : CurrentTransitionsInfo.Disabled);
+    PlayTransition(IsInteractable ? (IsHovered ? TransitionStates::Hovered : TransitionStates::Normal) : TransitionStates::Disabled);
 }
 
 bool UIInteractable::GetInteractable() const
@@ -104,16 +109,7 @@ bool UIInteractable::GetInteractable() const
     return IsInteractable;
 }
 
-void UIInteractable::StopTransition()
-{
-    if (isInTransition)
-    {
-        isInTransition = false;
-        Application::Instance->GetCurrentScene()->GetUILayer()->RemoveFromUpdateQueue(Owner);
-    }
-}
-
-void UIInteractable::PlayTransition(TransitionData data)
+void UIInteractable::PlayTransition(TransitionStates::TransitionState state)
 {
     if (isInTransition)
     {
@@ -126,7 +122,32 @@ void UIInteractable::PlayTransition(TransitionData data)
     }
 
     startingDataInitialized = false;
-    targetTransitionData = data;
+    currentState = state;
+    targetTransitionData = CurrentTransitionsInfo.Get(currentState);
     isInTransition = true;
     transitionProgress = 0.0f;
+}
+
+void UIInteractable::StopTransition()
+{
+    if (isInTransition)
+    {
+        isInTransition = false;
+        Application::Instance->GetCurrentScene()->GetUILayer()->RemoveFromUpdateQueue(Owner);
+    }
+}
+
+void UIInteractable::RestoreTransition()
+{
+    if (updateCallback != nullptr)
+    {
+        if (!isInTransition)
+        {
+            isInTransition = true;
+            transitionProgress = 1.0f;
+        }
+        targetTransitionData = CurrentTransitionsInfo.Get(currentState);
+
+        updateCallback(Owner);
+    }
 }

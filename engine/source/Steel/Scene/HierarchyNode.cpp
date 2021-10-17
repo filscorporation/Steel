@@ -18,7 +18,10 @@ void HierarchyNode::OnRemoved(EntitiesRegistry* entitiesRegistry)
             : entitiesRegistry->GetComponent<HierarchyNode>(ParentNode);
     RemoveChildFromItsParent(entitiesRegistry, (*this), hierarchyParent);
     if (ParentNode != NULL_ENTITY)
+    {
         UpdateThicknessUpwards(entitiesRegistry, ParentNode, -(int)Thickness);
+        entitiesRegistry->GetComponent<HierarchyNode>(ParentNode).IsDirty = true;
+    }
     // Delete all children entities
     DeleteRecursively(entitiesRegistry, (*this));
 
@@ -31,8 +34,10 @@ void HierarchyNode::OnEnabled(EntitiesRegistry* entitiesRegistry)
         return;
     lock = true;
 
+    EntityID ownerBackup = Owner;
+    IsDirty = true;
     SetActiveRecursively(entitiesRegistry, (*this), true);
-    if (entitiesRegistry->HasComponent<RectTransformation>(Owner))
+    if (entitiesRegistry->HasComponent<RectTransformation>(ownerBackup))
         Application::Instance->GetCurrentScene()->GetUILayer()->SetSortingOrderDirty();
 
     lock = false;
@@ -45,6 +50,7 @@ void HierarchyNode::OnDisabled(EntitiesRegistry* entitiesRegistry)
     lock = true;
 
     EntityID ownerBackup = Owner;
+    IsDirty = true;
     SetActiveRecursively(entitiesRegistry, (*this), false);
     if (entitiesRegistry->HasComponent<RectTransformation>(ownerBackup))
         Application::Instance->GetCurrentScene()->GetUILayer()->SetSortingOrderDirty();

@@ -42,6 +42,11 @@ void UIInputField::OnRemoved(EntitiesRegistry* entitiesRegistry)
     ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldEndEdit, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
 }
 
+void UIInputField::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    RestoreTransition();
+}
+
 void UIInputField::OnDisabled(EntitiesRegistry* entitiesRegistry)
 {
     if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
@@ -221,15 +226,15 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
     {
         IsHovered = true;
         if (!IsSelected)
-            PlayTransition(CurrentTransitionsInfo.Hovered);
+            PlayTransition(TransitionStates::Hovered);
     }
     if (eventType & UIEventTypes::MouseExit)
     {
         IsHovered = false;
         if (IsSelected)
-            PlayTransition(CurrentTransitionsInfo.Selected);
+            PlayTransition(TransitionStates::Selected);
         else
-            PlayTransition(CurrentTransitionsInfo.Normal);
+            PlayTransition(TransitionStates::Normal);
     }
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
@@ -361,7 +366,7 @@ void UIInputField::Select(UIText& uiText)
     IsSelected = true;
     SetCursorPosition(uiText.GetText().size());
     cursorHorizontalOffset = -1;
-    PlayTransition(CurrentTransitionsInfo.Selected);
+    PlayTransition(TransitionStates::Selected);
 }
 
 void UIInputField::Disselect(UIText& uiText)
@@ -383,10 +388,13 @@ void UIInputField::Disselect(UIText& uiText)
     isFirstSelection = false;
     DisableCursor();
     DisableSelection();
-    if (IsHovered)
-        PlayTransition(CurrentTransitionsInfo.Hovered);
-    else
-        PlayTransition(CurrentTransitionsInfo.Normal);
+    if (IsInteractable)
+    {
+        if (IsHovered)
+            PlayTransition(TransitionStates::Hovered);
+        else
+            PlayTransition(TransitionStates::Normal);
+    }
 }
 
 void UIInputField::AddText(UIText& uiText, const std::string& text)

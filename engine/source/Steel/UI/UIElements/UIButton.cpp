@@ -25,6 +25,11 @@ void UIButton::OnRemoved(EntitiesRegistry* entitiesRegistry)
     ScriptingCore::CallEventMethod(Owner, CallbackTypes::ButtonClick, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
 }
 
+void UIButton::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    RestoreTransition();
+}
+
 void UIButton::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
 {
     GetComponentS<UIButton>(handler).HandleEventInner(eventType, uiEvent);
@@ -43,16 +48,16 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& ui
     if (eventType & UIEventTypes::MouseEnter)
     {
         IsHovered = true;
-        PlayTransition(CurrentTransitionsInfo.Hovered);
+        PlayTransition(TransitionStates::Hovered);
     }
     if (eventType & UIEventTypes::MouseExit)
     {
         IsHovered = false;
-        PlayTransition(CurrentTransitionsInfo.Normal);
+        PlayTransition(TransitionStates::Normal);
     }
     if (eventType & UIEventTypes::MouseJustPressed)
     {
-        PlayTransition(CurrentTransitionsInfo.Clicked);
+        PlayTransition(TransitionStates::Clicked);
         if (Callback != nullptr)
             Callback(Owner);
         if (ScriptingSystem::IsInitialized())
@@ -60,6 +65,6 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& ui
     }
     if (eventType & UIEventTypes::MouseJustReleased)
     {
-        PlayTransition(CurrentTransitionsInfo.Hovered);
+        PlayTransition(TransitionStates::Hovered);
     }
 }

@@ -57,6 +57,8 @@ public:
     {
         Sprite* DefaultFrameSprite = nullptr;
         Sprite* DefaultPixelSprite = nullptr;
+        Sprite* DefaultStylePixelSprite = nullptr;
+        Sprite* DefaultArrowSprite = nullptr;
         Sprite* DefaultCheckBoxSprite = nullptr;
         Sprite* DefaultCheckMarkSprite = nullptr;
         Sprite* DefaultTabOpenedSprite = nullptr;

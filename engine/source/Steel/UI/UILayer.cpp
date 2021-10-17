@@ -22,6 +22,8 @@ void UILayer::LoadDefaultResources()
     UIResources.DefaultFrameSprite = resourcesManager->LoadSprite("frame.png", true);
     UIResources.DefaultFrameSprite->SetAsSliced(6);
     UIResources.DefaultPixelSprite = resourcesManager->LoadSprite("pixel.png", true);
+    UIResources.DefaultStylePixelSprite = resourcesManager->LoadSprite("style_pixel.png", true);
+    UIResources.DefaultArrowSprite = resourcesManager->LoadSprite("arrow.png", true);
     UIResources.DefaultCheckBoxSprite = resourcesManager->LoadSprite("check_box.png", true);
     UIResources.DefaultCheckBoxSprite->SetAsSliced(2);
     UIResources.DefaultCheckMarkSprite = resourcesManager->LoadSprite("check_mark.png", true);

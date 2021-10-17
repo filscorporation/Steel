@@ -137,24 +137,25 @@ template <typename T>
 struct ComponentIterator
 {
 public:
-    explicit ComponentIterator(ComponentsPoolWrapper<T>* pool) { _pool = pool; }
+    explicit ComponentIterator(ComponentsPoolWrapper<T>* pool, bool active) { _pool = pool;  _active = active; }
 
     T& operator[] (int index)
     {
-        return _pool->Storage[index];
+        return _active ? _pool->Storage[index] : _pool->InactiveStorage[index];
     }
 
     int Size()
     {
-        return _pool == nullptr ? 0 : _pool->Storage.Size();
+        return _pool == nullptr ? 0 : (_active ? _pool->Storage.Size() : _pool->InactiveStorage.Size());
     }
 
     using Iterator = typename ComponentsPool<T>::Iterator;
-    Iterator begin() { return _pool->Storage.begin(); }
-    Iterator end() { return _pool->Storage.end(); }
+    Iterator begin() { return _active ? _pool->Storage.begin() : _pool->InactiveStorage.begin(); }
+    Iterator end() { return _active ? _pool->Storage.end() : _pool->InactiveStorage.end(); }
 
-private:
+protected:
     ComponentsPoolWrapper<T>* _pool;
+    bool _active;
 };
 
 // Allows access to certain component type without using components types hashmap
@@ -356,16 +357,16 @@ public:
     }
 
     template <typename T>
-    ComponentIterator<T> GetComponentIterator()
+    ComponentIterator<T> GetComponentIterator(bool active = true)
     {
         auto typeID = TYPE_ID(T);
 
         if (componentsMap.find(typeID) == componentsMap.end())
         {
-            return ComponentIterator<T>(nullptr);
+            return ComponentIterator<T>(nullptr, active);
         }
 
-        return ComponentIterator<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID]);
+        return ComponentIterator<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID], active);
     }
 
     template <typename T>

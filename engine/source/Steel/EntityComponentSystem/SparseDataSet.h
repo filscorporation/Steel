@@ -17,7 +17,7 @@ public:
         return data[index];
     }
 
-    int Size()
+    int Size() const
     {
         return size;
     }
