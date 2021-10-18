@@ -56,6 +56,7 @@ public:
     struct UIResourcesStorage
     {
         Sprite* DefaultFrameSprite = nullptr;
+        Sprite* StraightFrameSprite = nullptr;
         Sprite* DefaultPixelSprite = nullptr;
         Sprite* DefaultStylePixelSprite = nullptr;
         Sprite* DefaultArrowSprite = nullptr;

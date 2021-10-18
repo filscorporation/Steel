@@ -3,8 +3,6 @@
 
 #include <Steel/Scene/NameComponent.h>
 
-#define STYLE_OFFSET 3
-
 void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry, UILayer* layer,
                             const HierarchyView& hierarchyView, EntityID nodeEntity, const HierarchyViewNode& node)
 {
@@ -112,9 +110,7 @@ void HierarchyElement::SetPosition(EntitiesRegistry* entitiesRegistry, int order
     auto& rectTransformation = entitiesRegistry->GetComponent<RectTransformation>(Owner);
     rectTransformation.SetAnchorMin(glm::vec2(0.0f, 1.0f));
     rectTransformation.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-    rectTransformation.SetOffsetMin(glm::vec2(STYLE_OFFSET, 0.0f));
-    rectTransformation.SetOffsetMax(glm::vec2(STYLE_OFFSET, 0.0f));
     rectTransformation.SetSize(glm::vec2(0.0f, STYLE_BUTTON_H));
     rectTransformation.SetPivot(glm::vec2(0.0f, 1.0f));
-    rectTransformation.SetAnchoredPosition(glm::vec2(0.0f, -STYLE_OFFSET - STYLE_BUTTON_H * order));
+    rectTransformation.SetAnchoredPosition(glm::vec2(0.0f, -STYLE_BUTTON_H * order));
 }

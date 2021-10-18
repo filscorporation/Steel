@@ -60,4 +60,7 @@ private:
     void GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParent& parent, std::unordered_map<EntityID, HierarchyViewNode>* nodes);
     EntityID CreateNodeUIElement(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry, UILayer* layer,
                                         EntityID parentEntity, EntityID nodeEntity, const HierarchyViewNode& node);
+
+    void DeleteSelectedEntities();
+    void CreateNewEntityInHierarchy();
 };

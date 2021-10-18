@@ -64,7 +64,7 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         componentsViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         componentsViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         auto& componentsImage = entitiesRegistry->AddComponent<UIImage>(componentsViewEntity);
-        componentsImage.SetImage(uiLayer->UIResources.DefaultFrameSprite);
+        componentsImage.SetImage(uiLayer->UIResources.StraightFrameSprite);
     }
 
     // Project view
@@ -81,7 +81,7 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         projectViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         projectViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         auto& projectImage = entitiesRegistry->AddComponent<UIImage>(projectViewEntity);
-        projectImage.SetImage(uiLayer->UIResources.DefaultFrameSprite);
+        projectImage.SetImage(uiLayer->UIResources.StraightFrameSprite);
     }
 
     // Hierarchy view

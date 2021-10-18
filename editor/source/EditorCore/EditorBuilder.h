@@ -7,6 +7,7 @@
 #define STYLE_DARK_GREY glm::vec4(100.0f / 256.0f, 100.0f / 256.0f, 100.0f / 256.0f, 1.0f)
 #define STYLE_BUTTON_W 80
 #define STYLE_BUTTON_H 20
+#define STYLE_OFFSET 2.0f
 
 class EditorBuilder
 {

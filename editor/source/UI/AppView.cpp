@@ -17,10 +17,16 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
 {
     auto editor = (EditorApplication*)Application::Instance;
     auto scene = Application::Instance->GetCurrentScene();
+    auto layer = scene->GetUILayer();
+
+    EntityID frameEntity = layer->CreateUIImage(layer->UIResources.StraightFrameSprite, "Frame", Owner);
+    auto& frameRT = entitiesRegistry->GetComponent<RectTransformation>(frameEntity);
+    frameRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+    frameRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
 
     {
         auto sprite = new Sprite(editor->ApplicationFramebuffer->GetColorAttachment());
-        appViewImageEntity = scene->GetUILayer()->CreateUIImage(nullptr, "App view image", Owner);
+        appViewImageEntity = layer->CreateUIImage(nullptr, "App view image", frameEntity);
         entitiesRegistry->GetComponent<UIEventHandler>(appViewImageEntity).Type = EventHandlerTypes::Transparent;
         auto& viewImage = entitiesRegistry->GetComponent<UIImage>(appViewImageEntity);
         viewImage.FlipImage = true;
@@ -28,11 +34,12 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
         auto& viewImageRT = entitiesRegistry->GetComponent<RectTransformation>(appViewImageEntity);
         viewImageRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         viewImageRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        viewImageRT.SetOffsetMax(glm::vec2(0.0f, STYLE_BUTTON_H * 1.2f));
+        viewImageRT.SetOffsetMin(glm::vec2(STYLE_OFFSET, STYLE_OFFSET));
+        viewImageRT.SetOffsetMax(glm::vec2(STYLE_OFFSET, STYLE_OFFSET + STYLE_BUTTON_H * 1.2f));
     }
 
     {
-        statsEntity = scene->GetUILayer()->CreateUIElement("Stats", appViewImageEntity);
+        statsEntity = layer->CreateUIElement("Stats", appViewImageEntity);
         auto& statsRT = entitiesRegistry->GetComponent<RectTransformation>(statsEntity);
         statsRT.SetAnchorMin(glm::vec2(1.0f, 1.0f));
         statsRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -45,19 +52,21 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
     }
 
     {
-        tabEntity = scene->GetUILayer()->CreateUIImage(scene->GetUILayer()->UIResources.DefaultPixelSprite, "Tab image", Owner);
+        tabEntity = layer->CreateUIImage(layer->UIResources.DefaultPixelSprite, "Tab image", frameEntity);
         auto& tabImage = entitiesRegistry->GetComponent<UIImage>(tabEntity);
         tabImage.SetColor(STYLE_DARK_GREY);
         auto& tabImageRT = entitiesRegistry->GetComponent<RectTransformation>(tabEntity);
         tabImageRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
         tabImageRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        tabImageRT.SetAnchoredPosition(glm::vec2(0.0f, -STYLE_BUTTON_H * 1.2f * 0.5f));
+        tabImageRT.SetOffsetMin(glm::vec2(STYLE_OFFSET, 0.0f));
+        tabImageRT.SetOffsetMax(glm::vec2(STYLE_OFFSET, 0.0f));
+        tabImageRT.SetAnchoredPosition(glm::vec2(0.0f, -STYLE_OFFSET - STYLE_BUTTON_H * 1.2f * 0.5f));
         tabImageRT.SetSize(glm::vec2(0.0f, STYLE_BUTTON_H * 1.2f));
 
         {
             float x = 4.0f;
             {
-                EntityID entity = scene->GetUILayer()->CreateUIText("Resolution:", "Resolution", tabEntity);
+                EntityID entity = layer->CreateUIText("Resolution:", "Resolution", tabEntity);
                 auto& labelRT = entitiesRegistry->GetComponent<RectTransformation>(entity);
                 labelRT.SetSize(glm::vec2(STYLE_BUTTON_H * 3.5f, STYLE_BUTTON_H));
                 labelRT.SetPivot(glm::vec2(0.0f, 0.5f));
@@ -68,7 +77,7 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
             }
 
             {
-                xFieldEntity = scene->GetUILayer()->CreateUIInputField("ResolutionX", tabEntity);
+                xFieldEntity = layer->CreateUIInputField("ResolutionX", tabEntity);
                 auto& fieldRT = entitiesRegistry->GetComponent<RectTransformation>(xFieldEntity);
                 fieldRT.SetSize(glm::vec2(STYLE_BUTTON_H * 3.5f, STYLE_BUTTON_H));
                 fieldRT.SetPivot(glm::vec2(0.0f, 0.5f));
@@ -99,7 +108,7 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
             }
 
             {
-                yFieldEntity = scene->GetUILayer()->CreateUIInputField("ResolutionY", tabEntity);
+                yFieldEntity = layer->CreateUIInputField("ResolutionY", tabEntity);
                 auto& fieldRT = entitiesRegistry->GetComponent<RectTransformation>(yFieldEntity);
                 fieldRT.SetSize(glm::vec2(STYLE_BUTTON_H * 3.5f, STYLE_BUTTON_H));
                 fieldRT.SetPivot(glm::vec2(0.0f, 0.5f));
@@ -129,7 +138,7 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
             }
 
             {
-                autoCBEntity = scene->GetUILayer()->CreateUICheckBox("auto", "Auto checkbox", tabEntity);
+                autoCBEntity = layer->CreateUICheckBox("auto", "Auto checkbox", tabEntity);
                 auto& checkboxRT = entitiesRegistry->GetComponent<RectTransformation>(autoCBEntity);
                 checkboxRT.SetPivot(glm::vec2(0.0f, 0.5f));
                 checkboxRT.SetAnchorMin(glm::vec2(0.0f, 0.5f));
@@ -154,7 +163,7 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
         }
 
         {
-            EntityID entity = scene->GetUILayer()->CreateUICheckBox("Stats", "Stats checkbox", tabEntity);
+            EntityID entity = layer->CreateUICheckBox("Stats", "Stats checkbox", tabEntity);
             auto& checkboxRT = entitiesRegistry->GetComponent<RectTransformation>(entity);
             checkboxRT.SetPivot(glm::vec2(1.0f, 0.5f));
             checkboxRT.SetAnchorMin(glm::vec2(1.0f, 0.5f));

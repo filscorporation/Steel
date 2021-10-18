@@ -1,6 +1,7 @@
 #include "HierarchyView.h"
 #include "HierarchyElement.h"
 #include "../EditorCore/EditorApplication.h"
+#include "../EditorCore/EditorBuilder.h"
 
 #include <Steel.h>
 
@@ -8,11 +9,59 @@ void HierarchyView::Init(EntitiesRegistry* entitiesRegistry)
 {
     auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
 
-    _parentEntity = layer->CreateUIImage(layer->UIResources.DefaultFrameSprite, "Nodes", Owner);
-    auto& nodesParentRT = entitiesRegistry->GetComponent<RectTransformation>(_parentEntity);
-    nodesParentRT.SetParallelHierarchy(true);
-    nodesParentRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-    nodesParentRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+    EntityID frameEntity = layer->CreateUIImage(layer->UIResources.StraightFrameSprite, "Frame", Owner);
+    auto& frameRT = entitiesRegistry->GetComponent<RectTransformation>(frameEntity);
+    frameRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+    frameRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+
+    {
+        EntityID tabEntity = layer->CreateUIImage(layer->UIResources.DefaultPixelSprite, "Tab image", frameEntity);
+        auto& tabImage = entitiesRegistry->GetComponent<UIImage>(tabEntity);
+        tabImage.SetColor(STYLE_DARK_GREY);
+        auto& tabImageRT = entitiesRegistry->GetComponent<RectTransformation>(tabEntity);
+        tabImageRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
+        tabImageRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        tabImageRT.SetOffsetMin(glm::vec2(STYLE_OFFSET, 0.0f));
+        tabImageRT.SetOffsetMax(glm::vec2(STYLE_OFFSET, 0.0f));
+        tabImageRT.SetAnchoredPosition(glm::vec2(0.0f, -STYLE_BUTTON_H * 1.2f * 0.5f - STYLE_OFFSET));
+        tabImageRT.SetSize(glm::vec2(0.0f, STYLE_BUTTON_H * 1.2f));
+
+        {
+            EntityID createEntity = layer->CreateUIButton(layer->UIResources.DefaultFrameSprite, "Create button", tabEntity);
+            auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(createEntity);
+            buttonRT.SetSize(glm::vec2(STYLE_BUTTON_H * 3.0f, STYLE_BUTTON_H));
+            buttonRT.SetPivot(glm::vec2(0.0f, 0.5f));
+            buttonRT.SetAnchorMin(glm::vec2(0.0f, 0.5f));
+            buttonRT.SetAnchorMax(glm::vec2(0.0f, 0.5f));
+            buttonRT.SetAnchoredPosition(glm::vec2(STYLE_OFFSET, 0.0f));
+            EntityID textEntity = layer->CreateUIText("Create", "Text", createEntity);
+            auto& text = entitiesRegistry->GetComponent<UIText>(textEntity);
+            text.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            auto& textRT = entitiesRegistry->GetComponent<RectTransformation>(textEntity);
+            textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+            textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+            textRT.SetOffsetMin(glm::vec2(8, 2));
+            textRT.SetOffsetMax(glm::vec2(8, 2));
+
+            auto& button = entitiesRegistry->GetComponent<UIButton>(createEntity);
+            EntityID hierarchyViewEntity = Owner;
+            button.Callback = [hierarchyViewEntity](EntityID entityID)
+            {
+                auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+                registry->GetComponent<HierarchyView>(hierarchyViewEntity).CreateNewEntityInHierarchy();
+            };
+        }
+    }
+
+    {
+        _parentEntity = layer->CreateUIElement("Nodes", frameEntity);
+        auto& nodesParentRT = entitiesRegistry->GetComponent<RectTransformation>(_parentEntity);
+        nodesParentRT.SetParallelHierarchy(true);
+        nodesParentRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+        nodesParentRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        nodesParentRT.SetOffsetMin(glm::vec2(STYLE_OFFSET, STYLE_OFFSET));
+        nodesParentRT.SetOffsetMax(glm::vec2(STYLE_OFFSET, STYLE_OFFSET + STYLE_BUTTON_H * 1.2f));
+    }
 }
 
 void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
@@ -44,10 +93,6 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
         }
         else
         {
-            if (lastNodes->find(node.first) == lastNodes->end())
-            {
-                int a = 0;
-            }
             node.second.UIElementEntity = (*lastNodes)[node.first].UIElementEntity;
             node.second.Flags = (*lastNodes)[node.first].Flags;
             auto& hierarchyElement = entitiesRegistry->GetComponent<HierarchyElement>(node.second.UIElementEntity);
@@ -67,15 +112,7 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
 
     if (Input::IsKeyJustPressed(KeyCodes::Delete))
     {
-        editor->SwitchContext(editor->AppContext);
-        for (auto& node : *nodes)
-        {
-            if (node.second.Flags & NodeFlags::Selected)
-            {
-                appScene->DestroyEntity(node.first);
-            }
-        }
-        editor->SwitchContext(editor->EditorContext);
+        DeleteSelectedEntities();
     }
 }
 
@@ -182,4 +219,45 @@ void HierarchyView::ElementExpanded(EntityID elementID)
             }
         }
     }
+}
+
+void HierarchyView::DeleteSelectedEntities()
+{
+    auto editor = (EditorApplication*)Application::Instance;
+    auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
+
+    editor->SwitchContext(editor->AppContext);
+    for (auto& node : *lastNodes)
+    {
+        if (node.second.Flags & NodeFlags::Selected)
+        {
+            appScene->DestroyEntity(node.first);
+        }
+    }
+    editor->SwitchContext(editor->EditorContext);
+}
+
+void HierarchyView::CreateNewEntityInHierarchy()
+{
+    auto editor = (EditorApplication*)Application::Instance;
+    auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
+    bool parentFound = false;
+
+    editor->SwitchContext(editor->AppContext);
+    if (lastNodes != nullptr)
+    {
+        for (auto& node : *lastNodes)
+        {
+            if (node.second.Flags & NodeFlags::Selected)
+            {
+                appScene->CreateEntity("New entity", node.first);
+                parentFound = true;
+            }
+        }
+    }
+    if (!parentFound)
+    {
+        appScene->CreateEntity("New entity", NULL_ENTITY);
+    }
+    editor->SwitchContext(editor->EditorContext);
 }

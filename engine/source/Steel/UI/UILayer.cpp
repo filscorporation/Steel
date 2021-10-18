@@ -21,6 +21,8 @@ void UILayer::LoadDefaultResources()
     auto resourcesManager = Application::Instance->GetResourcesManager();
     UIResources.DefaultFrameSprite = resourcesManager->LoadSprite("frame.png", true);
     UIResources.DefaultFrameSprite->SetAsSliced(6);
+    UIResources.StraightFrameSprite = resourcesManager->LoadSprite("straight_frame.png", true);
+    UIResources.StraightFrameSprite->SetAsSliced(6);
     UIResources.DefaultPixelSprite = resourcesManager->LoadSprite("pixel.png", true);
     UIResources.DefaultStylePixelSprite = resourcesManager->LoadSprite("style_pixel.png", true);
     UIResources.DefaultArrowSprite = resourcesManager->LoadSprite("arrow.png", true);
