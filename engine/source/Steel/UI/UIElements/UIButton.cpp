@@ -55,16 +55,17 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& ui
         IsHovered = false;
         PlayTransition(TransitionStates::Normal);
     }
-    if (eventType & UIEventTypes::MouseJustPressed)
-    {
-        PlayTransition(TransitionStates::Clicked);
-        if (Callback != nullptr)
-            Callback(Owner);
-        if (ScriptingSystem::IsInitialized())
-            ScriptingCore::CallEventMethod(Owner, CallbackTypes::ButtonClick, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
-    }
     if (eventType & UIEventTypes::MouseJustReleased)
     {
         PlayTransition(TransitionStates::Hovered);
+    }
+    if (eventType & UIEventTypes::MouseJustPressed)
+    {
+        PlayTransition(TransitionStates::Clicked);
+        EntityID ownerBackup = Owner;
+        if (Callback != nullptr)
+            Callback(ownerBackup);
+        if (ScriptingSystem::IsInitialized())
+            ScriptingCore::CallEventMethod(ownerBackup, CallbackTypes::ButtonClick, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
     }
 }

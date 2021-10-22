@@ -188,12 +188,6 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
 void AppView::Update(EntitiesRegistry* entitiesRegistry)
 {
     auto editor = (EditorApplication*)Application::Instance;
-    if (Input::IsKeyJustPressed(KeyCodes::Space))
-    {
-        // TODO: temp
-        editor->State = editor->State == EditorStates::Paused ? EditorStates::Playing : EditorStates::Paused;
-    }
-
     auto& viewRT = entitiesRegistry->GetComponent<RectTransformation>(Owner);
     if (viewRT.DidSizeChange() || editor->GetAppContext()->ScreenParams.IsDirty)
     {

@@ -10,7 +10,6 @@
 #include "HierarchyParent.h"
 
 class UILayer;
-class TransformationSystem;
 
 class Scene : public HierarchyParent
 {
@@ -19,11 +18,12 @@ public:
     UILayer* GetUILayer();
 
     explicit Scene();
+    Scene(const Scene& scene);
     ~Scene() override;
     void InitSystems();
 
     void CreateMainCamera();
-    Camera& GetMainCamera();
+    EntityID GetMainCamera();
 
     EntityID CreateEntity();
     EntityID CreateEntity(const char* name, EntityID parent);
@@ -32,6 +32,7 @@ public:
     void DestroyEntity(EntityID entity);
     void CleanDestroyedEntities();
 
+    void Refresh();
     void Update();
     void PrepareDraw();
     void Draw(Framebuffer* framebuffer);

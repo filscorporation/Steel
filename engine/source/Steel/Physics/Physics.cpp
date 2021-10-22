@@ -81,7 +81,14 @@ void Physics::SendEvents()
         }
     }
 
-    Camera& camera = Application::Instance->GetCurrentScene()->GetMainCamera();
+    EntityID cameraID = Application::Instance->GetCurrentScene()->GetMainCamera();
+    if (cameraID == NULL_ENTITY)
+    {
+        lastMouseOverCollider = NULL_ENTITY;
+        return;
+    }
+
+    auto& camera = entitiesRegistry->GetComponent<Camera>(cameraID);
     glm::vec2 worldMP = camera.ScreenToWorldPoint(Input::GetMousePosition());
     auto hits = PointCast(worldMP);
     if (hits.empty())

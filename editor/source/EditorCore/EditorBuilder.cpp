@@ -1,5 +1,6 @@
 #include "EditorBuilder.h"
 #include "../UI/AppView.h"
+#include "../UI/ControlPanel.h"
 #include "../UI/HierarchyView.h"
 
 #include <Steel.h>
@@ -16,9 +17,23 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
     EntityID layout2Entity = uiLayer->CreateUILayoutGroup(LayoutGroupTypes::Vertical, "Layout2", layout1Entity);
     EntityID layout3Entity = uiLayer->CreateUILayoutGroup(LayoutGroupTypes::Horizontal, "Layout2", layout2Entity);
 
+    // Control panel
+    {
+        EntityID cpEntity = uiLayer->CreateUIElement("Control panel", NULL_ENTITY);
+        auto& cpRT = entitiesRegistry->GetComponent<RectTransformation>(cpEntity);
+        cpRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
+        cpRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        cpRT.SetAnchoredPosition(glm::vec2(0.0f, -STYLE_BUTTON_H * 1.8f * 0.5f));
+        cpRT.SetSize(glm::vec2(0.0f, STYLE_BUTTON_H * 1.8f));
+        auto& controlPanel = entitiesRegistry->AddComponent<ControlPanel>(cpEntity);
+        controlPanel.Init();
+    }
+
     // Arrange layout
     auto& layout1rt = entitiesRegistry->GetComponent<RectTransformation>(layout1Entity);
+    layout1rt.SetAnchorMin(glm::vec2(0.0f, 0.0f));
     layout1rt.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+    layout1rt.SetOffsetMax(glm::vec2(0.0f, STYLE_BUTTON_H * 1.8f));
     auto& layout1 = entitiesRegistry->GetComponent<UILayoutGroup>(layout1Entity);
     layout1.AddElement(layout2Entity);
     LayoutElementInfo info {};

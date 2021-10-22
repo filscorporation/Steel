@@ -271,7 +271,7 @@ void ComponentsInternalCalls::Animator_Restart(EntityID entityID)
 
 EntityID ComponentsInternalCalls::Camera_GetEntityWithMainCamera()
 {
-    return Application::Instance->GetCurrentScene()->GetMainCamera().Owner;
+    return Application::Instance->GetCurrentScene()->GetMainCamera();
 }
 
 float ComponentsInternalCalls::Camera_GetWidth(EntityID entityID)

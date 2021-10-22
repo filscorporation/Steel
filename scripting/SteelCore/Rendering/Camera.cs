@@ -11,7 +11,14 @@ namespace Steel
         /// Camera in the scene, that is set as main
         /// </summary>
         // TODO: not optimal
-        public static Camera Main => Entity.GetInternalComponentByEntityID<Camera>(GetEntityWithMainCamera_Internal());
+        public static Camera Main
+        {
+            get
+            {
+                uint entityID = GetEntityWithMainCamera_Internal();
+                return entityID == Entity.NULL_ENTITY_ID ? null : Entity.GetInternalComponentByEntityID<Camera>(entityID);
+            }
+        }
 
         /// <summary>
         /// Viewport width in world coordinates

@@ -39,6 +39,7 @@ void Application::Init(ApplicationSettings settings)
     InitSystems(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer);
     AppContext = CreateContext(settings);
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
+    ScriptingSystem::CallEntryPoint();
 
     IsInitialized = true;
     Log::LogDebug("Application initialized");
@@ -96,9 +97,6 @@ void Application::Run()
 
     IsRunning = true;
 
-    SwitchContext(AppContext);
-    ScriptingSystem::CallEntryPoint();
-
     while (IsRunning)
     {
         RunUpdate();
@@ -119,6 +117,7 @@ void Application::RunUpdate()
     Screen::UpdateSize();
 
     // Update scene
+    CurrentContext->Scenes->GetActiveScene()->Refresh();
     CurrentContext->Scenes->GetActiveScene()->Update();
 
     // Render scene

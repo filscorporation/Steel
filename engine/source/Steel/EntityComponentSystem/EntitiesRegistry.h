@@ -28,6 +28,7 @@ class ComponentsPoolWrapperBase
 public:
     explicit ComponentsPoolWrapperBase(EntitiesRegistry* entitiesRegistry) { _entitiesRegistry = entitiesRegistry; }
     virtual ~ComponentsPoolWrapperBase() = default;
+    virtual ComponentsPoolWrapperBase* Clone() const = 0;
 
     virtual void ClearRemoved() = 0;
     virtual bool MoveFromActiveToInactive(EntityID entityID, EntityID id) = 0;
@@ -40,6 +41,8 @@ public:
 
 protected:
     EntitiesRegistry* _entitiesRegistry = nullptr;
+
+    friend class EntitiesRegistry;
 };
 
 // Wrapper around ComponentsPool
@@ -51,7 +54,11 @@ public:
     ComponentsPool<T> InactiveStorage;
 
     explicit ComponentsPoolWrapper(EntitiesRegistry* entitiesRegistry) : ComponentsPoolWrapperBase(entitiesRegistry) { }
-    ~ComponentsPoolWrapper() override = default;;
+    ~ComponentsPoolWrapper() override = default;
+    ComponentsPoolWrapper<T>* Clone() const override
+    {
+        return new ComponentsPoolWrapper<T>(*this);
+    }
 
     void ClearRemoved() override
     {
@@ -166,6 +173,21 @@ class EntitiesRegistry
 {
 public:
     EntitiesRegistry() = default;
+    EntitiesRegistry(const EntitiesRegistry& entitiesRegistry)
+    {
+        entityIDs = std::vector<EntityID>(entitiesRegistry.entityIDs);
+        entityStates = std::vector<EntityStates::EntityState>(entitiesRegistry.entityStates);
+
+        for (auto& pair : entitiesRegistry.componentsMap)
+        {
+            componentsMap[pair.first] = pair.second->Clone();
+            componentsMap[pair.first]->_entitiesRegistry = this;
+        }
+
+        freeIDsCount = entitiesRegistry.freeIDsCount;
+        nextFreeID = entitiesRegistry.freeIDsCount;
+        isCleared = entitiesRegistry.isCleared;
+    }
     ~EntitiesRegistry()
     {
         isCleared = true;
@@ -180,6 +202,8 @@ public:
 private:
     std::vector<EntityID> entityIDs;
     std::vector<EntityStates::EntityState> entityStates;
+
+    ComponentsMap componentsMap;
 
     int freeIDsCount = 0;
     EntityID nextFreeID = 0;
@@ -337,9 +361,6 @@ public:
         nextFreeID = 0;
         freeIDsCount = 0;
     }
-
-private:
-    ComponentsMap componentsMap;
 
 public:
     template <typename T>

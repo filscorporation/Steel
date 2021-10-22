@@ -24,6 +24,15 @@ Scene::Scene()
     uiLayer->LoadDefaultResources();
 }
 
+Scene::Scene(const Scene& scene) : HierarchyParent(scene)
+{
+    entitiesRegistry = new EntitiesRegistry(*scene.entitiesRegistry);
+    uiLayer = new UILayer(*scene.uiLayer);
+    uiLayer->_scene = this;
+
+    _mainCameraEntity = scene._mainCameraEntity;
+}
+
 Scene::~Scene()
 {
     delete uiLayer;
@@ -54,9 +63,9 @@ void Scene::CreateMainCamera()
     AudioCore::CreateAudioListener(_mainCameraEntity);
 }
 
-Camera& Scene::GetMainCamera()
+EntityID Scene::GetMainCamera()
 {
-    return entitiesRegistry->GetComponent<Camera>(_mainCameraEntity);
+    return entitiesRegistry->EntityExists(_mainCameraEntity) ? _mainCameraEntity : (_mainCameraEntity = NULL_ENTITY);
 }
 
 EntitiesRegistry* Scene::GetEntitiesRegistry()
@@ -111,7 +120,7 @@ void Scene::DestroyEntity(EntityID entity)
     entitiesToDelete.push_back(entity);
 }
 
-void Scene::Update()
+void Scene::Refresh()
 {
     // Refresh hierarchy nodes
     auto nodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
@@ -120,7 +129,10 @@ void Scene::Update()
     auto inactiveNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>(false);
     for (int i = inactiveNodes.Size() - 1; i >= 0; --i)
         inactiveNodes[i].IsDirty = false;
+}
 
+void Scene::Update()
+{
     // Poll UI events
     UIEvent uiEvent = Input::GetUIEvent();
     uiLayer->PollEvent(uiEvent);
@@ -172,13 +184,13 @@ void Scene::Update()
     uiLayer->Update();
 
     AfterUpdate();
-
-    // Clean destroyed entities
-    CleanDestroyedEntities();
 }
 
 void Scene::PrepareDraw()
 {
+    // Clean destroyed entities
+    CleanDestroyedEntities();
+
     // Sort hierarchy from parents to children and then apply transforms
     SortByHierarchy();
     UpdateGlobalTransformation();
@@ -199,9 +211,14 @@ void Scene::Draw(Framebuffer* framebuffer)
     framebuffer->Bind();
     Renderer::Clear(Screen::GetColor());
 
+    EntityID cameraEntity = GetMainCamera();
+    if (cameraEntity == NULL_ENTITY)
+        return;
+
     BeforeDraw();
 
-    Renderer::OnBeforeRender(GetMainCamera());
+    auto& camera = entitiesRegistry->GetComponent<Camera>(cameraEntity);
+    Renderer::OnBeforeRender(camera);
 
     auto quadRenderers = entitiesRegistry->GetComponentIterator<QuadRenderer>();
 

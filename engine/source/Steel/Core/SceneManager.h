@@ -5,13 +5,13 @@
 class SceneManager
 {
 public:
-    ~SceneManager();
+    virtual ~SceneManager();
 
     Scene* CreateNewScene();
-    Scene* GetActiveScene();
+    virtual Scene* GetActiveScene();
     void SetActiveScene(Scene* scene);
     Scene* GetScene(const std::string& sceneName);
 
-private:
-    Scene* activeScene;
+protected:
+    Scene* activeScene = nullptr;
 };

@@ -21,15 +21,18 @@ public:
     void Init(ApplicationSettings settings) override;
     void RunUpdate() override;
 
+    EditorStates::EditorState GetState() const;
+    void SetState(EditorStates::EditorState newState);
     ApplicationContext* GetAppContext();
-
-    EditorStates::EditorState State = EditorStates::Stopped;
     Framebuffer* ApplicationFramebuffer = nullptr;
     ApplicationContext* EditorContext = nullptr;
 
 private:
     void Terminate() override;
 
+    EditorStates::EditorState state = EditorStates::Stopped;
+
     friend class AppView;
+    friend class ControlPanel;
     friend class HierarchyView;
 };

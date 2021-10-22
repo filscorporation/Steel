@@ -86,4 +86,6 @@ private:
         EntityID Owner;
     };
     SparseDataSet<InteractableCallback> _updateQueue;
+
+    friend class Scene;
 };
