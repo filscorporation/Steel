@@ -24,6 +24,8 @@ public:
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
 
+    void SetTabsSprites(Sprite* tabOpenedSprite, Sprite* tabClosedSprite);
+
     EntityID GetTab(int index);
     int GetTabsCount();
     EntityID AddTab(const std::string& name);
@@ -38,8 +40,8 @@ private:
 
     uint32_t buttonHeight = 0;
     uint32_t buttonWidth = 0;
-    Sprite* tabOpenedSprite = nullptr;
-    Sprite* tabClosedSprite = nullptr;
+    Sprite* _tabOpenedSprite = nullptr;
+    Sprite* _tabClosedSprite = nullptr;
 
     void SetActiveTabByButtonID(EntityID buttonID);
     void SetButtonRect(RectTransformation& buttonRT, int index);

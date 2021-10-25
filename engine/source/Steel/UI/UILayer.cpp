@@ -31,6 +31,7 @@ void UILayer::LoadDefaultResources()
     UIResources.DefaultCheckMarkSprite = resourcesManager->LoadSprite("check_mark.png", true);
     UIResources.DefaultTabOpenedSprite = resourcesManager->LoadSprite("tab_opened.png", true);
     UIResources.DefaultTabClosedSprite = resourcesManager->LoadSprite("tab_closed.png", true);
+    UIResources.DefaultTabFocusedSprite = resourcesManager->LoadSprite("tab_focused.png", true); // TODO: move to editor
 }
 
 void UILayer::Update()

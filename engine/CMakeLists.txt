@@ -90,7 +90,7 @@ set(SOURCE_FILES
         source/Steel/UI/UIElements/UITabs.cpp source/Steel/UI/UIElements/UITabs.h source/Steel/UI/UIElements/UILayoutGroup.cpp
         source/Steel/UI/UIElements/UILayoutGroup.h source/Steel/UI/UIElements/UILayoutElement.h source/Steel/UI/UIElements/LayoutGroupTypes.h
         source/Steel/Core/SceneManager.cpp source/Steel/Core/SceneManager.h source/Steel/Rendering/Framebuffer.cpp source/Steel/Rendering/Framebuffer.h
-        source/Steel/Rendering/Texture.cpp source/Steel/Rendering/Texture.h)
+        source/Steel/Rendering/Texture.cpp source/Steel/Rendering/Texture.h source/Steel/UI/UIElements/UILayoutElement.cpp)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

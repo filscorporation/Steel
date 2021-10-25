@@ -23,7 +23,7 @@ class UILayoutElement : public UIComponent, public ILayoutElement
 public:
     explicit UILayoutElement(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    LayoutElementInfo GetInfo() override { return Info; };
+    LayoutElementInfo GetInfo() override;
 
     LayoutElementInfo Info { };
 };

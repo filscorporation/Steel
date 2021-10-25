@@ -2,6 +2,7 @@
 #include "../UI/AppView.h"
 #include "../UI/ControlPanel.h"
 #include "../UI/HierarchyView.h"
+#include "../UI/UIEditorTab.h"
 
 #include <Steel.h>
 
@@ -74,6 +75,8 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         auto& componentsTabs = entitiesRegistry->GetComponent<UITabs>(componentsTabsEntity);
 
         // Components view
+        entitiesRegistry->AddComponent<UIEditorTab>(componentsTabs.GetTab(0)).TabsEntityID = componentsTabsEntity;
+        entitiesRegistry->GetComponent<UIEventHandler>(componentsTabs.GetTab(0)).RectEntity = l1child1Entity;
         EntityID componentsViewEntity = uiLayer->CreateUIElement("Components view", componentsTabs.GetTab(0));
         auto& componentsViewRT = entitiesRegistry->GetComponent<RectTransformation>(componentsViewEntity);
         componentsViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
@@ -91,6 +94,8 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         auto& projectTabs = entitiesRegistry->GetComponent<UITabs>(projectTabsEntity);
 
         // Project view
+        entitiesRegistry->AddComponent<UIEditorTab>(projectTabs.GetTab(0)).TabsEntityID = projectTabsEntity;
+        entitiesRegistry->GetComponent<UIEventHandler>(projectTabs.GetTab(0)).RectEntity = l2child1Entity;
         EntityID projectViewEntity = uiLayer->CreateUIElement("Project view", projectTabs.GetTab(0));
         auto& projectViewRT = entitiesRegistry->GetComponent<RectTransformation>(projectViewEntity);
         projectViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
@@ -108,6 +113,8 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         auto& hierarchyTabs = entitiesRegistry->GetComponent<UITabs>(hierarchyTabsEntity);
 
         // Hierarchy view
+        entitiesRegistry->AddComponent<UIEditorTab>(hierarchyTabs.GetTab(0)).TabsEntityID = hierarchyTabsEntity;
+        entitiesRegistry->GetComponent<UIEventHandler>(hierarchyTabs.GetTab(0)).RectEntity = l3child1Entity;
         EntityID hierarchyViewEntity = uiLayer->CreateUIElement("Hierarchy view", hierarchyTabs.GetTab(0));
         auto& hierarchyViewRT = entitiesRegistry->GetComponent<RectTransformation>(hierarchyViewEntity);
         hierarchyViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
@@ -125,11 +132,17 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         auto& appSceneTabs = entitiesRegistry->GetComponent<UITabs>(appSceneTabsEntity);
 
         // Application view
+        entitiesRegistry->AddComponent<UIEditorTab>(appSceneTabs.GetTab(0)).TabsEntityID = appSceneTabsEntity;
+        entitiesRegistry->GetComponent<UIEventHandler>(appSceneTabs.GetTab(0)).RectEntity = l3child2Entity;
         EntityID appViewEntity = uiLayer->CreateUIElement("App view", appSceneTabs.GetTab(0));
         auto& appViewRT = entitiesRegistry->GetComponent<RectTransformation>(appViewEntity);
         appViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         appViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
         auto& appView = entitiesRegistry->AddComponent<AppView>(appViewEntity);
         appView.Init(entitiesRegistry);
+
+        // Scene view
+        entitiesRegistry->AddComponent<UIEditorTab>(appSceneTabs.GetTab(1)).TabsEntityID = appSceneTabsEntity;
+        entitiesRegistry->GetComponent<UIEventHandler>(appSceneTabs.GetTab(1)).RectEntity = l3child2Entity;
     }
 }

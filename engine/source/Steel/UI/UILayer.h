@@ -64,6 +64,7 @@ public:
         Sprite* DefaultCheckMarkSprite = nullptr;
         Sprite* DefaultTabOpenedSprite = nullptr;
         Sprite* DefaultTabClosedSprite = nullptr;
+        Sprite* DefaultTabFocusedSprite = nullptr;
     };
     UIResourcesStorage UIResources;
 
