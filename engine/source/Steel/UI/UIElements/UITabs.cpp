@@ -66,8 +66,6 @@ int UITabs::GetTabsCount()
 
 EntityID UITabs::AddTab(const std::string& name)
 {
-    // TODO: check for memory errors - after layer->CreateUI..., current UITabs component can move
-
     if (content == NULL_ENTITY)
     {
         Log::LogError("Tabs {0} content is null", Owner);
@@ -77,20 +75,17 @@ EntityID UITabs::AddTab(const std::string& name)
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     int index = (int)tabs.size();
-    auto tabSprite = _tabClosedSprite;
-    EntityID thisEntityID = Owner;
-    EntityID contentEntityID = content;
-    int currentActiveTab = activeTab;
 
-    EntityID newContentEntity = layer->CreateUIElement((name + " tab").c_str(), contentEntityID);
+    EntityID newContentEntity = layer->CreateUIElement(name + " tab", content);
     auto& tabRT = entitiesRegistry->GetComponent<RectTransformation>(newContentEntity);
     tabRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
     tabRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
 
-    EntityID buttonEntity = layer->CreateUIButton(tabSprite, (name + " tab").c_str(), thisEntityID);
+    EntityID buttonEntity = layer->CreateUIButton(_tabClosedSprite, name + " tab", Owner);
     auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(buttonEntity);
     SetButtonRect(buttonRT, index);
     auto& button = entitiesRegistry->GetComponent<UIButton>(buttonEntity);
+    EntityID thisEntityID = Owner;
     button.Callback = [thisEntityID](EntityID entityID)
     {
         auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
@@ -98,7 +93,7 @@ EntityID UITabs::AddTab(const std::string& name)
             registry->GetComponent<UITabs>(thisEntityID).SetActiveTabByButtonID(entityID);
     };
 
-    EntityID textEntity = layer->CreateUIText(name.c_str(), "Label", buttonEntity);
+    EntityID textEntity = layer->CreateUIText(name, "Label", buttonEntity);
     auto& textRT = entitiesRegistry->GetComponent<RectTransformation>(textEntity);
     textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
     textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -110,7 +105,7 @@ EntityID UITabs::AddTab(const std::string& name)
     tabs.emplace_back(buttonEntity, newContentEntity);
 
     entitiesRegistry->EntitySetActive(newContentEntity, false, true);
-    if (currentActiveTab == -1)
+    if (activeTab == -1)
         SetActiveTab((int)index);
 
     return newContentEntity;

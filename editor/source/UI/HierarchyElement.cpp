@@ -6,9 +6,6 @@
 void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry, UILayer* layer,
                             const HierarchyView& hierarchyView, EntityID nodeEntity, const HierarchyViewNode& node)
 {
-    auto& nodeName = sceneRegistry->GetComponent<NameComponent>(nodeEntity);
-    auto& nodeHN = sceneRegistry->GetComponent<HierarchyNode>(nodeEntity);
-
     EntityID hierarchyViewEntity = hierarchyView.Owner;
     EntityID elementEntity = Owner;
 
@@ -26,12 +23,14 @@ void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry
         registry->GetComponent<HierarchyView>(hierarchyViewEntity).ElementClicked(elementEntity);
     };
 
+    auto& nodeName = sceneRegistry->GetComponent<NameComponent>(nodeEntity);
     EntityID textEntity = layer->CreateUIText(nodeName.Name, "Node", buttonEntityID);
     auto& text = entitiesRegistry->GetComponent<UIText>(textEntity);
     if (node.Flags & NodeFlags::Active)
         text.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     else
         text.SetColor(STYLE_MID_GREY);
+    auto& nodeHN = sceneRegistry->GetComponent<HierarchyNode>(nodeEntity);
     auto& textRT = entitiesRegistry->GetComponent<RectTransformation>(textEntity);
     textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
     textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));

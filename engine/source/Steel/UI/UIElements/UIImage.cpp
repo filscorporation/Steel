@@ -283,6 +283,9 @@ void UIImage::SetClippingLevel(short clippingLevel)
     if (clippingLevel == _clippingLevel)
         return;
 
+    if (_image == nullptr)
+        return;
+
     _clippingLevel = clippingLevel;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();

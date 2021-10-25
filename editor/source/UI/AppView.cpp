@@ -13,6 +13,15 @@ void AppView::OnEnabled(EntitiesRegistry* entitiesRegistry)
     UpdateResolutionInfo(entitiesRegistry);
 }
 
+void AppView::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    if (appViewImageEntity == NULL_ENTITY || !entitiesRegistry->HasComponent<UIImage>(appViewImageEntity))
+        return;
+    auto& image = entitiesRegistry->GetComponent<UIImage>(appViewImageEntity);
+    image.SetImage(nullptr);
+    delete image.GetImage();
+}
+
 void AppView::Init(EntitiesRegistry* entitiesRegistry)
 {
     auto editor = (EditorApplication*)Application::Instance;

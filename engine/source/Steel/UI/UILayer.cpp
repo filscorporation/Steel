@@ -224,7 +224,7 @@ EntityID UILayer::CreateUIElement()
     return CreateUIElement("New UI element", NULL_ENTITY);
 }
 
-EntityID UILayer::CreateUIElement(const char* name, EntityID parent)
+EntityID UILayer::CreateUIElement(const std::string& name, EntityID parent)
 {
     auto entity = _scene->CreateEmptyEntity();
     auto& nameComponent = _scene->GetEntitiesRegistry()->AddComponent<NameComponent>(entity);
@@ -244,7 +244,7 @@ EntityID UILayer::CreateUIImage()
     return entity;
 }
 
-EntityID UILayer::CreateUIImage(Sprite* sprite, const char* name, EntityID parent)
+EntityID UILayer::CreateUIImage(Sprite* sprite, const std::string& name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
     _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity).SetImage(sprite);
@@ -261,7 +261,7 @@ EntityID UILayer::CreateUIButton()
     return entity;
 }
 
-EntityID UILayer::CreateUIButton(Sprite* sprite, const char* name, EntityID parent)
+EntityID UILayer::CreateUIButton(Sprite* sprite, const std::string& name, EntityID parent)
 {
     auto entity = CreateUIImage(sprite, name, parent);
     auto& button = _scene->GetEntitiesRegistry()->AddComponent<UIButton>(entity);
@@ -278,10 +278,10 @@ EntityID UILayer::CreateUIText()
     return entity;
 }
 
-EntityID UILayer::CreateUIText(const char* text, const char* name, EntityID parent)
+EntityID UILayer::CreateUIText(const std::string& text, const std::string& name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
-    _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity).SetText(text ? text : "");
+    _scene->GetEntitiesRegistry()->AddComponent<UIText>(entity).SetText(text);
 
     return entity;
 }
@@ -291,7 +291,7 @@ EntityID UILayer::CreateUIInputField()
     return CreateUIInputField("Input field", NULL_ENTITY);
 }
 
-EntityID UILayer::CreateUIInputField(const char* name, EntityID parent)
+EntityID UILayer::CreateUIInputField(const std::string& name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
     auto& uiImage = _scene->GetEntitiesRegistry()->AddComponent<UIImage>(entity);
@@ -334,7 +334,7 @@ EntityID UILayer::CreateUICheckBox()
     return CreateUICheckBox("", "Check box", NULL_ENTITY);
 }
 
-EntityID UILayer::CreateUICheckBox(const char* label, const char* name, EntityID parent)
+EntityID UILayer::CreateUICheckBox(const std::string& label, const std::string& name, EntityID parent)
 {
     float boxSize = 18;
     float markSize = 14;
@@ -382,7 +382,7 @@ EntityID UILayer::CreateUITabs()
     return CreateUITabs(tabs, "Tabs", NULL_ENTITY);
 }
 
-EntityID UILayer::CreateUITabs(const std::vector<std::string>& tabsNames, const char* name, EntityID parent)
+EntityID UILayer::CreateUITabs(const std::vector<std::string>& tabsNames, const std::string& name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
     _scene->GetEntitiesRegistry()->AddComponent<UIClipping>(entity);
@@ -399,7 +399,7 @@ EntityID UILayer::CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type)
     return CreateUILayoutGroup(type, "Layout group", NULL_ENTITY);
 }
 
-EntityID UILayer::CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type, const char* name, EntityID parent)
+EntityID UILayer::CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type, const std::string& name, EntityID parent)
 {
     auto entity = CreateUIElement(name, parent);
     auto& layout = _scene->GetEntitiesRegistry()->AddComponent<UILayoutGroup>(entity);

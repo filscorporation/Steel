@@ -8,6 +8,6 @@ class NameComponent : public Component
 public:
     explicit NameComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    const char* Name;
-    const char* Tag;
+    std::string Name;
+    std::string Tag;
 };

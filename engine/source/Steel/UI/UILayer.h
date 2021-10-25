@@ -33,23 +33,23 @@ public:
     void RemoveFromUpdateQueue(EntityID entityID);
 
     EntityID CreateUIElement();
-    EntityID CreateUIElement(const char* name, EntityID parent);
+    EntityID CreateUIElement(const std::string& name, EntityID parent);
     EntityID CreateUIImage();
-    EntityID CreateUIImage(Sprite* sprite, const char* name, EntityID parent);
+    EntityID CreateUIImage(Sprite* sprite, const std::string& name, EntityID parent);
     EntityID CreateUIButton();
-    EntityID CreateUIButton(Sprite* sprite, const char* name, EntityID parent);
+    EntityID CreateUIButton(Sprite* sprite, const std::string& name, EntityID parent);
     EntityID CreateUIText();
-    EntityID CreateUIText(const char* text, const char* name, EntityID parent);
+    EntityID CreateUIText(const std::string& text, const std::string& name, EntityID parent);
     EntityID CreateUIInputField();
-    EntityID CreateUIInputField(const char* name, EntityID parent);
+    EntityID CreateUIInputField(const std::string& name, EntityID parent);
     EntityID CreateUIClipping();
     EntityID CreateUIClipping(EntityID parent);
     EntityID CreateUICheckBox();
-    EntityID CreateUICheckBox(const char* label, const char* name, EntityID parent);
+    EntityID CreateUICheckBox(const std::string& label, const std::string& name, EntityID parent);
     EntityID CreateUITabs();
-    EntityID CreateUITabs(const std::vector<std::string>& tabsNames, const char* name, EntityID parent);
+    EntityID CreateUITabs(const std::vector<std::string>& tabsNames, const std::string& name, EntityID parent);
     EntityID CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type);
-    EntityID CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type, const char* name, EntityID parent);
+    EntityID CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type, const std::string& name, EntityID parent);
 
     int PixelsPerUnit = 32;
 
