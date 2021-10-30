@@ -19,6 +19,9 @@ void UIClipping::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIClipping::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
+    if (entitiesRegistry->IsCleared())
+        return;
+
     ClearCaps(entitiesRegistry);
 
     wasRemoved = true;

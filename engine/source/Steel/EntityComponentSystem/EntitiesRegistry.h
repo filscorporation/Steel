@@ -5,9 +5,14 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
-
 #include "Entity.h"
+
 #include "SparseDataSet.h"
+
+//#define DEBUG_GET
+#ifdef DEBUG_GET
+#include <iostream>
+#endif
 
 #define ENTITY_ID_MASK 0xFFFFFu
 #define ENTITY_VERSION_MASK 0xFFFu
@@ -518,6 +523,13 @@ public:
     T& GetComponent(EntityID entityID)
     {
         EntityID id = EntityIDGetID(entityID);
+
+#ifdef DEBUG_GET
+        if (!HasComponent<T>(entityID))
+        {
+            std::cout << "ERROR:: GET COMPONENT ON NON EXISTING WILL LEAD TO UNDEFINED BEHAVIOUR" << std::endl;
+        }
+#endif
 
         // Out of all methods, "get" doesn't check if there is component for the reason of return type
         // So HasComponent() should be used before it

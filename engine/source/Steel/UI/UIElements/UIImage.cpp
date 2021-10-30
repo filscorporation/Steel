@@ -19,6 +19,9 @@ void UIImage::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIImage::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
+    if (entitiesRegistry->IsCleared())
+        return;
+
     for (auto qrID : _renderers)
         entitiesRegistry->DeleteEntity(qrID);
     _renderers.clear();

@@ -22,12 +22,13 @@ public:
     void SetInteractable(bool interactable);
     bool GetInteractable() const;
 
+    void StopTransition();
+    void RestoreTransition();
+
 protected:
     void Init(UpdateInteractable callback);
     void PlayTransition(TransitionStates::TransitionState state);
-    void StopTransition();
     bool UpdateTransition();
-    void RestoreTransition();
 
     bool IsInteractable = true;
     bool IsHovered = false;

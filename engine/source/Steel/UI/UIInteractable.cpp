@@ -125,7 +125,6 @@ void UIInteractable::PlayTransition(TransitionStates::TransitionState state)
     currentState = state;
     targetTransitionData = CurrentTransitionsInfo.Get(currentState);
     isInTransition = true;
-    transitionProgress = 0.0f;
 }
 
 void UIInteractable::StopTransition()

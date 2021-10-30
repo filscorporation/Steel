@@ -148,26 +148,36 @@ int UITabs::GetActiveTab() const
 
 void UITabs::SetActiveTab(int index)
 {
-    // TODO: check for memory errors - after set active, current UITabs component can move
-
     if (index == activeTab)
         return;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    EntityID contentToDeactivate = NULL_ENTITY;
 
     if (activeTab != -1)
     {
-        entitiesRegistry->EntitySetActive(tabs[activeTab].ContentID, false, true);
-        auto& lastButton = entitiesRegistry->GetComponent<UIButton>(tabs[activeTab].ButtonID);
-        auto& lastButtonSprite = entitiesRegistry->GetComponent<UIImage>(lastButton.GetTargetImage());
-        lastButtonSprite.SetImage(_tabClosedSprite);
+        contentToDeactivate = tabs[activeTab].ContentID;
+        if (entitiesRegistry->EntityExists(contentToDeactivate))
+        {
+            auto& lastButton = entitiesRegistry->GetComponent<UIButton>(tabs[activeTab].ButtonID);
+            auto& lastButtonSprite = entitiesRegistry->GetComponent<UIImage>(lastButton.GetTargetImage());
+            lastButtonSprite.SetImage(_tabClosedSprite);
+            lastButton.StopTransition();
+        }
     }
 
     activeTab = index;
-    entitiesRegistry->EntitySetActive(tabs[activeTab].ContentID, true, true);
-    auto& currentButton = entitiesRegistry->GetComponent<UIButton>(tabs[activeTab].ButtonID);
-    auto& currentButtonSprite = entitiesRegistry->GetComponent<UIImage>(currentButton.GetTargetImage());
-    currentButtonSprite.SetImage(_tabOpenedSprite);
+    if (entitiesRegistry->EntityExists(tabs[activeTab].ContentID))
+    {
+        auto& currentButton = entitiesRegistry->GetComponent<UIButton>(tabs[activeTab].ButtonID);
+        auto& currentButtonSprite = entitiesRegistry->GetComponent<UIImage>(currentButton.GetTargetImage());
+        currentButtonSprite.SetImage(_tabOpenedSprite);
+        currentButton.StopTransition();
+        entitiesRegistry->EntitySetActive(tabs[activeTab].ContentID, true, true);
+    }
+
+    if (entitiesRegistry->EntityExists(contentToDeactivate))
+        entitiesRegistry->EntitySetActive(contentToDeactivate, false, true);
 }
 
 void UITabs::SetActiveTabByButtonID(EntityID buttonID)
