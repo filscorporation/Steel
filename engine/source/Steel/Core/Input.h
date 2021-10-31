@@ -31,6 +31,8 @@ public:
     static void PollEvents();
     static void ReleaseAllEvents();
 
+    static bool IgnoreEvents;
+
 private:
     static void Init(GLFWwindow* window);
 

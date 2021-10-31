@@ -9,7 +9,7 @@
 
 #include "SparseDataSet.h"
 
-//#define DEBUG_GET
+#define DEBUG_GET
 #ifdef DEBUG_GET
 #include <iostream>
 #endif
@@ -190,7 +190,7 @@ public:
         }
 
         freeIDsCount = entitiesRegistry.freeIDsCount;
-        nextFreeID = entitiesRegistry.freeIDsCount;
+        nextFreeID = entitiesRegistry.nextFreeID;
         isCleared = entitiesRegistry.isCleared;
     }
     ~EntitiesRegistry()

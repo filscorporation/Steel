@@ -33,11 +33,11 @@ protected:
     bool IsInteractable = true;
     bool IsHovered = false;
     bool IsSelected = false;
-    TransitionsInfo CurrentTransitionsInfo {};
 
 private:
     EntityID _targetImage = NULL_ENTITY;
 
+    TransitionsInfo currentTransitionsInfo {};
     UpdateInteractable updateCallback = nullptr;
     bool isInTransition = false;
     bool startingDataInitialized = false;

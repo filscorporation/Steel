@@ -2,6 +2,7 @@
 #include "StatsWindow.h"
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
+#include "UIEditorTab.h"
 
 #include <Steel.h>
 
@@ -198,6 +199,10 @@ void AppView::Update(EntitiesRegistry* entitiesRegistry)
 {
     auto editor = (EditorApplication*)Application::Instance;
     auto& viewRT = entitiesRegistry->GetComponent<RectTransformation>(Owner);
+
+    EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).ParentNode;
+    editor->GetAppContext()->IgnoreEvents = !entitiesRegistry->GetComponent<UIEditorTab>(parentEntity).GetIsFocused();
+
     if (viewRT.DidSizeChange() || editor->GetAppContext()->ScreenParams.IsDirty)
     {
         UpdateView(entitiesRegistry);

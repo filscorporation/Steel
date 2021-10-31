@@ -133,9 +133,15 @@ void Scene::Refresh()
 
 void Scene::Update()
 {
-    // Poll UI events
-    UIEvent uiEvent = Input::GetUIEvent();
-    uiLayer->PollEvent(uiEvent);
+    // Setup input
+    Input::IgnoreEvents = Application::Context()->IgnoreEvents;
+
+    if (!Input::IgnoreEvents)
+    {
+        // Poll UI events
+        UIEvent uiEvent = Input::GetUIEvent();
+        uiLayer->PollEvent(uiEvent);
+    }
 
     BeforeUpdate();
 

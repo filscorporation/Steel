@@ -12,6 +12,8 @@ bool keyIsDirty = false;
 bool mouseIsDirty = false;
 bool scrollDeltaIsDirty = false;
 
+bool Input::IgnoreEvents = false;
+
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     int ikey = (KeyCodes::KeyCode)key;
@@ -86,32 +88,32 @@ void Input::Init(GLFWwindow* window)
 
 bool Input::IsKeyPressed(KeyCodes::KeyCode code)
 {
-    return pressedKeys[code] == ButtonStates::JustPressed || pressedKeys[code] == ButtonStates::IsHeld;
+    return !IgnoreEvents && pressedKeys[code] == ButtonStates::JustPressed || pressedKeys[code] == ButtonStates::IsHeld;
 }
 
 bool Input::IsKeyJustPressed(KeyCodes::KeyCode code)
 {
-    return pressedKeys[code] == ButtonStates::JustPressed;
+    return !IgnoreEvents && pressedKeys[code] == ButtonStates::JustPressed;
 }
 
 bool Input::IsKeyJustReleased(KeyCodes::KeyCode code)
 {
-    return pressedKeys[code] == ButtonStates::JustReleased;
+    return !IgnoreEvents && pressedKeys[code] == ButtonStates::JustReleased;
 }
 
 bool Input::IsMouseButtonPressed(MouseCodes::MouseCode button)
 {
-    return pressedMouse[button] == ButtonStates::JustPressed || pressedMouse[button] == ButtonStates::IsHeld;
+    return !IgnoreEvents && pressedMouse[button] == ButtonStates::JustPressed || pressedMouse[button] == ButtonStates::IsHeld;
 }
 
 bool Input::IsMouseButtonJustPressed(MouseCodes::MouseCode button)
 {
-    return pressedMouse[button] == ButtonStates::JustPressed;
+    return !IgnoreEvents && pressedMouse[button] == ButtonStates::JustPressed;
 }
 
 bool Input::IsMouseButtonJustReleased(MouseCodes::MouseCode button)
 {
-    return pressedMouse[button] == ButtonStates::JustReleased;
+    return !IgnoreEvents && pressedMouse[button] == ButtonStates::JustReleased;
 }
 
 glm::vec2 Input::GetMousePosition()
@@ -121,7 +123,7 @@ glm::vec2 Input::GetMousePosition()
 
 glm::vec2 Input::GetMouseScrollDelta()
 {
-    return mouseScrollDelta;
+    return IgnoreEvents ? glm::vec2(0.0f, 0.0f) : mouseScrollDelta;
 }
 
 void CleanKeys()

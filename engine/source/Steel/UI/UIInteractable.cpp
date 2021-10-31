@@ -7,16 +7,16 @@
 void UIInteractable::Init(UpdateInteractable callback)
 {
     updateCallback = callback;
-    CurrentTransitionsInfo.TransitionType = TransitionTypes::ColorShift;
-    CurrentTransitionsInfo.TransitionDuration = 0.1f;
-    CurrentTransitionsInfo.Normal.FromColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    CurrentTransitionsInfo.Hovered.FromColor(glm::vec4(0.85f, 0.85f, 0.85f, 1.0f));
-    CurrentTransitionsInfo.Selected.FromColor(glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
-    CurrentTransitionsInfo.Clicked.FromColor(glm::vec4(0.55f, 0.55f, 0.55f, 1.0f));
-    CurrentTransitionsInfo.Disabled.FromColor(glm::vec4(0.35f, 0.35f, 0.35f, 1.0f));
+    currentTransitionsInfo.TransitionType = TransitionTypes::ColorShift;
+    currentTransitionsInfo.TransitionDuration = 0.1f;
+    currentTransitionsInfo.Normal.FromColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    currentTransitionsInfo.Hovered.FromColor(glm::vec4(0.85f, 0.85f, 0.85f, 1.0f));
+    currentTransitionsInfo.Selected.FromColor(glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
+    currentTransitionsInfo.Clicked.FromColor(glm::vec4(0.55f, 0.55f, 0.55f, 1.0f));
+    currentTransitionsInfo.Disabled.FromColor(glm::vec4(0.35f, 0.35f, 0.35f, 1.0f));
 
-    startingTransitionData = CurrentTransitionsInfo.Normal;
-    targetTransitionData = CurrentTransitionsInfo.Normal;
+    startingTransitionData = currentTransitionsInfo.Normal;
+    targetTransitionData = currentTransitionsInfo.Normal;
 }
 
 bool UIInteractable::UpdateTransition()
@@ -39,8 +39,8 @@ bool UIInteractable::UpdateTransition()
     }
     auto& image = entitiesRegistry->GetComponent<UIImage>(_targetImage);
 
-    float t = Math::Clamp01(transitionProgress / CurrentTransitionsInfo.TransitionDuration);
-    switch (CurrentTransitionsInfo.TransitionType)
+    float t = Math::Clamp01(transitionProgress / currentTransitionsInfo.TransitionDuration);
+    switch (currentTransitionsInfo.TransitionType)
     {
         case TransitionTypes::ColorShift:
             if (needInit)
@@ -62,7 +62,7 @@ bool UIInteractable::UpdateTransition()
             break;
     }
 
-    if (transitionProgress > CurrentTransitionsInfo.TransitionDuration)
+    if (transitionProgress > currentTransitionsInfo.TransitionDuration)
     {
         isInTransition = false;
         transitionProgress = 0.0f;
@@ -73,14 +73,14 @@ bool UIInteractable::UpdateTransition()
 
 void UIInteractable::SetTransitionsInfo(TransitionsInfo info)
 {
-    CurrentTransitionsInfo = info;
+    currentTransitionsInfo = info;
 
     RestoreTransition();
 }
 
 TransitionsInfo UIInteractable::GetTransitionsInfo() const
 {
-    return CurrentTransitionsInfo;
+    return currentTransitionsInfo;
 }
 
 void UIInteractable::SetTargetImage(EntityID targetID)
@@ -123,7 +123,7 @@ void UIInteractable::PlayTransition(TransitionStates::TransitionState state)
 
     startingDataInitialized = false;
     currentState = state;
-    targetTransitionData = CurrentTransitionsInfo.Get(currentState);
+    targetTransitionData = currentTransitionsInfo.Get(currentState);
     isInTransition = true;
 }
 
@@ -145,7 +145,7 @@ void UIInteractable::RestoreTransition()
             isInTransition = true;
             transitionProgress = 1.0f;
         }
-        targetTransitionData = CurrentTransitionsInfo.Get(currentState);
+        targetTransitionData = currentTransitionsInfo.Get(currentState);
 
         updateCallback(Owner);
     }

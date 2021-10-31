@@ -2,6 +2,7 @@
 #include "HierarchyElement.h"
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
+#include "UIEditorTab.h"
 
 #include <Steel.h>
 
@@ -71,6 +72,9 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
     auto sceneRegistry = appScene->GetEntitiesRegistry();
 
+    EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).ParentNode;
+    bool isFocused = entitiesRegistry->GetComponent<UIEditorTab>(parentEntity).GetIsFocused();
+
     auto nodes = new std::unordered_map<EntityID, HierarchyViewNode>();
     GetNodesData(sceneRegistry, (HierarchyParent&)*appScene, nodes);
 
@@ -83,7 +87,7 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
         }
     }
 
-    bool deselect = Input::IsKeyJustPressed(KeyCodes::Escape);
+    bool deselect = isFocused && Input::IsKeyJustPressed(KeyCodes::Escape);
 
     for (auto& node : *nodes)
     {
@@ -94,7 +98,6 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
         else
         {
             node.second.UIElementEntity = (*lastNodes)[node.first].UIElementEntity;
-            node.second.Flags = (*lastNodes)[node.first].Flags;
             auto& hierarchyElement = entitiesRegistry->GetComponent<HierarchyElement>(node.second.UIElementEntity);
             hierarchyElement.UpdatePosition(entitiesRegistry, sceneRegistry, node.first, node.second);
 
@@ -110,7 +113,7 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     delete lastNodes;
     lastNodes = nodes;
 
-    if (Input::IsKeyJustPressed(KeyCodes::Delete))
+    if (isFocused && Input::IsKeyJustPressed(KeyCodes::Delete))
     {
         DeleteSelectedEntities();
     }
@@ -174,11 +177,10 @@ EntityID HierarchyView::CreateNodeUIElement(EntitiesRegistry* entitiesRegistry, 
 
 void HierarchyView::ElementClicked(EntityID elementID)
 {
-    bool additiveSelect = Input::IsKeyPressed(KeyCodes::LeftControl) || Input::IsKeyPressed(KeyCodes::RightControl);
-
     if (lastNodes != nullptr)
     {
         auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+        bool additiveSelect = Input::IsKeyPressed(KeyCodes::LeftControl) || Input::IsKeyPressed(KeyCodes::RightControl);
 
         for (auto& node : *lastNodes)
         {

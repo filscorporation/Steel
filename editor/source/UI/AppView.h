@@ -13,8 +13,8 @@ public:
 
     void Init(EntitiesRegistry* entitiesRegistry);
     void Update(EntitiesRegistry* entitiesRegistry);
-private:
 
+private:
     void UpdateView(EntitiesRegistry* entitiesRegistry) const;
     void UpdateResolutionInfo(EntitiesRegistry* entitiesRegistry) const;
     EntityID tabEntity = NULL_ENTITY;

@@ -38,6 +38,7 @@ struct ApplicationContext
     SceneManager* Scenes = nullptr;
     ScreenParameters ScreenParams {};
     ApplicationStats Stats {};
+    bool IgnoreEvents = false;
 };
 
 class Application

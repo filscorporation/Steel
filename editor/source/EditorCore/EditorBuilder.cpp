@@ -132,9 +132,10 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         auto& appSceneTabs = entitiesRegistry->GetComponent<UITabs>(appSceneTabsEntity);
 
         // Application view
-        entitiesRegistry->AddComponent<UIEditorTab>(appSceneTabs.GetTab(0)).TabsEntityID = appSceneTabsEntity;
-        entitiesRegistry->GetComponent<UIEventHandler>(appSceneTabs.GetTab(0)).RectEntity = l3child2Entity;
-        EntityID appViewEntity = uiLayer->CreateUIElement("App view", appSceneTabs.GetTab(0));
+        EntityID appTabEntity = appSceneTabs.GetTab(0);
+        entitiesRegistry->AddComponent<UIEditorTab>(appTabEntity).TabsEntityID = appSceneTabsEntity;
+        entitiesRegistry->GetComponent<UIEventHandler>(appTabEntity).RectEntity = l3child2Entity;
+        EntityID appViewEntity = uiLayer->CreateUIElement("App view", appTabEntity);
         auto& appViewRT = entitiesRegistry->GetComponent<RectTransformation>(appViewEntity);
         appViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         appViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
