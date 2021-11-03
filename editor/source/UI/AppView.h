@@ -9,6 +9,7 @@ public:
     explicit AppView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
+    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
 
     void Init(EntitiesRegistry* entitiesRegistry);

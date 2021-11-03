@@ -3,6 +3,7 @@
 #include "../UI/ControlPanel.h"
 #include "../UI/HierarchyView.h"
 #include "../UI/UIEditorTab.h"
+#include "../UI/SceneView.h"
 
 #include <Steel.h>
 
@@ -143,7 +144,14 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         appView.Init(entitiesRegistry);
 
         // Scene view
-        entitiesRegistry->AddComponent<UIEditorTab>(appSceneTabs.GetTab(1)).TabsEntityID = appSceneTabsEntity;
-        entitiesRegistry->GetComponent<UIEventHandler>(appSceneTabs.GetTab(1)).RectEntity = l3child2Entity;
+        EntityID sceneTabEntity = appSceneTabs.GetTab(1);
+        entitiesRegistry->AddComponent<UIEditorTab>(sceneTabEntity).TabsEntityID = appSceneTabsEntity;
+        entitiesRegistry->GetComponent<UIEventHandler>(sceneTabEntity).RectEntity = l3child2Entity;
+        EntityID sceneViewEntity = uiLayer->CreateUIElement("Scene view", sceneTabEntity);
+        auto& sceneViewRT = entitiesRegistry->GetComponent<RectTransformation>(sceneViewEntity);
+        sceneViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+        sceneViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto& sceneView = entitiesRegistry->AddComponent<SceneView>(sceneViewEntity);
+        sceneView.Init(entitiesRegistry);
     }
 }

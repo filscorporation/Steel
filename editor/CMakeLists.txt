@@ -14,7 +14,7 @@ set(SOURCE_FILES source/main.cpp source/EditorCore/EditorApplication.cpp source/
         source/EditorCore/EditorBuilder.cpp source/EditorCore/EditorBuilder.h source/UI/StatsWindow.cpp source/UI/StatsWindow.h
         source/UI/HierarchyView.cpp source/UI/HierarchyView.h source/UI/HierarchyElement.cpp source/UI/HierarchyElement.h
         source/UI/ControlPanel.cpp source/UI/ControlPanel.h source/EditorCore/EditorSceneManager.cpp source/EditorCore/EditorSceneManager.h
-        source/UI/UIEditorTab.cpp source/UI/UIEditorTab.h)
+        source/UI/UIEditorTab.cpp source/UI/UIEditorTab.h source/UI/SceneView.cpp source/UI/SceneView.h)
 
 # steel
 include_directories(../engine/source)

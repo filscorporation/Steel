@@ -1,8 +1,8 @@
 #include "AppView.h"
 #include "StatsWindow.h"
+#include "UIEditorTab.h"
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
-#include "UIEditorTab.h"
 
 #include <Steel.h>
 
@@ -12,6 +12,12 @@ void AppView::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
     UpdateView(entitiesRegistry);
     UpdateResolutionInfo(entitiesRegistry);
+}
+
+void AppView::OnDisabled(EntitiesRegistry* entitiesRegistry)
+{
+    auto editor = (EditorApplication*)Application::Instance;
+    editor->GetAppContext()->IgnoreEvents = true;
 }
 
 void AppView::OnRemoved(EntitiesRegistry* entitiesRegistry)
