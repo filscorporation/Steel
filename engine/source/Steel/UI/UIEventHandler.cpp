@@ -82,7 +82,9 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
         if (eventsMask & UIEventTypes::MouseJustPressed)
         {
             if (!wasUsed &&
-                (uiEvent.LeftMouseButtonState == ButtonStates::JustPressed || uiEvent.RightMouseButtonState == ButtonStates::JustPressed))
+                (uiEvent.LeftMouseButtonState == ButtonStates::JustPressed
+                    || uiEvent.RightMouseButtonState == ButtonStates::JustPressed
+                    || uiEvent.MiddleMouseButtonState == ButtonStates::JustPressed))
             {
                 eventType = eventType | UIEventTypes::MouseJustPressed;
             }
@@ -90,7 +92,9 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
         if (eventsMask & UIEventTypes::MousePressed)
         {
             if (!wasUsed &&
-                (uiEvent.LeftMouseButtonState == ButtonStates::IsHeld || uiEvent.RightMouseButtonState == ButtonStates::IsHeld))
+                (uiEvent.LeftMouseButtonState == ButtonStates::IsHeld
+                    || uiEvent.RightMouseButtonState == ButtonStates::IsHeld
+                    || uiEvent.MiddleMouseButtonState == ButtonStates::IsHeld))
             {
                 eventType = eventType | UIEventTypes::MousePressed;
             }
@@ -98,7 +102,9 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
         if (eventsMask & UIEventTypes::MouseJustReleased)
         {
             if (!wasUsed &&
-                (uiEvent.LeftMouseButtonState == ButtonStates::JustReleased || uiEvent.RightMouseButtonState == ButtonStates::JustReleased))
+                (uiEvent.LeftMouseButtonState == ButtonStates::JustReleased
+                    || uiEvent.RightMouseButtonState == ButtonStates::JustReleased
+                    || uiEvent.MiddleMouseButtonState == ButtonStates::JustReleased))
             {
                 eventType = eventType | UIEventTypes::MouseJustReleased;
             }
@@ -143,21 +149,27 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
     }
     if (eventsMask & UIEventTypes::MouseJustPressedAnywhere)
     {
-        if (uiEvent.LeftMouseButtonState == ButtonStates::JustPressed || uiEvent.RightMouseButtonState == ButtonStates::JustPressed)
+        if (uiEvent.LeftMouseButtonState == ButtonStates::JustPressed
+            || uiEvent.RightMouseButtonState == ButtonStates::JustPressed
+            || uiEvent.MiddleMouseButtonState == ButtonStates::JustPressed)
         {
             eventType = eventType | UIEventTypes::MouseJustPressedAnywhere;
         }
     }
     if (eventsMask & UIEventTypes::MousePressedAnywhere)
     {
-        if (uiEvent.LeftMouseButtonState == ButtonStates::IsHeld || uiEvent.RightMouseButtonState == ButtonStates::IsHeld)
+        if (uiEvent.LeftMouseButtonState == ButtonStates::IsHeld
+            || uiEvent.RightMouseButtonState == ButtonStates::IsHeld
+            || uiEvent.MiddleMouseButtonState == ButtonStates::IsHeld)
         {
             eventType = eventType | UIEventTypes::MousePressedAnywhere;
         }
     }
     if (eventsMask & UIEventTypes::MouseJustReleasedAnywhere)
     {
-        if (uiEvent.LeftMouseButtonState == ButtonStates::JustReleased || uiEvent.RightMouseButtonState == ButtonStates::JustReleased)
+        if (uiEvent.LeftMouseButtonState == ButtonStates::JustReleased
+            || uiEvent.RightMouseButtonState == ButtonStates::JustReleased
+            || uiEvent.MiddleMouseButtonState == ButtonStates::JustReleased)
         {
             eventType = eventType | UIEventTypes::MouseJustReleasedAnywhere;
         }

@@ -62,5 +62,6 @@ private:
                                         EntityID parentEntity, EntityID nodeEntity, const HierarchyViewNode& node);
 
     void DeleteSelectedEntities();
+    void FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry);
     void CreateNewEntityInHierarchy();
 };

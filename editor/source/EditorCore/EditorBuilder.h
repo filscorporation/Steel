@@ -9,6 +9,8 @@
 #define STYLE_BUTTON_H 20
 #define STYLE_OFFSET 2.0f
 
+#define STYLE_SCENE_VIEW_CLEAR_COLOR glm::vec4(126.0f / 256.0f, 126.0f / 256.0f, 126.0f / 256.0f, 1.0f)
+
 class EditorBuilder
 {
 public:

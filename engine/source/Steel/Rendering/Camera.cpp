@@ -60,7 +60,7 @@ void Camera::SetResizeMode(CameraResizeModes::CameraResizeMode resizeMode)
         return;
 
     _resizeMode = resizeMode;
-    UpdateSize();
+    UpdateSize((float)Screen::GetWidth(), (float)Screen::GetHeight());
 }
 
 glm::vec2 Camera::ScreenToWorldPoint(glm::vec2 screenPoint)
@@ -81,37 +81,15 @@ glm::vec2 Camera::WorldToScreenPoint(glm::vec2 worldPoint)
     };
 }
 
-glm::mat4 Camera::GetViewProjection()
-{
-    if (Screen::IsScreenSizeDirty())
-        UpdateSize();
-
-    if (IsCameraDirty() || GetComponentS<Transformation>(Owner).DidTransformationChange())
-    {
-        SetCameraDirty(false);
-        glm::mat4 projection = glm::ortho(
-                -_width / 2, _width / 2,
-                -_height / 2, _height / 2,
-                _nearClippingPlane, _farClippingPlane
-        );
-        glm::mat4 view = GetComponentS<Transformation>(Owner).GetTransformationMatrix();
-        view = glm::inverse(view);
-
-        viewProjection = projection * view;
-    }
-
-    return viewProjection;
-}
-
-void Camera::UpdateSize()
+void Camera::UpdateSize(float screenWidth, float screenHeight)
 {
     switch (_resizeMode)
     {
         case CameraResizeModes::KeepHeight:
-            _width = _height * (float)Screen::GetWidth() / (float)Screen::GetHeight();
+            _width = _height * screenWidth / screenHeight;
             break;
         case CameraResizeModes::KeepWidth:
-            _height = _width * (float)Screen::GetHeight() / (float)Screen::GetWidth();
+            _height = _width * screenHeight / screenWidth;
             break;
         case CameraResizeModes::Stretch:
             // Do nothing
@@ -119,6 +97,31 @@ void Camera::UpdateSize()
     }
 
     SetCameraDirty(true);
+}
+
+void Camera::UpdateViewProjection(Transformation& transformation)
+{
+    if (AutoResize && Screen::IsScreenSizeDirty())
+        UpdateSize((float)Screen::GetWidth(), (float)Screen::GetHeight());
+
+    if (IsCameraDirty() || transformation.DidTransformationChange())
+    {
+        SetCameraDirty(false);
+        glm::mat4 projection = glm::ortho(
+                -_width / 2, _width / 2,
+                -_height / 2, _height / 2,
+                _nearClippingPlane, _farClippingPlane
+        );
+        glm::mat4 view = transformation.GetTransformationMatrix();
+        view = glm::inverse(view);
+
+        viewProjection = projection * view;
+    }
+}
+
+glm::mat4 Camera::GetViewProjection()
+{
+    return viewProjection;
 }
 
 void Camera::SetCameraDirty(bool dirty)

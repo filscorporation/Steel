@@ -207,47 +207,10 @@ void Scene::PrepareDraw()
 
     // Rebuild UI layer elements
     uiLayer->Rebuild();
-    //uiLayer->Refresh(); TODO: should be there
 
     AfterPrepareDraw();
-}
 
-void Scene::Draw(Framebuffer* framebuffer)
-{
-    framebuffer->Bind();
-    Renderer::Clear(Screen::GetColor());
-
-    EntityID cameraEntity = GetMainCamera();
-    if (cameraEntity == NULL_ENTITY)
-        return;
-
-    BeforeDraw();
-
-    auto& camera = entitiesRegistry->GetComponent<Camera>(cameraEntity);
-    Renderer::OnBeforeRender(camera);
-
-    auto quadRenderers = entitiesRegistry->GetComponentIterator<QuadRenderer>();
-
-    // Opaque pass
-    for (int i = 0; i < quadRenderers.Size(); ++i)
-        if (quadRenderers[i].Queue == RenderingQueue::Opaque)
-            Renderer::Draw(quadRenderers[i]);
-
-    // Transparent pass
-    for (int i = quadRenderers.Size() - 1; i >= 0; --i)
-        if (quadRenderers[i].Queue == RenderingQueue::Transparent)
-            Renderer::Draw(quadRenderers[i]);
-
-    // Clear depth buffer before rendering UI
-    Renderer::PrepareUIRender();
-    // Draw UI on top
-    uiLayer->Draw();
     uiLayer->Refresh();
-
-    AfterDraw();
-
-    Renderer::OnAfterRender();
-    framebuffer->Unbind();
 }
 
 void Scene::SortByHierarchy()
@@ -271,6 +234,7 @@ void Scene::UpdateGlobalTransformation()
     auto transformationsAccessor = entitiesRegistry->GetComponentAccessor<Transformation>();
     // Components to apply changed transformation
     auto srAccessor = entitiesRegistry->GetComponentAccessor<SpriteRenderer>();
+    auto cameraAccessor = entitiesRegistry->GetComponentAccessor<Camera>();
     for (auto& hierarchyNode : hierarchyNodes)
     {
         if (transformationsAccessor.Has(hierarchyNode.Owner))
@@ -281,6 +245,8 @@ void Scene::UpdateGlobalTransformation()
             bool transformationDirty = transformation.DidTransformationChange();
             if (transformationDirty && srAccessor.Has(hierarchyNode.Owner))
                 srAccessor.Get(hierarchyNode.Owner).UpdateRenderer(transformation);
+            if (cameraAccessor.Has(hierarchyNode.Owner))
+                cameraAccessor.Get(hierarchyNode.Owner).UpdateViewProjection(transformation);
         }
     }
 }

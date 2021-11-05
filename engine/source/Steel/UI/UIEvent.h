@@ -48,6 +48,7 @@ struct UIEvent
     glm::vec2 ScrollDelta;
     ButtonStates::ButtonState LeftMouseButtonState;
     ButtonStates::ButtonState RightMouseButtonState;
+    ButtonStates::ButtonState MiddleMouseButtonState;
     bool AnyKey = false;
     std::string InputString;
 };

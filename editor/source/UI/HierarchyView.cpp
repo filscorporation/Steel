@@ -3,6 +3,7 @@
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
 #include "UIEditorTab.h"
+#include "SceneView.h"
 
 #include <Steel.h>
 
@@ -113,9 +114,14 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     delete lastNodes;
     lastNodes = nodes;
 
+    // Controls
     if (isFocused && Input::IsKeyJustPressed(KeyCodes::Delete))
     {
         DeleteSelectedEntities();
+    }
+    if (isFocused && Input::IsKeyJustPressed(KeyCodes::F))
+    {
+        FocusOnSelectedEntities(entitiesRegistry);
     }
 }
 
@@ -237,6 +243,27 @@ void HierarchyView::DeleteSelectedEntities()
         }
     }
     editor->SwitchContext(editor->EditorContext);
+}
+
+void HierarchyView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
+{
+    std::vector<EntityID> selectedEntities;
+    for (auto& node : *lastNodes)
+    {
+        if (node.second.Flags & NodeFlags::Selected)
+        {
+            selectedEntities.push_back(node.first);
+        }
+    }
+
+    if (!selectedEntities.empty())
+    {
+        auto sceneViewIterator = entitiesRegistry->GetComponentIterator<SceneView>();
+        for (int i = 0; i < sceneViewIterator.Size(); ++i)
+        {
+            sceneViewIterator[i].FocusCameraOnEntity(entitiesRegistry, selectedEntities);
+        }
+    }
 }
 
 void HierarchyView::CreateNewEntityInHierarchy()

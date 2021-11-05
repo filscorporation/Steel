@@ -16,6 +16,7 @@
 #include "../Math/Random.h"
 #include "../Physics/Physics.h"
 #include "../Rendering/Renderer.h"
+#include "../Rendering/SceneRenderer.h"
 #include "../Scripting/ScriptingSystem.h"
 
 Application* Application::Instance;
@@ -117,12 +118,14 @@ void Application::RunUpdate()
     Screen::UpdateSize();
 
     // Update scene
-    CurrentContext->Scenes->GetActiveScene()->Refresh();
-    CurrentContext->Scenes->GetActiveScene()->Update();
+    auto scene = CurrentContext->Scenes->GetActiveScene();
+    scene->Refresh();
+    scene->Update();
 
     // Render scene
-    CurrentContext->Scenes->GetActiveScene()->PrepareDraw();
-    CurrentContext->Scenes->GetActiveScene()->Draw(Screen::ScreenFramebuffer());
+    scene->PrepareDraw();
+    SceneRenderer sceneRenderer(scene, Screen::ScreenFramebuffer(), scene->GetMainCamera());
+    sceneRenderer.DrawScene();
 
     Time::Update();
     Screen::SwapBuffers();

@@ -35,7 +35,6 @@ public:
     void Refresh();
     void Update();
     void PrepareDraw();
-    void Draw(Framebuffer* framebuffer);
 
 protected:
     EntitiesRegistry* entitiesRegistry;
@@ -61,4 +60,6 @@ private:
     void CleanAllEntities();
     void DestroyAndRemoveEntity(EntityID entity);
     void DestroyEntityInner(EntityID entity);
+
+    friend class SceneRenderer;
 };

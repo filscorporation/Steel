@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../EntityComponentSystem/Component.h"
+#include "../Scene/Transformation.h"
 #include <glm/glm.hpp>
 
 namespace CameraResizeModes
@@ -32,7 +33,11 @@ public:
     glm::vec2 ScreenToWorldPoint(glm::vec2 screenPoint);
     glm::vec2 WorldToScreenPoint(glm::vec2 worldPoint);
 
+    void UpdateSize(float screenWidth, float screenHeight);
+    void UpdateViewProjection(Transformation& transformation);
     glm::mat4 GetViewProjection();
+
+    bool AutoResize = true; // False used for scene camera
 
 private:
     float _width = 4.0f;
@@ -43,7 +48,6 @@ private:
 
     glm::mat4 viewProjection;
 
-    void UpdateSize();
     void SetCameraDirty(bool dirty);
     bool IsCameraDirty() const;
     bool dirtyCamera = true;

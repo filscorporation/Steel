@@ -1,8 +1,10 @@
 #include <Steel/Scripting/ScriptingSystem.h>
+#include <Steel/Rendering/SceneRenderer.h>
 #include "EditorApplication.h"
 #include "EditorScene.h"
 #include "EditorBuilder.h"
 #include "EditorSceneManager.h"
+#include "CustomSceneRenderer.h"
 
 void EditorApplication::Init(ApplicationSettings settings)
 {
@@ -56,8 +58,10 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext->Scenes->SetActiveScene(editorScene);
 
     ApplicationFramebuffer = new Framebuffer(AppContext->ScreenParams.ResolutionX, AppContext->ScreenParams.ResolutionY);
+    OpenedSceneFramebuffer = new Framebuffer(100, 100);
 
     EditorContext->Scenes->GetActiveScene()->CreateMainCamera();
+    CreateEditorViewCamera();
 
     IsInitialized = true;
 
@@ -75,26 +79,32 @@ void EditorApplication::RunUpdate()
     Screen::UpdateSize();
 
     // Update editor scene
-    CurrentContext->Scenes->GetActiveScene()->Refresh();
-    CurrentContext->Scenes->GetActiveScene()->Update();
-    CurrentContext->Scenes->GetActiveScene()->PrepareDraw();
+    auto editorScene = CurrentContext->Scenes->GetActiveScene();
+    editorScene->Refresh();
+    editorScene->Update();
+    editorScene->PrepareDraw();
 
     // Set scene we will update and render into framebuffer
     SwitchContext(AppContext);
 
-    CurrentContext->Scenes->GetActiveScene()->Refresh();
+    auto openedScene = CurrentContext->Scenes->GetActiveScene();
+    openedScene->Refresh();
     if (state == EditorStates::Playing || state == EditorStates::Step)
     {
-        CurrentContext->Scenes->GetActiveScene()->Update();
+        openedScene->Update();
         if (state == EditorStates::Step)
             state = EditorStates::Paused;
     }
-    CurrentContext->Scenes->GetActiveScene()->PrepareDraw();
-    CurrentContext->Scenes->GetActiveScene()->Draw(ApplicationFramebuffer);
+    openedScene->PrepareDraw();
+    SceneRenderer appViewRenderer(openedScene, ApplicationFramebuffer, openedScene->GetMainCamera());
+    appViewRenderer.DrawScene();
+    CustomSceneRenderer sceneViewRenderer(openedScene, OpenedSceneFramebuffer, EditorViewCameraEntity);
+    sceneViewRenderer.DrawScene();
 
     // Now render editor
     SwitchContext(EditorContext);
-    CurrentContext->Scenes->GetActiveScene()->Draw(Screen::ScreenFramebuffer());
+    SceneRenderer editorRenderer(editorScene, Screen::ScreenFramebuffer(), editorScene->GetMainCamera());
+    editorRenderer.DrawScene();
 
     Time::Update();
     Screen::SwapBuffers();
@@ -105,6 +115,7 @@ void EditorApplication::RunUpdate()
 
 void EditorApplication::Terminate()
 {
+    delete OpenedSceneFramebuffer;
     delete ApplicationFramebuffer;
 
     SwitchContext(EditorContext);
@@ -157,4 +168,15 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
 ApplicationContext* EditorApplication::GetAppContext()
 {
     return AppContext;
+}
+
+void EditorApplication::CreateEditorViewCamera()
+{
+    EditorViewCameraEntity = EditorContext->Scenes->GetActiveScene()->CreateEntity("Editor view camera", NULL_ENTITY);
+    auto& camera = EditorContext->Scenes->GetActiveScene()->GetEntitiesRegistry()->AddComponent<Camera>(EditorViewCameraEntity);
+    // We will manually update it's size from scene view
+    camera.AutoResize = false;
+    camera.SetHeight(3.0f);
+    auto& transform = EditorContext->Scenes->GetActiveScene()->GetEntitiesRegistry()->GetComponent<Transformation>(EditorViewCameraEntity);
+    transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 }

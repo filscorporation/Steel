@@ -20,6 +20,7 @@ public:
     static bool IsMouseButtonJustPressed(MouseCodes::MouseCode button);
     static bool IsMouseButtonJustReleased(MouseCodes::MouseCode button);
     static glm::vec2 GetMousePosition();
+    static glm::vec2 GetMouseDelta();
     static glm::vec2 GetMouseScrollDelta();
 
     static bool IsAnyKeyPressed();

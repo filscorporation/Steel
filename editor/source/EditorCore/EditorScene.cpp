@@ -1,5 +1,6 @@
 #include "EditorScene.h"
 #include "../UI/AppView.h"
+#include "../UI/SceneView.h"
 #include "../UI/HierarchyView.h"
 #include "../UI/StatsWindow.h"
 
@@ -33,5 +34,11 @@ void EditorScene::AfterPrepareDraw()
     for (int i = 0; i < appViews.Size(); ++i)
     {
         appViews[i].Update(entitiesRegistry);
+    }
+
+    auto sceneViews = entitiesRegistry->GetComponentIterator<SceneView>();
+    for (int i = 0; i < sceneViews.Size(); ++i)
+    {
+        sceneViews[i].Update(entitiesRegistry);
     }
 }

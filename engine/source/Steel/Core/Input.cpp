@@ -1,6 +1,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Input.h"
+#include "Log.h"
 
 ButtonStates::ButtonState pressedKeys[MAX_KEY_CODE + 1];
 ButtonStates::ButtonState pressedMouse[MAX_MOUSE_CODE + 1];
@@ -53,8 +54,6 @@ void MouseCallback(GLFWwindow* window, int button, int action, int mods)
 
 void CursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 {
-    lastMousePosition = Input::GetMousePosition();
-
     mousePosition.x = (float)xPos;
     // GLFW coordinate system is upside down by Y-axis
     mousePosition.y = Screen::InvertY((float)yPos);
@@ -121,6 +120,11 @@ glm::vec2 Input::GetMousePosition()
     return Screen::Transform(mousePosition);
 }
 
+glm::vec2 Input::GetMouseDelta()
+{
+    return Screen::Transform(mousePosition - lastMousePosition);
+}
+
 glm::vec2 Input::GetMouseScrollDelta()
 {
     return IgnoreEvents ? glm::vec2(0.0f, 0.0f) : mouseScrollDelta;
@@ -160,10 +164,11 @@ UIEvent Input::GetUIEvent()
     UIEvent uiEvent{};
     uiEvent.Used = false;
     uiEvent.MousePosition = GetMousePosition();
-    uiEvent.MouseDelta = GetMousePosition() - lastMousePosition;
+    uiEvent.MouseDelta = GetMouseDelta();
     uiEvent.ScrollDelta = mouseScrollDelta;
     uiEvent.LeftMouseButtonState = pressedMouse[MouseCodes::ButtonLeft];
     uiEvent.RightMouseButtonState = pressedMouse[MouseCodes::ButtonRight];
+    uiEvent.MiddleMouseButtonState = pressedMouse[MouseCodes::ButtonMiddle];
     uiEvent.AnyKey = IsAnyKeyPressed();
     uiEvent.InputString = textInput;
 
@@ -189,6 +194,7 @@ void Input::PollEvents()
     }
     textInput.clear();
 
+    lastMousePosition = mousePosition;
     glfwPollEvents();
 }
 
