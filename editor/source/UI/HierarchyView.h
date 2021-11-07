@@ -53,6 +53,8 @@ public:
     void ElementClicked(EntityID elementID);
     void ElementExpanded(EntityID elementID);
 
+    void FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry);
+
 private:
     EntityID _parentEntity = NULL_ENTITY;
     std::unordered_map<EntityID, HierarchyViewNode>* lastNodes = nullptr;
@@ -62,6 +64,5 @@ private:
                                         EntityID parentEntity, EntityID nodeEntity, const HierarchyViewNode& node);
 
     void DeleteSelectedEntities();
-    void FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry);
     void CreateNewEntityInHierarchy();
 };

@@ -229,22 +229,6 @@ void HierarchyView::ElementExpanded(EntityID elementID)
     }
 }
 
-void HierarchyView::DeleteSelectedEntities()
-{
-    auto editor = (EditorApplication*)Application::Instance;
-    auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
-
-    editor->SwitchContext(editor->AppContext);
-    for (auto& node : *lastNodes)
-    {
-        if (node.second.Flags & NodeFlags::Selected)
-        {
-            appScene->DestroyEntity(node.first);
-        }
-    }
-    editor->SwitchContext(editor->EditorContext);
-}
-
 void HierarchyView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
 {
     std::vector<EntityID> selectedEntities;
@@ -264,6 +248,22 @@ void HierarchyView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
             sceneViewIterator[i].FocusCameraOnEntity(entitiesRegistry, selectedEntities);
         }
     }
+}
+
+void HierarchyView::DeleteSelectedEntities()
+{
+    auto editor = (EditorApplication*)Application::Instance;
+    auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
+
+    editor->SwitchContext(editor->AppContext);
+    for (auto& node : *lastNodes)
+    {
+        if (node.second.Flags & NodeFlags::Selected)
+        {
+            appScene->DestroyEntity(node.first);
+        }
+    }
+    editor->SwitchContext(editor->EditorContext);
 }
 
 void HierarchyView::CreateNewEntityInHierarchy()

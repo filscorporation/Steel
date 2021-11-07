@@ -1,4 +1,5 @@
 #include "SceneView.h"
+#include "HierarchyView.h"
 #include "UIEditorTab.h"
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
@@ -60,7 +61,11 @@ void SceneView::Update(EntitiesRegistry* entitiesRegistry)
     }
     if (isFocused && (Input::IsKeyPressed(KeyCodes::LeftAlt) || Input::IsKeyPressed(KeyCodes::RightAlt)))
     {
-        UpdateCameraScroll(entitiesRegistry);
+        UpdateCameraZoom(entitiesRegistry);
+    }
+    if (isFocused && Input::IsKeyJustPressed(KeyCodes::F))
+    {
+        FocusOnSelectedEntities(entitiesRegistry);
     }
 
     if (isDirty || viewRT.DidSizeChange() || editor->GetAppContext()->ScreenParams.IsDirty)
@@ -148,7 +153,7 @@ void SceneView::UpdateCameraDrag(EntitiesRegistry* entitiesRegistry)
     cameraTransform.SetPosition(cameraTransform.GetPosition() - glm::vec3(drag, 0.0f));
 }
 
-void SceneView::UpdateCameraScroll(EntitiesRegistry* entitiesRegistry)
+void SceneView::UpdateCameraZoom(EntitiesRegistry* entitiesRegistry)
 {
     auto editor = (EditorApplication*)Application::Instance;
     if (!entitiesRegistry->EntityExists(editor->EditorViewCameraEntity))
@@ -159,6 +164,27 @@ void SceneView::UpdateCameraScroll(EntitiesRegistry* entitiesRegistry)
     float scrollStep = scrollDelta.y > 9 ? 9 : scrollDelta.y < -9 ? -9 : scrollDelta.y;
     float newSize = camera.GetHeight() - scrollStep / 10.0f * camera.GetHeight();
 
+    // Calculate target position to zoom to
+    auto& rt = entitiesRegistry->GetComponent<RectTransformation>(sceneViewImageEntity);
+    auto& cameraTransform = entitiesRegistry->GetComponent<Transformation>(editor->EditorViewCameraEntity);
+    glm::vec2 localMousePosition = Input::GetMousePosition() - rt.GetRealPositionCached() + rt.GetRealSizeCached() * 0.5f;
+    glm::vec2 mouseWorldPosition = {
+            camera.GetWidth() * (localMousePosition.x / rt.GetRealSizeCached().x - 0.5f) + cameraTransform.GetPosition().x,
+            camera.GetHeight() * (localMousePosition.y / rt.GetRealSizeCached().y - 0.5f) + cameraTransform.GetPosition().y
+    };
+
+    glm::vec2 newPosition = Math::Lerp(cameraTransform.GetPosition(), mouseWorldPosition, camera.GetHeight() / newSize - 1.0f);
+    cameraTransform.SetPosition(glm::vec3(newPosition, cameraTransform.GetPosition().z));
+
     camera.SetHeight(newSize);
     isDirty = true;
+}
+
+void SceneView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
+{
+    auto hierarchyViewIterator = entitiesRegistry->GetComponentIterator<HierarchyView>();
+    for (int i = 0; i < hierarchyViewIterator.Size(); ++i)
+    {
+        hierarchyViewIterator[i].FocusOnSelectedEntities(entitiesRegistry);
+    }
 }

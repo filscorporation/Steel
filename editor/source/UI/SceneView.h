@@ -21,7 +21,8 @@ private:
     void UpdateView(EntitiesRegistry* entitiesRegistry);
 
     void UpdateCameraDrag(EntitiesRegistry* entitiesRegistry);
-    void UpdateCameraScroll(EntitiesRegistry* entitiesRegistry);
+    void UpdateCameraZoom(EntitiesRegistry* entitiesRegistry);
+    void FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry);
 
     EntityID sceneViewImageEntity = NULL_ENTITY;
     bool ignoreAppInput = false;
