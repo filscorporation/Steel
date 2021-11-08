@@ -23,6 +23,9 @@ public:
     static void EndBatch();
     static void DrawBatchedData();
 
+    static void BeginWireframeMode();
+    static void EndWireframeMode();
+
 private:
 
     // Renderer state
@@ -31,4 +34,8 @@ private:
     static size_t lastPropertyBlockHash;
 
     static std::vector<Shader*> shadersUsed;
+
+    static bool drawWireframe;
+    static Shader* wireframeShader;
+    static Material* wireframeMaterial;
 };

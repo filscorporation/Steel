@@ -9,4 +9,7 @@ public:
         : SceneRenderer(scene, framebuffer, cameraEntity) { }
 
     void DrawScene() override;
+
+private:
+    void RenderPass(Camera& camera);
 };

@@ -2,7 +2,6 @@
 
 #include "Renderer.h"
 #include "Screen.h"
-#include "SpriteRenderer.h"
 #include "OpenGLAPI.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
@@ -20,6 +19,26 @@ glm::mat4 Renderer::currentViewProjection;
 size_t Renderer::lastPropertyBlockHash = 0;
 ResourceID Renderer::lastMaterial = NULL_RESOURCE;
 std::vector<Shader*> Renderer::shadersUsed;
+bool Renderer::drawWireframe = false;;
+Shader* Renderer::wireframeShader = nullptr;
+Material* Renderer::wireframeMaterial = nullptr;
+
+const char* WireframeVS =
+"#version 330 core\n"
+"layout (location = 0) in vec3 position;\n"
+"uniform mat4 view_projection;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = view_projection * vec4(position, 1.0f);\n"
+"}";
+
+const char* WireframeFS =
+"#version 330 core\n"
+"out vec4 color;\n"
+"void main()\n"
+"{\n"
+"    color = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
+"}";
 
 using namespace OpenGLAPI;
 
@@ -65,11 +84,17 @@ void Renderer::Init()
 
     Log::LogDebug("Indexes generated");
 
+    wireframeShader = new Shader(WireframeVS, WireframeFS);
+    wireframeMaterial = new Material();
+    wireframeMaterial->MainShader = wireframeShader;
+
     Log::LogDebug("Renderer initialized");
 }
 
 void Renderer::Terminate()
 {
+    delete wireframeShader;
+
     DeleteBuffer(indexBufferID);
     DeleteBuffer(vertexDataBufferID);
 
@@ -120,29 +145,32 @@ void Renderer::PrepareUIRender()
 
 void Renderer::Draw(const QuadRenderer& quad)
 {
-    if (quad.RenderMaterial->ID != lastMaterial)
+    if (!drawWireframe)
     {
-        EndBatch();
-        StartBatch();
-        lastMaterial = quad.RenderMaterial->ID;
-        lastPropertyBlockHash = 0;
-        quad.RenderMaterial->MainShader->Use();
-        quad.RenderMaterial->Properties.Apply(quad.RenderMaterial->MainShader);
-        quad.CustomProperties.Apply(quad.RenderMaterial->MainShader);
-    }
-    else if (quad.CustomProperties.GetHash() != lastPropertyBlockHash)
-    {
-        EndBatch();
-        StartBatch();
-        lastPropertyBlockHash = quad.CustomProperties.GetHash();
-        quad.CustomProperties.Apply(quad.RenderMaterial->MainShader);
-    }
+        if (quad.RenderMaterial->ID != lastMaterial)
+        {
+            EndBatch();
+            StartBatch();
+            lastMaterial = quad.RenderMaterial->ID;
+            lastPropertyBlockHash = 0;
+            quad.RenderMaterial->MainShader->Use();
+            quad.RenderMaterial->Properties.Apply(quad.RenderMaterial->MainShader);
+            quad.CustomProperties.Apply(quad.RenderMaterial->MainShader);
+        }
+        else if (quad.CustomProperties.GetHash() != lastPropertyBlockHash)
+        {
+            EndBatch();
+            StartBatch();
+            lastPropertyBlockHash = quad.CustomProperties.GetHash();
+            quad.CustomProperties.Apply(quad.RenderMaterial->MainShader);
+        }
 
-    if (!quad.RenderMaterial->MainShader->GlobalUniformsSet)
-    {
-        shadersUsed.push_back(quad.RenderMaterial->MainShader);
-        quad.RenderMaterial->MainShader->GlobalUniformsSet = true;
-        quad.RenderMaterial->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(currentViewProjection));
+        if (!quad.RenderMaterial->MainShader->GlobalUniformsSet)
+        {
+            shadersUsed.push_back(quad.RenderMaterial->MainShader);
+            quad.RenderMaterial->MainShader->GlobalUniformsSet = true;
+            quad.RenderMaterial->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(currentViewProjection));
+        }
     }
 
     int offset = renderCallsCount * RENDER_CALL_DATA_SIZE * 4;
@@ -184,24 +212,6 @@ void Renderer::EndBatch()
 
     Application::Context()->Stats.DrawCalls ++;
     DrawBatchedData();
-
-    // TODO: move to different pass
-    /*if (DrawWireframe)
-    {
-        // Wireframe mode
-        auto drawModeBackup = currentDrawMode;
-        SetDrawMode(DrawModes::Wireframe);
-
-        DisableDepthTest();
-        SetPolygonMode(Line);
-
-        DrawBatchedData();
-
-        SetPolygonMode(Fill);
-        EnableDepthTest();
-
-        SetDrawMode(drawModeBackup);
-    }*/
 }
 
 void Renderer::DrawBatchedData()
@@ -233,4 +243,22 @@ void Renderer::DrawBatchedData()
 
     UnbindTexture();
     DeleteVertexArray(vertexArrayID);
+}
+
+void Renderer::BeginWireframeMode()
+{
+    DisableDepthTest();
+    SetPolygonMode(Line);
+    drawWireframe = true;
+
+    wireframeShader->Use();
+    wireframeMaterial->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(currentViewProjection));
+    wireframeMaterial->Properties.Apply(wireframeShader);
+}
+
+void Renderer::EndWireframeMode()
+{
+    drawWireframe = false;
+    SetPolygonMode(Fill);
+    EnableDepthTest();
 }

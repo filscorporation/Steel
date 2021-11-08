@@ -1,7 +1,8 @@
-#include <Steel/Rendering/Renderer.h>
 #include "CustomSceneRenderer.h"
 #include "EditorBuilder.h"
 #include "EditorApplication.h"
+
+#include <Steel/Rendering/Renderer.h>
 
 void CustomSceneRenderer::DrawScene()
 {
@@ -16,6 +17,22 @@ void CustomSceneRenderer::DrawScene()
     // Camera from editor scene (not from rendered scene)
     auto editor = (EditorApplication*)Application::Instance;
     auto& camera = editor->EditorContext->Scenes->GetActiveScene()->GetEntitiesRegistry()->GetComponent<Camera>(_cameraEntity);
+
+    // Normal render pass
+    RenderPass(camera);
+
+    // Wireframe render pass (objects polygon lines for debugging)
+    Renderer::BeginWireframeMode();
+    RenderPass(camera);
+    Renderer::EndWireframeMode();
+
+    AfterDraw();
+
+    _framebuffer->Unbind();
+}
+
+void CustomSceneRenderer::RenderPass(Camera& camera)
+{
     Renderer::OnBeforeRender(camera);
 
     auto quadRenderers = _scene->GetEntitiesRegistry()->GetComponentIterator<QuadRenderer>();
@@ -30,8 +47,5 @@ void CustomSceneRenderer::DrawScene()
         if (quadRenderers[i].Queue == RenderingQueue::Transparent)
             Renderer::Draw(quadRenderers[i]);
 
-    AfterDraw();
-
     Renderer::OnAfterRender();
-    _framebuffer->Unbind();
 }
