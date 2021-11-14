@@ -11,6 +11,7 @@
 class PhysicsCore
 {
 public:
+    static bool Initialized();
     static void CreateWorld();
     static b2World* GetWorld();
     static void DeleteWorld();

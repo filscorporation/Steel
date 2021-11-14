@@ -146,8 +146,8 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
         case EditorStates::Playing:
             if (state == EditorStates::Stopped)
             {
-                sceneManager->StartTestEditedScene();
                 SwitchContext(AppContext);
+                sceneManager->StartTestEditedScene();
                 ScriptingSystem::CallEntryPoint();
                 SwitchContext(EditorContext);
             }

@@ -10,12 +10,15 @@
 
 void RigidBody::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info = new RigidBody::RigidBodyInfo();
 }
 
 void RigidBody::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    if (info == nullptr)
+    if (info == nullptr || !PhysicsCore::Initialized())
         return;
 
     PhysicsCore::GetWorld()->DestroyBody(info->Body);
@@ -25,6 +28,9 @@ void RigidBody::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
 void RigidBody::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info = new RigidBody::RigidBodyInfo();
     auto typeBackup = _type;
     _type = RigidBodyTypes::None;
@@ -33,12 +39,30 @@ void RigidBody::OnEnabled(EntitiesRegistry* entitiesRegistry)
 
 void RigidBody::OnDisabled(EntitiesRegistry* entitiesRegistry)
 {
-    if (info == nullptr)
+    if (info == nullptr || !PhysicsCore::Initialized())
         return;
 
     PhysicsCore::GetWorld()->DestroyBody(info->Body);
     delete info;
     info = nullptr;
+}
+
+void RigidBody::Init()
+{
+    // Init info and apply type
+    info = new RigidBody::RigidBodyInfo();
+    auto typeBackup = _type;
+    _type = RigidBodyTypes::None;
+    SetType(typeBackup);
+
+    // Apply all properties
+    SetGravityScale(_gravityScale);
+    SetFriction(_friction);
+    SetRestitution(_restitution);
+    SetLinearDamping(_linearDamping);
+    SetAngularDamping(_angularDamping);
+    SetIsFixedRotation(_isFixedRotation);
+    SetUseContinuousCollisionDetection(_useCCD);
 }
 
 void RigidBody::SetDynamic()
@@ -96,6 +120,12 @@ RigidBodyTypes::RigidBodyType RigidBody::GetType() const
 
 void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
 {
+    if (!PhysicsCore::Initialized())
+    {
+        _type = type;
+        return;
+    }
+
     if (type != _type && AssertInitialized())
         return;
 
@@ -150,6 +180,10 @@ float RigidBody::GetMass() const
 void RigidBody::SetMass(float mass)
 {
     _mass = mass;
+
+    if (!PhysicsCore::Initialized())
+        return;
+
     if (_type != RigidBodyTypes::None)
         SetMassInner();
 }
@@ -174,12 +208,18 @@ void RigidBody::SetMassInner()
 
 glm::vec2 RigidBody::GetVelocity() const
 {
+    if (!PhysicsCore::Initialized())
+        return glm::vec2(0.0f);
+
     auto& v = info->Body->GetLinearVelocity();
     return glm::vec2(v.x, v.y);
 }
 
 void RigidBody::SetVelocity(glm::vec2 velocity)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     auto v = b2Vec2(velocity.x, velocity.y);
     info->Body->SetLinearVelocity(v);
     info->Body->SetAwake(true);
@@ -187,22 +227,33 @@ void RigidBody::SetVelocity(glm::vec2 velocity)
 
 float RigidBody::GetAngularVelocity() const
 {
+    if (!PhysicsCore::Initialized())
+        return 0.0f;
+
     return info->Body->GetAngularVelocity();
 }
 
 void RigidBody::SetAngularVelocity(float velocity)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->SetAngularVelocity(velocity);
     info->Body->SetAwake(true);
 }
 
 float RigidBody::GetGravityScale() const
 {
-    return info->Body->GetGravityScale();
+    return _gravityScale;
 }
 
 void RigidBody::SetGravityScale(float gravityScale)
 {
+    _gravityScale = gravityScale;
+
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->SetGravityScale(gravityScale);
     info->Body->SetAwake(true);
 }
@@ -215,6 +266,9 @@ float RigidBody::GetFriction() const
 void RigidBody::SetFriction(float friction)
 {
     _friction = friction;
+
+    if (!PhysicsCore::Initialized())
+        return;
 
     if (_type == RigidBodyTypes::None)
         return;
@@ -236,6 +290,9 @@ void RigidBody::SetRestitution(float restitution)
 {
     _restitution = restitution;
 
+    if (!PhysicsCore::Initialized())
+        return;
+
     if (_type == RigidBodyTypes::None)
         return;
 
@@ -249,22 +306,32 @@ void RigidBody::SetRestitution(float restitution)
 
 float RigidBody::GetLinearDamping() const
 {
-    return info->Body->GetLinearDamping();
+    return _linearDamping;
 }
 
 void RigidBody::SetLinearDamping(float damping)
 {
+    _linearDamping = damping;
+
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->SetLinearDamping(damping);
     info->Body->SetAwake(true);
 }
 
 float RigidBody::GetAngularDamping() const
 {
-    return info->Body->GetAngularDamping();
+    return _angularDamping;
 }
 
 void RigidBody::SetAngularDamping(float damping)
 {
+    _angularDamping = damping;
+
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->SetAngularDamping(damping);
     info->Body->SetAwake(true);
 }
@@ -277,48 +344,75 @@ float RigidBody::GetIsFixedRotation() const
 void RigidBody::SetIsFixedRotation(bool isFixed)
 {
     _isFixedRotation = isFixed;
+
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->SetFixedRotation(_isFixedRotation);
     info->Body->SetAwake(true);
 }
 
 float RigidBody::GetUseContinuousCollisionDetection() const
 {
-    return info->Body->IsBullet();
+    return _useCCD;
 }
 
 void RigidBody::SetUseContinuousCollisionDetection(bool useCCD)
 {
+    _useCCD = useCCD;
+
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->SetBullet(useCCD);
     info->Body->SetAwake(true);
 }
 
 void RigidBody::ApplyForce(const glm::vec2& force)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
 }
 
 void RigidBody::ApplyForce(const glm::vec2& force, const glm::vec2& point)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->ApplyForce(b2Vec2(force.x, force.y), b2Vec2(point.x, point.y), true);
 }
 
 void RigidBody::ApplyTorque(float torque)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->ApplyTorque(torque, true);
 }
 
 void RigidBody::ApplyLinearImpulse(const glm::vec2& impulse)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->ApplyLinearImpulseToCenter(b2Vec2(impulse.x, impulse.y), true);
 }
 
 void RigidBody::ApplyLinearImpulse(const glm::vec2& impulse, const glm::vec2& point)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->ApplyLinearImpulse(b2Vec2(impulse.x, impulse.y), b2Vec2(point.x, point.y), true);
 }
 
 void RigidBody::ApplyAngularImpulse(float impulse)
 {
+    if (!PhysicsCore::Initialized())
+        return;
+
     info->Body->ApplyAngularImpulse(impulse, true);
 }
 

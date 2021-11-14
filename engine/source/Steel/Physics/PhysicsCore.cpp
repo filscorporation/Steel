@@ -9,7 +9,7 @@ const float GRAVITY = -9.8f;
 const int VELOCITY_ITERATIONS = 6;
 const int POSITION_ITERATIONS = 2;
 
-static b2World* world;
+static b2World* world = nullptr;
 static PhysicsContactListener contactListener;
 
 class QueryCallback : public b2QueryCallback
@@ -48,6 +48,11 @@ public:
 };
 static RayCastCallback rayCastCallback;
 
+bool PhysicsCore::Initialized()
+{
+    return world != nullptr;
+}
+
 void PhysicsCore::CreateWorld()
 {
     b2Vec2 gravity(0.0f, GRAVITY);
@@ -58,6 +63,7 @@ void PhysicsCore::CreateWorld()
 void PhysicsCore::DeleteWorld()
 {
     delete world;
+    world = nullptr;
 }
 
 void PhysicsCore::Simulate(float deltaTime)

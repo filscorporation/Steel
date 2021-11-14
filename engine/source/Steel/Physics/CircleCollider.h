@@ -13,6 +13,8 @@ public:
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
 
+    void Init();
+
     void SetSizeAutomatically();
     float GetRadius() const;
     void SetRadius(float radius);
@@ -20,6 +22,7 @@ public:
 private:
     CircleColliderInfo* info = nullptr;
     float _radius = 0.0f;
+    bool autoSize = true;
 
     friend class RigidBody;
 };

@@ -29,9 +29,8 @@ public:
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
-    void SetDynamic();
-    void SetStatic();
-    void SetKinematic();
+    void Init();
+
     RigidBodyTypes::RigidBodyType GetType() const;
     void SetType(RigidBodyTypes::RigidBodyType type);
 
@@ -70,13 +69,22 @@ public:
     std::unordered_map<EntityID, Collision> ActiveContacts;
 
 private:
+    bool initialized = false;
     RigidBodyInfo* info = nullptr;
     bool inGetTransformation = false;
     float _mass = 1.0f;
+    float _gravityScale = 1.0f;
     float _friction = 0.2f;
     float _restitution = 0.0f;
+    float _linearDamping = 0.0f;
+    float _angularDamping = 0.01f;
     bool _isFixedRotation = false;
+    bool _useCCD = false;
     RigidBodyTypes::RigidBodyType _type = RigidBodyTypes::None;
+
+    void SetDynamic();
+    void SetStatic();
+    void SetKinematic();
 
     void SetAutoFixture();
     bool AssertInitialized();

@@ -13,6 +13,27 @@ void Physics::CreatePhysicsScene(EntitiesRegistry* entitiesRegistry)
 {
     PhysicsCore::CreateWorld();
 
+    auto boxColliders = entitiesRegistry->GetComponentIterator<BoxCollider>();
+    for (int i = 0; i < boxColliders.Size(); ++i)
+    {
+        if (boxColliders[i].IsAlive())
+            boxColliders[i].Init();
+    }
+
+    auto circleColliders = entitiesRegistry->GetComponentIterator<CircleCollider>();
+    for (int i = 0; i < circleColliders.Size(); ++i)
+    {
+        if (circleColliders[i].IsAlive())
+            circleColliders[i].Init();
+    }
+
+    auto rigidBodies = entitiesRegistry->GetComponentIterator<RigidBody>();
+    for (int i = 0; i < rigidBodies.Size(); ++i)
+    {
+        if (rigidBodies[i].IsAlive())
+            rigidBodies[i].Init();
+    }
+
     Log::LogDebug("Physics initialized");
 }
 

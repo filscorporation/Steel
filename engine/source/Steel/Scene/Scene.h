@@ -20,7 +20,7 @@ public:
     explicit Scene();
     Scene(const Scene& scene);
     ~Scene() override;
-    void InitSystems();
+    void Init();
 
     void CreateMainCamera();
     EntityID GetMainCamera();

@@ -45,7 +45,7 @@ Scene::~Scene()
     }
 }
 
-void Scene::InitSystems()
+void Scene::Init()
 {
     Physics::CreatePhysicsScene(entitiesRegistry);
     AudioCore::CreateAudioScene(entitiesRegistry);

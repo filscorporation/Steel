@@ -27,7 +27,7 @@ void EditorSceneManager::StartTestEditedScene()
 
     delete activeScene;
     activeScene = new Scene(*editedScene);
-    activeScene->InitSystems();
+    activeScene->Init();
 }
 
 void EditorSceneManager::EndTestEditedScene()

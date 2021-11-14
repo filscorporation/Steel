@@ -8,7 +8,6 @@ SceneManager::~SceneManager()
 Scene* SceneManager::CreateNewScene()
 {
     auto scene = new Scene();
-    scene->InitSystems();
 
     return scene;
 }
