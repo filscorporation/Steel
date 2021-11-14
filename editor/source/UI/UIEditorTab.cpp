@@ -13,12 +13,8 @@ void UIEditorTab::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIEditorTab::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
+    isFocused = false;
     SetIsFocused(true);
-}
-
-void UIEditorTab::OnDisabled(EntitiesRegistry* entitiesRegistry)
-{
-    SetIsFocused(false);
 }
 
 void UIEditorTab::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)

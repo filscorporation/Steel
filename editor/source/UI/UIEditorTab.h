@@ -10,7 +10,6 @@ public:
 
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
-    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
     static void HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
