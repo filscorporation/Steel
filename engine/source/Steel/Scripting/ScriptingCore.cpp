@@ -730,7 +730,7 @@ void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
     }
 
     MonoObject* exception = nullptr;
-    mono_runtime_invoke(entryPointMethod, nullptr, nullptr,& exception);
+    mono_runtime_invoke(entryPointMethod, nullptr, nullptr, &exception);
 
     if (exception != nullptr)
     {

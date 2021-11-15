@@ -35,8 +35,8 @@ set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
         ${GLAD_FILES} ${ZLIB_FILES}
         source/Steel/Rendering/Shader.h source/Steel/Rendering/Shader.cpp source/Steel/Core/Application.cpp
-        source/Steel/Core/Application.h source/Steel/Core/Input.cpp source/Steel/Core/Input.h source/Steel/Core/KeyCodes.h
-        source/Steel/Core/MouseCodes.h source/Steel.h source/Steel/EntityComponentSystem/Component.cpp
+        source/Steel/Core/Application.h source/Steel/Input/Input.cpp source/Steel/Input/Input.h source/Steel/Input/KeyCodes.h
+        source/Steel/Input/MouseCodes.h source/Steel.h source/Steel/EntityComponentSystem/Component.cpp
         source/Steel/EntityComponentSystem/Component.h source/Steel/Rendering/SpriteRenderer.cpp
         source/Steel/Rendering/SpriteRenderer.h source/Steel/Scene/Scene.cpp source/Steel/Scene/Scene.h
         source/Steel/Scene/Transformation.cpp source/Steel/Scene/Transformation.h source/Steel/Core/Log.cpp
@@ -72,7 +72,7 @@ set(SOURCE_FILES
         source/Steel/Physics/CircleCollider.cpp source/Steel/Physics/CircleCollider.h
         source/Steel/Scene/HierarchyNode.cpp source/Steel/Scene/HierarchyNode.h source/Steel/Scene/Hierarchy.h
         source/Steel/Scene/Hierarchy.cpp source/Steel/Rendering/RendererData.h source/Steel/UI/UILayer.cpp source/Steel/UI/UILayer.h
-        source/Steel/UI/UIEventHandler.cpp source/Steel/UI/UIEventHandler.h source/Steel/UI/UIEvent.h source/Steel/Core/ButtonStates.h
+        source/Steel/UI/UIEventHandler.cpp source/Steel/UI/UIEventHandler.h source/Steel/UI/UIEvent.h source/Steel/Input/ButtonStates.h
         source/Steel/UI/UIElements/UIButton.cpp source/Steel/UI/UIElements/UIButton.h source/Steel/UI/UIElements/UIText.cpp source/Steel/UI/UIElements/UIText.h
         source/Steel/UI/Font.cpp source/Steel/UI/Font.h
         source/Steel/UI/FontManager.cpp source/Steel/UI/FontManager.h
@@ -89,7 +89,7 @@ set(SOURCE_FILES
         source/Steel/UI/UIElements/UICheckBox.cpp source/Steel/UI/UIElements/UICheckBox.h
         source/Steel/UI/UIElements/UITabs.cpp source/Steel/UI/UIElements/UITabs.h source/Steel/UI/UIElements/UILayoutGroup.cpp
         source/Steel/UI/UIElements/UILayoutGroup.h source/Steel/UI/UIElements/UILayoutElement.h source/Steel/UI/UIElements/LayoutGroupTypes.h
-        source/Steel/Core/SceneManager.cpp source/Steel/Core/SceneManager.h source/Steel/Rendering/Framebuffer.cpp source/Steel/Rendering/Framebuffer.h
+        source/Steel/Scene/SceneManager.cpp source/Steel/Scene/SceneManager.h source/Steel/Rendering/Framebuffer.cpp source/Steel/Rendering/Framebuffer.h
         source/Steel/Rendering/Texture.cpp source/Steel/Rendering/Texture.h source/Steel/UI/UIElements/UILayoutElement.cpp
         source/Steel/Rendering/SceneRenderer.cpp source/Steel/Rendering/SceneRenderer.h)
 

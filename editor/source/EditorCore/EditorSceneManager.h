@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Steel/Core/SceneManager.h>
+#include <Steel/Scene/SceneManager.h>
 
 class EditorSceneManager : public SceneManager
 {

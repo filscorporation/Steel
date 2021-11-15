@@ -6,7 +6,7 @@
 #include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Time.h"
-#include "Steel/Core/Input.h"
+#include "Steel/Input/Input.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 #include "Steel/EntityComponentSystem/Entity.h"
 #include "Steel/EntityComponentSystem/Component.h"

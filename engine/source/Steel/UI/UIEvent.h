@@ -3,7 +3,7 @@
 #include "glm/vec2.hpp"
 #include <string>
 
-#include "../Core/ButtonStates.h"
+#include "../Input/ButtonStates.h"
 
 namespace UIEventTypes
 {

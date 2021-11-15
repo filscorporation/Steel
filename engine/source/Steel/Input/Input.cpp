@@ -1,7 +1,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Input.h"
-#include "Log.h"
+#include "../Core/Log.h"
 
 ButtonStates::ButtonState pressedKeys[MAX_KEY_CODE + 1];
 ButtonStates::ButtonState pressedMouse[MAX_MOUSE_CODE + 1];

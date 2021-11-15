@@ -1,6 +1,6 @@
 #include "../Core/Log.h"
-#include "../Core/Input.h"
 #include "../Core/Application.h"
+#include "../Input/Input.h"
 #include "../Scene/Transformation.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"

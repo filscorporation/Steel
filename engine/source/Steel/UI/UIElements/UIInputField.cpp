@@ -4,9 +4,9 @@
 
 #include "UIInputField.h"
 #include "../UIQuadRenderer.h"
-#include "../../Core/Input.h"
 #include "../../Core/Log.h"
 #include "../../Core/Time.h"
+#include "../../Input/Input.h"
 #include "../../Scene/SceneHelper.h"
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"

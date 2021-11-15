@@ -4,8 +4,8 @@
 #include "Screen.h"
 #include "OpenGLAPI.h"
 #include "../Core/Application.h"
-#include "../Core/Input.h"
 #include "../Core/Log.h"
+#include "../Input/Input.h"
 
 GLFWwindow* _window;
 bool needToUpdateViewport = false;

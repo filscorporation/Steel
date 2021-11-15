@@ -8,11 +8,11 @@
 #endif
 
 #include "Application.h"
-#include "Input.h"
 #include "Log.h"
 #include "Time.h"
 #include "../Audio/AudioCore.h"
 #include "../Animation/Animator.h"
+#include "../Input/Input.h"
 #include "../Math/Random.h"
 #include "../Physics/Physics.h"
 #include "../Rendering/Renderer.h"
@@ -40,7 +40,6 @@ void Application::Init(ApplicationSettings settings)
     InitSystems(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer);
     AppContext = CreateContext(settings);
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
-    ScriptingSystem::CallEntryPoint();
 
     IsInitialized = true;
     Log::LogDebug("Application initialized");
@@ -82,7 +81,7 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
 
     context->Scenes = new SceneManager();
     context->Scenes->SetActiveScene(context->Scenes->CreateNewScene());
-    context->Scenes->CreateNewScene()->Init();
+    context->Scenes->GetActiveScene()->Init();
 
     return context;
 }
@@ -114,6 +113,12 @@ void Application::RunUpdate()
 
     // Set scene we will update and render
     SwitchContext(AppContext);
+
+    if (!EntryPointCalled)
+    {
+        EntryPointCalled = true;
+        ScriptingSystem::CallEntryPoint();
+    }
 
     Input::PollEvents();
     Screen::UpdateSize();

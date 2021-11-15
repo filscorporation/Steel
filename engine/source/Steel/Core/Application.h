@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SceneManager.h"
+#include "../Scene/SceneManager.h"
 #include "../Scene/Scene.h"
 #include "../Resources/ResourcesManager.h"
 
@@ -64,6 +64,7 @@ public:
 protected:
     bool IsInitialized = false;
     bool IsRunning;
+    bool EntryPointCalled = false;
     ApplicationContext* CurrentContext = nullptr;
     ApplicationContext* AppContext = nullptr;
 
