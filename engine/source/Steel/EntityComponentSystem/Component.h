@@ -4,8 +4,9 @@
 
 #include "Entity.h"
 #include "EntitiesRegistry.h"
+#include "../Serialization/Serializable.h"
 
-class Component
+class Component : public Serializable
 {
 public:
     explicit Component(EntityID ownerEntityID);

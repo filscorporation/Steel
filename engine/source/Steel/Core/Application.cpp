@@ -18,6 +18,7 @@
 #include "../Rendering/Renderer.h"
 #include "../Rendering/SceneRenderer.h"
 #include "../Scripting/ScriptingSystem.h"
+#include "../Serialization/SerializationManager.h"
 
 Application* Application::Instance;
 
@@ -53,6 +54,7 @@ void Application::InitSystems(int width, int height, glm::vec3 color, bool fulls
     Screen::Init(width, height, color, fullscreen, doubleBuffer);
 
     ScriptingSystem::Init();
+    SerializationManager::Init();
     Renderer::Init();
     AudioCore::Init();
 }
@@ -150,6 +152,7 @@ void Application::Terminate()
     AudioCore::Terminate();
     Renderer::Terminate();
     Screen::Terminate();
+    SerializationManager::Terminate();
     ScriptingSystem::Terminate();
 }
 

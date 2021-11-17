@@ -91,7 +91,9 @@ set(SOURCE_FILES
         source/Steel/UI/UIElements/UILayoutGroup.h source/Steel/UI/UIElements/UILayoutElement.h source/Steel/UI/UIElements/LayoutGroupTypes.h
         source/Steel/Scene/SceneManager.cpp source/Steel/Scene/SceneManager.h source/Steel/Rendering/Framebuffer.cpp source/Steel/Rendering/Framebuffer.h
         source/Steel/Rendering/Texture.cpp source/Steel/Rendering/Texture.h source/Steel/UI/UIElements/UILayoutElement.cpp
-        source/Steel/Rendering/SceneRenderer.cpp source/Steel/Rendering/SceneRenderer.h)
+        source/Steel/Rendering/SceneRenderer.cpp source/Steel/Rendering/SceneRenderer.h source/Steel/Serialization/SerializationManager.cpp
+        source/Steel/Serialization/SerializationManager.h source/Steel/Serialization/Serializable.h source/Steel/Serialization/AttributeInfo.h
+        source/Steel/Serialization/AttributeAccessor.h source/Steel/Common/StringUtils.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
