@@ -40,7 +40,7 @@ void UIClipping::OnDisabled(EntitiesRegistry* entitiesRegistry)
 
 void UIClipping::InitCaps(EntitiesRegistry* entitiesRegistry)
 {
-    ClippingLevel = GetClippingLevelUpwards(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner).ParentNode);
+    ClippingLevel = GetClippingLevelUpwards(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner).GetParentNode());
     ClippingLevel++;
 
     clippingQuads.reserve(4);

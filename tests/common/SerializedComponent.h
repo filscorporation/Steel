@@ -4,6 +4,8 @@
 
 class SerializedComponent : public Component
 {
+    COMPONENT(SerializedComponent)
+
 public:
     explicit SerializedComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
@@ -14,19 +16,19 @@ public:
     float GetFloatAttribute() const;
     bool GetBoolAttribute() const;
     EntityID GetEntityIDAttribute() const;
-    std::string GetStringAttribute() const;
-    glm::vec2 GetVec2Attribute() const;
-    glm::vec3 GetVec3Attribute() const;
-    glm::vec4 GetVec4Attribute() const;
+    const std::string& GetStringAttribute() const;
+    const glm::vec2& GetVec2Attribute() const;
+    const glm::vec3& GetVec3Attribute() const;
+    const glm::vec4& GetVec4Attribute() const;
 
     void SetIntegerAttribute(int newValue);
     void SetFloatAttribute(float newValue);
     void SetBoolAttribute(bool newValue);
     void SetEntityIDAttribute(EntityID newValue);
-    void SetStringAttribute(std::string newValue);
-    void SetVec2Attribute(glm::vec2 newValue);
-    void SetVec3Attribute(glm::vec3 newValue);
-    void SetVec4Attribute(glm::vec4 newValue);
+    void SetStringAttribute(const std::string& newValue);
+    void SetVec2Attribute(const glm::vec2& newValue);
+    void SetVec3Attribute(const glm::vec3& newValue);
+    void SetVec4Attribute(const glm::vec4& newValue);
 
     int IntegerAttribute = 0;
     float FloatAttribute = 0.0f;

@@ -6,6 +6,8 @@
 
 class SceneView : public UIComponent
 {
+    COMPONENT(SceneView)
+
 public:
     explicit SceneView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

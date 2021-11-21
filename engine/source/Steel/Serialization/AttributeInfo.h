@@ -48,8 +48,15 @@ public:
         _accessor->FromString(object, line);
     }
 
-    // TODO: void Serialize(Serializable* object, Node* node)
-    // TODO: void Deserialize(Serializable* object, Node* node)
+    void Serialize(Serializable* object, YAML::Node& node)
+    {
+        _accessor->Serialize(object, _name, node);
+    }
+
+    void Deserialize(Serializable* object, YAML::Node& node)
+    {
+        _accessor->Deserialize(object, _name, node);
+    }
 
 private:
     std::string _name;

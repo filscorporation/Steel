@@ -148,12 +148,12 @@ MonoString* EntityInternalCalls::Entity_GetName(EntityID id)
     if (!HasComponentS<NameComponent>(id))
         return nullptr;
 
-    return mono_string_new(mono_domain_get(), GetComponentS<NameComponent>(id).Name.c_str());
+    return mono_string_new(mono_domain_get(), GetComponentS<NameComponent>(id).GetName().c_str());
 }
 
 void EntityInternalCalls::Entity_SetName(EntityID id, MonoString* name)
 {
-    AddComponentS<NameComponent>(id).Name = ScriptingCore::ToString(name);
+    AddComponentS<NameComponent>(id).SetName(ScriptingCore::ToString(name));
 }
 
 MonoArray* EntityInternalCalls::Component_FindAllOfType(void* type)

@@ -12,14 +12,6 @@
 // TODO: remove al dependency into AudioCore
 #include <AL/al.h>
 
-#ifdef DISTRIBUTE_BUILD
-#define ENGINE_RESOURCES_PATH "Resources/"
-#define RESOURCES_PATH "Resources/"
-#else
-#define ENGINE_RESOURCES_PATH "../../../engine/resources/"
-#define RESOURCES_PATH "../../resources/"
-#endif
-
 ResourcesManager::ResourcesManager()
 {
     FontManager::Init();

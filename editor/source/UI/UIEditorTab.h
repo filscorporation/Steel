@@ -5,6 +5,8 @@
 
 class UIEditorTab : public UIComponent
 {
+    COMPONENT(UIEditorTab)
+
 public:
     explicit UIEditorTab(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

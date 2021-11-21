@@ -6,8 +6,12 @@
 
 class Animator : public Component
 {
+    COMPONENT(Animator)
+
 public:
     explicit Animator(EntityID ownerEntityID) : Component(ownerEntityID) { }
+
+    static void RegisterType();
 
     void Play();
     void Play(const std::string& animationName);

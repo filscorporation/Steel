@@ -17,6 +17,8 @@ namespace RenderingQueue
 
 class QuadRenderer : public Component
 {
+    COMPONENT(QuadRenderer)
+
 public:
     explicit QuadRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }
 

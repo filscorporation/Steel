@@ -5,6 +5,19 @@
 
 bool lock = false;
 
+void HierarchyNode::RegisterType()
+{
+    REGISTER_TYPE(HierarchyNode);
+    REGISTER_ATTRIBUTE(HierarchyNode, "childrenCount", GetChildrenCount, SetChildrenCount, uint32_t, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(HierarchyNode, "firstChildNode", GetFirstChildNode, SetFirstChildNode, EntityID, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(HierarchyNode, "hierarchyDepth", GetHierarchyDepth, SetHierarchyDepth, uint32_t, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(HierarchyNode, "nodeIndex", GetNodeIndex, SetNodeIndex, uint32_t, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(HierarchyNode, "thickness", GetThickness, SetThickness, uint32_t, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(HierarchyNode, "previousNode", GetPreviousNode, SetPreviousNode, EntityID, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(HierarchyNode, "nextNode", GetNextNode, SetNextNode, EntityID, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(HierarchyNode, "parentNode", GetParentNode, SetParentNode, EntityID, AttributeFlags::Public);
+}
+
 void HierarchyNode::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
     if (lock || entitiesRegistry->IsCleared())
@@ -13,14 +26,14 @@ void HierarchyNode::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
     // Remove child from its parent and keep all links valid
     HierarchyParent& hierarchyParent =
-            ParentNode == NULL_ENTITY
+            _parentNode == NULL_ENTITY
             ? (HierarchyParent&)(*Application::Instance->GetCurrentScene())
-            : entitiesRegistry->GetComponent<HierarchyNode>(ParentNode);
+            : entitiesRegistry->GetComponent<HierarchyNode>(_parentNode);
     RemoveChildFromItsParent(entitiesRegistry, (*this), hierarchyParent);
-    if (ParentNode != NULL_ENTITY)
+    if (_parentNode != NULL_ENTITY)
     {
-        UpdateThicknessUpwards(entitiesRegistry, ParentNode, -(int)Thickness);
-        entitiesRegistry->GetComponent<HierarchyNode>(ParentNode).IsDirty = true;
+        UpdateThicknessUpwards(entitiesRegistry, _parentNode, -(int)_thickness);
+        entitiesRegistry->GetComponent<HierarchyNode>(_parentNode).IsDirty = true;
     }
     // Delete all children entities
     DeleteRecursively(entitiesRegistry, (*this));
@@ -56,4 +69,64 @@ void HierarchyNode::OnDisabled(EntitiesRegistry* entitiesRegistry)
         Application::Instance->GetCurrentScene()->GetUILayer()->SetSortingOrderDirty();
 
     lock = false;
+}
+
+uint32_t HierarchyNode::GetHierarchyDepth() const
+{
+    return _hierarchyDepth;
+}
+
+void HierarchyNode::SetHierarchyDepth(uint32_t hierarchyDepth)
+{
+    _hierarchyDepth = hierarchyDepth;
+}
+
+uint32_t HierarchyNode::GetNodeIndex() const
+{
+    return _nodeIndex;
+}
+
+void HierarchyNode::SetNodeIndex(uint32_t nodeIndex)
+{
+    _nodeIndex = nodeIndex;
+}
+
+uint32_t HierarchyNode::GetThickness() const
+{
+    return _thickness;
+}
+
+void HierarchyNode::SetThickness(uint32_t thickness)
+{
+    _thickness = thickness;
+}
+
+EntityID HierarchyNode::GetPreviousNode() const
+{
+    return _previousNode;
+}
+
+void HierarchyNode::SetPreviousNode(EntityID previousNode)
+{
+    _previousNode = previousNode;
+}
+
+EntityID HierarchyNode::GetNextNode() const
+{
+    return _nextNode;
+}
+
+void HierarchyNode::SetNextNode(EntityID nextNode)
+{
+    _nextNode = nextNode;
+}
+
+EntityID HierarchyNode::GetParentNode() const
+{
+    return _parentNode;
+}
+
+void HierarchyNode::SetParentNode(EntityID parentNode)
+{
+    _parentNode = parentNode;
 }

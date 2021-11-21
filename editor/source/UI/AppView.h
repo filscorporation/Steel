@@ -5,6 +5,8 @@
 
 class AppView : public UIComponent
 {
+    COMPONENT(AppView)
+
 public:
     explicit AppView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

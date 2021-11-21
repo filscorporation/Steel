@@ -20,7 +20,7 @@ TEST(SerializationTest, ToString)
     component.SetVec3Attribute(glm::vec3(0.7f, 1.2f, -1.0f));
     component.SetVec4Attribute(glm::vec4(0.02f, 0.3f, 0.5f, 1.0f));
 
-    auto& attributes = SerializationManager::GetAttributes(CLASS_ID(SerializedComponent));
+    auto& attributes = SerializationManager::GetAttributes<SerializedComponent>();
     int attributesCount = 0;
     for (auto& attribute : attributes)
     {
@@ -80,7 +80,7 @@ TEST(SerializationTest, FromString)
     EntityID entityID = scene->CreateEntity();
     auto& component = registry->AddComponent<SerializedComponent>(entityID);
 
-    auto& attributes = SerializationManager::GetAttributes(CLASS_ID(SerializedComponent));
+    auto& attributes = SerializationManager::GetAttributes<SerializedComponent>();
     int attributesCount = 0;
     for (auto& attribute : attributes)
     {

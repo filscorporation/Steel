@@ -31,7 +31,7 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->Resources->LoadDefaultResources();
 
     AppContext->Scenes = new EditorSceneManager();
-    AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene());
+    AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene("New scene"));
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
     ((EditorSceneManager*)AppContext->Scenes)->EditActiveScene();

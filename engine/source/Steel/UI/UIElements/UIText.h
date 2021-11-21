@@ -33,6 +33,8 @@ namespace OverflowModes
 
 class UIText : public UIComponent
 {
+    COMPONENT(UIText)
+
 public:
     explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 

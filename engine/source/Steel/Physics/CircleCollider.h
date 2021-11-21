@@ -5,6 +5,8 @@
 
 class CircleCollider : public Component
 {
+    COMPONENT(CircleCollider)
+
     struct CircleColliderInfo;
 
 public:

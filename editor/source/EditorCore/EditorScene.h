@@ -5,7 +5,7 @@
 class EditorScene : public Scene
 {
 public:
-    EditorScene() : Scene() { };
+    EditorScene() : Scene("Editor scene") { };
     ~EditorScene() override = default;
 
 protected:

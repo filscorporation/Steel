@@ -73,7 +73,7 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
     auto sceneRegistry = appScene->GetEntitiesRegistry();
 
-    EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).ParentNode;
+    EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).GetParentNode();
     bool isFocused = entitiesRegistry->GetComponent<UIEditorTab>(parentEntity).GetIsFocused();
 
     auto nodes = new std::unordered_map<EntityID, HierarchyViewNode>();
@@ -125,6 +125,20 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     }
 }
 
+void HierarchyView::Clear(EntitiesRegistry* entitiesRegistry)
+{
+    if (lastNodes != nullptr)
+    {
+        for (auto& node : *lastNodes)
+        {
+            entitiesRegistry->DeleteEntity(node.second.UIElementEntity);
+        }
+    }
+
+    delete lastNodes;
+    lastNodes = nullptr;
+}
+
 void HierarchyView::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
     delete lastNodes;
@@ -133,11 +147,11 @@ void HierarchyView::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
 void HierarchyView::GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParent& parent, std::unordered_map<EntityID, HierarchyViewNode>* nodes)
 {
-    if (parent.ChildrenCount == 0)
+    if (parent.GetChildrenCount() == 0)
         return;
 
-    EntityID currentNodeID = parent.FirstChildNode;
-    uint32_t childrenCount = parent.ChildrenCount;
+    EntityID currentNodeID = parent.GetFirstChildNode();
+    uint32_t childrenCount = parent.GetChildrenCount();
     for (uint32_t i = 0; i < childrenCount; ++i)
     {
         auto& currentChildNode = sceneRegistry->GetComponent<HierarchyNode>(currentNodeID);
@@ -145,7 +159,7 @@ void HierarchyView::GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParen
 
         (*nodes)[currentNodeID].Order = (int)(*nodes).size();
         (*nodes)[currentNodeID].NodeDirty = currentChildNode.IsDirty;
-        (*nodes)[currentNodeID].HasChildren = currentChildNode.ChildrenCount != 0;
+        (*nodes)[currentNodeID].HasChildren = currentChildNode.GetChildrenCount() != 0;
 
         if (lastNodes != nullptr && (*lastNodes).find(currentNodeID) != (*lastNodes).end())
         {
@@ -168,7 +182,7 @@ void HierarchyView::GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParen
             GetNodesData(sceneRegistry, (HierarchyParent&)currentChildNode, nodes);
         }
 
-        currentNodeID = currentChildNode.NextNode;
+        currentNodeID = currentChildNode.GetNextNode();
     }
 }
 

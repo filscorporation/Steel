@@ -12,24 +12,28 @@
 
 class Transformation : public Component
 {
+    COMPONENT(Transformation)
+
 public:
     explicit Transformation(EntityID ownerEntityID) : Component(ownerEntityID) { };
+
+    static void RegisterType();
 
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
 
-    virtual glm::vec3 GetPosition();
-    virtual void SetPosition(const glm::vec3& position);
-    glm::vec3 GetRotation();
+    const glm::vec3& GetPosition();
+    void SetPosition(const glm::vec3& position);
+    const glm::vec3& GetRotation();
     void SetRotation(const glm::vec3& rotation);
-    glm::vec3 GetScale();
+    const glm::vec3& GetScale();
     void SetScale(const glm::vec3& scale);
 
-    virtual glm::vec3 GetLocalPosition() const;
-    virtual void SetLocalPosition(const glm::vec3& position);
-    glm::vec3 GetLocalRotation() const;
+    const glm::vec3& GetLocalPosition() const;
+    void SetLocalPosition(const glm::vec3& position);
+    const glm::vec3& GetLocalRotation() const;
     void SetLocalRotation(const glm::vec3& rotation);
-    glm::vec3 GetLocalScale() const;
+    const glm::vec3& GetLocalScale() const;
     void SetLocalScale(const glm::vec3& scale);
 
     virtual const glm::mat4& GetTransformationMatrixCached();

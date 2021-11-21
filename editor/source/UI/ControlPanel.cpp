@@ -2,6 +2,7 @@
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
 #include "../EditorCore/EditorSceneManager.h"
+#include "HierarchyView.h"
 
 void ControlPanel::Init()
 {
@@ -26,6 +27,45 @@ void ControlPanel::Update(EntitiesRegistry* entitiesRegistry)
     auto editor = (EditorApplication*)Application::Instance;
     if (editor->GetState() != lastState)
         UpdateState();
+
+    // Controls
+    // TODO: temp save/load
+    if ((Input::IsKeyPressed(KeyCodes::LeftControl) || Input::IsKeyPressed(KeyCodes::RightControl))
+        && Input::IsKeyJustPressed(KeyCodes::S))
+    {
+        SaveScene();
+    }
+    if ((Input::IsKeyPressed(KeyCodes::LeftControl) || Input::IsKeyPressed(KeyCodes::RightControl))
+        && Input::IsKeyJustPressed(KeyCodes::O))
+    {
+        LoadScene();
+    }
+}
+
+void ControlPanel::SaveScene()
+{
+    auto editor = (EditorApplication*)Application::Instance;
+    SerializationManager::SerializeScene(editor->AppContext->Scenes->GetActiveScene(), "test_scene.scene");
+}
+
+void ControlPanel::LoadScene()
+{
+    auto editor = (EditorApplication*)Application::Instance;
+
+    editor->SwitchContext(editor->AppContext);
+
+    auto newScene = SerializationManager::DeserializeScene("test_scene.scene");
+
+    if (newScene)
+        ((EditorSceneManager*)editor->AppContext->Scenes)->LoadSceneToEdit(newScene);
+
+    editor->SwitchContext(editor->EditorContext);
+
+    // Refresh views after scene changed
+    auto entitiesRegistry = editor->EditorContext->Scenes->GetActiveScene()->GetEntitiesRegistry();
+    auto hierarchyView = entitiesRegistry->GetComponentIterator<HierarchyView>();
+    for (auto& view : hierarchyView)
+        view.Clear(entitiesRegistry);
 }
 
 void ControlPanel::UpdateState()

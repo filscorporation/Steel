@@ -1,7 +1,5 @@
 #pragma once
 
-#include <typeinfo>
-#include <typeindex>
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
@@ -18,14 +16,15 @@
 #define ENTITY_VERSION_MASK 0xFFFu
 #define ENTITY_ID_SHIFT 12u
 
-#define TYPE_ID(m_type) std::type_index(typeid(m_type))
-using ComponentTypeID = std::type_index;
+#define TYPE_ID(m_type) m_type::GetTypeInfo()->ID
+using ComponentTypeID = uint64_t;
 
 // Stores all components of one type by entityID
 template <typename T>
 using ComponentsPool = SparseDataSet<T>;
 
 class EntitiesRegistry;
+class TypeInfo;
 
 // Base class to store components pool
 class ComponentsPoolWrapperBase
@@ -35,6 +34,8 @@ public:
     virtual ~ComponentsPoolWrapperBase() = default;
     virtual ComponentsPoolWrapperBase* Clone() const = 0;
 
+    virtual const TypeInfo* GetTypeInfo() = 0;
+
     virtual void ClearRemoved() = 0;
     virtual bool MoveFromActiveToInactive(EntityID entityID, EntityID id) = 0;
     virtual bool MoveFromInactiveToActive(EntityID entityID, EntityID id) = 0;
@@ -43,6 +44,10 @@ public:
     virtual void BeforeDeleteAll() = 0;
     virtual void DeleteByEntityID(EntityID entityID, EntityID id) = 0;
     virtual void AfterEntitySetActive(EntityID entityID, EntityID id, bool isActive) = 0;
+
+    virtual bool ExistsByID(EntityID id) = 0;
+    virtual void* GetRawByID(EntityID id) = 0;
+    virtual void* AddRawByID(EntityID id, EntityID entityID, bool active) = 0;
 
 protected:
     EntitiesRegistry* _entitiesRegistry = nullptr;
@@ -64,6 +69,8 @@ public:
     {
         return new ComponentsPoolWrapper<T>(*this);
     }
+
+    const TypeInfo* GetTypeInfo() override { return T::GetTypeInfo(); }
 
     void ClearRemoved() override
     {
@@ -137,6 +144,36 @@ public:
         else
         {
             InactiveStorage.Get(id).OnDisabled(_entitiesRegistry);
+        }
+    }
+
+    bool ExistsByID(EntityID id) override
+    {
+        return Storage.Has(id) || InactiveStorage.Has(id);
+    }
+
+    void* GetRawByID(EntityID id) override
+    {
+        if (Storage.Has(id))
+            return &(Storage.Get(id));
+        if (InactiveStorage.Has(id))
+            return &(InactiveStorage.Get(id));
+        return nullptr;
+    }
+
+    void* AddRawByID(EntityID id, EntityID entityID, bool active) override
+    {
+        if (active)
+        {
+            if (Storage.Has(id))
+                return nullptr;
+            return &(Storage.Add(id, entityID));
+        }
+        else
+        {
+            if (InactiveStorage.Has(id))
+                return nullptr;
+            return &(InactiveStorage.Add(id, entityID));
         }
     }
 };
@@ -274,6 +311,31 @@ public:
     EntityID EntityActual(EntityID id)
     {
         return entityIDs[id];
+    }
+
+    EntityID EntityGetMaxID()
+    {
+        return entityIDs.size();
+    }
+
+    void GetAllComponentsForEntity(EntityID entityID, std::vector<std::pair<ComponentTypeID, void*>>& componentsData)
+    {
+        auto id = EntityIDGetID(entityID);
+        for (auto pool : componentsMap)
+        {
+            if (pool.second->ExistsByID(id))
+            {
+                componentsData.emplace_back(pool.first, pool.second->GetRawByID(id));
+            }
+        }
+    }
+
+    const TypeInfo* GetTypeInfoByID(ComponentTypeID typeID)
+    {
+        if (componentsMap.find(typeID) == componentsMap.end())
+            return nullptr;
+
+        return componentsMap[typeID]->GetTypeInfo();
     }
 
     void EntitySetActive(EntityID entityID, bool active, bool self)
@@ -583,6 +645,55 @@ public:
         {
             ((ComponentsPoolWrapper<T>*)componentsMap[typeID])->ClearRemoved();
         }
+    }
+
+    // Serialization methods
+
+    void GetRegistryState(std::vector<EntityID>& outEntityIDs, int& outFreeIDsCount, EntityID& outNextFreeID)
+    {
+        outEntityIDs = std::vector<EntityID>(entityIDs);
+        outFreeIDsCount = freeIDsCount;
+        outNextFreeID = nextFreeID;
+    }
+
+    void RestoreRegistryState(std::vector<EntityID> rEntityIDs, int rFreeIDsCount, EntityID rNextFreeID)
+    {
+        entityIDs.clear();
+        entityIDs = std::vector<EntityID>(rEntityIDs);
+        entityStates.resize(entityIDs.size());
+        freeIDsCount = rFreeIDsCount;
+        nextFreeID = rNextFreeID;
+    }
+
+    bool RestoreEntityState(EntityID entityID, EntityStates::EntityState entityState)
+    {
+        if (!EntityExists(entityID))
+            return false;
+
+        entityStates[EntityIDGetID(entityID)] = entityState;
+        return true;
+    }
+
+    template<class T>
+    void CheckTypeRegistered()
+    {
+        auto typeID = TYPE_ID(T);
+        if (componentsMap.find(typeID) != componentsMap.end())
+            return;
+
+        componentsMap[typeID] = new ComponentsPoolWrapper<T>(this);
+    }
+
+    void* RestoreComponent(ComponentTypeID typeID, EntityID entityID)
+    {
+        EntityID id = EntityIDGetID(entityID);
+        if (!EntityExists(entityID))
+            return nullptr;
+
+        if (componentsMap.find(typeID) == componentsMap.end())
+            return nullptr;
+
+        return componentsMap[typeID]->AddRawByID(id, entityID, EntityGetState(entityID) & EntityStates::IsActive);
     }
 };
 

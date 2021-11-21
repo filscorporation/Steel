@@ -5,6 +5,8 @@
 
 class BoxCollider : public Component
 {
+    COMPONENT(BoxCollider)
+
     struct BoxColliderInfo;
 
 public:

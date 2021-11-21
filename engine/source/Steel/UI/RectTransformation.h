@@ -15,6 +15,8 @@
 
 class RectTransformation : public Component
 {
+    COMPONENT(RectTransformation)
+
 public:
     explicit RectTransformation(EntityID ownerEntityID) : Component(ownerEntityID) { };
 

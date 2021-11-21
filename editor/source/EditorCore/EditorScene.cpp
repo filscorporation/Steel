@@ -8,6 +8,12 @@ void EditorScene::AfterUpdate()
 {
     Scene::AfterUpdate();
 
+    auto controlPanels = entitiesRegistry->GetComponentIterator<ControlPanel>();
+    for (int i = 0; i < controlPanels.Size(); ++i)
+    {
+        controlPanels[i].Update(entitiesRegistry);
+    }
+
     auto hierarchyViews = entitiesRegistry->GetComponentIterator<HierarchyView>();
     for (int i = 0; i < hierarchyViews.Size(); ++i)
     {

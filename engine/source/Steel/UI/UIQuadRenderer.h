@@ -6,6 +6,8 @@
 
 class UIQuadRenderer : public QuadRenderer
 {
+    COMPONENT(UIQuadRenderer)
+
 public:
     explicit UIQuadRenderer(EntityID ownerEntityID) : QuadRenderer(ownerEntityID) { }
 

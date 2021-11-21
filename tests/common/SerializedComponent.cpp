@@ -38,22 +38,22 @@ EntityID SerializedComponent::GetEntityIDAttribute() const
     return EntityIDAttribute;
 }
 
-std::string SerializedComponent::GetStringAttribute() const
+const std::string& SerializedComponent::GetStringAttribute() const
 {
     return StringAttribute;
 }
 
-glm::vec2 SerializedComponent::GetVec2Attribute() const
+const glm::vec2& SerializedComponent::GetVec2Attribute() const
 {
     return Vec2Attribute;
 }
 
-glm::vec3 SerializedComponent::GetVec3Attribute() const
+const glm::vec3& SerializedComponent::GetVec3Attribute() const
 {
     return Vec3Attribute;
 }
 
-glm::vec4 SerializedComponent::GetVec4Attribute() const
+const glm::vec4& SerializedComponent::GetVec4Attribute() const
 {
     return Vec4Attribute;
 }
@@ -78,22 +78,22 @@ void SerializedComponent::SetEntityIDAttribute(EntityID newValue)
     EntityIDAttribute = newValue;
 }
 
-void SerializedComponent::SetStringAttribute(std::string newValue)
+void SerializedComponent::SetStringAttribute(const std::string& newValue)
 {
     StringAttribute = newValue;
 }
 
-void SerializedComponent::SetVec2Attribute(glm::vec2 newValue)
+void SerializedComponent::SetVec2Attribute(const glm::vec2& newValue)
 {
     Vec2Attribute = newValue;
 }
 
-void SerializedComponent::SetVec3Attribute(glm::vec3 newValue)
+void SerializedComponent::SetVec3Attribute(const glm::vec3& newValue)
 {
     Vec3Attribute = newValue;
 }
 
-void SerializedComponent::SetVec4Attribute(glm::vec4 newValue)
+void SerializedComponent::SetVec4Attribute(const glm::vec4& newValue)
 {
     Vec4Attribute = newValue;
 }

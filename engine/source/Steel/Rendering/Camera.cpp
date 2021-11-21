@@ -3,6 +3,16 @@
 #include "../Scene/Transformation.h"
 #include "../Scene/SceneHelper.h"
 
+void Camera::RegisterType()
+{
+    REGISTER_TYPE(Camera);
+    REGISTER_ATTRIBUTE(Camera, "width", GetWidth, SetWidth, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(Camera, "height", GetHeight, SetHeight, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(Camera, "nearClippingPlane", GetNearClippingPlane, SetNearClippingPlane, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(Camera, "farClippingPlane", GetFarClippingPlane, SetFarClippingPlane, float, AttributeFlags::Public);
+    //REGISTER_ATTRIBUTE(Camera, "resizeMode", GetResizeMode, SetResizeMode, CameraResizeModes::CameraResizeMode, AttributeFlags::Public);
+}
+
 float Camera::GetWidth() const
 {
     return _width;
@@ -49,7 +59,7 @@ void Camera::SetFarClippingPlane(float distance)
     SetCameraDirty(true);
 }
 
-CameraResizeModes::CameraResizeMode Camera::GetResizeMode()
+CameraResizeModes::CameraResizeMode Camera::GetResizeMode() const
 {
     return _resizeMode;
 }

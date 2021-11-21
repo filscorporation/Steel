@@ -12,6 +12,7 @@ public:
     void EditActiveScene();
     void StartTestEditedScene();
     void EndTestEditedScene();
+    void LoadSceneToEdit(Scene* scene);
 
 private:
     Scene* editedScene = nullptr;

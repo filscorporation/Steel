@@ -5,6 +5,8 @@
 
 class StatsWindow : public UIComponent
 {
+    COMPONENT(StatsWindow)
+
 public:
     explicit StatsWindow(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

@@ -33,4 +33,15 @@ public:
     {
         return glm::vec4(Lerp(a.r, b.r, t), Lerp(a.g, b.g, t), Lerp(a.b, b.b, t), Lerp(a.a, b.a, t));
     }
+
+    static uint64_t StringHash(const char* str)
+    {
+        uint64_t hash = 0;
+        int c;
+
+        while ((c = *str++))
+            hash = c + (hash << 6) + (hash << 16) - hash;
+
+        return hash;
+    }
 };

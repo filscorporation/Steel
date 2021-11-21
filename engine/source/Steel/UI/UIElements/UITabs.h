@@ -18,6 +18,8 @@ struct UITabInfo
 
 class UITabs : public UIComponent
 {
+    COMPONENT(UITabs)
+
 public:
     explicit UITabs(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

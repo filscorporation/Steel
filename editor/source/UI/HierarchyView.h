@@ -42,6 +42,8 @@ struct HierarchyViewNode
 
 class HierarchyView : public UIComponent
 {
+    COMPONENT(HierarchyView)
+
 public:
     explicit HierarchyView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
@@ -49,6 +51,7 @@ public:
 
     void Init(EntitiesRegistry* entitiesRegistry);
     void Update(EntitiesRegistry* entitiesRegistry);
+    void Clear(EntitiesRegistry* entitiesRegistry);
 
     void ElementClicked(EntityID elementID);
     void ElementExpanded(EntityID elementID);

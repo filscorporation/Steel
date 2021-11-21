@@ -152,13 +152,13 @@ glm::vec3 RectTransformation::GetRotation()
 {
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& node = registry->GetComponent<HierarchyNode>(Owner);
-    if (node.ParentNode == NULL_ENTITY)
+    if (node.GetParentNode() == NULL_ENTITY)
     {
         _rotation = _localRotation;
     }
     else
     {
-        auto& parentRT = registry->GetComponent<RectTransformation>(node.ParentNode);
+        auto& parentRT = registry->GetComponent<RectTransformation>(node.GetParentNode());
         // For rotation, it should be enough to add parent's rotation to out local
         _rotation = parentRT.GetRotation() + _localRotation;
     }
@@ -172,13 +172,13 @@ void RectTransformation::SetRotation(const glm::vec3& rotation)
     auto& node = registry->GetComponent<HierarchyNode>(Owner);
 
     _rotation = rotation;
-    if (node.ParentNode == NULL_ENTITY)
+    if (node.GetParentNode() == NULL_ENTITY)
     {
         _localRotation = _rotation;
     }
     else
     {
-        auto& parentRT = registry->GetComponent<RectTransformation>(node.ParentNode);
+        auto& parentRT = registry->GetComponent<RectTransformation>(node.GetParentNode());
         // For rotation, it should be enough to subtract parent's rotation from target global
         _localRotation = _rotation - parentRT.GetRotation();
     }
@@ -248,7 +248,7 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
     glm::vec2 parentSize;
     glm::vec2 parentPosition;
 
-    if (hierarchyNode.ParentNode == NULL_ENTITY)
+    if (hierarchyNode.GetParentNode() == NULL_ENTITY)
     {
         if (!DidTransformationChange() && !Screen::IsScreenSizeDirty())
         {
@@ -265,11 +265,11 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
         parentSize = glm::vec2(Screen::GetWidth(), Screen::GetHeight());
         parentPosition = parentSize * 0.5f;
         _hierarchyIndex = layer->GetCurrentHierarchyIndex();
-        layer->IncreaseCurrentHierarchyIndex(hierarchyNode.Thickness);
+        layer->IncreaseCurrentHierarchyIndex(hierarchyNode.GetThickness());
     }
     else
     {
-        auto& parentRT = rtAccessor.Get(hierarchyNode.ParentNode);
+        auto& parentRT = rtAccessor.Get(hierarchyNode.GetParentNode());
 
         if (!DidTransformationChange() && !parentRT.DidTransformationChange() && !Screen::IsScreenSizeDirty())
         {
@@ -286,7 +286,7 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
         parentSize = parentRT.GetRealSizeCached();
         parentPosition = parentRT.GetRealPositionCached();
         _hierarchyIndex = parentRT.GetCurrentHierarchyIndex();
-        parentRT.IncreaseCurrentThickness(hierarchyNode.Thickness);
+        parentRT.IncreaseCurrentThickness(hierarchyNode.GetThickness());
     }
 
     for (int i = 0; i < 2; ++i)

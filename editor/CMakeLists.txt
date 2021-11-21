@@ -29,6 +29,9 @@ include_directories(../engine/includes/glm)
 # spdlog
 include_directories(../engine/includes/spdlog/include)
 
+# yaml-cpp
+include_directories(../engine/includes/yaml-cpp/include)
+
 # steel
 add_subdirectory(../engine ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} EXCLUDE_FROM_ALL)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Steel)

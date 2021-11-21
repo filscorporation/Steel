@@ -11,6 +11,14 @@
 #include "../Rendering/Material.h"
 #include "../UI/Font.h"
 
+#ifdef DISTRIBUTE_BUILD
+#define ENGINE_RESOURCES_PATH "Resources/"
+#define RESOURCES_PATH "Resources/"
+#else
+#define ENGINE_RESOURCES_PATH "../../../engine/resources/"
+#define RESOURCES_PATH "../../resources/"
+#endif
+
 class ResourcesManager
 {
 public:

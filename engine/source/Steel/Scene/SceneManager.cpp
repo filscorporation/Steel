@@ -5,9 +5,9 @@ SceneManager::~SceneManager()
     delete activeScene;
 }
 
-Scene* SceneManager::CreateNewScene()
+Scene* SceneManager::CreateNewScene(const std::string& sceneName)
 {
-    auto scene = new Scene();
+    auto scene = new Scene(sceneName);
 
     return scene;
 }
@@ -19,6 +19,7 @@ Scene* SceneManager::GetActiveScene()
 
 void SceneManager::SetActiveScene(Scene* scene)
 {
+    delete activeScene;
     activeScene = scene;
 }
 

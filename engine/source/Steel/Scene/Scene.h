@@ -17,13 +17,16 @@ public:
     EntitiesRegistry* GetEntitiesRegistry();
     UILayer* GetUILayer();
 
-    explicit Scene();
+    explicit Scene(const std::string& name);
     Scene(const Scene& scene);
     ~Scene() override;
     void Init();
 
     void CreateMainCamera();
     EntityID GetMainCamera();
+
+    const std::string& GetName();
+    void SetName(const std::string& name);
 
     EntityID CreateEntity();
     EntityID CreateEntity(const char* name, EntityID parent);
@@ -49,6 +52,7 @@ protected:
     virtual void AfterDraw() { };
 
 private:
+    std::string _name;
     bool systemsInitialized = false;
     std::list<EntityID> entitiesToDelete;
     EntityID _mainCameraEntity = NULL_ENTITY;
@@ -62,4 +66,5 @@ private:
     void DestroyEntityInner(EntityID entity);
 
     friend class SceneRenderer;
+    friend class SerializationManager;
 };

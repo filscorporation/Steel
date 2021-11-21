@@ -20,6 +20,8 @@ public:
 
 class UILayoutElement : public UIComponent, public ILayoutElement
 {
+    COMPONENT(UILayoutElement)
+
 public:
     explicit UILayoutElement(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

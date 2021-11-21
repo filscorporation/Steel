@@ -8,6 +8,8 @@
 
 class ControlPanel : public UIComponent
 {
+    COMPONENT(ControlPanel)
+
 public:
     explicit ControlPanel(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
@@ -26,6 +28,9 @@ private:
     Sprite* stopButtonSprite = nullptr;
     Sprite* pauseButtonSprite = nullptr;
     Sprite* stepButtonSprite = nullptr;
+
+    void SaveScene();
+    void LoadScene();
 
     void UpdateState();
     void CreatePlayButton();

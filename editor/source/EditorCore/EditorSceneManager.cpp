@@ -40,3 +40,9 @@ void EditorSceneManager::EndTestEditedScene()
     delete activeScene;
     activeScene = nullptr;
 }
+
+void EditorSceneManager::LoadSceneToEdit(Scene* scene)
+{
+    delete editedScene;
+    editedScene = scene;
+}

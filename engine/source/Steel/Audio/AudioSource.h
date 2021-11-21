@@ -5,6 +5,8 @@
 
 class AudioSource : public Component
 {
+    COMPONENT(AudioSource)
+
 public:
     explicit AudioSource(EntityID ownerEntityID) : Component(ownerEntityID) { };
 

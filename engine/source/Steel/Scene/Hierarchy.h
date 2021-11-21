@@ -7,18 +7,18 @@
 template<typename Function>
 void ForeachChildren(EntitiesRegistry* registry, HierarchyNode& parentNode, Function function)
 {
-    if (parentNode.ChildrenCount == 0)
+    if (parentNode.GetChildrenCount() == 0)
         return;
 
-    EntityID currentNodeID = parentNode.FirstChildNode;
-    for (uint32_t i = 0; i < parentNode.ChildrenCount; ++i)
+    EntityID currentNodeID = parentNode.GetFirstChildNode();
+    for (uint32_t i = 0; i < parentNode.GetChildrenCount(); ++i)
     {
         auto& currentChildNode = registry->GetComponent<HierarchyNode>(currentNodeID);
         function(registry, currentNodeID);
         // Recursively call for children
         ForeachChildren(registry, currentChildNode, function);
 
-        currentNodeID = currentChildNode.NextNode;
+        currentNodeID = currentChildNode.GetNextNode();
     }
 }
 

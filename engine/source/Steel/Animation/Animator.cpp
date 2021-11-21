@@ -4,6 +4,12 @@
 #include "../Scene/SceneHelper.h"
 #include "../UI/UIElements/UIImage.h"
 
+void Animator::RegisterType()
+{
+    REGISTER_TYPE(Animator);
+    // TODO
+}
+
 void Animator::Init()
 {
     if (Animations.empty() || currentAnimation == nullptr)

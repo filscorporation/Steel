@@ -26,7 +26,7 @@ TEST(HierarchyTest, SimpleAdd)
     EXPECT_EQ(children[0], entityID2);
     auto children2 = GetAllChildren(registry, entityID2);
     EXPECT_EQ(children2.size(), 0);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).ParentNode, entityID);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).GetParentNode(), entityID);
 }
 
 TEST(HierarchyTest, ChangeParent)
@@ -46,10 +46,10 @@ TEST(HierarchyTest, ChangeParent)
     auto children2 = GetAllChildren(registry, entityID2);
     EXPECT_EQ(children2.size(), 1);
     EXPECT_EQ(children2[0], entityID3);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).ParentNode, entityID);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).GetParentNode(), entityID);
     auto children3 = GetAllChildren(registry, entityID3);
     EXPECT_EQ(children3.size(), 0);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID3).ParentNode, entityID2);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID3).GetParentNode(), entityID2);
 
     LinkChildToParent(registry, entityID3, entityID);
     children = GetAllChildren(registry, entityID);
@@ -58,10 +58,10 @@ TEST(HierarchyTest, ChangeParent)
     EXPECT_TRUE(std::find(children.begin(), children.end(), entityID3) != children.end());
     children2 = GetAllChildren(registry, entityID2);
     EXPECT_EQ(children2.size(), 0);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).ParentNode, entityID);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).GetParentNode(), entityID);
     children3 = GetAllChildren(registry, entityID3);
     EXPECT_EQ(children3.size(), 0);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID3).ParentNode, entityID);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID3).GetParentNode(), entityID);
 }
 
 TEST(HierarchyTest, Unlink)
@@ -78,7 +78,7 @@ TEST(HierarchyTest, Unlink)
     EXPECT_EQ(children.size(), 0);
     auto children2 = GetAllChildren(registry, entityID2);
     EXPECT_EQ(children2.size(), 0);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).ParentNode, NULL_ENTITY);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).GetParentNode(), NULL_ENTITY);
 }
 
 TEST(HierarchyTest, SimpleCicle)
@@ -100,10 +100,10 @@ TEST(HierarchyTest, SimpleCicle)
     EXPECT_TRUE(std::find(children.begin(), children.end(), entityID3) != children.end());
     auto children2 = GetAllChildren(registry, entityID2);
     EXPECT_EQ(children2.size(), 0);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).ParentNode, entityID);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID2).GetParentNode(), entityID);
     auto children3 = GetAllChildren(registry, entityID3);
     EXPECT_EQ(children3.size(), 0);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID3).ParentNode, entityID);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entityID3).GetParentNode(), entityID);
 }
 
 TEST(HierarchyTest, ComplexCicleAndRebase)
@@ -139,20 +139,20 @@ TEST(HierarchyTest, ComplexCicleAndRebase)
     EXPECT_EQ(GetAllChildren(registry, entities[6]).size(), 3);
     EXPECT_EQ(GetAllChildren(registry, entities[7]).size(), 0);
     EXPECT_EQ(GetAllChildren(registry, entities[13]).size(), 0);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entities[3]).ParentNode, entities[1]);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entities[3]).GetParentNode(), entities[1]);
 
     LinkChildToParent(registry, entities[0], entities[6]);
     EXPECT_EQ(GetAllChildren(registry, entities[0]).size(), 2);
     EXPECT_EQ(GetAllChildren(registry, entities[6]).size(), 3);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entities[0]).ParentNode, NULL_ENTITY);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entities[0]).GetParentNode(), NULL_ENTITY);
 
     LinkChildToParent(registry, entities[6], entities[2]);
     EXPECT_EQ(GetAllChildren(registry, entities[0]).size(), 2);
     EXPECT_EQ(GetAllChildren(registry, entities[6]).size(), 3);
     EXPECT_EQ(GetAllChildren(registry, entities[2]).size(), 2);
     EXPECT_EQ(GetAllChildren(registry, entities[10]).size(), 2);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entities[6]).ParentNode, entities[2]);
-    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entities[10]).ParentNode, entities[6]);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entities[6]).GetParentNode(), entities[2]);
+    EXPECT_EQ(registry->GetComponent<HierarchyNode>(entities[10]).GetParentNode(), entities[6]);
 }
 
 TEST(HierarchyTest, Remove)

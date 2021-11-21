@@ -16,8 +16,9 @@
 #include "../Scripting/ScriptingSystem.h"
 #include "../UI/RectTransformation.h"
 
-Scene::Scene()
+Scene::Scene(const std::string& name)
 {
+    _name = name;
     entitiesRegistry = new EntitiesRegistry();
 
     uiLayer = new UILayer(this);
@@ -26,6 +27,7 @@ Scene::Scene()
 
 Scene::Scene(const Scene& scene) : HierarchyParent(scene)
 {
+    _name = scene._name;
     entitiesRegistry = new EntitiesRegistry(*scene.entitiesRegistry);
     uiLayer = new UILayer(*scene.uiLayer);
     uiLayer->_scene = this;
@@ -55,7 +57,8 @@ void Scene::Init()
 void Scene::CreateMainCamera()
 {
     _mainCameraEntity = CreateEntity();
-    entitiesRegistry->GetComponent<NameComponent>(_mainCameraEntity).Name = "Main camera";
+    entitiesRegistry->GetComponent<NameComponent>(_mainCameraEntity).SetName("Main camera");
+    entitiesRegistry->GetComponent<NameComponent>(_mainCameraEntity).SetTag("MainCamera");
     auto& mainCamera = entitiesRegistry->AddComponent<Camera>(_mainCameraEntity);
     entitiesRegistry->GetComponent<Transformation>(_mainCameraEntity).SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     mainCamera.SetHeight(3.0f);
@@ -66,6 +69,16 @@ void Scene::CreateMainCamera()
 EntityID Scene::GetMainCamera()
 {
     return entitiesRegistry->EntityExists(_mainCameraEntity) ? _mainCameraEntity : (_mainCameraEntity = NULL_ENTITY);
+}
+
+const std::string& Scene::GetName()
+{
+    return _name;
+}
+
+void Scene::SetName(const std::string& name)
+{
+    _name = name;
 }
 
 EntitiesRegistry* Scene::GetEntitiesRegistry()
@@ -87,7 +100,7 @@ EntityID Scene::CreateEntity(const char* name, EntityID parent)
 {
     auto entity = CreateEmptyEntity();
     auto& nameComponent = entitiesRegistry->AddComponent<NameComponent>(entity);
-    nameComponent.Name = name;
+    nameComponent.SetName(name);
     entitiesRegistry->AddComponent<Transformation>(entity);
     entitiesRegistry->AddComponent<HierarchyNode>(entity);
     LinkChildToParent(entitiesRegistry, entity, parent);
@@ -220,7 +233,8 @@ void Scene::SortByHierarchy()
     {
         bool operator()(const HierarchyNode& a, const HierarchyNode& b) const
         {
-            return a.HierarchyDepth < b.HierarchyDepth || (a.HierarchyDepth == b.HierarchyDepth && a.NodeIndex < b.NodeIndex);
+            return a.GetHierarchyDepth() < b.GetHierarchyDepth()
+                || (a.GetHierarchyDepth() == b.GetHierarchyDepth() && a.GetNodeIndex() < b.GetNodeIndex());
         }
     } DepthComparer;
     entitiesRegistry->SortComponents<HierarchyNode>(DepthComparer);

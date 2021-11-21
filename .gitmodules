@@ -22,3 +22,6 @@
 [submodule "engine/includes/spdlog"]
 	path = engine/includes/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "engine/includes/yaml-cpp"]
+	path = engine/includes/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git

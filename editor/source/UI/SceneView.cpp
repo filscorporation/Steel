@@ -49,7 +49,7 @@ void SceneView::Update(EntitiesRegistry* entitiesRegistry)
     auto editor = (EditorApplication*)Application::Instance;
     auto& viewRT = entitiesRegistry->GetComponent<RectTransformation>(Owner);
 
-    EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).ParentNode;
+    EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).GetParentNode();
     ignoreAppInput = !entitiesRegistry->GetComponent<UIEditorTab>(parentEntity).GetIsFocused();
     bool isFocused = !ignoreAppInput;
 

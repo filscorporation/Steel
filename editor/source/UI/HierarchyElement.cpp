@@ -24,7 +24,7 @@ void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry
     };
 
     auto& nodeName = sceneRegistry->GetComponent<NameComponent>(nodeEntity);
-    EntityID textEntity = layer->CreateUIText(nodeName.Name, "Node", buttonEntityID);
+    EntityID textEntity = layer->CreateUIText(nodeName.GetName(), "Node", buttonEntityID);
     auto& text = entitiesRegistry->GetComponent<UIText>(textEntity);
     if (node.Flags & NodeFlags::Active)
         text.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -34,7 +34,7 @@ void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry
     auto& textRT = entitiesRegistry->GetComponent<RectTransformation>(textEntity);
     textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
     textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-    textRT.SetOffsetMin(glm::vec2(8.0f + STYLE_BUTTON_H + STYLE_OFFSET + STYLE_BUTTON_H * nodeHN.HierarchyDepth, 2.0f));
+    textRT.SetOffsetMin(glm::vec2(8.0f + STYLE_BUTTON_H + STYLE_OFFSET + STYLE_BUTTON_H * nodeHN.GetHierarchyDepth(), 2.0f));
     textRT.SetOffsetMax(glm::vec2(8.0f, 2.0f));
 
     if (node.HasChildren)
@@ -47,7 +47,7 @@ void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry
             arrowRT.SetRotation(glm::vec3(0.0f, 0.0f, -Math::Pi * 0.5f));
         auto arrowTexture = layer->UIResources.DefaultArrowSprite->SpriteTexture;
         arrowRT.SetSize(glm::vec2(arrowTexture->GetWidth(), arrowTexture->GetHeight()));
-        arrowRT.SetAnchoredPosition(glm::vec2(8.0f + STYLE_BUTTON_H * 0.5f + STYLE_BUTTON_H * nodeHN.HierarchyDepth, 0.0f));
+        arrowRT.SetAnchoredPosition(glm::vec2(8.0f + STYLE_BUTTON_H * 0.5f + STYLE_BUTTON_H * nodeHN.GetHierarchyDepth(), 0.0f));
 
         auto& arrowButton = entitiesRegistry->GetComponent<UIButton>(arrowEntityID);
         arrowButton.Callback = [hierarchyViewEntity, elementEntity](EntityID entityID)

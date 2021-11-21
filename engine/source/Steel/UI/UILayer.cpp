@@ -228,7 +228,7 @@ EntityID UILayer::CreateUIElement(const std::string& name, EntityID parent)
 {
     auto entity = _scene->CreateEmptyEntity();
     auto& nameComponent = _scene->GetEntitiesRegistry()->AddComponent<NameComponent>(entity);
-    nameComponent.Name = name;
+    nameComponent.SetName(name);
     _scene->GetEntitiesRegistry()->AddComponent<RectTransformation>(entity);
     _scene->GetEntitiesRegistry()->AddComponent<HierarchyNode>(entity);
     LinkChildToParent(_scene->GetEntitiesRegistry(), entity, parent);

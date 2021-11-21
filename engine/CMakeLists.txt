@@ -93,7 +93,9 @@ set(SOURCE_FILES
         source/Steel/Rendering/Texture.cpp source/Steel/Rendering/Texture.h source/Steel/UI/UIElements/UILayoutElement.cpp
         source/Steel/Rendering/SceneRenderer.cpp source/Steel/Rendering/SceneRenderer.h source/Steel/Serialization/SerializationManager.cpp
         source/Steel/Serialization/SerializationManager.h source/Steel/Serialization/Serializable.h source/Steel/Serialization/AttributeInfo.h
-        source/Steel/Serialization/AttributeAccessor.h source/Steel/Common/StringUtils.h)
+        source/Steel/Serialization/AttributeAccessor.h source/Steel/Common/StringUtils.h source/Steel/Serialization/SerializationConvert.h
+        source/Steel/Core/TypeInfo.h source/Steel/Core/TypeInfo.cpp source/Steel/Serialization/TypeInfoStorage.cpp source/Steel/Serialization/TypeInfoStorage.h
+        source/Steel/Scene/HierarchyParent.cpp)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -176,5 +178,10 @@ target_link_libraries(Steel PRIVATE freetype)
 add_subdirectory(includes/spdlog EXCLUDE_FROM_ALL)
 include_directories(includes/spdlog/include)
 target_link_libraries(Steel PRIVATE spdlog)
+
+# yaml cpp
+add_subdirectory(includes/yaml-cpp EXCLUDE_FROM_ALL)
+include_directories(includes/yaml-cpp/include)
+target_link_libraries(Steel PRIVATE yaml-cpp)
 
 target_compile_definitions(Steel PRIVATE)

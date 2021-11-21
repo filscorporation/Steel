@@ -8,6 +8,8 @@
 
 class UIImage : public UIComponent
 {
+    COMPONENT(UIImage)
+
 public:
     explicit UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

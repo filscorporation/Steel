@@ -103,7 +103,7 @@ EntityID ComponentsInternalCalls::HierarchyNode_GetParent(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(HierarchyNode, NULL_ENTITY)
 
-    return component.ParentNode;
+    return component.GetParentNode();
 }
 
 void ComponentsInternalCalls::HierarchyNode_SetParent(EntityID entityID, EntityID parentEntityID)

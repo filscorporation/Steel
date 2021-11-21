@@ -9,6 +9,8 @@
 
 class HierarchyElement : public UIComponent
 {
+    COMPONENT(HierarchyElement)
+
 public:
     explicit HierarchyElement(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

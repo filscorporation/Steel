@@ -29,3 +29,6 @@ target_link_libraries(RunAutoTests Steel)
 
 # glm
 include_directories(../engine/includes/glm)
+
+# yaml cpp
+include_directories(../engine/includes/yaml-cpp/include)

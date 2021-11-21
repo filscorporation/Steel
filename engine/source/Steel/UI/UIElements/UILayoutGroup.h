@@ -9,6 +9,8 @@
 
 class UILayoutGroup : public UIComponent, public ILayoutElement
 {
+    COMPONENT(UILayoutGroup)
+
 public:
     explicit UILayoutGroup(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

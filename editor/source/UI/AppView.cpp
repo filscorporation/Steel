@@ -163,7 +163,7 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
                 auto& autoCheckbox = entitiesRegistry->GetComponent<UICheckBox>(autoCBEntity);
                 autoCheckbox.SetValue(editor->GetAppContext()->ScreenParams.AutoResolution);
                 EntityID labelEntity = entitiesRegistry->GetComponent<HierarchyNode>(
-                        entitiesRegistry->GetComponent<HierarchyNode>(autoCBEntity).FirstChildNode).NextNode;
+                        entitiesRegistry->GetComponent<HierarchyNode>(autoCBEntity).GetFirstChildNode()).GetNextNode();
                 entitiesRegistry->GetComponent<UIText>(labelEntity).SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
                 autoCheckbox.Callback = [](EntityID entityID)
@@ -187,7 +187,7 @@ void AppView::Init(EntitiesRegistry* entitiesRegistry)
             auto& statsCheckbox = entitiesRegistry->GetComponent<UICheckBox>(entity);
             statsCheckbox.SetValue(false);
             EntityID labelEntity = entitiesRegistry->GetComponent<HierarchyNode>(
-                    entitiesRegistry->GetComponent<HierarchyNode>(entity).FirstChildNode).NextNode;
+                    entitiesRegistry->GetComponent<HierarchyNode>(entity).GetFirstChildNode()).GetNextNode();
             entitiesRegistry->GetComponent<UIText>(labelEntity).SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
             EntityID _statsEntity = statsEntity;
@@ -206,7 +206,7 @@ void AppView::Update(EntitiesRegistry* entitiesRegistry)
     auto editor = (EditorApplication*)Application::Instance;
     auto& viewRT = entitiesRegistry->GetComponent<RectTransformation>(Owner);
 
-    EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).ParentNode;
+    EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).GetParentNode();
     editor->GetAppContext()->IgnoreEvents = !entitiesRegistry->GetComponent<UIEditorTab>(parentEntity).GetIsFocused();
 
     if (viewRT.DidSizeChange() || editor->GetAppContext()->ScreenParams.IsDirty)

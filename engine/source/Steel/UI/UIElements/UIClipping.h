@@ -6,6 +6,8 @@
 
 class UIClipping : public UIComponent
 {
+    COMPONENT(UIClipping)
+
 public:
     explicit UIClipping(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 

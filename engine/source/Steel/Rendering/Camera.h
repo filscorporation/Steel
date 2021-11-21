@@ -2,6 +2,7 @@
 
 #include "../EntityComponentSystem/Component.h"
 #include "../Scene/Transformation.h"
+
 #include <glm/glm.hpp>
 
 namespace CameraResizeModes
@@ -16,8 +17,12 @@ namespace CameraResizeModes
 
 class Camera : public Component
 {
+    COMPONENT(Camera)
+
 public:
     explicit Camera(EntityID ownerEntityID) : Component(ownerEntityID) { }
+
+    static void RegisterType();
 
     float GetWidth() const;
     void SetWidth(float width);
@@ -27,7 +32,7 @@ public:
     void SetNearClippingPlane(float distance);
     float GetFarClippingPlane() const;
     void SetFarClippingPlane(float distance);
-    CameraResizeModes::CameraResizeMode GetResizeMode();
+    CameraResizeModes::CameraResizeMode GetResizeMode() const;
     void SetResizeMode(CameraResizeModes::CameraResizeMode resizeMode);
 
     glm::vec2 ScreenToWorldPoint(glm::vec2 screenPoint);
