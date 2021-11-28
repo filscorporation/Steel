@@ -1,8 +1,10 @@
 #pragma once
 
-#include "../UIComponent.h"
-#include "../RectTransformation.h"
-#include "../../EntityComponentSystem/EntitiesRegistry.h"
+#include "Steel/EntityComponentSystem/EntitiesRegistry.h"
+#include "Steel/Rendering/Core/IndexBuffer.h"
+#include "Steel/Rendering/Core/VertexBuffer.h"
+#include "Steel/UI/UIComponent.h"
+#include "Steel/UI/RectTransformation.h"
 
 class UIClipping : public UIComponent
 {
@@ -24,13 +26,16 @@ public:
     short ClippingLevel = 1;
 
 private:
-    std::vector<EntityID> clippingQuads;
-    EntityID openingEH = NULL_ENTITY;
-    EntityID closingEH = NULL_ENTITY;
-    bool needRebuild = false;
-    // This is used to prevent clippling recalculation process initiated by this element to count it in
-    bool wasRemoved = false;
-
+    void RebuildInner(RectTransformation& transformation);
     void InitCaps(EntitiesRegistry* entitiesRegistry);
     void ClearCaps(EntitiesRegistry* entitiesRegistry);
+
+    EntityID openingEH = NULL_ENTITY;
+    EntityID closingEH = NULL_ENTITY;
+    // This is used to prevent clipping recalculation process initiated by this element to count it in
+    bool wasRemoved = false;
+
+    bool isDirty = true;
+    VertexBuffer vb;
+    IndexBuffer ib;
 };

@@ -3,13 +3,12 @@
 #include <sstream>
 
 #include "UIInputField.h"
-#include "../UIQuadRenderer.h"
-#include "../../Core/Log.h"
-#include "../../Core/Time.h"
-#include "../../Input/Input.h"
-#include "../../Scene/SceneHelper.h"
-#include "../../Scripting/ScriptingCore.h"
-#include "../../Scripting/ScriptingSystem.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Core/Time.h"
+#include "Steel/Input/Input.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scripting/ScriptingCore.h"
+#include "Steel/Scripting/ScriptingSystem.h"
 
 bool UIInputField::Validate(EntitiesRegistry* entitiesRegistry)
 {
@@ -30,12 +29,12 @@ void UIInputField::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIInputField::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    if (cursor != NULL_ENTITY)
+    /*if (cursor != NULL_ENTITY)
         entitiesRegistry->DeleteEntity(cursor);
     cursor = NULL_ENTITY;
     for (auto& selectionEntity : selectionEntites)
         entitiesRegistry->DeleteEntity(selectionEntity);
-    selectionEntites.clear();
+    selectionEntites.clear();*/
 
     StopTransition();
     ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
@@ -44,6 +43,9 @@ void UIInputField::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
 void UIInputField::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
+    isSelectionDirty = true;
+    isCursorDirty = true;
+
     RestoreTransition();
 }
 
@@ -63,6 +65,7 @@ void UIInputField::Update()
 
 void UIInputField::Rebuild(UILayer* layer, RectTransformation& transformation)
 {
+    /*
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
     {
@@ -112,7 +115,15 @@ void UIInputField::Rebuild(UILayer* layer, RectTransformation& transformation)
 
     cursorDirty = false;
     cursorColorDirty = false;
-    selectionDirty = false;
+    selectionDirty = false;*/
+}
+
+void UIInputField::Draw(RenderContext* renderContext)
+{
+    if (isCursorDirty)
+        RebuildCursorInner(GetComponentS<RectTransformation>(Owner));
+    if (isSelectionDirty)
+        RebuildSelectionInner(GetComponentS<RectTransformation>(Owner));
 }
 
 void UIInputField::SetTargetText(EntityID targetID)
@@ -128,7 +139,7 @@ EntityID UIInputField::GetTargetText() const
 void UIInputField::SetCursorWidth(uint32_t width)
 {
     cursorWidth = width;
-    cursorDirty = true;
+    isCursorDirty = true;
 }
 
 uint32_t UIInputField::GetCursorWidth() const
@@ -140,7 +151,7 @@ void UIInputField::SetCursorColor(glm::vec4 color)
 {
     cursorColor = color;
     autoCursorColor = false;
-    cursorColorDirty = true;
+    isCursorDirty = true; // TODO: ?
 }
 
 glm::vec4 UIInputField::GetCursorColor() const
@@ -151,7 +162,7 @@ glm::vec4 UIInputField::GetCursorColor() const
 void UIInputField::SetCursorAutoColor(bool isAuto)
 {
     autoCursorColor = isAuto;
-    cursorColorDirty = true;
+    isCursorDirty = true;
 }
 
 bool UIInputField::GetCursorAutoColor() const
@@ -204,12 +215,26 @@ TextTypes::TextType UIInputField::GetTextType() const
 void UIInputField::SetSelectionColor(glm::vec4 color)
 {
     selectionColor = color;
-    selectionDirty = true;
+    isSelectionDirty = true;
 }
 
 glm::vec4 UIInputField::GetSelectionColor() const
 {
     return selectionColor;
+}
+
+void UIInputField::RebuildCursorInner(RectTransformation& transformation)
+{
+    isCursorDirty = false;
+
+    // TODO:
+}
+
+void UIInputField::RebuildSelectionInner(RectTransformation& transformation)
+{
+    isSelectionDirty = false;
+
+    // TODO:
 }
 
 void UIInputField::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
@@ -493,7 +518,7 @@ void UIInputField::SetCursorPosition(uint32_t position)
 
     cursorPosition = position;
     drawCursor = true;
-    cursorDirty = true;
+    isCursorDirty = true;
 
     cursorBlinkProgress = 0;
     cursorIsVisible = true;
@@ -502,30 +527,32 @@ void UIInputField::SetCursorPosition(uint32_t position)
 
 void UIInputField::DisableCursor()
 {
+    /*
     if (!drawCursor)
         return;
     drawCursor = false;
     cursorDirty = true;
     if (cursor != NULL_ENTITY)
-        Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntitySetActive(cursor, false, true);
+        Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntitySetActive(cursor, false, true);*/
 }
 
 void UIInputField::UpdateCursorBlink()
 {
+    /*
     cursorBlinkProgress += Time::UnscaledDeltaTime();
     if (cursorBlinkProgress > cursorBlinkRate)
     {
         cursorBlinkProgress -= cursorBlinkRate;
         cursorIsVisible = !cursorIsVisible;
-        cursorDirty = true;
+        isCursorDirty = true;
         auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
         entitiesRegistry->EntitySetActive(cursor, cursorIsVisible, true);
-    }
+    }*/
 }
 
 void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT, float dz)
 {
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    /*auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (!cursorIsVisible || !drawCursor)
     {
         entitiesRegistry->EntitySetActive(cursor, false, true);
@@ -587,29 +614,7 @@ void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT, f
     cursorRenderer.SortingOrder = uiTextRT.GetSortingOrder() + dz * 0.1f;
 
     for (int j = 0; j < 4; ++j)
-        cursorRenderer.Vertices[j] = rectMatrix * cursorRenderer.DefaultVertices[j];
-}
-
-void UIInputField::UpdateCursorColor(UIText& uiText) const
-{
-    if (cursor == NULL_ENTITY)
-        return;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
-    cursorRenderer.Color = autoCursorColor ? uiText.GetColor() : cursorColor;
-}
-
-void UIInputField::UpdateCursorSortingOrder(RectTransformation& uiTextRT, float dz) const
-{
-    if (cursor == NULL_ENTITY)
-        return;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
-    for (auto dv : cursorRenderer.DefaultVertices)
-        dv.z = dz * 0.1f;
-    cursorRenderer.SortingOrder = uiTextRT.GetSortingOrder() + dz * 0.1f;
+        cursorRenderer.Vertices[j] = rectMatrix * cursorRenderer.DefaultVertices[j];*/
 }
 
 void UIInputField::SetSelection(uint32_t from, uint32_t to)
@@ -618,7 +623,7 @@ void UIInputField::SetSelection(uint32_t from, uint32_t to)
         return;
 
     drawSelection = true;
-    selectionDirty = true;
+    isSelectionDirty = true;
     selectionStart = from;
     selectionEnd = to;
 }
@@ -634,13 +639,14 @@ void UIInputField::DisableSelection()
 
 void UIInputField::CleanSelection()
 {
+    /*
     if (selectionEntites.empty())
         return;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     for (auto& selectionEntity : selectionEntites)
         entitiesRegistry->DeleteEntity(selectionEntity);
-    selectionEntites.clear();
+    selectionEntites.clear();*/
 }
 
 void UIInputField::TryKeepSelection()
@@ -674,7 +680,7 @@ void UIInputField::RemoveSelectedText(UIText& uiText)
 
 void UIInputField::RebuildSelection(UIText& uiText, RectTransformation& uiTextRT, float dz)
 {
-    if (!drawSelection)
+    /*if (!drawSelection)
         return;
 
     CleanSelection();
@@ -688,26 +694,12 @@ void UIInputField::RebuildSelection(UIText& uiText, RectTransformation& uiTextRT
     for (auto& indexPair : indices)
     {
         selectionEntites.push_back(CreateSelectionBlock(uiText, uiTextRT, std::get<0>(indexPair), std::get<1>(indexPair), dz));
-    }
-}
-
-void UIInputField::UpdateSelectionSortingOrder(RectTransformation& uiTextRT, float dz) const
-{
-    if (cursor == NULL_ENTITY)
-        return;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    for (auto selectionID : selectionEntites)
-    {
-        auto& blockRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(selectionID);
-        for (auto dv : blockRenderer.DefaultVertices)
-            dv.z = -dz * 0.1f;
-        blockRenderer.SortingOrder = uiTextRT.GetSortingOrder() - dz * 0.1f;
-    }
+    }*/
 }
 
 EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to, float dz)
 {
+    /*
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
     auto& atlas = uiText.GetFont()->characters[uiText.GetTextSize()];
@@ -762,5 +754,5 @@ EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& 
     for (int j = 0; j < 4; ++j)
         blockRenderer.Vertices[j] = rectMatrix * blockRenderer.DefaultVertices[j];
 
-    return entity;
+    return entity;*/
 }

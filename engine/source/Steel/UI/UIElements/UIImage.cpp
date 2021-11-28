@@ -1,10 +1,8 @@
 #include "UIImage.h"
-#include "../UIQuadRenderer.h"
-#include "../UIEventHandler.h"
-#include "../../Core/Log.h"
-#include "../../Scene/Hierarchy.h"
-#include "../../Scene/SceneHelper.h"
-#include "../../Rendering/Screen.h"
+#include "Steel/Rendering/Screen.h"
+#include "Steel/Scene/Hierarchy.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/UI/UIEventHandler.h"
 
 bool UIImage::Validate(EntitiesRegistry* entitiesRegistry)
 {
@@ -19,29 +17,188 @@ void UIImage::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIImage::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    if (entitiesRegistry->IsCleared())
-        return;
-
-    for (auto qrID : _renderers)
-        entitiesRegistry->DeleteEntity(qrID);
-    _renderers.clear();
+    vb.Clear();
+    ib.Clear();
 }
 
 void UIImage::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
-    for (auto qrID : _renderers)
-        entitiesRegistry->EntitySetActive(qrID, true, false);
+    isDirty = true;
 }
 
-void UIImage::OnDisabled(EntitiesRegistry* entitiesRegistry)
+void UIImage::Rebuild(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty)
 {
-    for (auto qrID : _renderers)
-        entitiesRegistry->EntitySetActive(qrID, false, false);
+    RebuildInner(transformation);
+
+    // TODO: check from update
 }
 
-void UIImage::UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty)
+void UIImage::Draw(RenderContext* renderContext)
 {
+    if (isDirty)
+        RebuildInner(GetComponentS<RectTransformation>(Owner));
+
+    if (vb.IsEmpty() || ib.IsEmpty())
+        return;
+
+    DrawCall drawCall;
+    drawCall.VB = vb;
+    drawCall.IB = ib;
+    drawCall.RenderMaterial = _material;
+    drawCall.CustomProperties = _customProperties;
+    drawCall.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
+
+    renderContext->List.AddDrawCall(drawCall);
+}
+
+void UIImage::SetMaterial(Material* material)
+{
+    _material = material;
+    isDirty = true;
+}
+
+Material* UIImage::GetMaterial()
+{
+    return _material;
+}
+
+void UIImage::SetCustomProperties(const MaterialPropertyBlock& properties)
+{
+    _customProperties = properties;
+
+    /*
+    _customProperties.UpdateHash();
+
+    if (_image == nullptr || _material == nullptr)
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_image->IsSliced)
+    {
+        for (uint32_t _renderer : _renderers)
+        {
+            entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer).CustomProperties = _customProperties;
+        }
+    }
+    else
+    {
+        entitiesRegistry->GetComponent<UIQuadRenderer>(Owner).CustomProperties = _customProperties;
+    }*/
+}
+
+const MaterialPropertyBlock& UIImage::GetCustomProperties()
+{
+    if (isDirty)
+        RebuildInner(GetComponentS<RectTransformation>(Owner));
+
+    return _customProperties;
+}
+
+void UIImage::SetImage(Sprite* image)
+{
+    _image = image;
+    isDirty = true;
+}
+
+Sprite* UIImage::GetImage()
+{
+    return _image;
+}
+
+void UIImage::SetColor(glm::vec4 color)
+{
+    _color = color;
+    isDirty = true;
+
+    /*
     if (_image == nullptr)
+        return;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_image->IsSliced)
+    {
+        for (uint32_t _renderer : _renderers)
+        {
+            entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer).Color = _color;
+        }
+    }
+    else
+    {
+        entitiesRegistry->GetComponent<UIQuadRenderer>(Owner).Color = _color;
+    }*/
+}
+
+glm::vec4 UIImage::GetColor()
+{
+    return _color;
+}
+
+void UIImage::SetImageTileIndex(uint32_t index)
+{
+    if (index == currentImageTileIndex)
+        return;
+
+    currentImageTileIndex = index;
+    isDirty = true;
+
+    /*
+    if (_image == nullptr || !_image->IsSpriteSheet)
+        return;
+
+    if (_image->IsSliced)
+    {
+        // TODO: make it work for sliced
+        Log::LogWarning("Setting tile index for sliced image is not supported yet");
+        return;
+    }
+
+    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& qr = registry->GetComponent<UIQuadRenderer>(Owner);
+
+    currentImageTileIndex = index;
+    _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);*/
+}
+
+uint32_t UIImage::GetImageTileIndex()
+{
+    return currentImageTileIndex;
+}
+
+void UIImage::SetClippingLevel(short clippingLevel)
+{
+    _clippingLevel = clippingLevel;
+    isDirty = true;
+
+    /*if (clippingLevel == _clippingLevel)
+        return;
+
+    if (_image == nullptr)
+        return;
+
+    _clippingLevel = clippingLevel;
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    if (_image->IsSliced)
+    {
+        for (uint32_t _renderer : _renderers)
+        {
+            auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
+            qr.CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
+        }
+    }
+    else
+    {
+        auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(Owner);
+        qr.CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
+    }*/
+}
+
+void UIImage::RebuildInner(RectTransformation& transformation)
+{
+    isDirty = false;
+
+    // From update
+    /*if (_image == nullptr)
         return;
 
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
@@ -81,50 +238,10 @@ void UIImage::UpdateRenderer(RectTransformation& transformation, bool transforma
         for (int i = 0; i < 4; ++i)
             qr.Vertices[i] = matrix * qr.DefaultVertices[i];
         qr.SortingOrder = sortingOrder;
-    }
-}
+    }*/
 
-void UIImage::SetMaterial(Material* material)
-{
-    _material = material;
-    SetImage(_image);
-}
-
-Material* UIImage::GetMaterial()
-{
-    return _material;
-}
-
-void UIImage::SetCustomProperties(const MaterialPropertyBlock& properties)
-{
-    _customProperties = properties;
-    _customProperties.UpdateHash();
-
-    if (_image == nullptr || _material == nullptr)
-        return;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (_image->IsSliced)
-    {
-        for (uint32_t _renderer : _renderers)
-        {
-            entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer).CustomProperties = _customProperties;
-        }
-    }
-    else
-    {
-        entitiesRegistry->GetComponent<UIQuadRenderer>(Owner).CustomProperties = _customProperties;
-    }
-}
-
-const MaterialPropertyBlock& UIImage::GetCustomProperties()
-{
-    return _customProperties;
-}
-
-void UIImage::SetImage(Sprite* image)
-{
-    _customProperties.UpdateHash();
+    // From set image
+    /*_customProperties.UpdateHash();
 
     if (image != nullptr && _material == nullptr)
         _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
@@ -220,89 +337,5 @@ void UIImage::SetImage(Sprite* image)
             qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
             qr.CustomOwner = Owner;
         }
-    }
-}
-
-Sprite* UIImage::GetImage()
-{
-    return _image;
-}
-
-void UIImage::SetColor(glm::vec4 color)
-{
-    _color = color;
-
-    if (_image == nullptr)
-        return;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (_image->IsSliced)
-    {
-        for (uint32_t _renderer : _renderers)
-        {
-            entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer).Color = _color;
-        }
-    }
-    else
-    {
-        entitiesRegistry->GetComponent<UIQuadRenderer>(Owner).Color = _color;
-    }
-}
-
-glm::vec4 UIImage::GetColor()
-{
-    return _color;
-}
-
-void UIImage::SetImageTileIndex(uint32_t index)
-{
-    if (index == currentImageTileIndex)
-        return;
-
-    if (_image == nullptr || !_image->IsSpriteSheet)
-        return;
-
-    if (_image->IsSliced)
-    {
-        // TODO: make it work for sliced
-        Log::LogWarning("Setting tile index for sliced image is not supported yet");
-        return;
-    }
-
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& qr = registry->GetComponent<UIQuadRenderer>(Owner);
-
-    currentImageTileIndex = index;
-    _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
-}
-
-uint32_t UIImage::GetImageTileIndex()
-{
-    return currentImageTileIndex;
-}
-
-void UIImage::SetClippingLevel(short clippingLevel)
-{
-    if (clippingLevel == _clippingLevel)
-        return;
-
-    if (_image == nullptr)
-        return;
-
-    _clippingLevel = clippingLevel;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (_image->IsSliced)
-    {
-        for (uint32_t _renderer : _renderers)
-        {
-            auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(_renderer);
-            qr.CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
-        }
-    }
-    else
-    {
-        auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(Owner);
-        qr.CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
-    }
+    }*/
 }

@@ -78,7 +78,7 @@ void UILayer::Rebuild()
             if ((transformationDirty || _rebuildSortingOrder) && ehAccessor.Has(hierarchyNode.Owner))
                 ehAccessor.Get(hierarchyNode.Owner).Update(entitiesRegistry, rt);
             if ((transformationDirty || _rebuildSortingOrder) && imageAccessor.Has(hierarchyNode.Owner))
-                imageAccessor.Get(hierarchyNode.Owner).UpdateRenderer(rt, transformationDirty, _rebuildSortingOrder);
+                imageAccessor.Get(hierarchyNode.Owner).Rebuild(rt, transformationDirty, _rebuildSortingOrder);
             if (textAccessor.Has(hierarchyNode.Owner))
                 // Possible place for optimization - entering component even if transformation not dirty
                 textAccessor.Get(hierarchyNode.Owner).Rebuild(this, rt, transformationDirty, _rebuildSortingOrder);
@@ -99,38 +99,6 @@ void UILayer::Rebuild()
     auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
     for (int i = 0; i < uiIFs.Size(); ++i)
         uiIFs[i].Rebuild(this, rtAccessor.Get(uiIFs[i].Owner));
-
-    // After rebuilding text we need to condense renderers list to not wait for the next frame
-    entitiesRegistry->ClearRemoved<UIQuadRenderer>();
-
-    // Sort all UI objects by SortingOrder
-    struct
-    {
-        bool operator()(UIQuadRenderer& a, UIQuadRenderer& b) const
-        { return a.SortingOrder < b.SortingOrder; }
-    } SOComparer;
-    entitiesRegistry->SortComponents<UIQuadRenderer>(SOComparer);
-}
-
-void UILayer::Draw()
-{
-    auto entitiesRegistry = _scene->GetEntitiesRegistry();
-
-    // Draw
-    auto uiRenderers = entitiesRegistry->GetComponentIterator<UIQuadRenderer>();
-
-    // Opaque pass
-    for (int i = uiRenderers.Size() - 1; i >= 0; --i)
-        if (uiRenderers[i].Queue == RenderingQueue::Opaque)
-            Renderer::Draw((const QuadRenderer&)uiRenderers[i]);
-    Renderer::EndBatch();
-
-    Renderer::StartBatch();
-    // Transparent pass
-    for (int i = 0; i < uiRenderers.Size(); ++i)
-        if (uiRenderers[i].Queue == RenderingQueue::Transparent)
-            Renderer::Draw((const QuadRenderer&)uiRenderers[i]);
-    Renderer::EndBatch();
 }
 
 void UILayer::Refresh()

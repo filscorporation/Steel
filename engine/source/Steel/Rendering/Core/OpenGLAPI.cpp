@@ -261,6 +261,11 @@ void OpenGLAPI::SetVertexBufferSubData(uint32_t size, void* data)
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * size, data);
 }
 
+void OpenGLAPI::SetIndexBufferSubData(uint32_t size, void* data)
+{
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint) * size, data);
+}
+
 void OpenGLAPI::EnableVertexFloatAttribute(int attributeID, int size, int step, int offset)
 {
     glVertexAttribPointer(attributeID, size, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * step, (GLvoid*)(sizeof(GLfloat) * offset));

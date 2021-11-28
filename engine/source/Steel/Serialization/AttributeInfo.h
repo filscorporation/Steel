@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AttributeAccessor.h"
+#include "Steel/Common/FlagType.h"
 
 #include <cstdint>
 #include <string>
@@ -15,15 +16,7 @@ namespace AttributeFlags
         Readonly = 1 << 1,
     };
 
-    inline AttributeFlag operator|(AttributeFlag a, AttributeFlag b)
-    {
-        return static_cast<AttributeFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
-    }
-
-    inline AttributeFlag operator&(AttributeFlag a, AttributeFlag b)
-    {
-        return static_cast<AttributeFlag>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
-    }
+    FLAG_TYPE(AttributeFlag)
 }
 
 class AttributeInfo

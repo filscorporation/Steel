@@ -3,7 +3,8 @@
 #include "glm/vec2.hpp"
 #include <string>
 
-#include "../Input/ButtonStates.h"
+#include "Steel/Input/ButtonStates.h"
+#include "Steel/Common/FlagType.h"
 
 namespace UIEventTypes
 {
@@ -26,15 +27,7 @@ namespace UIEventTypes
         TextInput                 = 1 << 14,
     };
 
-    inline UIEventType operator|(UIEventType a, UIEventType b)
-    {
-        return static_cast<UIEventType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
-    }
-
-    inline UIEventType operator&(UIEventType a, UIEventType b)
-    {
-        return static_cast<UIEventType>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
-    }
+    FLAG_TYPE(UIEventType)
 }
 
 struct UIEvent

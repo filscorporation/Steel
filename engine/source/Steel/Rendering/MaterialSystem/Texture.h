@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "../Resources/ResourceID.h"
+#include "Steel/Resources/ResourceID.h"
 
 class Texture
 {

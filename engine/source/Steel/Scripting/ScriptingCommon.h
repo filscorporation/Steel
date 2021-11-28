@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Steel/Common/FlagType.h"
+
 #include <cstdint>
 
 namespace ScriptEventTypes
@@ -30,15 +32,7 @@ namespace ScriptEventTypes
         OnMouseJustReleasedUI = 1 << 21,
     };
 
-    inline ScriptEventType operator|(ScriptEventType a, ScriptEventType b)
-    {
-        return static_cast<ScriptEventType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
-    }
-
-    inline ScriptEventType operator&(ScriptEventType a, ScriptEventType b)
-    {
-        return static_cast<ScriptEventType>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
-    }
+    FLAG_TYPE(ScriptEventType)
 }
 
 struct ScriptTypeInfo

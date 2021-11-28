@@ -6,11 +6,23 @@
 void Camera::RegisterType()
 {
     REGISTER_TYPE(Camera);
+    REGISTER_ATTRIBUTE(Camera, "renderMask", GetRenderMask, SetRenderMask, RenderMask, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(Camera, "width", GetWidth, SetWidth, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(Camera, "height", GetHeight, SetHeight, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(Camera, "nearClippingPlane", GetNearClippingPlane, SetNearClippingPlane, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(Camera, "farClippingPlane", GetFarClippingPlane, SetFarClippingPlane, float, AttributeFlags::Public);
     //REGISTER_ATTRIBUTE(Camera, "resizeMode", GetResizeMode, SetResizeMode, CameraResizeModes::CameraResizeMode, AttributeFlags::Public);
+    //REGISTER_ATTRIBUTE(Camera, "clearFlag", GetClearFlag, SetClearFlag, ClearFlags::ClearFlag, AttributeFlags::Public);
+}
+
+RenderMask Camera::GetRenderMask() const
+{
+    return _mask;
+}
+
+void Camera::SetRenderMask(RenderMask mask)
+{
+    _mask = mask;
 }
 
 float Camera::GetWidth() const
@@ -71,6 +83,26 @@ void Camera::SetResizeMode(CameraResizeModes::CameraResizeMode resizeMode)
 
     _resizeMode = resizeMode;
     UpdateSize((float)Screen::GetWidth(), (float)Screen::GetHeight());
+}
+
+ClearFlags::ClearFlag Camera::GetClearFlag() const
+{
+    return _clearFlag;
+}
+
+void Camera::SetClearFlag(ClearFlags::ClearFlag clearFlag)
+{
+    _clearFlag = clearFlag;
+}
+
+Framebuffer* Camera::GetCustomTargetFramebuffer() const
+{
+    return _customTargetFramebuffer;
+}
+
+void Camera::SetCustomTargetFramebuffer(Framebuffer* framebuffer)
+{
+    _customTargetFramebuffer = framebuffer;
 }
 
 glm::vec2 Camera::ScreenToWorldPoint(glm::vec2 screenPoint)

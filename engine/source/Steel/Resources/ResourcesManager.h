@@ -4,12 +4,12 @@
 
 #include "AsepriteData.h"
 #include "ResourceID.h"
-#include "../Animation/Animation.h"
-#include "../Audio/AudioTrack.h"
-#include "../Rendering/Shader.h"
-#include "../Rendering/Sprite.h"
-#include "../Rendering/Material.h"
-#include "../UI/Font.h"
+#include "Steel/Animation/Animation.h"
+#include "Steel/Audio/AudioTrack.h"
+#include "Steel/Rendering/MaterialSystem/Shader.h"
+#include "Steel/Rendering/Sprite.h"
+#include "Steel/Rendering/MaterialSystem/Material.h"
+#include "Steel/UI/Font.h"
 
 #ifdef DISTRIBUTE_BUILD
 #define ENGINE_RESOURCES_PATH "Resources/"

@@ -1,57 +1,43 @@
 #include "SceneRenderer.h"
+#include "Camera.h"
 #include "Renderer.h"
+#include "SceneDrawCallsSource.h"
 #include "Screen.h"
+#include "UIDrawCallsSource.h"
+#include "Core/RenderTask.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Scene/Scene.h"
 
-SceneRenderer::SceneRenderer(Scene* scene, Framebuffer* framebuffer, EntityID cameraEntity)
+void SceneRenderer::Draw(Scene* scene, Framebuffer* framebuffer)
 {
-    _scene = scene;
-    _framebuffer = framebuffer;
-    _cameraEntity = cameraEntity;
-}
+    // TODO: rework stats collecting
+    Application::Context()->Stats.DrawCalls = 0;
+    Application::Context()->Stats.VerticesCount = 0;
 
-void SceneRenderer::DrawScene()
-{
-    _framebuffer->Bind();
-    Renderer::Clear(Screen::GetColor());
+    auto cameras = scene->GetEntitiesRegistry()->GetComponentIterator<Camera>();
+    // TODO: sort cameras by draw order
+    // Render scene cameras
+    for (int i = 0; i < cameras.Size(); ++i)
+    {
+        RenderTask renderTask;
+        renderTask.Source = new SceneDrawCallsSource(scene, cameras[i].GetRenderMask());
+        renderTask.ViewProjection = cameras[i].GetViewProjection();
+        renderTask.TargetFramebuffer = cameras[i].GetCustomTargetFramebuffer() != nullptr
+                ? cameras[i].GetCustomTargetFramebuffer()
+                : framebuffer;
+        renderTask.ClearFlagsValue = cameras[i].GetClearFlag();
+        Renderer::Draw(renderTask);
+        delete renderTask.Source;
+    }
 
-    if (_cameraEntity == NULL_ENTITY)
-        return;
-
-    BeforeDraw();
-
-    auto& camera = _scene->entitiesRegistry->GetComponent<Camera>(_cameraEntity);
-    Renderer::OnBeforeRender(camera);
-
-    auto quadRenderers = _scene->entitiesRegistry->GetComponentIterator<QuadRenderer>();
-
-    // Opaque pass
-    for (int i = 0; i < quadRenderers.Size(); ++i)
-        if (quadRenderers[i].Queue == RenderingQueue::Opaque)
-            Renderer::Draw(quadRenderers[i]);
-
-    // Transparent pass
-    for (int i = quadRenderers.Size() - 1; i >= 0; --i)
-        if (quadRenderers[i].Queue == RenderingQueue::Transparent)
-            Renderer::Draw(quadRenderers[i]);
-
-    // Clear depth buffer before rendering UI
-    Renderer::PrepareUIRender();
-    // Draw UI on top
-    // TODO: move all UILayer draw logic here
-    _scene->uiLayer->Draw();
-
-    AfterDraw();
-
-    Renderer::OnAfterRender();
-    _framebuffer->Unbind();
-}
-
-void SceneRenderer::BeforeDraw()
-{
-    _scene->BeforeDraw();
-}
-
-void SceneRenderer::AfterDraw()
-{
-    _scene->AfterDraw();
+    // Render UI
+    {
+        RenderTask renderTask;
+        renderTask.Source = new UIDrawCallsSource(scene);
+        renderTask.ViewProjection = Screen::GetUIViewProjection();
+        renderTask.TargetFramebuffer = framebuffer;
+        renderTask.ClearFlagsValue = ClearFlags::Depth | ClearFlags::Stencil;
+        Renderer::Draw(renderTask);
+        delete renderTask.Source;
+    }
 }

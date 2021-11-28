@@ -1,1 +1,0 @@
-#include "UIQuadRenderer.h"

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../RectTransformation.h"
-#include "../UIComponent.h"
-#include "../UIQuadRenderer.h"
-#include "../../Rendering/Material.h"
-#include "../../Rendering/Sprite.h"
+#include "Steel/Rendering/MaterialSystem/Material.h"
+#include "Steel/Rendering/Sprite.h"
+#include "Steel/Rendering/Core/RenderContext.h"
+#include "Steel/UI/RectTransformation.h"
+#include "Steel/UI/UIComponent.h"
 
 class UIImage : public UIComponent
 {
@@ -17,9 +17,9 @@ public:
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
-    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
-    void UpdateRenderer(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
+    void Rebuild(RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
+    void Draw(RenderContext* renderContext);
 
     void SetMaterial(Material* material);
     Material* GetMaterial();
@@ -37,6 +37,8 @@ public:
     bool FlipImage = false;
 
 protected:
+    void RebuildInner(RectTransformation& transformation);
+
     Sprite* _image = nullptr;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     Material* _material = nullptr;
@@ -44,5 +46,8 @@ protected:
     short _clippingLevel = 0;
 
     uint32_t currentImageTileIndex = 0;
-    std::vector<EntityID> _renderers;
+
+    bool isDirty = true;
+    VertexBuffer vb;
+    IndexBuffer ib;
 };

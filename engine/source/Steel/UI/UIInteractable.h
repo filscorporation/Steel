@@ -2,10 +2,10 @@
 
 #include <functional>
 
-#include "../EntityComponentSystem/Entity.h"
 #include "UIComponent.h"
 #include "TransitionInfo.h"
 #include "UIEvent.h"
+#include "Steel/EntityComponentSystem/Entity.h"
 
 typedef std::function<bool(EntityID)> UpdateInteractable;
 
@@ -45,6 +45,4 @@ private:
     TransitionData startingTransitionData {};
     TransitionData targetTransitionData {};
     float transitionProgress = 0.0f;
-
-    friend class UISystem;
 };

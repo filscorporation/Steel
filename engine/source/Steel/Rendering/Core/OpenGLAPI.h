@@ -2,8 +2,7 @@
 
 #include <cstdint>
 
-#include "MaterialPropertyBlock.h"
-#include "Texture.h"
+#include "Steel/Rendering/Core/RendererEnums.h"
 
 namespace OpenGLAPI
 {
@@ -64,6 +63,7 @@ namespace OpenGLAPI
     uint32_t GenerateVertexBuffer(int size, void* data, BufferType type);
     uint32_t GenerateIndexBuffer(int size, void* data, BufferType type);
     void SetVertexBufferSubData(uint32_t size, void* data);
+    void SetIndexBufferSubData(uint32_t size, void* data);
     void EnableVertexFloatAttribute(int attributeID, int size, int step, int offset);
     void BindVertexBuffer(uint32_t bufferID);
     void BindIndexBuffer(uint32_t bufferID);

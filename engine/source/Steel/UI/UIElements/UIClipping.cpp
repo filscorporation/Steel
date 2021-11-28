@@ -1,8 +1,7 @@
 #include "UIClipping.h"
-#include "../UIQuadRenderer.h"
-#include "../UIEventHandler.h"
-#include "../../Core/Application.h"
-#include "../../Scene/Hierarchy.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Scene/Hierarchy.h"
+#include "Steel/UI/UIEventHandler.h"
 
 #define SO_OFFSET 0.1f
 
@@ -19,6 +18,9 @@ void UIClipping::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIClipping::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
+    vb.Clear();
+    ib.Clear();
+
     if (entitiesRegistry->IsCleared())
         return;
 
@@ -40,6 +42,7 @@ void UIClipping::OnDisabled(EntitiesRegistry* entitiesRegistry)
 
 void UIClipping::InitCaps(EntitiesRegistry* entitiesRegistry)
 {
+    /*
     ClippingLevel = GetClippingLevelUpwards(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner).GetParentNode());
     ClippingLevel++;
 
@@ -71,11 +74,14 @@ void UIClipping::InitCaps(EntitiesRegistry* entitiesRegistry)
 
     needRebuild = true;
 
-    UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));
+    UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));*/
 }
 
 void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, bool sortingOrderDirty)
 {
+    if (isDirty)
+        RebuildInner(transformation);
+    /*
     if (!needRebuild && !transformation.DidTransformationChange() && !sortingOrderDirty)
         return;
 
@@ -98,7 +104,12 @@ void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, boo
     // Opening event handler cap
     entitiesRegistry->GetComponent<UIEventHandler>(openingEH).SortingOrder = sortingOrder - dz * SO_OFFSET;
     // Closing event handler cap
-    entitiesRegistry->GetComponent<UIEventHandler>(closingEH).SortingOrder = sortingOrder + dz * (thickness + SO_OFFSET);
+    entitiesRegistry->GetComponent<UIEventHandler>(closingEH).SortingOrder = sortingOrder + dz * (thickness + SO_OFFSET);*/
+}
+
+void UIClipping::RebuildInner(RectTransformation& transformation)
+{
+
 }
 
 bool UIClipping::WasRemoved() const
@@ -108,9 +119,6 @@ bool UIClipping::WasRemoved() const
 
 void UIClipping::ClearCaps(EntitiesRegistry* entitiesRegistry)
 {
-    for (auto qrID : clippingQuads)
-        entitiesRegistry->DeleteEntity(qrID);
-    clippingQuads.clear();
     entitiesRegistry->DeleteEntity(openingEH);
     openingEH = NULL_ENTITY;
     entitiesRegistry->DeleteEntity(closingEH);

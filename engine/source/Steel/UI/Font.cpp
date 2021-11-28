@@ -3,8 +3,8 @@
 #include "Font.h"
 
 #include "FontManager.h"
-#include "../Core/Log.h"
-#include "../Rendering/OpenGLAPI.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Rendering/Core/OpenGLAPI.h"
 
 #define CHARACTERS_START 32
 #define CHARACTERS_NUMBER 255

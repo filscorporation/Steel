@@ -4,8 +4,9 @@
 #include <glm/glm.hpp>
 
 #include "Camera.h"
-#include "QuadRenderer.h"
-#include "RendererData.h"
+#include "Steel/Rendering/MaterialSystem/Material.h"
+#include "Steel/Rendering/MaterialSystem/Shader.h"
+#include "Core/RenderTask.h"
 
 class Renderer
 {
@@ -13,27 +14,10 @@ public:
     static void Init();
     static void Terminate();
 
-    static void OnBeforeRender(Camera& camera);
-    static void OnAfterRender();
-    static void Clear(glm::vec3 color);
-    static void PrepareUIRender();
-    static void Draw(const QuadRenderer& quad);
-
-    static void StartBatch();
-    static void EndBatch();
-    static void DrawBatchedData();
-
-    static void BeginWireframeMode();
-    static void EndWireframeMode();
+    static void Draw(RenderTask& renderTask);
+    static void Clear(ClearFlags::ClearFlag clearFlag);
 
 private:
-
-    // Renderer state
-    static glm::mat4 currentViewProjection;
-    static ResourceID lastMaterial;
-    static size_t lastPropertyBlockHash;
-
-    static std::vector<Shader*> shadersUsed;
 
     static bool drawWireframe;
     static Shader* wireframeShader;

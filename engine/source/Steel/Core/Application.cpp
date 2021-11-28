@@ -130,10 +130,12 @@ void Application::RunUpdate()
     scene->Refresh();
     scene->Update();
 
-    // Render scene
+    // Prepare scene to rendering (update components after changing positions and other properties)
+    // TODO: ideally move this into collect draw calls
     scene->PrepareDraw();
-    SceneRenderer sceneRenderer(scene, Screen::ScreenFramebuffer(), scene->GetMainCamera());
-    sceneRenderer.DrawScene();
+
+    // Render scene
+    SceneRenderer::Draw(scene, Screen::ScreenFramebuffer());
 
     Time::Update();
     Screen::SwapBuffers();

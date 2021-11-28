@@ -6,8 +6,8 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "../Resources/ResourceID.h"
-#include "../Rendering/Texture.h"
+#include "Steel/Resources/ResourceID.h"
+#include "Steel/Rendering/MaterialSystem/Texture.h"
 
 struct Sprite
 {

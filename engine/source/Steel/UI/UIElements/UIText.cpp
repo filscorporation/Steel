@@ -1,11 +1,11 @@
 #include <vector>
 #include <cctype>
-#include "UIText.h"
 
-#include "../../Core/Application.h"
-#include "../../Core/Log.h"
-#include "../../Scene/Hierarchy.h"
-#include "../UIQuadRenderer.h"
+#include "UIText.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Scene/Hierarchy.h"
+#include "Steel/Scene/SceneHelper.h"
 
 bool UIText::Validate(EntitiesRegistry* entitiesRegistry)
 {
@@ -20,21 +20,18 @@ void UIText::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIText::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    ForeachLetterDelete(entitiesRegistry, letters.size());
+    vb.Clear();
+    ib.Clear();
 }
 
 void UIText::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
-    ForeachLetterSetActive(entitiesRegistry, true);
-}
-
-void UIText::OnDisabled(EntitiesRegistry* entitiesRegistry)
-{
-    ForeachLetterSetActive(entitiesRegistry, false);
+    isDirty = true;
 }
 
 void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, bool transformationDirty, bool sortingOrderDirty)
 {
+    /*
     if (!_dirtyText && !_dirtyTextColor && !transformationDirty && !sortingOrderDirty)
         return;
 
@@ -203,13 +200,29 @@ void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, boo
     {
         auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
         ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix, rectTransformation.GetSortingOrder());
-    }
+    }*/
+}
+
+void UIText::Draw(RenderContext* renderContext)
+{
+    if (isDirty)
+        RebuildInner(GetComponentS<RectTransformation>(Owner));
+
+    if (vb.IsEmpty() || ib.IsEmpty())
+        return;
+
+    DrawCall drawCall;
+    drawCall.VB = vb;
+    drawCall.IB = ib;
+    drawCall.RenderMaterial = _material;
+    drawCall.Queue = RenderingQueue::Opaque;
+
+    renderContext->List.AddDrawCall(drawCall);
 }
 
 void UIText::Refresh()
 {
-    _dirtyText = false;
-    _dirtyTextColor = false;
+    isDirty = false;
 }
 
 Font* UIText::GetFont() const
@@ -220,8 +233,7 @@ Font* UIText::GetFont() const
 void UIText::SetFont(Font* font)
 {
     _font = font;
-
-    _dirtyText = true;
+    isDirty = true;
 }
 
 std::string UIText::GetText() const
@@ -236,7 +248,6 @@ void UIText::SetText(const std::string& text)
 
     // Save how many letters changed (to not rebuild text when one last char changed)
     // TODO: rework rebuilding optimization for multiline text
-    _lettersChangedCount = letters.size();
     //for (uint32_t i = _lettersChangedCount; i < std::min(text.size(), letters.size()); ++i)
     //{
     //    if (text[i] == _text[i])
@@ -246,7 +257,7 @@ void UIText::SetText(const std::string& text)
     //}
 
     _text = text;
-    _dirtyText = true;
+    isDirty = true;
 }
 
 uint32_t UIText::GetTextSize() const
@@ -259,9 +270,8 @@ void UIText::SetTextSize(uint32_t size)
     if (_textSize == size || size < 1)
         return;
 
-    _lettersChangedCount = letters.size();
     _textSize = size;
-    _dirtyText = true;
+    isDirty = true;
 }
 
 float UIText::GetLineSpacing() const
@@ -274,9 +284,8 @@ void UIText::SetLineSpacing(float spacing)
     if (_lineSpacing == spacing || spacing < 0.0f)
         return;
 
-    _lettersChangedCount = letters.size();
     _lineSpacing = spacing;
-    _dirtyText = true;
+    isDirty = true;
 }
 
 const glm::vec4& UIText::GetColor() const
@@ -290,7 +299,7 @@ void UIText::SetColor(glm::vec4 color)
         return;
 
     _color = color;
-    _dirtyTextColor = true;
+    isDirty = true;
 }
 
 bool UIText::GetIsTextAutoSize() const
@@ -304,7 +313,7 @@ void UIText::SetIsTextAutoSize(bool isAutoSize)
         return;
 
     _isTextAutoSize = isAutoSize;
-    _dirtyText = true;
+    isDirty = true;
 }
 
 AlignmentTypes::AlignmentType UIText::GetTextAlignment() const
@@ -317,9 +326,8 @@ void UIText::SetTextAlignment(AlignmentTypes::AlignmentType alignmentType)
     if (_textAlignment == alignmentType)
         return;
 
-    _lettersChangedCount = letters.size();
     _textAlignment = alignmentType;
-    _dirtyText = true;
+    isDirty = true;
 }
 
 OverflowModes::OverflowMode UIText::GetOverflowMode() const
@@ -332,9 +340,8 @@ void UIText::SetOverflowMode(OverflowModes::OverflowMode overflowMode)
     if (_overflowMode == overflowMode)
         return;
 
-    _lettersChangedCount = letters.size();
     _overflowMode = overflowMode;
-    _dirtyText = true;
+    isDirty = true;
 }
 
 void UIText::SetClippingLevel(short clippingLevel)
@@ -343,13 +350,7 @@ void UIText::SetClippingLevel(short clippingLevel)
         return;
 
     _clippingLevel = clippingLevel;
-
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    for (auto& letterID : letters)
-    {
-        if (letterID == NULL_ENTITY) continue;
-        registry->GetComponent<UIQuadRenderer>(letterID).CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
-    }
+    isDirty = true;
 }
 
 glm::vec3 UIText::GetLetterOrigin(uint32_t letterIndex, bool& calculated)
@@ -428,7 +429,7 @@ uint32_t UIText::GetLetterPositionLineUp(uint32_t currentPosition, float& horOff
     auto& atlas = _font->characters[_textSize];
     float height = _lineSpacing * (float)(atlas.MaxY - atlas.MinY);
 
-    uint32_t realPosition = std::min((uint32_t)letters.size(), currentPosition);
+    uint32_t realPosition = std::min((uint32_t)_text.size(), currentPosition);
 
     for (auto& letterDimension : lettersDimensions)
     {
@@ -450,7 +451,7 @@ uint32_t UIText::GetLetterPositionLineDown(uint32_t currentPosition, float& horO
     auto& atlas = _font->characters[_textSize];
     float height = _lineSpacing * (float)(atlas.MaxY - atlas.MinY);
 
-    uint32_t realPosition = std::min((uint32_t)letters.size(), currentPosition);
+    uint32_t realPosition = std::min((uint32_t)_text.size(), currentPosition);
 
     for (auto& letterDimension : lettersDimensions)
     {
@@ -464,7 +465,7 @@ uint32_t UIText::GetLetterPositionLineDown(uint32_t currentPosition, float& horO
         }
     }
 
-    return letters.size();
+    return _text.size();
 }
 
 void UIText::GetLinesIndices(uint32_t from, uint32_t to, std::vector<std::tuple<uint32_t, uint32_t>>& indices)
@@ -488,56 +489,17 @@ void UIText::GetLinesIndices(uint32_t from, uint32_t to, std::vector<std::tuple<
     indices.emplace_back(lastIndex, to);
 }
 
-bool UIText::IsTextColorDirty() const
+bool UIText::IsDirty() const
 {
-    return _dirtyTextColor;
+    return isDirty;
 }
 
-bool UIText::IsTextDirty() const
+void UIText::RebuildInner(RectTransformation& transformation)
 {
-    return _dirtyText;
-}
+    // TODO: see Refresh()
+    //isDirty = false;
 
-void UIText::ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const
-{
-    for (auto& letterID : letters)
-    {
-        if (letterID == NULL_ENTITY) continue;
-        registry->GetComponent<UIQuadRenderer>(letterID).Color = color;
-    }
-}
-
-void UIText::ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count)
-{
-    for (uint32_t i = letters.size() - count; i < letters.size(); ++i)
-    {
-        if (letters[i] == NULL_ENTITY) continue;
-        registry->DeleteEntity(letters[i]);
-    }
-    letters.resize(letters.size() - count);
-    lettersDimensions.resize(letters.size());
-}
-
-void UIText::ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const
-{
-    for (auto& letterID : letters)
-    {
-        if (letterID == NULL_ENTITY) continue;
-        registry->EntitySetActive(letterID, active, false);
-    }
-}
-
-void UIText::ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix, float sortingOrder) const
-{
-    auto lettersAccessor = registry->GetComponentAccessor<UIQuadRenderer>();
-    for (auto& letterID : letters)
-    {
-        if (letterID == NULL_ENTITY) continue;
-        auto& renderer = lettersAccessor.Get(letterID);
-        for (int j = 0; j < 4; ++j)
-            renderer.Vertices[j] = transformationMatrix * renderer.DefaultVertices[j];
-        renderer.SortingOrder = sortingOrder;
-    }
+    // TODO: rebuild
 }
 
 bool UIText::IsNewLine(char c)
@@ -575,7 +537,7 @@ void UIText::GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<ui
             case OverflowModes::Overflow:
                 break;
             case OverflowModes::WrapByLetters:
-                if (linesSize[line] + character.Advance > maxWidth)
+                if ((float)linesSize[line] + character.Advance > maxWidth)
                 {
                     lastSpace = -1;
                     wordSize = 0;
@@ -587,7 +549,7 @@ void UIText::GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<ui
                 }
                 break;
             case OverflowModes::WrapByWords:
-                if (linesSize[line] + character.Advance > maxWidth)
+                if ((float)linesSize[line] + character.Advance > maxWidth)
                 {
                     if (lettersCount[line] != 0 && !IsSpace(_text[i]) && lastSpace != -1)
                     {
@@ -615,7 +577,7 @@ void UIText::GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<ui
         lettersCount[line]++;
         if (IsSpace(_text[i]))
         {
-            lastSpace = lettersCount[line] - 1;
+            lastSpace = (int)lettersCount[line] - 1;
             wordSize = 0;
         }
         else

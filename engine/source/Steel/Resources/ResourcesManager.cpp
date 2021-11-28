@@ -1,12 +1,12 @@
 #include "ResourcesManager.h"
 #include "AsepriteLoader.h"
 #include "PngLoader.h"
-#include "../Core/Log.h"
-#include "../Audio/AudioCore.h"
-#include "../Audio/WavLoader.h"
-#include "../Rendering/BuiltInShaders.h"
-#include "../Rendering/OpenGLAPI.h"
-#include "../UI/FontManager.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Audio/AudioCore.h"
+#include "Steel/Audio/WavLoader.h"
+#include "Steel/Rendering/MaterialSystem/BuiltInShaders.h"
+#include "Steel/Rendering/Core/OpenGLAPI.h"
+#include "Steel/UI/FontManager.h"
 
 #include <fstream>
 // TODO: remove al dependency into AudioCore

@@ -1,6 +1,6 @@
 #include "PngLoader.h"
-#include "../Core/Application.h"
-#include "../Rendering/OpenGLAPI.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Rendering/Core/OpenGLAPI.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>

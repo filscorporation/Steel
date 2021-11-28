@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "Texture.h"
+#include "Steel/Rendering/MaterialSystem/Texture.h"
 
 class Framebuffer
 {

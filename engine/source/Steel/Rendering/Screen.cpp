@@ -2,7 +2,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Screen.h"
-#include "OpenGLAPI.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
 #include "../Input/Input.h"

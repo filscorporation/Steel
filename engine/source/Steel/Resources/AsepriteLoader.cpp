@@ -3,9 +3,9 @@
 
 #include "AsepriteLoader.h"
 #include "ResourcesManager.h"
-#include "../Core/Application.h"
-#include "../Core/Log.h"
-#include "../Rendering/OpenGLAPI.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Rendering/Core/OpenGLAPI.h"
 
 int Decompress(const void* src, uint32_t srcLen, void* dst, uint32_t dstLen)
 {

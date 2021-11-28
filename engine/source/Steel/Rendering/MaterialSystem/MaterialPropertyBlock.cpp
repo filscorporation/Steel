@@ -1,8 +1,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "MaterialPropertyBlock.h"
-#include "OpenGLAPI.h"
-#include "../Core/Log.h"
+#include "Steel/Rendering/Core/OpenGLAPI.h"
+#include "Steel/Core/Log.h"
 
 void MaterialPropertyBlock::Apply(Shader* shader) const
 {

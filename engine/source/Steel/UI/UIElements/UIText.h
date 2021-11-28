@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../Font.h"
-#include "../UIComponent.h"
-#include "../RectTransformation.h"
-#include "../../Rendering/Material.h"
+#include "Steel/Rendering/MaterialSystem/Material.h"
+#include "Steel/Rendering/Core/RenderContext.h"
+#include "Steel/UI/Font.h"
+#include "Steel/UI/UIComponent.h"
+#include "Steel/UI/RectTransformation.h"
 
 namespace AlignmentTypes
 {
@@ -42,9 +43,9 @@ public:
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
-    void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
     void Rebuild(UILayer* layer, RectTransformation& transformation, bool transformationDirty, bool sortingOrderDirty);
+    void Draw(RenderContext* renderContext);
     void Refresh();
 
     Font* GetFont() const;
@@ -72,14 +73,10 @@ public:
     uint32_t GetLetterPositionLineDown(uint32_t currentPosition, float& horOffset);
     void GetLinesIndices(uint32_t from, uint32_t to, std::vector<std::tuple<uint32_t, uint32_t>>& indices);
 
-    bool IsTextColorDirty() const;
-    bool IsTextDirty() const;
+    bool IsDirty() const;
 
 private:
-    void ForeachLetterChangeColor(EntitiesRegistry* registry, glm::vec4 color) const;
-    void ForeachLetterDelete(EntitiesRegistry* registry, uint32_t count);
-    void ForeachLetterSetActive(EntitiesRegistry* registry, bool active) const;
-    void ForeachLetterApplyTransformation(EntitiesRegistry* registry, const glm::mat4& transformationMatrix, float sortingOrder) const;
+    void RebuildInner(RectTransformation& transformation);
 
     void GetLinesSize(CharactersAtlas& atlas, float maxWidth, std::vector<uint32_t>& linesSize, std::vector<uint32_t>& lettersCount);
     static bool IsNewLine(char c);
@@ -99,10 +96,9 @@ private:
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     short _clippingLevel = 0;
 
-    uint32_t _lettersChangedCount = 0;
-    bool _dirtyText = false;
-    bool _dirtyTextColor = false;
-
-    std::vector<EntityID> letters;
     std::vector<glm::ivec3> lettersDimensions;
+
+    bool isDirty = true;
+    VertexBuffer vb;
+    IndexBuffer ib;
 };

@@ -35,6 +35,5 @@ private:
     bool isChecked = false;
     EntityID checkMark = NULL_ENTITY;
 
-    friend class UISystem;
     friend class UILayer;
 };

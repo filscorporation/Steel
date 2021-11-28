@@ -2,7 +2,7 @@
 
 #include <mono/jit/jit.h>
 
-#include "../Rendering/MaterialPropertyBlock.h"
+#include "Steel/Rendering/MaterialSystem/MaterialPropertyBlock.h"
 
 struct MaterialPropertyBlockInternal
 {

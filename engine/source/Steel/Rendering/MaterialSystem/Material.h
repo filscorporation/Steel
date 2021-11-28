@@ -4,7 +4,7 @@
 
 #include "MaterialPropertyBlock.h"
 #include "Shader.h"
-#include "Sprite.h"
+#include "Steel/Rendering/Sprite.h"
 
 class Material
 {

@@ -34,7 +34,7 @@ set(ZLIB_FILES includes/zlib/zlib.h includes/zlib/adler32.c includes/zlib/compre
 set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
         ${GLAD_FILES} ${ZLIB_FILES}
-        source/Steel/Rendering/Shader.h source/Steel/Rendering/Shader.cpp source/Steel/Core/Application.cpp
+        source/Steel/Rendering/MaterialSystem/Shader.h source/Steel/Rendering/MaterialSystem/Shader.cpp source/Steel/Core/Application.cpp
         source/Steel/Core/Application.h source/Steel/Input/Input.cpp source/Steel/Input/Input.h source/Steel/Input/KeyCodes.h
         source/Steel/Input/MouseCodes.h source/Steel.h source/Steel/EntityComponentSystem/Component.cpp
         source/Steel/EntityComponentSystem/Component.h source/Steel/Rendering/SpriteRenderer.cpp
@@ -59,7 +59,7 @@ set(SOURCE_FILES
         source/Steel/Scripting/EntityInternalCalls.cpp source/Steel/Scripting/EntityInternalCalls.h
         source/Steel/Scripting/ComponentsInternalCalls.cpp source/Steel/Scripting/ComponentsInternalCalls.h
         source/Steel/Scripting/ScriptingCallsRegister.cpp source/Steel/Scripting/ScriptingCallsRegister.h
-        source/Steel/Rendering/BuiltInShaders.h source/Steel/Physics/Physics.cpp source/Steel/Physics/Physics.h
+        source/Steel/Rendering/MaterialSystem/BuiltInShaders.h source/Steel/Physics/Physics.cpp source/Steel/Physics/Physics.h
         source/Steel/Physics/PhysicsContactListener.cpp source/Steel/Physics/PhysicsContactListener.h
         source/Steel/Physics/Collision.h source/Steel/UI/RectTransformation.cpp source/Steel/UI/RectTransformation.h
         source/Steel/UI/UIComponent.cpp source/Steel/UI/UIComponent.h
@@ -71,31 +71,36 @@ set(SOURCE_FILES
         source/Steel/EntityComponentSystem/SparseDataSet.h
         source/Steel/Physics/CircleCollider.cpp source/Steel/Physics/CircleCollider.h
         source/Steel/Scene/HierarchyNode.cpp source/Steel/Scene/HierarchyNode.h source/Steel/Scene/Hierarchy.h
-        source/Steel/Scene/Hierarchy.cpp source/Steel/Rendering/RendererData.h source/Steel/UI/UILayer.cpp source/Steel/UI/UILayer.h
+        source/Steel/Scene/Hierarchy.cpp source/Steel/UI/UILayer.cpp source/Steel/UI/UILayer.h
         source/Steel/UI/UIEventHandler.cpp source/Steel/UI/UIEventHandler.h source/Steel/UI/UIEvent.h source/Steel/Input/ButtonStates.h
         source/Steel/UI/UIElements/UIButton.cpp source/Steel/UI/UIElements/UIButton.h source/Steel/UI/UIElements/UIText.cpp source/Steel/UI/UIElements/UIText.h
         source/Steel/UI/Font.cpp source/Steel/UI/Font.h
         source/Steel/UI/FontManager.cpp source/Steel/UI/FontManager.h
         source/Steel/EntityComponentSystem/SparseSet.h source/Steel/Math/Math.h
         source/Steel/Math/PerlinNoise.cpp source/Steel/Math/PerlinNoise.h
-        source/Steel/Resources/PngLoader.cpp source/Steel/Resources/PngLoader.h source/Steel/Rendering/OpenGLAPI.cpp source/Steel/Rendering/OpenGLAPI.h
+        source/Steel/Resources/PngLoader.cpp source/Steel/Resources/PngLoader.h source/Steel/Rendering/Core/OpenGLAPI.cpp source/Steel/Rendering/Core/OpenGLAPI.h
         source/Steel/Resources/AsepriteLoader.cpp source/Steel/Resources/AsepriteLoader.h source/Steel/Resources/AsepriteData.h
-        source/Steel/Resources/FileLoader.cpp source/Steel/Resources/FileLoader.h source/Steel/Rendering/QuadRenderer.cpp source/Steel/Rendering/QuadRenderer.h
-        source/Steel/UI/UIQuadRenderer.cpp source/Steel/UI/UIQuadRenderer.h source/Steel/Scripting/ScriptingCommon.h source/Steel/UI/UIElements/UIInputField.cpp
+        source/Steel/Resources/FileLoader.cpp source/Steel/Resources/FileLoader.h
+        source/Steel/Scripting/ScriptingCommon.h source/Steel/UI/UIElements/UIInputField.cpp
         source/Steel/UI/UIElements/UIInputField.h source/Steel/UI/TransitionInfo.h source/Steel/UI/UIInteractable.cpp source/Steel/UI/UIInteractable.h
-        source/Steel/UI/CallbackType.h source/Steel/Scene/HierarchyParent.h source/Steel/Rendering/Material.cpp source/Steel/Rendering/Material.h
-        source/Steel/Rendering/MaterialPropertyBlock.cpp source/Steel/Rendering/MaterialPropertyBlock.h source/Steel/Scripting/MaterialPropertyBlockInternal.h
+        source/Steel/UI/CallbackType.h source/Steel/Scene/HierarchyParent.h source/Steel/Rendering/MaterialSystem/Material.cpp source/Steel/Rendering/MaterialSystem/Material.h
+        source/Steel/Rendering/MaterialSystem/MaterialPropertyBlock.cpp source/Steel/Rendering/MaterialSystem/MaterialPropertyBlock.h source/Steel/Scripting/MaterialPropertyBlockInternal.h
         source/Steel/Scripting/MaterialPropertyBlockInternal.cpp source/Steel/UI/UIElements/UIClipping.cpp source/Steel/UI/UIElements/UIClipping.h
         source/Steel/UI/UIElements/UICheckBox.cpp source/Steel/UI/UIElements/UICheckBox.h
         source/Steel/UI/UIElements/UITabs.cpp source/Steel/UI/UIElements/UITabs.h source/Steel/UI/UIElements/UILayoutGroup.cpp
         source/Steel/UI/UIElements/UILayoutGroup.h source/Steel/UI/UIElements/UILayoutElement.h source/Steel/UI/UIElements/LayoutGroupTypes.h
         source/Steel/Scene/SceneManager.cpp source/Steel/Scene/SceneManager.h source/Steel/Rendering/Framebuffer.cpp source/Steel/Rendering/Framebuffer.h
-        source/Steel/Rendering/Texture.cpp source/Steel/Rendering/Texture.h source/Steel/UI/UIElements/UILayoutElement.cpp
+        source/Steel/Rendering/MaterialSystem/Texture.cpp source/Steel/Rendering/MaterialSystem/Texture.h source/Steel/UI/UIElements/UILayoutElement.cpp
         source/Steel/Rendering/SceneRenderer.cpp source/Steel/Rendering/SceneRenderer.h source/Steel/Serialization/SerializationManager.cpp
         source/Steel/Serialization/SerializationManager.h source/Steel/Serialization/Serializable.h source/Steel/Serialization/AttributeInfo.h
         source/Steel/Serialization/AttributeAccessor.h source/Steel/Common/StringUtils.h source/Steel/Serialization/SerializationConvert.h
         source/Steel/Core/TypeInfo.h source/Steel/Core/TypeInfo.cpp source/Steel/Serialization/TypeInfoStorage.cpp source/Steel/Serialization/TypeInfoStorage.h
-        source/Steel/Scene/HierarchyParent.cpp)
+        source/Steel/Scene/HierarchyParent.cpp source/Steel/Rendering/Core/DrawCall.h source/Steel/Rendering/Core/RenderList.cpp
+        source/Steel/Rendering/Core/RenderList.h source/Steel/Rendering/Core/RenderContext.h source/Steel/Rendering/Core/VertexBuffer.cpp
+        source/Steel/Rendering/Core/VertexBuffer.h source/Steel/Rendering/Core/RenderTask.h source/Steel/Rendering/Core/DrawCallsSource.h
+        source/Steel/Rendering/SceneDrawCallsSource.cpp source/Steel/Rendering/SceneDrawCallsSource.h source/Steel/Rendering/UIDrawCallsSource.cpp
+        source/Steel/Rendering/UIDrawCallsSource.h source/Steel/Common/FlagType.h source/Steel/Rendering/Core/IndexBuffer.cpp source/Steel/Rendering/Core/IndexBuffer.h
+        source/Steel/Rendering/Core/RendererEnums.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -125,6 +130,8 @@ add_custom_command(TARGET Steel POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PROJECT_SOURCE_DIR}/includes/dll/
         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/)
+
+include_directories(source)
 
 # opengl
 find_package(OpenGL REQUIRED)

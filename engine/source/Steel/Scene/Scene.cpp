@@ -2,19 +2,18 @@
 #include "Transformation.h"
 #include "NameComponent.h"
 #include "Hierarchy.h"
-#include "../Animation/Animator.h"
-#include "../Audio/AudioCore.h"
-#include "../Audio/AudioSource.h"
-#include "../Audio/AudioListener.h"
-#include "../Core/Log.h"
-#include "../Core/Time.h"
-#include "../Input/Input.h"
-#include "../Rendering/SpriteRenderer.h"
-#include "../Rendering/QuadRenderer.h"
-#include "../Rendering/Renderer.h"
-#include "../Physics/Physics.h"
-#include "../Scripting/ScriptingSystem.h"
-#include "../UI/RectTransformation.h"
+#include "Steel/Animation/Animator.h"
+#include "Steel/Audio/AudioCore.h"
+#include "Steel/Audio/AudioSource.h"
+#include "Steel/Audio/AudioListener.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Core/Time.h"
+#include "Steel/Input/Input.h"
+#include "Steel/Rendering/SpriteRenderer.h"
+#include "Steel/Rendering/Renderer.h"
+#include "Steel/Physics/Physics.h"
+#include "Steel/Scripting/ScriptingSystem.h"
+#include "Steel/UI/RectTransformation.h"
 
 Scene::Scene(const std::string& name)
 {
@@ -213,7 +212,6 @@ void Scene::PrepareDraw()
     // Sort hierarchy from parents to children and then apply transforms
     SortByHierarchy();
     UpdateGlobalTransformation();
-    SortByDrawOrder();
     RefreshTransformation();
 
     BeforeRebuildUI();
@@ -258,7 +256,7 @@ void Scene::UpdateGlobalTransformation()
 
             bool transformationDirty = transformation.DidTransformationChange();
             if (transformationDirty && srAccessor.Has(hierarchyNode.Owner))
-                srAccessor.Get(hierarchyNode.Owner).UpdateRenderer(transformation);
+                srAccessor.Get(hierarchyNode.Owner).Rebuild(transformation);
             if (cameraAccessor.Has(hierarchyNode.Owner))
                 cameraAccessor.Get(hierarchyNode.Owner).UpdateViewProjection(transformation);
         }
@@ -270,17 +268,6 @@ void Scene::RefreshTransformation()
     auto transformations = entitiesRegistry->GetComponentIterator<Transformation>();
     for (auto& transformation : transformations)
         transformation.RefreshTransformation();
-}
-
-void Scene::SortByDrawOrder()
-{
-    // Sort all objects by Z
-    struct
-    {
-        bool operator()(QuadRenderer& a, QuadRenderer& b) const
-        { return a.SortingOrder > b.SortingOrder; } // TODO: check direction
-    } ZComparer;
-    entitiesRegistry->SortComponents<QuadRenderer>(ZComparer);
 }
 
 void Scene::CleanDestroyedEntities()

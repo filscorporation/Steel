@@ -6,7 +6,7 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "../Resources/ResourceID.h"
+#include "Steel/Resources/ResourceID.h"
 
 class Shader
 {

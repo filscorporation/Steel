@@ -1,5 +1,4 @@
 #include "Sprite.h"
-#include "OpenGLAPI.h"
 
 Sprite::Sprite(Texture* texture)
 {

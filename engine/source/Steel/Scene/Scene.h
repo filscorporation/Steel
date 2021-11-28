@@ -2,12 +2,11 @@
 
 #include <list>
 
-#include "../EntityComponentSystem/EntitiesRegistry.h"
-#include "../Rendering/Camera.h"
-#include "../Rendering/Framebuffer.h"
-#include "../Resources/AsepriteData.h"
-#include "../UI/UILayer.h"
 #include "HierarchyParent.h"
+#include "Steel/EntityComponentSystem/EntitiesRegistry.h"
+#include "Steel/Resources/AsepriteData.h"
+#include "Steel/Rendering/SceneRenderer.h"
+#include "Steel/UI/UILayer.h"
 
 class UILayer;
 
@@ -60,7 +59,6 @@ private:
     void SortByHierarchy();
     void UpdateGlobalTransformation();
     void RefreshTransformation();
-    void SortByDrawOrder();
     void CleanAllEntities();
     void DestroyAndRemoveEntity(EntityID entity);
     void DestroyEntityInner(EntityID entity);

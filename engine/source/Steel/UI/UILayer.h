@@ -15,7 +15,6 @@ public:
 
     void Update();
     void Rebuild();
-    void Draw();
     void Refresh();
 
     void LoadDefaultResources();

@@ -34,6 +34,7 @@ public:
 
     void Update();
     void Rebuild(UILayer* layer, RectTransformation& transformation);
+    void Draw(RenderContext* renderContext);
 
     void SetTargetText(EntityID targetID);
     EntityID GetTargetText() const;
@@ -57,6 +58,9 @@ public:
     InputFieldSubmitCallback SubmitCallback = nullptr;
 
 private:
+    void RebuildCursorInner(RectTransformation& transformation);
+    void RebuildSelectionInner(RectTransformation& transformation);
+
     static void HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     void HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& uiEvent);
     static bool UpdateTransition(EntityID entityID);
@@ -70,8 +74,6 @@ private:
     void DisableCursor();
     void UpdateCursorBlink();
     void RebuildCursor(UIText& uiText, RectTransformation& uiTextRT, float dz);
-    void UpdateCursorColor(UIText& uiText) const;
-    void UpdateCursorSortingOrder(RectTransformation& uiTextRT, float dz) const;
 
     void SetSelection(uint32_t from, uint32_t to);
     void DisableSelection();
@@ -79,7 +81,6 @@ private:
     void TryKeepSelection();
     void RemoveSelectedText(UIText& uiText);
     void RebuildSelection(UIText& uiText, RectTransformation& uiTextRT, float dz);
-    void UpdateSelectionSortingOrder(RectTransformation& uiTextRT, float dz) const;
     EntityID CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to, float dz);
 
     EntityID _targetText = NULL_ENTITY;
@@ -91,7 +92,6 @@ private:
     TextTypes::TextType textType = TextTypes::Standard;
 
     bool drawCursor = false;
-    EntityID cursor = NULL_ENTITY;
     uint32_t cursorWidth = 2;
     float cursorBlinkRate = 0.53f;
     float cursorBlinkProgress = 0.0f;
@@ -99,16 +99,16 @@ private:
     glm::vec4 cursorColor = glm::vec4(0.0f);
     bool autoCursorColor = true;
 
-    bool cursorColorDirty = false;
-    bool cursorDirty = false;
+    bool isCursorDirty = false;
+    VertexBuffer vbCursor;
+    IndexBuffer ibCursor;
+    bool isSelectionDirty = false;
+    VertexBuffer vbSelection;
+    IndexBuffer ibSelection;
 
     bool drawSelection = false;
-    bool selectionDirty = false;
     bool isFirstSelection = false;
     uint32_t selectionStart = 0;
     uint32_t selectionEnd = 0;
-    std::vector<EntityID> selectionEntites;
     glm::vec4 selectionColor = glm::vec4(0.42f, 0.57f, 0.7f, 1.0f);
-
-    friend class UISystem;
 };

@@ -1,26 +1,44 @@
 #include "SpriteRenderer.h"
-#include "Renderer.h"
-#include "QuadRenderer.h"
-#include "../Scene/SceneHelper.h"
+#include "Steel/Scene/SceneHelper.h"
 
-void SpriteRenderer::UpdateRenderer(Transformation& transformation)
+void SpriteRenderer::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
-    if (_image == nullptr)
+    isDirty = true;
+}
+
+void SpriteRenderer::OnRemoved(EntitiesRegistry* entitiesRegistry)
+{
+    vb.Clear();
+    ib.Clear();
+}
+
+void SpriteRenderer::Rebuild(Transformation& transformation)
+{
+    RebuildInner(transformation);
+}
+
+void SpriteRenderer::Draw(RenderContext* renderContext)
+{
+    if (isDirty)
+        RebuildInner(GetComponentS<Transformation>(Owner));
+
+    if (vb.IsEmpty() || ib.IsEmpty())
         return;
 
-    auto& qr = GetComponentS<QuadRenderer>(Owner);
+    DrawCall drawCall;
+    drawCall.VB = vb;
+    drawCall.IB = ib;
+    drawCall.RenderMaterial = _material;
+    drawCall.CustomProperties = _customProperties;
+    drawCall.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
 
-    glm::mat4 matrix = transformation.GetTransformationMatrixCached()
-                       * glm::scale(glm::mat4(1.0f), _image->GetRealWorldSize());
-    for (int i = 0; i < 4; ++i)
-        qr.Vertices[i] = matrix * qr.DefaultVertices[i];
-    qr.SortingOrder = transformation.GetGlobalSortingOrderCached();
+    renderContext->List.AddDrawCall(drawCall);
 }
 
 void SpriteRenderer::SetMaterial(Material* material)
 {
     _material = material;
-    SetImage(_image);
+    isDirty = true;
 }
 
 Material* SpriteRenderer::GetMaterial()
@@ -31,59 +49,21 @@ Material* SpriteRenderer::GetMaterial()
 void SpriteRenderer::SetCustomProperties(const MaterialPropertyBlock& properties)
 {
     _customProperties = properties;
-    _customProperties.UpdateHash();
-
-    if (_image == nullptr || _material == nullptr)
-        return;
-
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& qr = registry->AddComponent<QuadRenderer>(Owner);
-    qr.CustomProperties = _customProperties;
+    isDirty = true;
 }
 
 const MaterialPropertyBlock& SpriteRenderer::GetCustomProperties()
 {
+    if (isDirty)
+        RebuildInner(GetComponentS<Transformation>(Owner));
+
     return _customProperties;
 }
 
 void SpriteRenderer::SetImage(Sprite* image)
 {
-    _customProperties.UpdateHash();
-
-    if (image != nullptr && _material == nullptr)
-        _material = Application::Instance->GetResourcesManager()->DefaultSpriteMaterial();
-
-    bool wasNull = _image == nullptr;
     _image = image;
-
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (_image == nullptr)
-    {
-        if (!wasNull)
-            registry->RemoveComponent<QuadRenderer>(Owner);
-    }
-    else
-    {
-        auto& qr = registry->AddComponent<QuadRenderer>(Owner);
-        if (_image->IsSpriteSheet)
-        {
-            _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
-        }
-        else
-        {
-            qr.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
-            qr.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
-            qr.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
-            qr.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
-        }
-        qr.SetDefaultQuad(_image->Pivot);
-        qr.Color = _color;
-        qr.RenderMaterial = _material;
-        if (_image->SpriteTexture != nullptr)
-            _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
-        qr.CustomProperties = _customProperties;
-        qr.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
-    }
+    isDirty = true;
 }
 
 Sprite* SpriteRenderer::GetImage()
@@ -96,14 +76,8 @@ void SpriteRenderer::SetImageTileIndex(uint32_t index)
     if (index == currentImageTileIndex)
         return;
 
-    if (_image == nullptr || !_image->IsSpriteSheet)
-        return;
-
-    auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& qr = registry->AddComponent<QuadRenderer>(Owner);
-
     currentImageTileIndex = index;
-    _image->GetTexCoord(currentImageTileIndex, qr.TextureCoords);
+    isDirty = true;
 }
 
 uint32_t SpriteRenderer::GetImageTileIndex() const
@@ -117,4 +91,53 @@ glm::vec2 SpriteRenderer::GetWorldSize()
         return glm::vec2(0, 0);
 
     return GetComponentS<Transformation>(Owner).GetScale() * _image->GetRealWorldSize();
+}
+
+void SpriteRenderer::RebuildInner(Transformation& transformation)
+{
+    isDirty = false;
+
+    _customProperties.UpdateHash();
+
+    if (_image != nullptr && _material == nullptr)
+        _material = Application::Instance->GetResourcesManager()->DefaultSpriteMaterial();
+
+    ib.Clear();
+    vb.Clear();
+
+    if (_image != nullptr)
+    {
+        glm::vec2 texCoords[4];
+        if (_image->IsSpriteSheet)
+        {
+            _image->GetTexCoord(currentImageTileIndex, texCoords);
+        }
+        else
+        {
+            texCoords[0] = glm::vec2(1.0f, 0.0f);
+            texCoords[1] = glm::vec2(1.0f, 1.0f);
+            texCoords[2] = glm::vec2(0.0f, 0.0f);
+            texCoords[3] = glm::vec2(0.0f, 1.0f);
+        }
+
+        glm::vec4 defaultVertices[4];
+        defaultVertices[0] = glm::vec4(1.0f - _image->Pivot.x, 1.0f - _image->Pivot.y, 0.0f, 1.0f);
+        defaultVertices[1] = glm::vec4(1.0f - _image->Pivot.x, 0.0f - _image->Pivot.y, 0.0f, 1.0f);
+        defaultVertices[2] = glm::vec4(0.0f - _image->Pivot.x, 1.0f - _image->Pivot.y, 0.0f, 1.0f);
+        defaultVertices[3] = glm::vec4(0.0f - _image->Pivot.x, 0.0f - _image->Pivot.y, 0.0f, 1.0f);
+
+        glm::vec3 vertices[4];
+        glm::mat4 matrix = transformation.GetTransformationMatrixCached()
+                           * glm::scale(glm::mat4(1.0f), _image->GetRealWorldSize());
+        for (int i = 0; i < 4; ++i)
+            vertices[i] = matrix * defaultVertices[i];
+
+        auto indices = new uint32_t[6]{ 0, 1, 2, 1, 2, 3 };
+
+        vb.Create(vertices, _color, texCoords);
+        ib.Create(indices, 6);
+
+        if (_image->SpriteTexture != nullptr)
+            _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
+    }
 }

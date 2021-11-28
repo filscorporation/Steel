@@ -1,9 +1,8 @@
 #include <GLAD/glad.h>
-#include <glm/glm.hpp>
 
 #include "Shader.h"
-#include "OpenGLAPI.h"
-#include "../Core/Log.h"
+#include "Steel/Rendering/Core/OpenGLAPI.h"
+#include "Steel/Core/Log.h"
 
 #define MAX_TEXTURES 16
 

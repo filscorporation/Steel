@@ -5,38 +5,9 @@
 #include <map>
 
 #include "Shader.h"
+#include "Steel/Rendering/Core/RendererEnums.h"
 
 #define MAIN_TEX "main_tex"
-
-namespace StencilOperations
-{
-    enum StencilOperation
-    {
-        Keep,
-        Zero,
-        Replace,
-        Increment,
-        IncrementWrap,
-        Decrement,
-        DecrementWrap,
-        Invert,
-    };
-}
-
-namespace ComparisonFunctions
-{
-    enum ComparisonFunction
-    {
-        Never,
-        Less,
-        LessEqual,
-        Greater,
-        GreaterEqual,
-        Equal,
-        NotEqual,
-        Always,
-    };
-}
 
 struct MaterialPropertyBlock
 {
