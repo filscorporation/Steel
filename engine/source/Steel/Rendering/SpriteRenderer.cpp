@@ -30,6 +30,7 @@ void SpriteRenderer::Draw(RenderContext* renderContext)
     drawCall.IB = ib;
     drawCall.RenderMaterial = _material;
     drawCall.CustomProperties = _customProperties;
+    drawCall.SortingOrder = _sortingOrder;
     drawCall.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
 
     renderContext->List.AddDrawCall(drawCall);
@@ -97,6 +98,7 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
 {
     isDirty = false;
 
+    _sortingOrder = transformation.GetGlobalSortingOrderCached();
     _customProperties.UpdateHash();
 
     if (_image != nullptr && _material == nullptr)

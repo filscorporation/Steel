@@ -44,4 +44,5 @@ private:
     bool isDirty = true;
     VertexBuffer vb;
     IndexBuffer ib;
+    float _sortingOrder = 0;
 };

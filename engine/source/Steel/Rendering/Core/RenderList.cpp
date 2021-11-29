@@ -1,7 +1,10 @@
 #include "RenderList.h"
 #include "RenderContext.h"
-#include "Steel/Core/Application.h"
 #include "OpenGLAPI.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Math/Math.h"
+#include "Steel/Math/Sorting.h"
 #include "Steel/Rendering/Core/RenderTask.h"
 
 #include <algorithm>
@@ -12,6 +15,11 @@
 #define MAX_VB_SIZE 100000
 #define MAX_IB_SIZE 100000
 
+void RenderList::Reserve(uint32_t size)
+{
+    list.reserve(size);
+}
+
 void RenderList::AddDrawCall(const DrawCall& drawCall)
 {
     list.emplace_back(drawCall);
@@ -19,13 +27,20 @@ void RenderList::AddDrawCall(const DrawCall& drawCall)
 
 void RenderList::SortDrawCalls(RenderContext* renderContext)
 {
-    struct
+    std::vector<uint32_t> sortingKeys;
+    sortingKeys.resize(list.size());
+    for (int i = 0; i < sortingKeys.size(); ++i)
     {
-        bool operator()(DrawCall& a, DrawCall& b) const
-        { return a.Queue > b.Queue || (a.Queue == b.Queue && a.SortingOrder > b.SortingOrder); }
-    } comparer;
+        uint32_t key = ((uint32_t)(list[i].Queue) << 31) | (Math::FloatToUnsigned(list[i].SortingOrder) >> 1);
+        sortingKeys[i] = key;
+    }
 
-    std::sort(list.begin(), list.end(), comparer);
+    sortingIndices.clear();
+    sortingIndices.resize(list.size());
+    for (int i = 0; i < sortingIndices.size(); ++i)
+        sortingIndices[i] = i;
+
+    Sorting::RadixSort(sortingKeys, sortingIndices);
 }
 
 void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
@@ -34,7 +49,7 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
 
     for (int i = 0; i < list.size(); ++i)
     {
-        auto& drawCall = list[i];
+        auto& drawCall = list[sortingIndices[i]];
 
         if (drawCall.VB.IsEmpty() || drawCall.IB.IsEmpty()
             || drawCall.RenderMaterial == nullptr || drawCall.RenderMaterial->MainShader == nullptr)
@@ -58,9 +73,9 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
         uint32_t ibSize = drawCall.IB.Size;
         for (int j = i + 1; j < list.size(); ++j)
         {
-            vbSize += list[j].VB.Size;
-            ibSize += list[j].IB.Size;
-            if (!CanBatch(drawCall, list[j]) || vbSize >= MAX_VB_SIZE || ibSize >= MAX_IB_SIZE)
+            vbSize += list[sortingIndices[j]].VB.Size;
+            ibSize += list[sortingIndices[j]].IB.Size;
+            if (!CanBatch(drawCall, list[sortingIndices[j]]) || vbSize >= MAX_VB_SIZE || ibSize >= MAX_IB_SIZE)
                 break;
             batchSize++;
         }
@@ -72,14 +87,15 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
             // Fill batch data
             for (int j = 0; j < batchSize; ++j)
             {
-                std::copy(list[i + j].VB.Data, list[i + j].VB.Data + list[i + j].VB.Size, vertexBufferData + vbSize);
-                std::copy(list[i + j].IB.Data, list[i + j].IB.Data + list[i + j].IB.Size, indexBufferData + ibSize);
+                auto& batchDrawCall = list[sortingIndices[i + j]];
+                std::copy(batchDrawCall.VB.Data, batchDrawCall.VB.Data + batchDrawCall.VB.Size, vertexBufferData + vbSize);
+                std::copy(batchDrawCall.IB.Data, batchDrawCall.IB.Data + batchDrawCall.IB.Size, indexBufferData + ibSize);
                 // We can't just copy index buffer, need to add vertices count as step
-                for (int k = 0; k < list[i + j].IB.Size; ++k)
+                for (int k = 0; k < batchDrawCall.IB.Size; ++k)
                     indexBufferData[ibSize + k] += verticesCount;
-                vbSize += list[i + j].VB.Size;
-                ibSize += list[i + j].IB.Size;
-                verticesCount += list[i + j].VB.VerticesCount;
+                vbSize += batchDrawCall.VB.Size;
+                ibSize += batchDrawCall.IB.Size;
+                verticesCount += batchDrawCall.VB.VerticesCount;
             }
         }
         else
@@ -110,10 +126,10 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
 
         // TODO: check if valid in batch
         uint32_t blockSize = 0;
-        for (int j = 0; j < drawCall.VB.AttributeBlocks.size(); ++j)
+        for (auto& attribute : drawCall.VB.Attributes)
         {
-            OpenGLAPI::EnableVertexFloatAttribute(j, drawCall.VB.AttributeBlocks[j], drawCall.VB.BlockSize, blockSize);
-            blockSize += drawCall.VB.AttributeBlocks[j];
+            OpenGLAPI::EnableVertexFloatAttribute(attribute.AttributeID, attribute.Size, drawCall.VB.BlockSize, blockSize);
+            blockSize += attribute.Size;
         }
 
         // Draw

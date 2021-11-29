@@ -14,17 +14,7 @@ void IndexBuffer::Clear()
     Size = 0;
 }
 
-bool IndexBuffer::IsEmpty()
+bool IndexBuffer::IsEmpty() const
 {
     return Size == 0;
-}
-
-void IndexBuffer::Bind()
-{
-
-}
-
-void IndexBuffer::Unbind()
-{
-
 }

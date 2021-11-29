@@ -1,4 +1,5 @@
 #include "VertexBuffer.h"
+#include "OpenGLAPI.h"
 
 void VertexBuffer::Create(glm::vec3* vertices, glm::vec4 color, glm::vec2* textureCoords)
 {
@@ -21,7 +22,11 @@ void VertexBuffer::Create(glm::vec3* vertices, glm::vec4 color, glm::vec2* textu
         Data[offset++] = textureCoords[i][1];
     }
 
-    AttributeBlocks = { 3, 4, 2 };
+    Attributes.reserve(3);
+    Attributes.emplace_back(0, 3);
+    Attributes.emplace_back(1, 4);
+    Attributes.emplace_back(2, 2);
+
     BlockSize = 9;
     VerticesCount = 4;
 }
@@ -32,21 +37,11 @@ void VertexBuffer::Clear()
     Data = nullptr;
     Size = 0;
 
-    AttributeBlocks.clear();
+    Attributes.clear();
     BlockSize = 0;
 }
 
-bool VertexBuffer::IsEmpty()
+bool VertexBuffer::IsEmpty() const
 {
     return Size == 0;
-}
-
-void VertexBuffer::Bind()
-{
-
-}
-
-void VertexBuffer::Unbind()
-{
-
 }

@@ -44,4 +44,11 @@ public:
 
         return hash;
     }
+
+    // Convert float to uint representation (https://aras-p.info/blog/2014/01/16/rough-sorting-by-depth/)
+    static uint32_t FloatToUnsigned(float value)
+    {
+        const uint32_t valueI = *((uint32_t*)&value);
+        return ((uint32_t)(-(uint32_t)(valueI >> 31)) | 0x80000000) ^ valueI;
+    }
 };

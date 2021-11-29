@@ -10,6 +10,8 @@ SceneDrawCallsSource::SceneDrawCallsSource(Scene* scene, RenderMask mask)
 void SceneDrawCallsSource::CollectDrawCalls(RenderContext* renderContext)
 {
     auto spriteRenderers = _scene->GetEntitiesRegistry()->GetComponentIterator<SpriteRenderer>();
+    renderContext->List.Reserve(spriteRenderers.Size());
+
     for (int i = 0; i < spriteRenderers.Size(); ++i)
         spriteRenderers[i].Draw(renderContext);
 

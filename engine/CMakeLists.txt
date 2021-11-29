@@ -100,7 +100,7 @@ set(SOURCE_FILES
         source/Steel/Rendering/Core/VertexBuffer.h source/Steel/Rendering/Core/RenderTask.h source/Steel/Rendering/Core/DrawCallsSource.h
         source/Steel/Rendering/SceneDrawCallsSource.cpp source/Steel/Rendering/SceneDrawCallsSource.h source/Steel/Rendering/UIDrawCallsSource.cpp
         source/Steel/Rendering/UIDrawCallsSource.h source/Steel/Common/FlagType.h source/Steel/Rendering/Core/IndexBuffer.cpp source/Steel/Rendering/Core/IndexBuffer.h
-        source/Steel/Rendering/Core/RendererEnums.h)
+        source/Steel/Rendering/Core/RendererEnums.h source/Steel/Rendering/Core/VertexAttribute.h source/Steel/Math/Sorting.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
