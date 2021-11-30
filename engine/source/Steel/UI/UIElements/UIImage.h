@@ -30,7 +30,7 @@ public:
     void SetColor(glm::vec4 color);
     glm::vec4 GetColor();
     void SetImageTileIndex(uint32_t index);
-    uint32_t GetImageTileIndex();
+    uint32_t GetImageTileIndex() const;
     void SetClippingLevel(short clippingLevel);
 
     // Will flip UVs upside down by Y (used for framebuffer texture)
@@ -50,4 +50,5 @@ protected:
     bool isDirty = true;
     VertexBuffer vb;
     IndexBuffer ib;
+    float _sortingOrder = 0;
 };

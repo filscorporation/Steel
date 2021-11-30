@@ -31,6 +31,18 @@ void VertexBuffer::Create(glm::vec3* vertices, glm::vec4 color, glm::vec2* textu
     VerticesCount = 4;
 }
 
+void VertexBuffer::Create(float* data, uint32_t size, const std::vector<VertexAttribute>& attributes, uint32_t verticesCount)
+{
+    Data = data;
+    Size = size;
+    Attributes = attributes;
+
+    BlockSize = 0;
+    for (auto& Attribute : Attributes)
+        BlockSize += Attribute.Size;
+    VerticesCount = verticesCount;
+}
+
 void VertexBuffer::Clear()
 {
     delete[] Data;

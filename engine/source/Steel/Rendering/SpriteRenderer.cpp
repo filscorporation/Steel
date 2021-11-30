@@ -107,7 +107,7 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
     ib.Clear();
     vb.Clear();
 
-    if (_image != nullptr)
+    if (_image != nullptr && _image->SpriteTexture != nullptr)
     {
         glm::vec2 texCoords[4];
         if (_image->IsSpriteSheet)
@@ -139,7 +139,6 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
         vb.Create(vertices, _color, texCoords);
         ib.Create(indices, 6);
 
-        if (_image->SpriteTexture != nullptr)
-            _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
+        _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
     }
 }
