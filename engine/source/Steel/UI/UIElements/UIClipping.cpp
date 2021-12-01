@@ -1,7 +1,6 @@
 #include "UIClipping.h"
 #include "Steel/Core/Application.h"
 #include "Steel/Scene/Hierarchy.h"
-#include "Steel/Scene/SceneHelper.h"
 #include "Steel/UI/UIEventHandler.h"
 
 #define SO_OFFSET 0.1f
@@ -19,8 +18,11 @@ void UIClipping::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIClipping::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    vb.Clear();
-    ib.Clear();
+    for (int i = 0; i < 4; ++i)
+    {
+        vb[i].Clear();
+        ib[i].Clear();
+    }
 
     if (entitiesRegistry->IsCleared())
         return;
@@ -43,27 +45,16 @@ void UIClipping::OnDisabled(EntitiesRegistry* entitiesRegistry)
 
 void UIClipping::InitCaps(EntitiesRegistry* entitiesRegistry)
 {
-    /*
     ClippingLevel = GetClippingLevelUpwards(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner).GetParentNode());
     ClippingLevel++;
 
-    clippingQuads.reserve(4);
-    for (int i = 0; i < 4; ++i)
-    {
-        clippingQuads.push_back(entitiesRegistry->CreateNewEntity());
-        auto& qr = entitiesRegistry->AddComponent<UIQuadRenderer>(clippingQuads[i]);
-        qr.SetDefaultQuad();
-        qr.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
-        qr.CustomOwner = Owner;
-        // First two clipping quads for opaque pass, last ones for transparent
-        qr.Queue = i > 1 ? RenderingQueue::Transparent : RenderingQueue::Opaque;
-        // One clipping quad per pass increments stencil value, other - decrements
-        StencilOperations::StencilOperation op = i == 0 || i == 2 ? StencilOperations::Decrement : StencilOperations::Increment;
-        qr.CustomProperties.SetStencilOperation(StencilOperations::Keep, op, op);
-        // Clipping planes should not write to depth buffer
-        qr.CustomProperties.SetDepthMask(false);
-    }
+    _customProperties[0].SetStencilOperation(StencilOperations::Keep, StencilOperations::Increment, StencilOperations::Increment);
+    _customProperties[1].SetStencilOperation(StencilOperations::Keep, StencilOperations::Decrement, StencilOperations::Decrement);
+    // Clipping planes should not write to depth buffer
+    _customProperties[0].SetDepthMask(false);
+    _customProperties[1].SetDepthMask(false);
 
+    // Init event handlers to discard UI events outside of clipping area
     openingEH = entitiesRegistry->CreateNewEntity();
     auto& eh1 = entitiesRegistry->AddComponent<UIEventHandler>(openingEH);
     eh1.Type = EventHandlerTypes::ClippingOpen;
@@ -73,59 +64,82 @@ void UIClipping::InitCaps(EntitiesRegistry* entitiesRegistry)
     eh2.Type = EventHandlerTypes::ClippingClose;
     eh2.RectEntity = Owner;
 
-    needRebuild = true;
-
-    UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));*/
+    UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));
 }
 
 void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, bool sortingOrderDirty)
 {
-    if (transformation.DidTransformationChange() || sortingOrderDirty)
-        RebuildInner(transformation);
-    /*
-    if (!needRebuild && !transformation.DidTransformationChange() && !sortingOrderDirty)
+    if (!transformation.DidTransformationChange() && !sortingOrderDirty)
         return;
 
+    RebuildInner(transformation);
+
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    glm::mat4 matrix = transformation.GetTransformationMatrixCached();
-    float sortingOrder = transformation.GetSortingOrder();
-    float dz = 1.0f / (float)layer->GetLayerThickness();
-    float thickness = (float)transformation.GetChildrenThickness();
-
-    for (int i = 0; i < 4; ++i)
-    {
-        auto& qr = entitiesRegistry->GetComponent<UIQuadRenderer>(clippingQuads[i]);
-        for (int j = 0; j < 4; ++j)
-            qr.Vertices[j] = matrix * qr.DefaultVertices[j];
-        qr.SortingOrder = i == 0 || i == 3 ? sortingOrder - dz * SO_OFFSET : sortingOrder + dz * (thickness + SO_OFFSET);
-    }
-
-    needRebuild = false;
 
     // Opening event handler cap
-    entitiesRegistry->GetComponent<UIEventHandler>(openingEH).SortingOrder = sortingOrder - dz * SO_OFFSET;
+    entitiesRegistry->GetComponent<UIEventHandler>(openingEH).SortingOrder = _sortingOrder[0];
     // Closing event handler cap
-    entitiesRegistry->GetComponent<UIEventHandler>(closingEH).SortingOrder = sortingOrder + dz * (thickness + SO_OFFSET);*/
+    entitiesRegistry->GetComponent<UIEventHandler>(closingEH).SortingOrder = _sortingOrder[1];
 }
 
 void UIClipping::Draw(RenderContext* renderContext)
 {
-    if (vb.IsEmpty() || ib.IsEmpty())
+    if (vb[0].IsEmpty() || ib[0].IsEmpty() || vb[1].IsEmpty() || ib[1].IsEmpty())
         return;
 
-    DrawCall drawCall;
-    drawCall.VB = vb;
-    drawCall.IB = ib;
-    drawCall.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
-    drawCall.SortingOrder = _sortingOrder;
-    drawCall.Queue = RenderingQueue::Opaque;
+    for (int i = 0; i < 4; ++i)
+    {
+        DrawCall drawCall;
+        drawCall.VB = vb[i];
+        drawCall.IB = ib[i];
+        drawCall.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
+        drawCall.CustomProperties = i == 0 || i == 2 ? _customProperties[0] : _customProperties[1];
+        drawCall.SortingOrder = i == 0 || i == 3 ? _sortingOrder[1] : _sortingOrder[0];
+        drawCall.Queue = i > 1 ? RenderingQueue::Opaque : RenderingQueue::Transparent;
 
-    renderContext->List.AddDrawCall(drawCall);
+        renderContext->List.AddDrawCall(drawCall);
+    }
 }
 
 void UIClipping::RebuildInner(RectTransformation& transformation)
 {
-    // TODO: rebuild
+    UILayer* layer = Application::Instance->GetCurrentScene()->GetUILayer();
+    glm::mat4 matrix = transformation.GetTransformationMatrixCached();
+    float sortingOrder = transformation.GetSortingOrder();
+    float dz = 1.0f / (float)layer->GetLayerThickness();
+    float thickness = transformation.GetChildrenThickness();
+
+    std::vector<VertexAttribute> attributes;
+    attributes.reserve(1);
+    attributes.emplace_back(0, 3);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        const uint32_t verticesSize = 9 * 4;
+        auto vertices = new float[verticesSize];
+
+        glm::vec3 verticesVectors[4];
+        verticesVectors[0] = matrix * glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
+        verticesVectors[1] = matrix * glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
+        verticesVectors[2] = matrix * glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
+        verticesVectors[3] = matrix * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
+
+        uint32_t offset = 0;
+        for (auto& verticesVector : verticesVectors)
+        {
+            vertices[offset++] = verticesVector[0];
+            vertices[offset++] = verticesVector[1];
+            vertices[offset++] = verticesVector[2];
+        }
+
+        auto indices = new uint32_t[6]{ 0, 1, 2, 1, 2, 3 };
+
+        vb[i].Create(vertices, verticesSize, attributes);
+        ib[i].Create(indices, 6);
+    }
+
+    _sortingOrder[0] = sortingOrder - dz * SO_OFFSET;
+    _sortingOrder[1] = sortingOrder + dz * (thickness + SO_OFFSET);
 }
 
 bool UIClipping::WasRemoved() const

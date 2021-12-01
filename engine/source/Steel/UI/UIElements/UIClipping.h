@@ -36,8 +36,9 @@ private:
     EntityID closingEH = NULL_ENTITY;
     // This is used to prevent clipping recalculation process initiated by this element to count it in
     bool wasRemoved = false;
+    MaterialPropertyBlock _customProperties[2];
 
-    VertexBuffer vb;
-    IndexBuffer ib;
-    float _sortingOrder = 0;
+    VertexBuffer vb[4];
+    IndexBuffer ib[4];
+    float _sortingOrder[2] = { 0.0f, 0.0f };
 };
