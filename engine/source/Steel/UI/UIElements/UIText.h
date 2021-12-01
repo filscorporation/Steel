@@ -94,6 +94,7 @@ private:
     AlignmentTypes::AlignmentType _textAlignment = AlignmentTypes::CenterLeft;
     OverflowModes::OverflowMode _overflowMode = OverflowModes::Overflow;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    MaterialPropertyBlock _customProperties;
     short _clippingLevel = 0;
 
     std::vector<glm::ivec3> lettersDimensions;
@@ -101,4 +102,5 @@ private:
     bool isDirty = true;
     VertexBuffer vb;
     IndexBuffer ib;
+    float _sortingOrder = 0;
 };

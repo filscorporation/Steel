@@ -1,6 +1,7 @@
 #include "UIClipping.h"
 #include "Steel/Core/Application.h"
 #include "Steel/Scene/Hierarchy.h"
+#include "Steel/Scene/SceneHelper.h"
 #include "Steel/UI/UIEventHandler.h"
 
 #define SO_OFFSET 0.1f
@@ -79,7 +80,7 @@ void UIClipping::InitCaps(EntitiesRegistry* entitiesRegistry)
 
 void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, bool sortingOrderDirty)
 {
-    if (isDirty)
+    if (transformation.DidTransformationChange() || sortingOrderDirty)
         RebuildInner(transformation);
     /*
     if (!needRebuild && !transformation.DidTransformationChange() && !sortingOrderDirty)
@@ -107,9 +108,24 @@ void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, boo
     entitiesRegistry->GetComponent<UIEventHandler>(closingEH).SortingOrder = sortingOrder + dz * (thickness + SO_OFFSET);*/
 }
 
+void UIClipping::Draw(RenderContext* renderContext)
+{
+    if (vb.IsEmpty() || ib.IsEmpty())
+        return;
+
+    DrawCall drawCall;
+    drawCall.VB = vb;
+    drawCall.IB = ib;
+    drawCall.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
+    drawCall.SortingOrder = _sortingOrder;
+    drawCall.Queue = RenderingQueue::Opaque;
+
+    renderContext->List.AddDrawCall(drawCall);
+}
+
 void UIClipping::RebuildInner(RectTransformation& transformation)
 {
-
+    // TODO: rebuild
 }
 
 bool UIClipping::WasRemoved() const

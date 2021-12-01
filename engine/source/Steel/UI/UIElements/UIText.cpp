@@ -31,176 +31,8 @@ void UIText::OnEnabled(EntitiesRegistry* entitiesRegistry)
 
 void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, bool transformationDirty, bool sortingOrderDirty)
 {
-    /*
-    if (!_dirtyText && !_dirtyTextColor && !transformationDirty && !sortingOrderDirty)
-        return;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    if (_material == nullptr)
-        _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
-
-    if (_font == nullptr)
-    {
-        ForeachLetterDelete(entitiesRegistry, letters.size());
-        if (_textSizeRef != 0)
-        {
-            _font->FreeSize(_textSizeRef);
-            _textSizeRef = 0;
-        }
-
-        return;
-    }
-
-    if (rectTransformation.DidSizeChange())
-    {
-        // If text rect changed in size, completely rebuild
-        _lettersChangedCount = letters.size();
-        _dirtyText = true;
-    }
-
-    if (_dirtyText)
-    {
-        // If alignment is not to the left, than we need to change all letters positions
-        if (!(_textAlignment == AlignmentTypes::TopLeft
-           || _textAlignment == AlignmentTypes::CenterLeft
-           || _textAlignment == AlignmentTypes::BottomLeft))
-        {
-            _lettersChangedCount = letters.size();
-        }
-
-        // Remove letters that changed
-        ForeachLetterDelete(entitiesRegistry, _lettersChangedCount);
-
-        if (letters.empty())
-        {
-            // If all letter changed, we don't need to change transformation and color, as new one will be created
-            transformationDirty = false;
-            _dirtyTextColor = false;
-            sortingOrderDirty = false;
-        }
-
-        if (_textSizeRef != 0 && _textSizeRef != _textSize)
-            _font->FreeSize(_textSizeRef);
-        _textSizeRef = _textSize;
-        _font->AddSizeIfNotExists(_textSize);
-        auto& atlas = _font->characters[_textSize];
-        auto rectSize = rectTransformation.GetRealSizeCached();
-        auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
-
-        // We will try to fit text into the rect
-        bool valid = (float)atlas.LineHeight() <= rectSize.y && (float)atlas.MaxX <= rectSize.x;
-
-        // Calculate text metrics
-        std::vector<uint32_t> linesSize;
-        std::vector<uint32_t> lettersCount;
-        if (valid)
-        {
-            GetLinesSize(atlas, rectSize.x, linesSize, lettersCount);
-            valid = !linesSize.empty();
-        }
-
-        if (!valid)
-        {
-            // Text is not valid, it can't be drawn
-            ForeachLetterDelete(entitiesRegistry, letters.size());
-            _dirtyText = false;
-            _dirtyTextColor = false;
-
-            return;
-        }
-        uint32_t spacing = std::floor((float)atlas.LineHeight() * _lineSpacing);
-        uint32_t textHeight = atlas.LineHeight() + (linesSize.size() - 1) * spacing;
-
-        // Calculate alignment variables
-        int cursorX = OriginX(rectSize.x, linesSize[0]);
-        int cursorY = OriginY(atlas, rectSize.y, textHeight);
-
-        // Move cursor to first changed letter
-        // TODO: rework rebuilding optimization for multiline text
-        //for (uint32_t i = 0; i < letters.size(); ++i)
-        //    cursorX += atlas.Characters[_text[i]].Advance;
-
-        // Create letter renderer for each letter and calculate its transformation
-        letters.reserve(_text.size());
-        lettersDimensions.reserve(_text.size() + 1);
-        uint32_t currentLine = 0, lettersInLine = 0;
-        for (uint32_t i = letters.size(); i < _text.size(); ++i)
-        {
-            char& c = _text[i];
-            auto& character = atlas.Characters[c];
-
-            // If letter doesn't fit into rect, it will be hidden
-            bool isRendered = cursorX >= 0 && (float)cursorX + (float)character.Advance <= rectSize.x
-                && cursorY >= -atlas.MinY && (float)cursorY + (float)atlas.MaxY <= rectSize.y;
-            if (isRendered)
-            {
-                EntityID letterEntityID = entitiesRegistry->CreateNewEntity();
-                auto& letterRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(letterEntityID);
-
-                letterRenderer.Color = _color;
-                letterRenderer.RenderMaterial = _material;
-                letterRenderer.CustomProperties.SetTexture(MAIN_TEX, atlas.TextureID);
-                letterRenderer.CustomProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
-                letterRenderer.Queue = RenderingQueue::Opaque;
-                letterRenderer.TextureCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
-                letterRenderer.TextureCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);
-                letterRenderer.TextureCoords[2] = glm::vec2(character.BottomLeft.x, character.BottomLeft.y);
-                letterRenderer.TextureCoords[3] = glm::vec2(character.BottomLeft.x, character.TopRight.y);
-
-                // Calculate letter rect
-                float x = ((float)cursorX + (float)character.Bearing.x + (float)character.Size.x * 0.5f) / rectSize.x - 0.5f;
-                float y = ((float)cursorY + (float)character.Bearing.y - (float)character.Size.y * 0.5f) / rectSize.y - 0.5f;
-                float hw = 0.5f * (float)character.Size.x / rectSize.x;
-                float hh = 0.5f * (float)character.Size.y / rectSize.y;
-                letterRenderer.DefaultVertices[0] = glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
-                letterRenderer.DefaultVertices[1] = glm::vec4(x + hw, y - hh, 0.0f, 1.0f);
-                letterRenderer.DefaultVertices[2] = glm::vec4(x - hw, y + hh, 0.0f, 1.0f);
-                letterRenderer.DefaultVertices[3] = glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
-                letterRenderer.SortingOrder = rectTransformation.GetSortingOrder();
-
-                // Save letter origins for text navigation needs
-                lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
-
-                // Apply text rect transformation
-                for (int j = 0; j < 4; ++j)
-                    letterRenderer.Vertices[j] = rectMatrix * letterRenderer.DefaultVertices[j];
-
-                letters.push_back(letterEntityID);
-                lettersInLine++;
-                cursorX += (int)character.Advance;
-            }
-            else
-            {
-                lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
-                letters.push_back(NULL_ENTITY);
-                lettersInLine++;
-                cursorX += (int)character.Advance;
-            }
-
-            if (lettersInLine >= lettersCount[currentLine] && currentLine < linesSize.size() - 1)
-            {
-                currentLine++;
-                lettersInLine = 0;
-                cursorX = OriginX(rectSize.x, linesSize[currentLine]);
-                cursorY -= (int)spacing;
-            }
-        }
-
-        // Add one more letter point in the end for new letters
-        lettersDimensions.emplace_back(cursorX, cursorY, 0);
-    }
-
-    if (_dirtyTextColor)
-    {
-        ForeachLetterChangeColor(entitiesRegistry, _color);
-    }
-
-    if (transformationDirty || sortingOrderDirty)
-    {
-        auto& rectMatrix = rectTransformation.GetTransformationMatrixCached();
-        ForeachLetterApplyTransformation(entitiesRegistry, rectMatrix, rectTransformation.GetSortingOrder());
-    }*/
+    if (transformationDirty || sortingOrderDirty || isDirty)
+        RebuildInner(rectTransformation);
 }
 
 void UIText::Draw(RenderContext* renderContext)
@@ -215,6 +47,8 @@ void UIText::Draw(RenderContext* renderContext)
     drawCall.VB = vb;
     drawCall.IB = ib;
     drawCall.RenderMaterial = _material;
+    drawCall.CustomProperties = _customProperties;
+    drawCall.SortingOrder = _sortingOrder;
     drawCall.Queue = RenderingQueue::Opaque;
 
     renderContext->List.AddDrawCall(drawCall);
@@ -245,16 +79,6 @@ void UIText::SetText(const std::string& text)
 {
     if (_text == text)
         return;
-
-    // Save how many letters changed (to not rebuild text when one last char changed)
-    // TODO: rework rebuilding optimization for multiline text
-    //for (uint32_t i = _lettersChangedCount; i < std::min(text.size(), letters.size()); ++i)
-    //{
-    //    if (text[i] == _text[i])
-    //        _lettersChangedCount--;
-    //    else
-    //        break;
-    //}
 
     _text = text;
     isDirty = true;
@@ -496,10 +320,182 @@ bool UIText::IsDirty() const
 
 void UIText::RebuildInner(RectTransformation& transformation)
 {
-    // TODO: see Refresh()
-    //isDirty = false;
+    isDirty = false;
 
-    // TODO: rebuild
+    _sortingOrder = transformation.GetSortingOrder();
+
+    if (_material == nullptr)
+        _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
+
+    ib.Clear();
+    vb.Clear();
+
+    if (_font == nullptr)
+    {
+        if (_textSizeRef != 0)
+        {
+            _font->FreeSize(_textSizeRef);
+            _textSizeRef = 0;
+        }
+
+        return;
+    }
+
+    if (_textSizeRef != 0 && _textSizeRef != _textSize)
+        _font->FreeSize(_textSizeRef);
+    _textSizeRef = _textSize;
+    _font->AddSizeIfNotExists(_textSize);
+    auto& atlas = _font->characters[_textSize];
+
+    _customProperties.SetTexture(MAIN_TEX, atlas.TextureID);
+    _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
+    _customProperties.UpdateHash();
+
+    glm::mat4 matrix = transformation.GetTransformationMatrixCached();
+    auto rectSize = transformation.GetRealSizeCached();
+
+    // We will try to fit text into the rect
+    bool valid = (float)atlas.LineHeight() <= rectSize.y && (float)atlas.MaxX <= rectSize.x;
+
+    // Calculate text metrics
+    std::vector<uint32_t> linesSize;
+    std::vector<uint32_t> lettersCount;
+    if (valid)
+    {
+        GetLinesSize(atlas, rectSize.x, linesSize, lettersCount);
+        valid = !linesSize.empty();
+    }
+
+    if (!valid)
+    {
+        // Text is not valid, it can't be drawn
+        return;
+    }
+
+    uint32_t spacing = std::floor((float)atlas.LineHeight() * _lineSpacing);
+    uint32_t textHeight = atlas.LineHeight() + (linesSize.size() - 1) * spacing;
+
+    // Calculate alignment variables
+    int cursorX = OriginX(rectSize.x, linesSize[0]);
+    int cursorY = OriginY(atlas, rectSize.y, textHeight);
+
+    // Count letters to render (preprocess all calculations to allocate the right amount of memory from the first try)
+    uint32_t renderedLettersCount = 0;
+    uint32_t currentLine = 0, lettersInLine = 0;
+    for (char& c : _text)
+    {
+        auto& character = atlas.Characters[c];
+
+        // If letter doesn't fit into rect, it will be hidden
+        bool isRendered = cursorX >= 0 && (float)cursorX + (float)character.Advance <= rectSize.x
+                          && cursorY >= -atlas.MinY && (float)cursorY + (float)atlas.MaxY <= rectSize.y;
+        if (isRendered)
+            renderedLettersCount++;
+
+        lettersInLine++;
+        cursorX += (int)character.Advance;
+
+        if (lettersInLine >= lettersCount[currentLine] && currentLine < linesSize.size() - 1)
+        {
+            currentLine++;
+            lettersInLine = 0;
+            cursorX = OriginX(rectSize.x, linesSize[currentLine]);
+            cursorY -= (int)spacing;
+        }
+    }
+
+    if (renderedLettersCount == 0)
+    {
+        // No letters to draw
+        return;
+    }
+
+    // Create vertices and indices for each letter
+    const uint32_t verticesSize = 9 * 4 * renderedLettersCount; // 4 vertices for each letter
+    auto vertices = new float[verticesSize];
+    const uint32_t indicesSize = 6 * renderedLettersCount; // 2 triangles for each letter
+    auto indices = new uint32_t[indicesSize];
+
+    cursorX = OriginX(rectSize.x, linesSize[0]);
+    cursorY = OriginY(atlas, rectSize.y, textHeight);
+
+    lettersDimensions.reserve(_text.size() + 1);
+    uint32_t offsetV = 0, offsetI = 0, lettersReady = 0;
+    currentLine = 0, lettersInLine = 0;
+    for (char& c : _text)
+    {
+        auto& character = atlas.Characters[c];
+
+        // If letter doesn't fit into rect, it will be hidden
+        bool isRendered = cursorX >= 0 && (float)cursorX + (float)character.Advance <= rectSize.x
+                          && cursorY >= -atlas.MinY && (float)cursorY + (float)atlas.MaxY <= rectSize.y;
+        if (isRendered)
+        {
+            glm::vec2 texCoords[4];
+            texCoords[0] = glm::vec2(character.TopRight.x, character.BottomLeft.y);
+            texCoords[1] = glm::vec2(character.TopRight.x, character.TopRight.y);
+            texCoords[2] = glm::vec2(character.BottomLeft.x, character.BottomLeft.y);
+            texCoords[3] = glm::vec2(character.BottomLeft.x, character.TopRight.y);
+
+            // Calculate letter rect
+            float x = ((float)cursorX + (float)character.Bearing.x + (float)character.Size.x * 0.5f) / rectSize.x - 0.5f;
+            float y = ((float)cursorY + (float)character.Bearing.y - (float)character.Size.y * 0.5f) / rectSize.y - 0.5f;
+            float hw = 0.5f * (float)character.Size.x / rectSize.x;
+            float hh = 0.5f * (float)character.Size.y / rectSize.y;
+            glm::vec3 letterVertices[4];
+            letterVertices[0] = matrix * glm::vec4(x + hw, y + hh, 0.0f, 1.0f);
+            letterVertices[1] = matrix * glm::vec4(x + hw, y - hh, 0.0f, 1.0f);
+            letterVertices[2] = matrix * glm::vec4(x - hw, y + hh, 0.0f, 1.0f);
+            letterVertices[3] = matrix * glm::vec4(x - hw, y - hh, 0.0f, 1.0f);
+
+            for (int j = 0; j < 4; ++j)
+            {
+                vertices[offsetV++] = letterVertices[j][0];
+                vertices[offsetV++] = letterVertices[j][1];
+                vertices[offsetV++] = letterVertices[j][2];
+                vertices[offsetV++] = _color[0];
+                vertices[offsetV++] = _color[1];
+                vertices[offsetV++] = _color[2];
+                vertices[offsetV++] = _color[3];
+                vertices[offsetV++] = texCoords[j][0];
+                vertices[offsetV++] = texCoords[j][1];
+            }
+
+            indices[offsetI++] = lettersReady * 4 + 0;
+            indices[offsetI++] = lettersReady * 4 + 1;
+            indices[offsetI++] = lettersReady * 4 + 2;
+            indices[offsetI++] = lettersReady * 4 + 1;
+            indices[offsetI++] = lettersReady * 4 + 2;
+            indices[offsetI++] = lettersReady * 4 + 3;
+
+            lettersReady++;
+        }
+
+        // Save letter origins for text navigation needs
+        lettersDimensions.emplace_back(cursorX, cursorY, character.Advance);
+        lettersInLine++;
+        cursorX += (int)character.Advance;
+
+        if (lettersInLine >= lettersCount[currentLine] && currentLine < linesSize.size() - 1)
+        {
+            currentLine++;
+            lettersInLine = 0;
+            cursorX = OriginX(rectSize.x, linesSize[currentLine]);
+            cursorY -= (int)spacing;
+        }
+    }
+
+    // Add one more letter point in the end for new letters
+    lettersDimensions.emplace_back(cursorX, cursorY, 0);
+
+    std::vector<VertexAttribute> attributes;
+    attributes.reserve(3);
+    attributes.emplace_back(0, 3);
+    attributes.emplace_back(1, 4);
+    attributes.emplace_back(2, 2);
+
+    vb.Create(vertices, verticesSize, attributes);
+    ib.Create(indices, indicesSize);
 }
 
 bool UIText::IsNewLine(char c)

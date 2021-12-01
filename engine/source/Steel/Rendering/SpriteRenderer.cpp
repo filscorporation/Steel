@@ -99,6 +99,8 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
     isDirty = false;
 
     _sortingOrder = transformation.GetGlobalSortingOrderCached();
+
+    _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
     _customProperties.UpdateHash();
 
     if (_image != nullptr && _material == nullptr)
@@ -138,7 +140,5 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
 
         vb.Create(vertices, _color, texCoords);
         ib.Create(indices, 6);
-
-        _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
     }
 }

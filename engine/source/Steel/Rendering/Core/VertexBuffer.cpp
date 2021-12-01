@@ -28,10 +28,10 @@ void VertexBuffer::Create(glm::vec3* vertices, glm::vec4 color, glm::vec2* textu
     Attributes.emplace_back(2, 2);
 
     BlockSize = 9;
-    VerticesCount = 4;
+    VerticesCount = Size / BlockSize;
 }
 
-void VertexBuffer::Create(float* data, uint32_t size, const std::vector<VertexAttribute>& attributes, uint32_t verticesCount)
+void VertexBuffer::Create(float* data, uint32_t size, const std::vector<VertexAttribute>& attributes)
 {
     Data = data;
     Size = size;
@@ -40,7 +40,7 @@ void VertexBuffer::Create(float* data, uint32_t size, const std::vector<VertexAt
     BlockSize = 0;
     for (auto& Attribute : Attributes)
         BlockSize += Attribute.Size;
-    VerticesCount = verticesCount;
+    VerticesCount = Size / BlockSize;
 }
 
 void VertexBuffer::Clear()

@@ -122,6 +122,9 @@ void UIImage::RebuildInner(RectTransformation& transformation)
 
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     _sortingOrder = transformation.GetSortingOrder();
+
+    _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
+    _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
     _customProperties.UpdateHash();
 
     if (_image != nullptr && _material == nullptr)
@@ -146,7 +149,7 @@ void UIImage::RebuildInner(RectTransformation& transformation)
             float yvs[4] = { 0.0f, (float)_image->SliceBottomOffset * k / size.y,
                              1.0f - (float)_image->SliceTopOffset * k / size.y, 1.0f };
 
-            const uint32_t verticesSize = 16 * 9;
+            const uint32_t verticesSize = 9 * 16;
             auto vertices = new float[verticesSize];
             const uint32_t indicesSize = 6 * 9;
             auto indices = new uint32_t[indicesSize];
@@ -190,7 +193,7 @@ void UIImage::RebuildInner(RectTransformation& transformation)
             attributes.emplace_back(1, 4);
             attributes.emplace_back(2, 2);
 
-            vb.Create(vertices, verticesSize, attributes, 16);
+            vb.Create(vertices, verticesSize, attributes);
             ib.Create(indices, indicesSize);
         }
         else
@@ -224,8 +227,5 @@ void UIImage::RebuildInner(RectTransformation& transformation)
             vb.Create(vertices, _color, texCoords);
             ib.Create(indices, 6);
         }
-
-        _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
-        _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
     }
 }

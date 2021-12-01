@@ -2,6 +2,7 @@
 
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 #include "Steel/Rendering/Core/IndexBuffer.h"
+#include "Steel/Rendering/Core/RenderContext.h"
 #include "Steel/Rendering/Core/VertexBuffer.h"
 #include "Steel/UI/UIComponent.h"
 #include "Steel/UI/RectTransformation.h"
@@ -20,6 +21,7 @@ public:
     void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
     void Rebuild(UILayer* layer, RectTransformation& transformation, bool sortingOrderDirty);
+    void Draw(RenderContext* renderContext);
 
     bool WasRemoved() const;
 
@@ -35,7 +37,7 @@ private:
     // This is used to prevent clipping recalculation process initiated by this element to count it in
     bool wasRemoved = false;
 
-    bool isDirty = true;
     VertexBuffer vb;
     IndexBuffer ib;
+    float _sortingOrder = 0;
 };
