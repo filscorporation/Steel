@@ -307,13 +307,16 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
 
     _currentThickness = DEFAULT_THICKNESS;
     if (layer->NeedRebuildSortingOrder())
-        _sortingOrder = (float)(_hierarchyIndex + _currentThickness) / (float)layer->GetLayerThickness();
+        // UI elements deeper in hierarchy will get higher hierarchyIndex, but should get rendered earlier (for opaque)
+        // For this reason we invert their sorting order (elements renderer ascending by sorting order)
+        // But z position is (1 - sortingOrder) because UI camera is pointing to negative z
+        _sortingOrder = 1.0f - (float)(_hierarchyIndex + _currentThickness) / (float)layer->GetLayerThickness();
 
     // Pixel correction is fixing bug caused by rounding error when quad position is in the middle of pixel
     // Shifting position will prevent this bug for rects with uneven size
     const float d = PIXEL_CORRECTION ? 0.01f : 0.0f;
     glm::vec3 pixelCorrection = glm::vec3(d, d, 0.0f);
-    _transformationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(_realPosition, _sortingOrder) + pixelCorrection)
+    _transformationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(_realPosition, 1.0f - _sortingOrder) + pixelCorrection)
                             * glm::toMat4(glm::quat(_rotation))
                             * glm::scale(glm::mat4(1.0f), glm::vec3(_realSize, 1.0f));
 }

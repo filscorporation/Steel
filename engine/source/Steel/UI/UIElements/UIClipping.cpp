@@ -93,7 +93,7 @@ void UIClipping::Draw(RenderContext* renderContext)
         drawCall.VB = vb[i];
         drawCall.IB = ib[i];
         drawCall.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
-        drawCall.CustomProperties = i == 0 || i == 2 ? _customProperties[0] : _customProperties[1];
+        drawCall.CustomProperties = i == 0 || i == 2 ? _customProperties[1] : _customProperties[0];
         drawCall.SortingOrder = i == 0 || i == 3 ? _sortingOrder[1] : _sortingOrder[0];
         drawCall.Queue = i > 1 ? RenderingQueue::Opaque : RenderingQueue::Transparent;
 

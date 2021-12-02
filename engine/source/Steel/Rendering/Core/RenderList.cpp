@@ -31,7 +31,10 @@ void RenderList::SortDrawCalls(RenderContext* renderContext)
     sortingKeys.resize(list.size());
     for (int i = 0; i < sortingKeys.size(); ++i)
     {
-        uint32_t key = ((uint32_t)(list[i].Queue) << 31) | (Math::FloatToUnsigned(list[i].SortingOrder) >> 1);
+        uint32_t key = Math::FloatToUnsigned(list[i].SortingOrder);
+        if (list[i].Queue == RenderingQueue::Transparent)
+            key = ~key; // Invert sorting order for transparent draw calls
+        key = ((uint32_t)(list[i].Queue) << 31) | (key >> 1);
         sortingKeys[i] = key;
     }
 
@@ -154,7 +157,8 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
 bool RenderList::CanBatch(const DrawCall& drawCall1, const DrawCall& drawCall2)
 {
     return drawCall1.RenderMaterial->ID == drawCall2.RenderMaterial->ID
-        && drawCall1.CustomProperties.GetHash() == drawCall2.CustomProperties.GetHash();
+        && drawCall1.CustomProperties.GetHash() == drawCall2.CustomProperties.GetHash()
+        && drawCall1.Queue == drawCall2.Queue;
 }
 
 void RenderList::PrepareBuffers()
