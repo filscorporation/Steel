@@ -26,7 +26,7 @@ void UIText::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
 void UIText::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
-    isDirty = true;
+    SetDirty();
 }
 
 void UIText::Rebuild(UILayer* layer, RectTransformation& rectTransformation, bool transformationDirty, bool sortingOrderDirty)
@@ -56,7 +56,7 @@ void UIText::Draw(RenderContext* renderContext)
 
 void UIText::Refresh()
 {
-    isDirty = false;
+    isDirtyPublic = false;
 }
 
 Font* UIText::GetFont() const
@@ -67,7 +67,7 @@ Font* UIText::GetFont() const
 void UIText::SetFont(Font* font)
 {
     _font = font;
-    isDirty = true;
+    SetDirty();
 }
 
 std::string UIText::GetText() const
@@ -81,7 +81,7 @@ void UIText::SetText(const std::string& text)
         return;
 
     _text = text;
-    isDirty = true;
+    SetDirty();
 }
 
 uint32_t UIText::GetTextSize() const
@@ -95,7 +95,7 @@ void UIText::SetTextSize(uint32_t size)
         return;
 
     _textSize = size;
-    isDirty = true;
+    SetDirty();
 }
 
 float UIText::GetLineSpacing() const
@@ -109,7 +109,7 @@ void UIText::SetLineSpacing(float spacing)
         return;
 
     _lineSpacing = spacing;
-    isDirty = true;
+    SetDirty();
 }
 
 const glm::vec4& UIText::GetColor() const
@@ -123,7 +123,7 @@ void UIText::SetColor(glm::vec4 color)
         return;
 
     _color = color;
-    isDirty = true;
+    SetDirty();
 }
 
 bool UIText::GetIsTextAutoSize() const
@@ -137,7 +137,7 @@ void UIText::SetIsTextAutoSize(bool isAutoSize)
         return;
 
     _isTextAutoSize = isAutoSize;
-    isDirty = true;
+    SetDirty();
 }
 
 AlignmentTypes::AlignmentType UIText::GetTextAlignment() const
@@ -151,7 +151,7 @@ void UIText::SetTextAlignment(AlignmentTypes::AlignmentType alignmentType)
         return;
 
     _textAlignment = alignmentType;
-    isDirty = true;
+    SetDirty();
 }
 
 OverflowModes::OverflowMode UIText::GetOverflowMode() const
@@ -165,7 +165,7 @@ void UIText::SetOverflowMode(OverflowModes::OverflowMode overflowMode)
         return;
 
     _overflowMode = overflowMode;
-    isDirty = true;
+    SetDirty();
 }
 
 void UIText::SetClippingLevel(short clippingLevel)
@@ -174,11 +174,14 @@ void UIText::SetClippingLevel(short clippingLevel)
         return;
 
     _clippingLevel = clippingLevel;
-    isDirty = true;
+    SetDirty();
 }
 
 glm::vec3 UIText::GetLetterOrigin(uint32_t letterIndex, bool& calculated)
 {
+    if (isDirty)
+        RebuildInner(GetComponentS<RectTransformation>(Owner));
+
     calculated = letterIndex < lettersDimensions.size();
     if (!calculated)
         return glm::vec3(0.0f);
@@ -250,6 +253,9 @@ uint32_t UIText::GetLetterPositionLocal(const glm::vec2& localPosition)
 
 uint32_t UIText::GetLetterPositionLineUp(uint32_t currentPosition, float& horOffset)
 {
+    if (isDirty)
+        RebuildInner(GetComponentS<RectTransformation>(Owner));
+
     auto& atlas = _font->characters[_textSize];
     float height = _lineSpacing * (float)(atlas.MaxY - atlas.MinY);
 
@@ -272,6 +278,9 @@ uint32_t UIText::GetLetterPositionLineUp(uint32_t currentPosition, float& horOff
 
 uint32_t UIText::GetLetterPositionLineDown(uint32_t currentPosition, float& horOffset)
 {
+    if (isDirty)
+        RebuildInner(GetComponentS<RectTransformation>(Owner));
+
     auto& atlas = _font->characters[_textSize];
     float height = _lineSpacing * (float)(atlas.MaxY - atlas.MinY);
 
@@ -294,6 +303,9 @@ uint32_t UIText::GetLetterPositionLineDown(uint32_t currentPosition, float& horO
 
 void UIText::GetLinesIndices(uint32_t from, uint32_t to, std::vector<std::tuple<uint32_t, uint32_t>>& indices)
 {
+    if (isDirty)
+        RebuildInner(GetComponentS<RectTransformation>(Owner));
+
     if (lettersDimensions.size() < to)
         return;
 
@@ -315,7 +327,14 @@ void UIText::GetLinesIndices(uint32_t from, uint32_t to, std::vector<std::tuple<
 
 bool UIText::IsDirty() const
 {
-    return isDirty;
+    return isDirtyPublic;
+}
+
+void UIText::SetDirty()
+{
+    // TODO: maybe replace with event subscription
+    isDirty = true;
+    isDirtyPublic = true;
 }
 
 void UIText::RebuildInner(RectTransformation& transformation)
@@ -329,6 +348,7 @@ void UIText::RebuildInner(RectTransformation& transformation)
 
     ib.Clear();
     vb.Clear();
+    lettersDimensions.clear();
 
     if (_font == nullptr)
     {

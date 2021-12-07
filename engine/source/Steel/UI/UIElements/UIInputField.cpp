@@ -29,12 +29,10 @@ void UIInputField::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UIInputField::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    /*if (cursor != NULL_ENTITY)
-        entitiesRegistry->DeleteEntity(cursor);
-    cursor = NULL_ENTITY;
-    for (auto& selectionEntity : selectionEntites)
-        entitiesRegistry->DeleteEntity(selectionEntity);
-    selectionEntites.clear();*/
+    vbCursor.Clear();
+    ibCursor.Clear();
+    vbSelection.Clear();
+    ibSelection.Clear();
 
     StopTransition();
     ScriptingCore::CallEventMethod(Owner, CallbackTypes::InputFieldChangeValue, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
@@ -63,59 +61,31 @@ void UIInputField::Update()
         UpdateCursorBlink();
 }
 
-void UIInputField::Rebuild(UILayer* layer, RectTransformation& transformation)
+void UIInputField::Rebuild(RectTransformation& transformation)
 {
-    /*
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
     if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
     {
-        if (drawCursor)
-        {
-            entitiesRegistry->EntitySetActive(cursor, false, true);
-            drawCursor = false;
-        }
-        if (drawSelection)
-        {
-            CleanSelection();
-            drawSelection = false;
-        }
+        DisableCursor();
+        DisableSelection();
         return;
     }
 
     auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
     auto& uiTextRT = entitiesRegistry->GetComponent<RectTransformation>(_targetText);
-    if (uiText.IsTextColorDirty() || cursorColorDirty)
+
+    if (drawCursor && uiText.IsDirty())
     {
-        UpdateCursorColor(uiText);
-    }
-    if (drawCursor && uiText.IsTextDirty())
-    {
+        isCursorDirty = true;
+        isSelectionDirty = true;
         SetCursorPosition(std::min((uint32_t)uiText.GetText().size(), cursorPosition));
     }
-    bool otherDirty = uiTextRT.DidTransformationChange() || uiText.IsTextDirty() || transformation.DidTransformationChange();
-    float dz = 1.0f / (float)layer->GetLayerThickness();
-    bool cursorRebuilt = false, selectionRebuilt = false;
-    if (otherDirty || cursorDirty)
-    {
-        cursorRebuilt = true;
-        RebuildCursor(uiText, uiTextRT, dz);
-    }
-    if (otherDirty || selectionDirty)
-    {
-        selectionRebuilt = true;
-        RebuildSelection(uiText, uiTextRT, dz);
-    }
-    if (layer->NeedRebuildSortingOrder())
-    {
-        if (!cursorRebuilt)
-            UpdateCursorSortingOrder(uiTextRT, dz);
-        if (!selectionRebuilt)
-            UpdateSelectionSortingOrder(uiTextRT, dz);
-    }
 
-    cursorDirty = false;
-    cursorColorDirty = false;
-    selectionDirty = false;*/
+    if (isCursorDirty)
+        RebuildCursorInner(transformation);
+    if (isSelectionDirty)
+        RebuildSelectionInner(transformation);
 }
 
 void UIInputField::Draw(RenderContext* renderContext)
@@ -124,6 +94,32 @@ void UIInputField::Draw(RenderContext* renderContext)
         RebuildCursorInner(GetComponentS<RectTransformation>(Owner));
     if (isSelectionDirty)
         RebuildSelectionInner(GetComponentS<RectTransformation>(Owner));
+
+    if (cursorIsVisible && !vbCursor.IsEmpty() && !ibCursor.IsEmpty())
+    {
+        DrawCall drawCall;
+        drawCall.VB = vbCursor;
+        drawCall.IB = ibCursor;
+        drawCall.RenderMaterial = materialCursor;
+        drawCall.CustomProperties = propertiesCursor;
+        drawCall.SortingOrder = sortingOrderCursor;
+        drawCall.Queue = RenderingQueue::Opaque;
+
+        renderContext->List.AddDrawCall(drawCall);
+    }
+
+    if (!vbSelection.IsEmpty() && !ibSelection.IsEmpty())
+    {
+        DrawCall drawCall;
+        drawCall.VB = vbSelection;
+        drawCall.IB = ibSelection;
+        drawCall.RenderMaterial = materialSelection;
+        drawCall.CustomProperties = propertiesSelection;
+        drawCall.SortingOrder = sortingOrderSelection;
+        drawCall.Queue = RenderingQueue::Opaque;
+
+        renderContext->List.AddDrawCall(drawCall);
+    }
 }
 
 void UIInputField::SetTargetText(EntityID targetID)
@@ -151,7 +147,7 @@ void UIInputField::SetCursorColor(glm::vec4 color)
 {
     cursorColor = color;
     autoCursorColor = false;
-    isCursorDirty = true; // TODO: ?
+    isCursorDirty = true;
 }
 
 glm::vec4 UIInputField::GetCursorColor() const
@@ -227,14 +223,188 @@ void UIInputField::RebuildCursorInner(RectTransformation& transformation)
 {
     isCursorDirty = false;
 
-    // TODO:
+    ibCursor.Clear();
+    vbCursor.Clear();
+
+    if (!drawCursor)
+        return;
+
+    auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
+    if (materialCursor == nullptr)
+    {
+        materialCursor = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
+        auto cursorSprite = layer->UIResources.DefaultPixelSprite;
+        propertiesCursor.SetTexture(MAIN_TEX, cursorSprite->SpriteTexture->GetTextureID());
+    }
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
+    auto& uiTextRT = entitiesRegistry->GetComponent<RectTransformation>(_targetText);
+    auto& atlas = uiText.GetFont()->characters[uiText.GetTextSize()];
+    auto rectSize = uiTextRT.GetRealSizeCached();
+    auto& matrix = uiTextRT.GetTransformationMatrixCached();
+
+    if (autoCursorColor)
+        cursorColor = uiText.GetColor();
+
+    float width = (float)cursorWidth / rectSize.x;
+    uint32_t realPosition = std::min((uint32_t)uiText.GetText().size(), cursorPosition);
+
+    bool isRendered;
+    glm::vec2 origin = uiText.GetLetterOrigin(realPosition, isRendered);
+    if (!isRendered)
+        return;
+
+    // Place cursor in the origin of the letter where it is positioned
+    float ox = origin.x / rectSize.x - 0.5f;
+    float oy = origin.y / rectSize.y - 0.5f;
+
+    float up = (float)atlas.MaxY / rectSize.y;
+    float down = (float)atlas.MinY / rectSize.y;
+
+    isRendered = ox >= -0.5f && ox <= 0.5f && oy + down >= -0.5f && oy + up <= 0.5f;
+    if (!isRendered)
+        return;
+
+    float dz = 1.0f / (float)layer->GetLayerThickness();
+    sortingOrderCursor = uiTextRT.GetSortingOrder() + dz * 0.1f;
+
+    glm::vec2 texCoords[4];
+    texCoords[0] = glm::vec2(1.0f, 0.0f);
+    texCoords[1] = glm::vec2(1.0f, 1.0f);
+    texCoords[2] = glm::vec2(0.0f, 0.0f);
+    texCoords[3] = glm::vec2(0.0f, 1.0f);
+
+    glm::vec3 vertices[4];
+    vertices[0] = matrix * glm::vec4(ox + width, oy + up, dz * 0.1f, 1.0f);
+    vertices[1] = matrix * glm::vec4(ox + width, oy + down, dz * 0.1f, 1.0f);
+    vertices[2] = matrix * glm::vec4(ox, oy + up, dz * 0.1f, 1.0f);
+    vertices[3] = matrix * glm::vec4(ox, oy + down, dz * 0.1f, 1.0f);
+
+    auto indices = new uint32_t[6]{ 0, 1, 2, 1, 2, 3 };
+
+    ibCursor.Create(indices, 6);
+    vbCursor.Create(vertices, cursorColor, texCoords);
 }
 
 void UIInputField::RebuildSelectionInner(RectTransformation& transformation)
 {
     isSelectionDirty = false;
 
-    // TODO:
+    ibSelection.Clear();
+    vbSelection.Clear();
+
+    if (!drawSelection || selectionStart == selectionEnd)
+        return;
+
+    auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
+    if (materialSelection == nullptr)
+    {
+        materialSelection = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
+        auto selectionSprite = layer->UIResources.DefaultPixelSprite;
+        propertiesSelection.SetTexture(MAIN_TEX, selectionSprite->SpriteTexture->GetTextureID());
+    }
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& uiText = entitiesRegistry->GetComponent<UIText>(_targetText);
+    auto& uiTextRT = entitiesRegistry->GetComponent<RectTransformation>(_targetText);
+    auto& atlas = uiText.GetFont()->characters[uiText.GetTextSize()];
+    auto rectSize = uiTextRT.GetRealSizeCached();
+    auto& matrix = uiTextRT.GetTransformationMatrixCached();
+
+    float dz = 1.0f / (float)layer->GetLayerThickness();
+    sortingOrderSelection = uiTextRT.GetSortingOrder() - dz * 0.1f;
+
+    std::vector<std::tuple<uint32_t, uint32_t>> linesIndices;
+    uiText.GetLinesIndices(std::min(selectionStart, selectionEnd), std::max(selectionStart, selectionEnd), linesIndices);
+
+    std::vector<float> vertices;
+    std::vector<uint32_t> indices;
+
+    uint32_t linesRendered = 0;
+    for (auto& lineIndexPair : linesIndices)
+    {
+        uint32_t from = std::get<0>(lineIndexPair);
+        uint32_t to = std::get<1>(lineIndexPair);
+
+        bool isRenderedFrom, isRenderedTo;
+        glm::vec3 originFrom = uiText.GetLetterOrigin(from, isRenderedFrom);
+        glm::vec3 originTo = uiText.GetLetterOrigin(to, isRenderedTo);
+        if (!isRenderedFrom || !isRenderedTo)
+            continue;
+
+        float ox1 = originFrom.x / rectSize.x - 0.5f;
+        float oy1 = originFrom.y / rectSize.y - 0.5f;
+        float ox2 = originTo.x / rectSize.x - 0.5f;
+        float oy2 = originTo.y / rectSize.y - 0.5f;
+
+        float up = (float)atlas.MaxY / rectSize.y;
+        float down = (float)atlas.MinY / rectSize.y;
+
+        bool isRendered = (ox1 >= -0.5f || ox2 >= -0.5f) && (ox1 <= 0.5f || ox2 <= 0.5f)
+                          && (oy1 + down >= -0.5f || oy2 + down >= -0.5f) && (oy1 + up <= 0.5f || oy2 + up <= 0.5f);
+
+        if (!isRendered)
+            continue;
+
+        indices.reserve(linesRendered * 6);
+        indices.push_back(linesRendered * 4 + 0);
+        indices.push_back(linesRendered * 4 + 1);
+        indices.push_back(linesRendered * 4 + 2);
+        indices.push_back(linesRendered * 4 + 1);
+        indices.push_back(linesRendered * 4 + 2);
+        indices.push_back(linesRendered * 4 + 3);
+
+        glm::vec2 texCoords[4];
+        texCoords[0] = glm::vec2(1.0f, 0.0f);
+        texCoords[1] = glm::vec2(1.0f, 1.0f);
+        texCoords[2] = glm::vec2(0.0f, 0.0f);
+        texCoords[3] = glm::vec2(0.0f, 1.0f);
+
+        ox1 = std::min(0.5f, std::max(-0.5f, ox1));
+        ox2 = std::min(0.5f, std::max(-0.5f, ox2));
+        oy1 = std::min(0.5f, std::max(-0.5f, oy1));
+        oy2 = std::min(0.5f, std::max(-0.5f, oy2));
+
+        glm::vec3 vectorVertices[4];
+        vectorVertices[0] = matrix * glm::vec4(ox2, oy2 + up, -dz * 0.1f, 1.0f);
+        vectorVertices[1] = matrix * glm::vec4(ox2, oy2 + down, -dz * 0.1f, 1.0f);
+        vectorVertices[2] = matrix * glm::vec4(ox1, oy1 + up, -dz * 0.1f, 1.0f);
+        vectorVertices[3] = matrix * glm::vec4(ox1, oy1 + down, -dz * 0.1f, 1.0f);
+
+        vertices.reserve(linesRendered * 9 * 4);
+        for (int i = 0; i < 4; ++i)
+        {
+            vertices.push_back(vectorVertices[i][0]);
+            vertices.push_back(vectorVertices[i][1]);
+            vertices.push_back(vectorVertices[i][2]);
+            vertices.push_back(selectionColor[0]);
+            vertices.push_back(selectionColor[1]);
+            vertices.push_back(selectionColor[2]);
+            vertices.push_back(selectionColor[3]);
+            vertices.push_back(texCoords[i][0]);
+            vertices.push_back(texCoords[i][1]);
+        }
+
+        linesRendered++;
+    }
+
+    if (linesRendered == 0)
+        return;
+
+    std::vector<VertexAttribute> attributes;
+    attributes.reserve(3);
+    attributes.emplace_back(0, 3);
+    attributes.emplace_back(1, 4);
+    attributes.emplace_back(2, 2);
+
+    auto indicesData = new uint32_t[indices.size()];
+    std::copy(indices.begin(), indices.end(), indicesData);
+    auto verticesData = new float[vertices.size()];
+    std::copy(vertices.begin(), vertices.end(), verticesData);
+
+    ibSelection.Create(indicesData, indices.size());
+    vbSelection.Create(verticesData, vertices.size(), attributes);
 }
 
 void UIInputField::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)
@@ -425,15 +595,15 @@ void UIInputField::Disselect(UIText& uiText)
 void UIInputField::AddText(UIText& uiText, const std::string& text)
 {
     std::string newText;
+    int diffFromSelected = 0;
     if (selectionStart != selectionEnd)
     {
         // Remove selected text
         uint32_t from = std::min(selectionStart, selectionEnd);
         uint32_t len = std::abs((int)selectionStart - (int)selectionEnd);
+        diffFromSelected = len;
         newText = uiText.GetText().erase(from, len);
         SetCursorPosition(from);
-        selectionEnd = from;
-        selectionStart = from;
         cursorHorizontalOffset = -1;
     }
     else
@@ -443,7 +613,10 @@ void UIInputField::AddText(UIText& uiText, const std::string& text)
     newText.insert(offset, text);
 
     int diff = SetText(uiText, newText);
+    diff += diffFromSelected; // We do not want to move cursor from changes of removed selected text, only the one we added
     SetCursorPosition(cursorPosition + diff);
+    selectionEnd = cursorPosition;
+    selectionStart = cursorPosition;
     cursorHorizontalOffset = -1;
 }
 
@@ -527,94 +700,22 @@ void UIInputField::SetCursorPosition(uint32_t position)
 
 void UIInputField::DisableCursor()
 {
-    /*
     if (!drawCursor)
         return;
+
     drawCursor = false;
-    cursorDirty = true;
-    if (cursor != NULL_ENTITY)
-        Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntitySetActive(cursor, false, true);*/
+    vbCursor.Clear();
+    ibCursor.Clear();
 }
 
 void UIInputField::UpdateCursorBlink()
 {
-    /*
     cursorBlinkProgress += Time::UnscaledDeltaTime();
     if (cursorBlinkProgress > cursorBlinkRate)
     {
         cursorBlinkProgress -= cursorBlinkRate;
         cursorIsVisible = !cursorIsVisible;
-        isCursorDirty = true;
-        auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-        entitiesRegistry->EntitySetActive(cursor, cursorIsVisible, true);
-    }*/
-}
-
-void UIInputField::RebuildCursor(UIText& uiText, RectTransformation& uiTextRT, float dz)
-{
-    /*auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (!cursorIsVisible || !drawCursor)
-    {
-        entitiesRegistry->EntitySetActive(cursor, false, true);
-        return;
     }
-
-    auto& atlas = uiText.GetFont()->characters[uiText.GetTextSize()];
-    auto rectSize = uiTextRT.GetRealSizeCached();
-    auto& rectMatrix = uiTextRT.GetTransformationMatrixCached();
-
-    if (cursor == NULL_ENTITY)
-    {
-        // Create cursor renderer if it was not already
-        auto cursorSprite = Application::Instance->GetCurrentScene()->GetUILayer()->UIResources.DefaultPixelSprite;
-        cursor = entitiesRegistry->CreateNewEntity();
-
-        auto& cursorRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(cursor);
-        cursorRenderer.Color = uiText.GetColor();
-        cursorRenderer.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
-        cursorRenderer.CustomProperties.SetTexture(MAIN_TEX, cursorSprite->SpriteTexture->GetTextureID());
-        cursorRenderer.Queue = RenderingQueue::Opaque;
-        cursorRenderer.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
-        cursorRenderer.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
-        cursorRenderer.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
-        cursorRenderer.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
-    }
-
-    float width = (float)cursorWidth / rectSize.x;
-    uint32_t realPosition = std::min((uint32_t)uiText.GetText().size(), cursorPosition);
-
-    bool isRendered;
-    glm::vec2 origin = uiText.GetLetterOrigin(realPosition, isRendered);
-    if (!isRendered)
-    {
-        entitiesRegistry->EntitySetActive(cursor, false, true);
-        return;
-    }
-
-    // Place cursor in the origin of the letter where it is positioned
-    float ox = origin.x / rectSize.x - 0.5f;
-    float oy = origin.y / rectSize.y - 0.5f;
-
-    float up = (float)atlas.MaxY / rectSize.y;
-    float down = (float)atlas.MinY / rectSize.y;
-
-    isRendered = ox >= -0.5f && ox <= 0.5f && oy + down >= -0.5f && oy + up <= 0.5f;
-    if (!isRendered)
-    {
-        entitiesRegistry->EntitySetActive(cursor, false, true);
-        return;
-    }
-
-    entitiesRegistry->EntitySetActive(cursor, true, true);
-    auto& cursorRenderer = entitiesRegistry->GetComponent<UIQuadRenderer>(cursor);
-    cursorRenderer.DefaultVertices[0] = glm::vec4(ox + width, oy + up, dz * 0.1f, 1.0f);
-    cursorRenderer.DefaultVertices[1] = glm::vec4(ox + width, oy + down, dz * 0.1f, 1.0f);
-    cursorRenderer.DefaultVertices[2] = glm::vec4(ox, oy + up, dz * 0.1f, 1.0f);
-    cursorRenderer.DefaultVertices[3] = glm::vec4(ox, oy + down, dz * 0.1f, 1.0f);
-    cursorRenderer.SortingOrder = uiTextRT.GetSortingOrder() + dz * 0.1f;
-
-    for (int j = 0; j < 4; ++j)
-        cursorRenderer.Vertices[j] = rectMatrix * cursorRenderer.DefaultVertices[j];*/
 }
 
 void UIInputField::SetSelection(uint32_t from, uint32_t to)
@@ -634,19 +735,8 @@ void UIInputField::DisableSelection()
         return;
 
     drawSelection = false;
-    CleanSelection();
-}
-
-void UIInputField::CleanSelection()
-{
-    /*
-    if (selectionEntites.empty())
-        return;
-
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    for (auto& selectionEntity : selectionEntites)
-        entitiesRegistry->DeleteEntity(selectionEntity);
-    selectionEntites.clear();*/
+    vbSelection.Clear();
+    ibSelection.Clear();
 }
 
 void UIInputField::TryKeepSelection()
@@ -661,6 +751,7 @@ void UIInputField::TryKeepSelection()
     {
         DisableSelection();
         selectionStart = cursorPosition;
+        selectionEnd = cursorPosition;
     }
 }
 
@@ -673,86 +764,7 @@ void UIInputField::RemoveSelectedText(UIText& uiText)
     uint32_t len = std::abs((int)selectionStart - (int)selectionEnd);
     SetText(uiText, uiText.GetText().erase(from, len));
     SetCursorPosition(from);
-    selectionEnd = from;
     selectionStart = from;
+    selectionEnd = from;
     cursorHorizontalOffset = -1;
-}
-
-void UIInputField::RebuildSelection(UIText& uiText, RectTransformation& uiTextRT, float dz)
-{
-    /*if (!drawSelection)
-        return;
-
-    CleanSelection();
-
-    if (selectionStart == selectionEnd)
-        return;
-
-    std::vector<std::tuple<uint32_t, uint32_t>> indices;
-    uiText.GetLinesIndices(std::min(selectionStart, selectionEnd), std::max(selectionStart, selectionEnd), indices);
-
-    for (auto& indexPair : indices)
-    {
-        selectionEntites.push_back(CreateSelectionBlock(uiText, uiTextRT, std::get<0>(indexPair), std::get<1>(indexPair), dz));
-    }*/
-}
-
-EntityID UIInputField::CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to, float dz)
-{
-    /*
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    auto& atlas = uiText.GetFont()->characters[uiText.GetTextSize()];
-    auto rectSize = uiTextRT.GetRealSizeCached();
-    auto& rectMatrix = uiTextRT.GetTransformationMatrixCached();
-
-    auto pixelSprite = Application::Instance->GetCurrentScene()->GetUILayer()->UIResources.DefaultPixelSprite;
-
-    bool isRenderedFrom, isRenderedTo;
-    glm::vec3 originFrom = uiText.GetLetterOrigin(from, isRenderedFrom);
-    glm::vec3 originTo = uiText.GetLetterOrigin(to, isRenderedTo);
-    if (!isRenderedFrom || !isRenderedTo)
-        return NULL_ENTITY;
-
-    float ox1 = originFrom.x / rectSize.x - 0.5f;
-    float oy1 = originFrom.y / rectSize.y - 0.5f;
-    float ox2 = originTo.x / rectSize.x - 0.5f;
-    float oy2 = originTo.y / rectSize.y - 0.5f;
-
-    float up = (float)atlas.MaxY / rectSize.y;
-    float down = (float)atlas.MinY / rectSize.y;
-
-    bool isRendered = (ox1 >= -0.5f || ox2 >= -0.5f) && (ox1 <= 0.5f || ox2 <= 0.5f)
-            && (oy1 + down >= -0.5f || oy2 + down >= -0.5f) && (oy1 + up <= 0.5f || oy2 + up <= 0.5f);
-
-    if (!isRendered)
-        return NULL_ENTITY;
-
-    ox1 = std::min(0.5f, std::max(-0.5f, ox1));
-    ox2 = std::min(0.5f, std::max(-0.5f, ox2));
-    oy1 = std::min(0.5f, std::max(-0.5f, oy1));
-    oy2 = std::min(0.5f, std::max(-0.5f, oy2));
-
-    EntityID entity = entitiesRegistry->CreateNewEntity();
-
-    auto& blockRenderer = entitiesRegistry->AddComponent<UIQuadRenderer>(entity);
-    blockRenderer.Color = selectionColor;
-    blockRenderer.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
-    blockRenderer.CustomProperties.SetTexture(MAIN_TEX, pixelSprite->SpriteTexture->GetTextureID());
-    blockRenderer.Queue = RenderingQueue::Opaque;
-    blockRenderer.TextureCoords[0] = glm::vec2(1.0f, 0.0f);
-    blockRenderer.TextureCoords[1] = glm::vec2(1.0f, 1.0f);
-    blockRenderer.TextureCoords[2] = glm::vec2(0.0f, 0.0f);
-    blockRenderer.TextureCoords[3] = glm::vec2(0.0f, 1.0f);
-
-    blockRenderer.DefaultVertices[0] = glm::vec4(ox2, oy2 + up, -dz * 0.1f, 1.0f);
-    blockRenderer.DefaultVertices[1] = glm::vec4(ox2, oy2 + down, -dz * 0.1f, 1.0f);
-    blockRenderer.DefaultVertices[2] = glm::vec4(ox1, oy1 + up, -dz * 0.1f, 1.0f);
-    blockRenderer.DefaultVertices[3] = glm::vec4(ox1, oy1 + down, -dz * 0.1f, 1.0f);
-    blockRenderer.SortingOrder = uiTextRT.GetSortingOrder() - dz * 0.1f;
-
-    for (int j = 0; j < 4; ++j)
-        blockRenderer.Vertices[j] = rectMatrix * blockRenderer.DefaultVertices[j];
-
-    return entity;*/
 }

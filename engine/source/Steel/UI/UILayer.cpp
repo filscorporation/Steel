@@ -98,7 +98,7 @@ void UILayer::Rebuild()
     // Input fields requires target text to be updated
     auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
     for (int i = 0; i < uiIFs.Size(); ++i)
-        uiIFs[i].Rebuild(this, rtAccessor.Get(uiIFs[i].Owner));
+        uiIFs[i].Rebuild(rtAccessor.Get(uiIFs[i].Owner));
 }
 
 void UILayer::Refresh()

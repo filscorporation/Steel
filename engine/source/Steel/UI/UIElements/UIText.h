@@ -83,6 +83,7 @@ private:
     static bool IsSpace(char c);
     int OriginX(float rectWidth, uint32_t lineWidth);
     int OriginY(CharactersAtlas& atlas, float rectHeight, uint32_t textHeight);
+    void SetDirty();
 
     Material* _material = nullptr;
     Font* _font = nullptr;
@@ -96,6 +97,7 @@ private:
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     MaterialPropertyBlock _customProperties;
     short _clippingLevel = 0;
+    bool isDirtyPublic = true; // Saves dirty state till the next frame
 
     std::vector<glm::ivec3> lettersDimensions;
 

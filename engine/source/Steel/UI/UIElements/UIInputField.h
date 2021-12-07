@@ -33,7 +33,7 @@ public:
     void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
     void Update();
-    void Rebuild(UILayer* layer, RectTransformation& transformation);
+    void Rebuild(RectTransformation& transformation);
     void Draw(RenderContext* renderContext);
 
     void SetTargetText(EntityID targetID);
@@ -73,15 +73,11 @@ private:
     void SetCursorPosition(uint32_t position);
     void DisableCursor();
     void UpdateCursorBlink();
-    void RebuildCursor(UIText& uiText, RectTransformation& uiTextRT, float dz);
 
     void SetSelection(uint32_t from, uint32_t to);
     void DisableSelection();
-    void CleanSelection();
     void TryKeepSelection();
     void RemoveSelectedText(UIText& uiText);
-    void RebuildSelection(UIText& uiText, RectTransformation& uiTextRT, float dz);
-    EntityID CreateSelectionBlock(UIText& uiText, RectTransformation& uiTextRT, uint32_t from, uint32_t to, float dz);
 
     EntityID _targetText = NULL_ENTITY;
     bool wasEdited = false;
@@ -99,16 +95,23 @@ private:
     glm::vec4 cursorColor = glm::vec4(0.0f);
     bool autoCursorColor = true;
 
-    bool isCursorDirty = false;
-    VertexBuffer vbCursor;
-    IndexBuffer ibCursor;
-    bool isSelectionDirty = false;
-    VertexBuffer vbSelection;
-    IndexBuffer ibSelection;
-
     bool drawSelection = false;
     bool isFirstSelection = false;
     uint32_t selectionStart = 0;
     uint32_t selectionEnd = 0;
     glm::vec4 selectionColor = glm::vec4(0.42f, 0.57f, 0.7f, 1.0f);
+
+    bool isCursorDirty = false;
+    VertexBuffer vbCursor;
+    IndexBuffer ibCursor;
+    float sortingOrderCursor = 0;
+    Material* materialCursor = nullptr;
+    MaterialPropertyBlock propertiesCursor;
+
+    bool isSelectionDirty = false;
+    VertexBuffer vbSelection;
+    IndexBuffer ibSelection;
+    float sortingOrderSelection = 0;
+    Material* materialSelection = nullptr;
+    MaterialPropertyBlock propertiesSelection;
 };

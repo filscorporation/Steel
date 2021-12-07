@@ -149,10 +149,10 @@ void UIImage::RebuildInner(RectTransformation& transformation)
             float yvs[4] = { 0.0f, (float)_image->SliceBottomOffset * k / size.y,
                              1.0f - (float)_image->SliceTopOffset * k / size.y, 1.0f };
 
-            const uint32_t verticesSize = 9 * 16;
-            auto vertices = new float[verticesSize];
             const uint32_t indicesSize = 6 * 9;
             auto indices = new uint32_t[indicesSize];
+            const uint32_t verticesSize = 9 * 16;
+            auto vertices = new float[verticesSize];
             int offset = 0;
             // Nine slice triangles indices (18 triangles for 9 quads)
             for (int j = 0; j < 3; ++j)
