@@ -1,5 +1,6 @@
 #include "UIClipping.h"
 #include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
 #include "Steel/Scene/Hierarchy.h"
 #include "Steel/UI/UIEventHandler.h"
 
@@ -65,11 +66,13 @@ void UIClipping::InitCaps(EntitiesRegistry* entitiesRegistry)
     eh2.RectEntity = Owner;
 
     UpdateHierarchyDependantProperties(entitiesRegistry, entitiesRegistry->GetComponent<HierarchyNode>(Owner));
+
+    isDirty = true;
 }
 
 void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, bool sortingOrderDirty)
 {
-    if (!transformation.DidTransformationChange() && !sortingOrderDirty)
+    if (!isDirty && !transformation.DidTransformationChange() && !sortingOrderDirty)
         return;
 
     RebuildInner(transformation);
@@ -93,9 +96,9 @@ void UIClipping::Draw(RenderContext* renderContext)
         drawCall.VB = vb[i];
         drawCall.IB = ib[i];
         drawCall.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
-        drawCall.CustomProperties = i == 0 || i == 2 ? _customProperties[1] : _customProperties[0];
-        drawCall.SortingOrder = i == 0 || i == 3 ? _sortingOrder[1] : _sortingOrder[0];
-        drawCall.Queue = i > 1 ? RenderingQueue::Opaque : RenderingQueue::Transparent;
+        drawCall.CustomProperties = i == 0 || i == 2 ? _customProperties[0] : _customProperties[1];
+        drawCall.SortingOrder = i == 0 || i == 3 ? _sortingOrder[0] : _sortingOrder[1];
+        drawCall.Queue = i < 2 ? RenderingQueue::Opaque : RenderingQueue::Transparent;
 
         renderContext->List.AddDrawCall(drawCall);
     }
@@ -103,6 +106,8 @@ void UIClipping::Draw(RenderContext* renderContext)
 
 void UIClipping::RebuildInner(RectTransformation& transformation)
 {
+    isDirty = false;
+
     UILayer* layer = Application::Instance->GetCurrentScene()->GetUILayer();
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     float sortingOrder = transformation.GetSortingOrder();
@@ -138,8 +143,8 @@ void UIClipping::RebuildInner(RectTransformation& transformation)
         ib[i].Create(indices, 6);
     }
 
-    _sortingOrder[0] = sortingOrder - dz * SO_OFFSET;
-    _sortingOrder[1] = sortingOrder + dz * (thickness + SO_OFFSET);
+    _sortingOrder[0] = sortingOrder - dz * (thickness + SO_OFFSET);
+    _sortingOrder[1] = sortingOrder + dz * SO_OFFSET;
 }
 
 bool UIClipping::WasRemoved() const

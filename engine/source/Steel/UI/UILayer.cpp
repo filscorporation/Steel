@@ -125,7 +125,7 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     struct
     {
         bool operator()(UIEventHandler& a, UIEventHandler& b) const
-        { return a.SortingOrder > b.SortingOrder; }
+        { return a.SortingOrder < b.SortingOrder; }
     } SOComparer;
     entitiesRegistry->SortComponents<UIEventHandler>(SOComparer);
 

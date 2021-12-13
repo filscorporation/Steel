@@ -4,7 +4,7 @@
 #include "EditorScene.h"
 #include "EditorBuilder.h"
 #include "EditorSceneManager.h"
-#include "CustomSceneRenderer.h"
+#include "EditorSceneRenderer.h"
 
 void EditorApplication::Init(ApplicationSettings settings)
 {
@@ -96,15 +96,12 @@ void EditorApplication::RunUpdate()
             state = EditorStates::Paused;
     }
     openedScene->PrepareDraw();
-    SceneRenderer appViewRenderer(openedScene, ApplicationFramebuffer, openedScene->GetMainCamera());
-    appViewRenderer.DrawScene();
-    CustomSceneRenderer sceneViewRenderer(openedScene, OpenedSceneFramebuffer, EditorViewCameraEntity);
-    sceneViewRenderer.DrawScene();
+    SceneRenderer::Draw(openedScene, ApplicationFramebuffer);
+    EditorSceneRenderer::DrawToSceneView(openedScene, OpenedSceneFramebuffer, EditorViewCameraEntity);
 
     // Now render editor
     SwitchContext(EditorContext);
-    SceneRenderer editorRenderer(editorScene, Screen::ScreenFramebuffer(), editorScene->GetMainCamera());
-    editorRenderer.DrawScene();
+    SceneRenderer::Draw(editorScene, Screen::ScreenFramebuffer());
 
     Time::Update();
     Screen::SwapBuffers();

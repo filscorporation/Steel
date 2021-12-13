@@ -38,6 +38,7 @@ private:
     bool wasRemoved = false;
     MaterialPropertyBlock _customProperties[2];
 
+    bool isDirty = true;
     VertexBuffer vb[4];
     IndexBuffer ib[4];
     float _sortingOrder[2] = { 0.0f, 0.0f };

@@ -131,7 +131,6 @@ void Application::RunUpdate()
     scene->Update();
 
     // Prepare scene to rendering (update components after changing positions and other properties)
-    // TODO: ideally move this into collect draw calls
     scene->PrepareDraw();
 
     // Render scene

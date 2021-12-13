@@ -1,7 +1,3 @@
-#include <algorithm>
-#include <string>
-#include <sstream>
-
 #include "UIInputField.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Time.h"
@@ -9,6 +5,10 @@
 #include "Steel/Scene/SceneHelper.h"
 #include "Steel/Scripting/ScriptingCore.h"
 #include "Steel/Scripting/ScriptingSystem.h"
+
+#include <algorithm>
+#include <string>
+#include <sstream>
 
 bool UIInputField::Validate(EntitiesRegistry* entitiesRegistry)
 {
