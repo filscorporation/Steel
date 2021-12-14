@@ -15,11 +15,4 @@ public:
     static void Terminate();
 
     static void Draw(RenderTask& renderTask);
-    static void Clear(ClearFlags::ClearFlag clearFlag);
-
-private:
-
-    static bool drawWireframe;
-    static Shader* wireframeShader;
-    static Material* wireframeMaterial;
 };

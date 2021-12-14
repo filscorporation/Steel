@@ -21,14 +21,10 @@ void EditorSceneRenderer::DrawToSceneView(Scene* scene, Framebuffer* framebuffer
         renderTask.ViewProjection = camera.GetViewProjection();
         renderTask.TargetFramebuffer = framebuffer;
         renderTask.ClearFlagsValue = camera.GetClearFlag();
+        renderTask.RenderMode = RenderTaskModes::Mixed;
         Renderer::Draw(renderTask);
         delete renderTask.Source;
     }
-
-    // Wireframe render pass (objects polygon lines for debugging)
-    /*Renderer::BeginWireframeMode();
-    RenderPass(camera);
-    Renderer::EndWireframeMode();*/
 
     // Render UI
     /*

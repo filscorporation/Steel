@@ -1,11 +1,12 @@
 #include "RenderList.h"
-#include "RenderContext.h"
 #include "OpenGLAPI.h"
+#include "RenderContext.h"
+#include "RenderTask.h"
 #include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Math/Math.h"
 #include "Steel/Math/Sorting.h"
-#include "Steel/Rendering/Core/RenderTask.h"
+#include "Steel/Rendering/Screen.h"
 
 #include <algorithm>
 #include <glm/gtc/type_ptr.hpp>
@@ -48,7 +49,11 @@ void RenderList::SortDrawCalls(RenderContext* renderContext)
 
 void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
 {
+    // Clear framebuffer flags
+    Clear(renderContext->Task->ClearFlagsValue);
+
     PrepareBuffers();
+    PrepareResources(renderContext);
 
     for (int i = 0; i < list.size(); ++i)
     {
@@ -127,7 +132,7 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
             OpenGLAPI::SetIndexBufferSubData(ibSize, indexBufferData);
         }
 
-        // TODO: check if valid in batch
+        // TODO: check if not breaking batch
         uint32_t blockSize = 0;
         for (auto& attribute : drawCall.VB.Attributes)
         {
@@ -136,7 +141,23 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
         }
 
         // Draw
-        OpenGLAPI::DrawTriangles(ibSize);
+        if (renderContext->Task->RenderMode == RenderTaskModes::Normal
+            || renderContext->Task->RenderMode == RenderTaskModes::Mixed)
+        {
+            // Normal rendering
+            OpenGLAPI::DrawTriangles(ibSize);
+        }
+        if (renderContext->Task->RenderMode == RenderTaskModes::Wireframe
+            || renderContext->Task->RenderMode == RenderTaskModes::Mixed)
+        {
+            // Wireframe rendering
+            OpenGLAPI::DisableDepthTest();
+            OpenGLAPI::SetPolygonMode(OpenGLAPI::Line);
+            wireframeShader->Use();
+            OpenGLAPI::DrawTriangles(ibSize);
+            OpenGLAPI::SetPolygonMode(OpenGLAPI::Fill);
+            OpenGLAPI::EnableDepthTest();
+        }
         i += batchSize - 1;
 
         OpenGLAPI::UnbindVertexArray();
@@ -151,7 +172,22 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
         shader->GlobalUniformsSet = false;
     shadersUsed.clear();
 
+    ClearResources();
     ClearBuffers();
+}
+
+void RenderList::Clear(ClearFlags::ClearFlag clearFlag)
+{
+    if (clearFlag & ClearFlags::Color)
+    {
+        auto color = Screen::GetColor();
+        OpenGLAPI::SetClearColor(color.r, color.g, color.b, 1.0f);
+        OpenGLAPI::ClearColor();
+    }
+    if (clearFlag & ClearFlags::Depth)
+        OpenGLAPI::ClearDepth();
+    if (clearFlag & ClearFlags::Stencil)
+        OpenGLAPI::ClearStencil();
 }
 
 bool RenderList::CanBatch(const DrawCall& drawCall1, const DrawCall& drawCall2)
@@ -181,4 +217,40 @@ void RenderList::ClearBuffers()
     delete[] indexBufferData;
     vertexBufferData = nullptr;
     indexBufferData = nullptr;
+}
+
+void RenderList::PrepareResources(RenderContext* renderContext)
+{
+    const char* WireframeVS =
+            "#version 330 core\n"
+            "layout (location = 0) in vec3 position;\n"
+            "uniform mat4 view_projection;\n"
+            "void main()\n"
+            "{\n"
+            "    gl_Position = view_projection * vec4(position, 1.0f);\n"
+            "}";
+
+    const char* WireframeFS =
+            "#version 330 core\n"
+            "out vec4 color;\n"
+            "void main()\n"
+            "{\n"
+            "    color = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
+            "}";
+
+    wireframeShader = new Shader(WireframeVS, WireframeFS);
+    wireframeMaterial = new Material();
+    wireframeMaterial->MainShader = wireframeShader;
+
+    wireframeShader->Use();
+    wireframeMaterial->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(renderContext->Task->ViewProjection));
+    wireframeMaterial->Properties.Apply(wireframeShader);
+}
+
+void RenderList::ClearResources()
+{
+    delete wireframeShader;
+    wireframeShader = nullptr;
+    delete wireframeMaterial;
+    wireframeMaterial = nullptr;
 }

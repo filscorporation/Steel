@@ -15,9 +15,12 @@ public:
     void ExecuteDrawCalls(RenderContext* renderContext);
 private:
 
+    static void Clear(ClearFlags::ClearFlag clearFlag);
     static bool CanBatch(const DrawCall& drawCall1, const DrawCall& drawCall2);
     void PrepareBuffers();
     void ClearBuffers();
+    void PrepareResources(RenderContext* renderContext);
+    void ClearResources();
 
     std::vector<DrawCall> list;
     std::vector<uint32_t> sortingIndices;
@@ -26,4 +29,7 @@ private:
     float* vertexBufferData;
     uint32_t* indexBufferData;
     uint32_t indexBufferID, vertexBufferID;
+
+    Shader* wireframeShader;
+    Material* wireframeMaterial;
 };
