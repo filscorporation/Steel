@@ -1,26 +1,27 @@
 #include "ScriptingCore.h"
 #include "ScriptComponent.h"
 #include "ScriptingCallsRegister.h"
-#include "../Animation/Animator.h"
-#include "../Audio/AudioListener.h"
-#include "../Audio/AudioSource.h"
-#include "../Core/Log.h"
-#include "../Physics/BoxCollider.h"
-#include "../Physics/CircleCollider.h"
-#include "../Physics/RigidBody.h"
-#include "../Rendering/Camera.h"
-#include "../Rendering/SpriteRenderer.h"
-#include "../UI/RectTransformation.h"
-#include "../UI/UIElements/UIImage.h"
-#include "../UI/UIElements/UIButton.h"
-#include "../UI/UIElements/UIInputField.h"
-#include "../UI/UIElements/UIClipping.h"
-#include "../UI/UIElements/UILayoutGroup.h"
-#include "../UI/UIElements/UITabs.h"
-#include "../UI/UIElements/UIText.h"
-#include "../UI/UIElements/UICheckBox.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scene/NameComponent.h"
+#include "Steel/Animation/Animator.h"
+#include "Steel/Audio/AudioListener.h"
+#include "Steel/Audio/AudioSource.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Physics/BoxCollider.h"
+#include "Steel/Physics/CircleCollider.h"
+#include "Steel/Physics/RigidBody.h"
+#include "Steel/Rendering/Camera.h"
+#include "Steel/Rendering/SpriteRenderer.h"
+#include "Steel/Rendering/MeshRenderer.h"
+#include "Steel/UI/RectTransformation.h"
+#include "Steel/UI/UIElements/UIImage.h"
+#include "Steel/UI/UIElements/UIButton.h"
+#include "Steel/UI/UIElements/UIInputField.h"
+#include "Steel/UI/UIElements/UIClipping.h"
+#include "Steel/UI/UIElements/UILayoutGroup.h"
+#include "Steel/UI/UIElements/UITabs.h"
+#include "Steel/UI/UIElements/UIText.h"
+#include "Steel/UI/UIElements/UICheckBox.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scene/NameComponent.h"
 
 EngineCallsMethods ScriptingCore::EngineCalls;
 EventManagerMethods ScriptingCore::EventManagerCalls;
@@ -143,6 +144,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
     CACHE_CLASS(CircleCollider, API_CLASS(CircleCollider))
     CACHE_CLASS(RigidBody, API_CLASS(RigidBody))
     CACHE_CLASS(SpriteRenderer, API_CLASS(SpriteRenderer))
+    CACHE_CLASS(MeshRenderer, API_CLASS(MeshRenderer))
     CACHE_CLASS(Camera, API_CLASS(Camera))
     CACHE_CLASS(AudioListener, API_CLASS(AudioListener))
     CACHE_CLASS(AudioSource, API_CLASS(AudioSource))
@@ -160,8 +162,11 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
 
 void ScriptingCore::CacheDataTypes(MonoImage* image)
 {
+    // TODO: very inconvenient
     cachedDataTypes.push_back(API_CLASS(RayCastHit));
     cachedDataTypes.push_back(API_CLASS(Color));
+    cachedDataTypes.push_back(API_CLASS(Vector2));
+    cachedDataTypes.push_back(API_CLASS(Vector3));
 }
 
 void ScriptingCore::FreeScriptHandle(ScriptPointer scriptPointer)
@@ -212,6 +217,8 @@ Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* 
         return entitiesRegistry->AddComponent<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))
         return entitiesRegistry->AddComponent<SpriteRenderer>(entity);
+    if (monoClass == CACHED_CLASS(MeshRenderer))
+        return entitiesRegistry->AddComponent<MeshRenderer>(entity);
     if (monoClass == CACHED_CLASS(Camera))
         return entitiesRegistry->AddComponent<Camera>(entity);
     if (monoClass == CACHED_CLASS(AudioListener))
@@ -271,6 +278,8 @@ bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass* monoCl
         return entitiesRegistry->HasComponent<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))
         return entitiesRegistry->HasComponent<SpriteRenderer>(entity);
+    if (monoClass == CACHED_CLASS(MeshRenderer))
+        return entitiesRegistry->HasComponent<MeshRenderer>(entity);
     if (monoClass == CACHED_CLASS(Camera))
         return entitiesRegistry->HasComponent<Camera>(entity);
     if (monoClass == CACHED_CLASS(AudioListener))
@@ -331,6 +340,8 @@ bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass* mon
         return entitiesRegistry->RemoveComponent<RigidBody>(entity);
     if (monoClass == CACHED_CLASS(SpriteRenderer))
         return entitiesRegistry->RemoveComponent<SpriteRenderer>(entity);
+    if (monoClass == CACHED_CLASS(MeshRenderer))
+        return entitiesRegistry->RemoveComponent<MeshRenderer>(entity);
     if (monoClass == CACHED_CLASS(Camera))
         return entitiesRegistry->RemoveComponent<Camera>(entity);
     if (monoClass == CACHED_CLASS(AudioListener))
@@ -390,6 +401,8 @@ bool ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* monoClass, std::vect
         RETURN_COMPONENT_OWNERS(RigidBody)
     if (monoClass == CACHED_CLASS(SpriteRenderer))
         RETURN_COMPONENT_OWNERS(SpriteRenderer)
+    if (monoClass == CACHED_CLASS(MeshRenderer))
+        RETURN_COMPONENT_OWNERS(MeshRenderer)
     if (monoClass == CACHED_CLASS(Camera))
         RETURN_COMPONENT_OWNERS(Camera)
     if (monoClass == CACHED_CLASS(AudioListener))

@@ -10,6 +10,7 @@
 #include "Steel/Core/Time.h"
 #include "Steel/Input/Input.h"
 #include "Steel/Rendering/SpriteRenderer.h"
+#include "Steel/Rendering/MeshRenderer.h"
 #include "Steel/Rendering/Renderer.h"
 #include "Steel/Physics/Physics.h"
 #include "Steel/Scripting/ScriptingSystem.h"
@@ -246,6 +247,7 @@ void Scene::UpdateGlobalTransformation()
     auto transformationsAccessor = entitiesRegistry->GetComponentAccessor<Transformation>();
     // Components to apply changed transformation
     auto srAccessor = entitiesRegistry->GetComponentAccessor<SpriteRenderer>();
+    auto mrAccessor = entitiesRegistry->GetComponentAccessor<MeshRenderer>();
     auto cameraAccessor = entitiesRegistry->GetComponentAccessor<Camera>();
     for (auto& hierarchyNode : hierarchyNodes)
     {
@@ -257,6 +259,8 @@ void Scene::UpdateGlobalTransformation()
             bool transformationDirty = transformation.DidTransformationChange();
             if (transformationDirty && srAccessor.Has(hierarchyNode.Owner))
                 srAccessor.Get(hierarchyNode.Owner).Rebuild(transformation);
+            if (transformationDirty && mrAccessor.Has(hierarchyNode.Owner))
+                mrAccessor.Get(hierarchyNode.Owner).Rebuild(transformation);
             if (cameraAccessor.Has(hierarchyNode.Owner))
                 cameraAccessor.Get(hierarchyNode.Owner).UpdateViewProjection(transformation);
         }

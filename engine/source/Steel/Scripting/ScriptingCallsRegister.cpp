@@ -131,6 +131,13 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.SpriteRenderer::GetCustomMaterialProperties_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_GetCustomMaterialProperties);
     mono_add_internal_call("Steel.SpriteRenderer::SetCustomMaterialProperties_Internal", (void*)ComponentsInternalCalls::SpriteRenderer_SetCustomMaterialProperties);
 
+    mono_add_internal_call("Steel.MeshRenderer::GetMesh_Internal", (void*)ComponentsInternalCalls::MeshRenderer_GetMesh);
+    mono_add_internal_call("Steel.MeshRenderer::SetMesh_Internal", (void*)ComponentsInternalCalls::MeshRenderer_SetMesh);
+    mono_add_internal_call("Steel.MeshRenderer::GetMaterial_Internal", (void*)ComponentsInternalCalls::MeshRenderer_GetMaterial);
+    mono_add_internal_call("Steel.MeshRenderer::SetMaterial_Internal", (void*)ComponentsInternalCalls::MeshRenderer_SetMaterial);
+    mono_add_internal_call("Steel.MeshRenderer::GetCustomMaterialProperties_Internal", (void*)ComponentsInternalCalls::MeshRenderer_GetCustomMaterialProperties);
+    mono_add_internal_call("Steel.MeshRenderer::SetCustomMaterialProperties_Internal", (void*)ComponentsInternalCalls::MeshRenderer_SetCustomMaterialProperties);
+
     mono_add_internal_call("Steel.Animator::PlayAnimation_Internal", (void*)ComponentsInternalCalls::Animator_PlayAnimation);
     mono_add_internal_call("Steel.Animator::PlayAnimation_Internal2", (void*)ComponentsInternalCalls::Animator_PlayAnimation2);
     mono_add_internal_call("Steel.Animator::Play_Internal", (void*)ComponentsInternalCalls::Animator_Play);

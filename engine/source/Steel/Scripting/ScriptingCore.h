@@ -19,6 +19,7 @@ struct CachedData
     MonoClass* classCircleCollider;
     MonoClass* classRigidBody;
     MonoClass* classSpriteRenderer;
+    MonoClass* classMeshRenderer;
     MonoClass* classCamera;
     MonoClass* classAudioListener;
     MonoClass* classAudioSource;

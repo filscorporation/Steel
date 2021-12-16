@@ -40,6 +40,35 @@ namespace BuiltInShaders
 "    if (color.a < 0.01) discard;\n"
 "}";
 
+    const char* DefaultMeshVS =
+"#version 330 core\n"
+"\n"
+"layout (location = 0) in vec3 position;\n"
+"layout (location = 1) in vec4 color;\n"
+"\n"
+"out vec4 vertexColor;\n"
+"\n"
+"uniform mat4 view_projection;\n"
+"\n"
+"void main()\n"
+"{\n"
+"    gl_Position = view_projection * vec4(position, 1.0f);\n"
+"    vertexColor = color;\n"
+"}";
+
+    const char* DefaultMeshFS =
+"#version 330 core\n"
+"\n"
+"in vec4 vertexColor;\n"
+"\n"
+"out vec4 color;\n"
+"\n"
+"void main()\n"
+"{\n"
+"    color = vertexColor;\n"
+"    if (color.a < 0.01) discard;\n"
+"}";
+
     const char* DefaultUIVS =
 "#version 330 core\n"
 "\n"

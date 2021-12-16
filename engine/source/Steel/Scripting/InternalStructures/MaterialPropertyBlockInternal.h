@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mono/jit/jit.h>
+#include "mono/include/mono/jit/jit.h"
 
 #include "Steel/Rendering/MaterialSystem/MaterialPropertyBlock.h"
 

@@ -1,19 +1,20 @@
 #include "ComponentsInternalCalls.h"
 #include "InternalCallsCommon.h"
-#include "../Animation/Animator.h"
-#include "../Audio/AudioSource.h"
-#include "../Audio/AudioListener.h"
-#include "../Core/Application.h"
-#include "../Core/Log.h"
-#include "../Physics/BoxCollider.h"
-#include "../Physics/CircleCollider.h"
-#include "../Rendering/SpriteRenderer.h"
-#include "../Rendering/Camera.h"
-#include "../Scene/Hierarchy.h"
-#include "../Scene/HierarchyNode.h"
-#include "../Scene/Transformation.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scripting/ScriptingCore.h"
+#include "Steel/Animation/Animator.h"
+#include "Steel/Audio/AudioSource.h"
+#include "Steel/Audio/AudioListener.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Physics/BoxCollider.h"
+#include "Steel/Physics/CircleCollider.h"
+#include "Steel/Rendering/SpriteRenderer.h"
+#include "Steel/Rendering/MeshRenderer.h"
+#include "Steel/Rendering/Camera.h"
+#include "Steel/Scene/Hierarchy.h"
+#include "Steel/Scene/HierarchyNode.h"
+#include "Steel/Scene/Transformation.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scripting/ScriptingCore.h"
 
 glm::vec3 ComponentsInternalCalls::Transformation_GetPosition(EntityID entityID)
 {
@@ -214,6 +215,53 @@ void ComponentsInternalCalls::SpriteRenderer_GetCustomMaterialProperties(EntityI
 void ComponentsInternalCalls::SpriteRenderer_SetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal properties)
 {
     GET_COMPONENT_OR_RETURN(SpriteRenderer, )
+
+    MaterialPropertyBlock propertiesOut;
+    properties.ToMaterialPropertyBlock(propertiesOut);
+    component.SetCustomProperties(propertiesOut);
+}
+
+void ComponentsInternalCalls::MeshRenderer_GetMesh(EntityID entityID, MeshInternal* mesh)
+{
+    GET_COMPONENT_OR_RETURN(MeshRenderer, )
+
+    mesh->FromMesh(component.GetMesh());
+}
+
+void ComponentsInternalCalls::MeshRenderer_SetMesh(EntityID entityID, MeshInternal mesh)
+{
+    GET_COMPONENT_OR_RETURN(MeshRenderer, )
+
+    Mesh outMesh;
+    mesh.ToMesh(outMesh);
+    component.SetMesh(outMesh);
+}
+
+ResourceID ComponentsInternalCalls::MeshRenderer_GetMaterial(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(MeshRenderer, NULL_RESOURCE)
+    auto material = component.GetMaterial();
+
+    return material == nullptr ? 0 : material->ID;
+}
+
+void ComponentsInternalCalls::MeshRenderer_SetMaterial(EntityID entityID, ResourceID materialID)
+{
+    GET_COMPONENT_OR_RETURN(MeshRenderer, )
+
+    component.SetMaterial(Application::Instance->GetResourcesManager()->GetMaterial(materialID));
+}
+
+void ComponentsInternalCalls::MeshRenderer_GetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal* properties)
+{
+    GET_COMPONENT_OR_RETURN(MeshRenderer, )
+
+    properties->FromMaterialPropertyBlock(component.GetCustomProperties());
+}
+
+void ComponentsInternalCalls::MeshRenderer_SetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal properties)
+{
+    GET_COMPONENT_OR_RETURN(MeshRenderer, )
 
     MaterialPropertyBlock propertiesOut;
     properties.ToMaterialPropertyBlock(propertiesOut);

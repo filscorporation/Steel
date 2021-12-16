@@ -89,7 +89,7 @@ uint32_t SpriteRenderer::GetImageTileIndex() const
 glm::vec2 SpriteRenderer::GetWorldSize()
 {
     if (_image == nullptr)
-        return glm::vec2(0, 0);
+        return { 0, 0 };
 
     return GetComponentS<Transformation>(Owner).GetScale() * _image->GetRealWorldSize();
 }
@@ -100,7 +100,7 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
 
     _sortingOrder = transformation.GetGlobalSortingOrderCached();
 
-    _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
+    _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->SpriteTexture->GetTextureID());
     _customProperties.UpdateHash();
 
     if (_image != nullptr && _material == nullptr)

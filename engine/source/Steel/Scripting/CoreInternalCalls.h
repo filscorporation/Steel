@@ -5,8 +5,8 @@
 #include <glm/vec4.hpp>
 
 #include "ScriptingCore.h"
-#include "MaterialPropertyBlockInternal.h"
-#include "../Resources/ResourceID.h"
+#include "Steel/Resources/ResourceID.h"
+#include "Steel/Scripting/InternalStructures/MaterialPropertyBlockInternal.h"
 
 namespace CoreInternalCalls
 {

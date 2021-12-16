@@ -18,7 +18,7 @@
 
 void RenderList::Reserve(uint32_t size)
 {
-    list.reserve(size);
+    list.reserve(list.size() + size);
 }
 
 void RenderList::AddDrawCall(const DrawCall& drawCall)

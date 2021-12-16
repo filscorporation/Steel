@@ -3,13 +3,13 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 
-#include "MaterialPropertyBlockInternal.h"
-#include "../EntityComponentSystem/Entity.h"
-#include "../Resources/ResourceID.h"
-#include "../UI/UIElements/UIButton.h"
-#include "../UI/UIElements/UILayoutGroup.h"
-#include "../UI/UIElements/UIInputField.h"
-#include "../UI/UIElements/UIText.h"
+#include "Steel/Scripting/InternalStructures/MaterialPropertyBlockInternal.h"
+#include "Steel/EntityComponentSystem/Entity.h"
+#include "Steel/Resources/ResourceID.h"
+#include "Steel/UI/UIElements/UIButton.h"
+#include "Steel/UI/UIElements/UILayoutGroup.h"
+#include "Steel/UI/UIElements/UIInputField.h"
+#include "Steel/UI/UIElements/UIText.h"
 
 namespace UIInternalCalls
 {

@@ -4,10 +4,11 @@
 #include <glm/vec2.hpp>
 #include <mono/jit/jit.h>
 
-#include "../Physics/RigidBody.h"
-#include "../Rendering/Camera.h"
-#include "../Resources/ResourceID.h"
-#include "MaterialPropertyBlockInternal.h"
+#include "Steel/Physics/RigidBody.h"
+#include "Steel/Rendering/Camera.h"
+#include "Steel/Resources/ResourceID.h"
+#include "Steel/Scripting/InternalStructures/MaterialPropertyBlockInternal.h"
+#include "Steel/Scripting/InternalStructures/MeshInternal.h"
 
 namespace ComponentsInternalCalls
 {
@@ -47,6 +48,14 @@ namespace ComponentsInternalCalls
     void SpriteRenderer_SetMaterial(EntityID entityID, ResourceID materialID);
     void SpriteRenderer_GetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal* properties);
     void SpriteRenderer_SetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal properties);
+
+    // Mesh Renderer
+    void MeshRenderer_GetMesh(EntityID entityID, MeshInternal* mesh);
+    void MeshRenderer_SetMesh(EntityID entityID, MeshInternal mesh);
+    ResourceID MeshRenderer_GetMaterial(EntityID entityID);
+    void MeshRenderer_SetMaterial(EntityID entityID, ResourceID materialID);
+    void MeshRenderer_GetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal* properties);
+    void MeshRenderer_SetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal properties);
 
     // Animator
     void Animator_PlayAnimation(EntityID entityID, ResourceID animationID);

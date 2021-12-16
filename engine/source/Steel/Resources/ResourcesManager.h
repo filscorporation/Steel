@@ -60,6 +60,7 @@ public:
     void AddMaterial(Material* material);
     Material* GetMaterial(ResourceID materialID);
     Material* DefaultSpriteMaterial();
+    Material* DefaultMeshMaterial();
     Material* DefaultUIMaterial();
     Material* DefaultUIClippingMaterial();
 
@@ -79,9 +80,11 @@ private:
 
     Font* defaultFont;
     Shader* defaultSpriteShader;
+    Shader* defaultMeshShader;
     Shader* defaultUIShader;
     Shader* defaultUIClippingShader;
     Material* defaultSpriteMaterial;
+    Material* defaultMeshMaterial;
     Material* defaultUIMaterial;
     Material* defaultUIClippingMaterial;
 };

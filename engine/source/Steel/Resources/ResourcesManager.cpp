@@ -72,6 +72,9 @@ void ResourcesManager::LoadDefaultResources()
     defaultSpriteShader = new Shader(BuiltInShaders::DefaultSpriteVS, BuiltInShaders::DefaultSpriteFS);
     AddShader(defaultSpriteShader);
 
+    defaultMeshShader = new Shader(BuiltInShaders::DefaultMeshVS, BuiltInShaders::DefaultMeshFS);
+    AddShader(defaultMeshShader);
+
     defaultUIShader = new Shader(BuiltInShaders::DefaultUIVS, BuiltInShaders::DefaultUIFS);
     AddShader(defaultUIShader);
 
@@ -81,6 +84,10 @@ void ResourcesManager::LoadDefaultResources()
     defaultSpriteMaterial = new Material();
     defaultSpriteMaterial->MainShader = defaultSpriteShader;
     AddMaterial(defaultSpriteMaterial);
+
+    defaultMeshMaterial = new Material();
+    defaultMeshMaterial->MainShader = defaultMeshShader;
+    AddMaterial(defaultMeshMaterial);
 
     defaultUIMaterial = new Material();
     defaultUIMaterial->MainShader = defaultUIShader;
@@ -492,6 +499,11 @@ Material* ResourcesManager::GetMaterial(ResourceID materialID)
 Material* ResourcesManager::DefaultSpriteMaterial()
 {
     return defaultSpriteMaterial;
+}
+
+Material* ResourcesManager::DefaultMeshMaterial()
+{
+    return defaultMeshMaterial;
 }
 
 Material* ResourcesManager::DefaultUIMaterial()

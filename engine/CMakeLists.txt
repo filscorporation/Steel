@@ -84,8 +84,8 @@ set(SOURCE_FILES
         source/Steel/Scripting/ScriptingCommon.h source/Steel/UI/UIElements/UIInputField.cpp
         source/Steel/UI/UIElements/UIInputField.h source/Steel/UI/TransitionInfo.h source/Steel/UI/UIInteractable.cpp source/Steel/UI/UIInteractable.h
         source/Steel/UI/CallbackType.h source/Steel/Scene/HierarchyParent.h source/Steel/Rendering/MaterialSystem/Material.cpp source/Steel/Rendering/MaterialSystem/Material.h
-        source/Steel/Rendering/MaterialSystem/MaterialPropertyBlock.cpp source/Steel/Rendering/MaterialSystem/MaterialPropertyBlock.h source/Steel/Scripting/MaterialPropertyBlockInternal.h
-        source/Steel/Scripting/MaterialPropertyBlockInternal.cpp source/Steel/UI/UIElements/UIClipping.cpp source/Steel/UI/UIElements/UIClipping.h
+        source/Steel/Rendering/MaterialSystem/MaterialPropertyBlock.cpp source/Steel/Rendering/MaterialSystem/MaterialPropertyBlock.h source/Steel/Scripting/InternalStructures/MaterialPropertyBlockInternal.h
+        source/Steel/Scripting/InternalStructures/MaterialPropertyBlockInternal.cpp source/Steel/UI/UIElements/UIClipping.cpp source/Steel/UI/UIElements/UIClipping.h
         source/Steel/UI/UIElements/UICheckBox.cpp source/Steel/UI/UIElements/UICheckBox.h
         source/Steel/UI/UIElements/UITabs.cpp source/Steel/UI/UIElements/UITabs.h source/Steel/UI/UIElements/UILayoutGroup.cpp
         source/Steel/UI/UIElements/UILayoutGroup.h source/Steel/UI/UIElements/UILayoutElement.h source/Steel/UI/UIElements/LayoutGroupTypes.h
@@ -100,7 +100,9 @@ set(SOURCE_FILES
         source/Steel/Rendering/Core/VertexBuffer.h source/Steel/Rendering/Core/RenderTask.h source/Steel/Rendering/Core/DrawCallsSource.h
         source/Steel/Rendering/SceneDrawCallsSource.cpp source/Steel/Rendering/SceneDrawCallsSource.h source/Steel/Rendering/UIDrawCallsSource.cpp
         source/Steel/Rendering/UIDrawCallsSource.h source/Steel/Common/FlagType.h source/Steel/Rendering/Core/IndexBuffer.cpp source/Steel/Rendering/Core/IndexBuffer.h
-        source/Steel/Rendering/Core/RendererEnums.h source/Steel/Rendering/Core/VertexAttribute.h source/Steel/Math/Sorting.h)
+        source/Steel/Rendering/Core/RendererEnums.h source/Steel/Rendering/Core/VertexAttribute.h source/Steel/Math/Sorting.h
+        source/Steel/Rendering/MeshRenderer.cpp source/Steel/Rendering/MeshRenderer.h source/Steel/Rendering/Mesh.cpp source/Steel/Rendering/Mesh.h
+        source/Steel/Scripting/InternalStructures/MeshInternal.cpp source/Steel/Scripting/InternalStructures/MeshInternal.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

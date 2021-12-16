@@ -78,6 +78,8 @@
         <Compile Include="Rendering\Color.cs" />
         <Compile Include="Rendering\Material.cs" />
         <Compile Include="Rendering\MaterialPropertyBlock.cs" />
+        <Compile Include="Rendering\Mesh.cs" />
+        <Compile Include="Rendering\MeshRenderer.cs" />
         <Compile Include="Rendering\Screen.cs" />
         <Compile Include="Rendering\Shader.cs" />
         <Compile Include="Rendering\Sprite.cs" />

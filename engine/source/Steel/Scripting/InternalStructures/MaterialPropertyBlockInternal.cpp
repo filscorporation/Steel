@@ -1,5 +1,5 @@
 #include "MaterialPropertyBlockInternal.h"
-#include "ScriptingCore.h"
+#include "Steel/Scripting/ScriptingCore.h"
 
 void MaterialPropertyBlockInternal::FromMaterialPropertyBlock(const MaterialPropertyBlock& properties)
 {

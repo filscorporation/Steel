@@ -16,6 +16,7 @@
 #include "Steel/Rendering/Camera.h"
 #include "Steel/Rendering/Screen.h"
 #include "Steel/Rendering/SpriteRenderer.h"
+#include "Steel/Rendering/MeshRenderer.h"
 #include "Steel/Scene/Transformation.h"
 #include "Steel/UI/UILayer.h"
 #include "Steel/UI/RectTransformation.h"

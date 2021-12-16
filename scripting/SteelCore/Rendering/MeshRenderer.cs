@@ -1,19 +1,23 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace Steel
 {
     /// <summary>
-    /// Renders sprite (image) in the scene
+    /// Renders custom mesh in the scene
     /// </summary>
-    public class SpriteRenderer : Component
+    public class MeshRenderer : Component
     {
         /// <summary>
-        /// Sprite to render
+        /// Mesh
         /// </summary>
-        public Sprite Sprite
+        public Mesh Mesh
         {
-            get => new Sprite(GetSprite_Internal(Entity.ID));
-            set => SetSprite_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
+            get
+            {
+                GetMesh_Internal(Entity.ID, out Mesh mesh);
+                return mesh;
+            }
+            set => SetMesh_Internal(Entity.ID, value);
         }
         
         /// <summary>
@@ -39,10 +43,10 @@ namespace Steel
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint GetSprite_Internal(uint entityID);
+        private static extern void GetMesh_Internal(uint entityID, out Mesh mesh);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetSprite_Internal(uint entityID, uint spriteID);
+        private static extern void SetMesh_Internal(uint entityID, Mesh mesh);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetMaterial_Internal(uint entityID);
