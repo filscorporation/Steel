@@ -14,8 +14,9 @@ void SceneView::OnRemoved(EntitiesRegistry* entitiesRegistry)
     if (sceneViewImageEntity == NULL_ENTITY || !entitiesRegistry->HasComponent<UIImage>(sceneViewImageEntity))
         return;
     auto& image = entitiesRegistry->GetComponent<UIImage>(sceneViewImageEntity);
+    auto oldImage = image.GetImage();
     image.SetImage(nullptr);
-    delete image.GetImage();
+    delete oldImage;
 }
 
 void SceneView::Init(EntitiesRegistry* entitiesRegistry)

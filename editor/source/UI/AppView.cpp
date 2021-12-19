@@ -25,8 +25,9 @@ void AppView::OnRemoved(EntitiesRegistry* entitiesRegistry)
     if (appViewImageEntity == NULL_ENTITY || !entitiesRegistry->HasComponent<UIImage>(appViewImageEntity))
         return;
     auto& image = entitiesRegistry->GetComponent<UIImage>(appViewImageEntity);
+    auto oldImage = image.GetImage();
     image.SetImage(nullptr);
-    delete image.GetImage();
+    delete oldImage;
 }
 
 void AppView::Init(EntitiesRegistry* entitiesRegistry)

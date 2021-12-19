@@ -108,6 +108,12 @@ void UIClipping::RebuildInner(RectTransformation& transformation)
 {
     isDirty = false;
 
+    for (int i = 0; i < 4; ++i)
+    {
+        vb[i].Clear();
+        ib[i].Clear();
+    }
+
     UILayer* layer = Application::Instance->GetCurrentScene()->GetUILayer();
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     float sortingOrder = transformation.GetSortingOrder();
