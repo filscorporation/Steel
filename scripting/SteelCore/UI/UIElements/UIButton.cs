@@ -17,7 +17,7 @@ namespace Steel
                 if (onClick == null)
                 {
                     onClick = new CallbackList();
-                    EventManager.RegisterCallbacks(Entity.ID, CallbackType.ButtonClick, onClick);
+                    EventManager.RegisterCallbacks(Entity.EntityID, CallbackType.ButtonClick, onClick);
                 }
                 return onClick;
             }
@@ -31,7 +31,7 @@ namespace Steel
         {
             get
             {
-                uint targetID = GetTargetImage_Internal(Entity.ID);
+                uint targetID = GetTargetImage_Internal(Entity.EntityID);
                 if (targetID == Entity.NULL_ENTITY_ID)
                     return null;
                 
@@ -40,7 +40,7 @@ namespace Steel
                 
                 return image;
             }
-            set => SetTargetImage_Internal(Entity.ID, value?.Entity.ID ?? Entity.NULL_ENTITY_ID);
+            set => SetTargetImage_Internal(Entity.EntityID, value?.Entity.EntityID ?? Entity.NULL_ENTITY_ID);
         }
 
         /// <summary>
@@ -48,8 +48,8 @@ namespace Steel
         /// </summary>
         public bool Interactable
         {
-            get => GetInteractable_Internal(Entity.ID);
-            set => SetInteractable_Internal(Entity.ID, value);
+            get => GetInteractable_Internal(Entity.EntityID);
+            set => SetInteractable_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace Steel
         /// </summary>
         public TransitionsInfo Transition
         {
-            get => GetTransition_Internal(Entity.ID).ToTransitionsInfo();
-            set => SetTransition_Internal(Entity.ID, value.ToInternal());
+            get => GetTransition_Internal(Entity.EntityID).ToTransitionsInfo();
+            set => SetTransition_Internal(Entity.EntityID, value.ToInternal());
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

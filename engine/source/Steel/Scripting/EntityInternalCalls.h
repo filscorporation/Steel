@@ -4,6 +4,7 @@
 
 #include "ScriptingCore.h"
 #include "ScriptComponent.h"
+#include "Steel/Scene/IDComponent.h"
 
 namespace EntityInternalCalls
 {
@@ -25,6 +26,7 @@ namespace EntityInternalCalls
 
     bool Entity_IsDestroyed(EntityID entityID);
 
+    UUID Entity_GetUUID(EntityID id);
     MonoString* Entity_GetName(EntityID id);
     void Entity_SetName(EntityID id, MonoString* name);
 

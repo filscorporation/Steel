@@ -14,10 +14,10 @@ namespace Steel
         {
             get
             {
-                GetAnchorMin_Internal(Entity.ID, out Vector2 anchor);
+                GetAnchorMin_Internal(Entity.EntityID, out Vector2 anchor);
                 return anchor;
             }
-            set => SetAnchorMin_Internal(Entity.ID, ref value);
+            set => SetAnchorMin_Internal(Entity.EntityID, ref value);
         }
 
         /// <summary>
@@ -27,10 +27,10 @@ namespace Steel
         {
             get
             {
-                GetAnchorMax_Internal(Entity.ID, out Vector2 anchor);
+                GetAnchorMax_Internal(Entity.EntityID, out Vector2 anchor);
                 return anchor;
             }
-            set => SetAnchorMax_Internal(Entity.ID, ref value);
+            set => SetAnchorMax_Internal(Entity.EntityID, ref value);
         }
 
         /// <summary>
@@ -40,10 +40,10 @@ namespace Steel
         {
             get
             {
-                GetAnchoredPosition_Internal(Entity.ID, out Vector2 position);
+                GetAnchoredPosition_Internal(Entity.EntityID, out Vector2 position);
                 return position;
             }
-            set => SetAnchoredPosition_Internal(Entity.ID, ref value);
+            set => SetAnchoredPosition_Internal(Entity.EntityID, ref value);
         }
         
         /// <summary>
@@ -53,10 +53,10 @@ namespace Steel
         {
             get
             {
-                GetOffsetMin_Internal(Entity.ID, out Vector2 offset);
+                GetOffsetMin_Internal(Entity.EntityID, out Vector2 offset);
                 return offset;
             }
-            set => SetOffsetMin_Internal(Entity.ID, ref value);
+            set => SetOffsetMin_Internal(Entity.EntityID, ref value);
         }
         
         /// <summary>
@@ -66,10 +66,10 @@ namespace Steel
         {
             get
             {
-                GetOffsetMax_Internal(Entity.ID, out Vector2 offset);
+                GetOffsetMax_Internal(Entity.EntityID, out Vector2 offset);
                 return offset;
             }
-            set => SetOffsetMax_Internal(Entity.ID, ref value);
+            set => SetOffsetMax_Internal(Entity.EntityID, ref value);
         }
         
         /// <summary>
@@ -79,10 +79,10 @@ namespace Steel
         {
             get
             {
-                GetPivot_Internal(Entity.ID, out Vector2 pivot);
+                GetPivot_Internal(Entity.EntityID, out Vector2 pivot);
                 return pivot;
             }
-            set => SetPivot_Internal(Entity.ID, ref value);
+            set => SetPivot_Internal(Entity.EntityID, ref value);
         }
 
         /// <summary>
@@ -92,24 +92,24 @@ namespace Steel
         {
             get
             {
-                GetSize_Internal(Entity.ID, out Vector2 size);
+                GetSize_Internal(Entity.EntityID, out Vector2 size);
                 return size;
             }
-            set => SetSize_Internal(Entity.ID, ref value);
+            set => SetSize_Internal(Entity.EntityID, ref value);
         }
 
         /// <summary>
         /// Order when element will be drawn in UI, bigger - later
         /// </summary>
-        public float SortingOrder => GetSortingOrder_Internal(Entity.ID);
+        public float SortingOrder => GetSortingOrder_Internal(Entity.EntityID);
 
         /// <summary>
         /// Element global rotation
         /// </summary>
         public Vector3 Rotation
         {
-            get => GetRotation_Internal(Entity.ID);
-            set => SetRotation_Internal(Entity.ID, value);
+            get => GetRotation_Internal(Entity.EntityID);
+            set => SetRotation_Internal(Entity.EntityID, value);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

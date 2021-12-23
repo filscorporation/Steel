@@ -17,7 +17,7 @@ namespace Steel
                 if (onValueChanged == null)
                 {
                     onValueChanged = new CallbackList();
-                    EventManager.RegisterCallbacks(Entity.ID, CallbackType.InputFieldChangeValue, onValueChanged);
+                    EventManager.RegisterCallbacks(Entity.EntityID, CallbackType.InputFieldChangeValue, onValueChanged);
                 }
                 return onValueChanged;
             }
@@ -34,7 +34,7 @@ namespace Steel
                 if (onEndEditing == null)
                 {
                     onEndEditing = new CallbackList();
-                    EventManager.RegisterCallbacks(Entity.ID, CallbackType.InputFieldEndEdit, onEndEditing);
+                    EventManager.RegisterCallbacks(Entity.EntityID, CallbackType.InputFieldEndEdit, onEndEditing);
                 }
                 return onEndEditing;
             }
@@ -48,7 +48,7 @@ namespace Steel
         {
             get
             {
-                uint targetID = GetTargetText_Internal(Entity.ID);
+                uint targetID = GetTargetText_Internal(Entity.EntityID);
                 if (targetID == Entity.NULL_ENTITY_ID)
                     return null;
                 
@@ -57,7 +57,7 @@ namespace Steel
                 
                 return text;
             }
-            set => SetTargetText_Internal(Entity.ID, value?.Entity.ID ?? Entity.NULL_ENTITY_ID);
+            set => SetTargetText_Internal(Entity.EntityID, value?.Entity.EntityID ?? Entity.NULL_ENTITY_ID);
         }
         
         /// <summary>
@@ -67,7 +67,7 @@ namespace Steel
         {
             get
             {
-                uint targetID = GetTargetImage_Internal(Entity.ID);
+                uint targetID = GetTargetImage_Internal(Entity.EntityID);
                 if (targetID == Entity.NULL_ENTITY_ID)
                     return null;
                 
@@ -76,7 +76,7 @@ namespace Steel
                 
                 return image;
             }
-            set => SetTargetImage_Internal(Entity.ID, value?.Entity.ID ?? Entity.NULL_ENTITY_ID);
+            set => SetTargetImage_Internal(Entity.EntityID, value?.Entity.EntityID ?? Entity.NULL_ENTITY_ID);
         }
 
         /// <summary>
@@ -84,8 +84,8 @@ namespace Steel
         /// </summary>
         public bool Interactable
         {
-            get => GetInteractable_Internal(Entity.ID);
-            set => SetInteractable_Internal(Entity.ID, value);
+            get => GetInteractable_Internal(Entity.EntityID);
+            set => SetInteractable_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -93,8 +93,8 @@ namespace Steel
         /// </summary>
         public uint CursorWidth
         {
-            get => GetCursorWidth_Internal(Entity.ID);
-            set => SetCursorWidth_Internal(Entity.ID, value);
+            get => GetCursorWidth_Internal(Entity.EntityID);
+            set => SetCursorWidth_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -102,8 +102,8 @@ namespace Steel
         /// </summary>
         public Color CursorColor
         {
-            get => GetCursorColor_Internal(Entity.ID);
-            set => SetCursorColor_Internal(Entity.ID, value);
+            get => GetCursorColor_Internal(Entity.EntityID);
+            set => SetCursorColor_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -111,8 +111,8 @@ namespace Steel
         /// </summary>
         public bool CursorAutoColor
         {
-            get => GetCursorAutoColor_Internal(Entity.ID);
-            set => SetCursorAutoColor_Internal(Entity.ID, value);
+            get => GetCursorAutoColor_Internal(Entity.EntityID);
+            set => SetCursorAutoColor_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -120,8 +120,8 @@ namespace Steel
         /// </summary>
         public bool IsMultiline
         {
-            get => GetIsMultiline_Internal(Entity.ID);
-            set => SetIsMultiline_Internal(Entity.ID, value);
+            get => GetIsMultiline_Internal(Entity.EntityID);
+            set => SetIsMultiline_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace Steel
         /// </summary>
         public TextType TextType
         {
-            get => GetTextType_Internal(Entity.ID);
-            set => SetTextType_Internal(Entity.ID, value);
+            get => GetTextType_Internal(Entity.EntityID);
+            set => SetTextType_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -138,8 +138,8 @@ namespace Steel
         /// </summary>
         public Color SelectionColor
         {
-            get => GetSelectionColor_Internal(Entity.ID);
-            set => SetSelectionColor_Internal(Entity.ID, value);
+            get => GetSelectionColor_Internal(Entity.EntityID);
+            set => SetSelectionColor_Internal(Entity.EntityID, value);
         }
         
         [MethodImpl(MethodImplOptions.InternalCall)]

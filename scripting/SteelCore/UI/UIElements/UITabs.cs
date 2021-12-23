@@ -10,15 +10,15 @@ namespace Steel
         /// <summary>
         /// Tabs count
         /// </summary>
-        public int TabsCount => TabsCount_Internal(Entity.ID);
+        public int TabsCount => TabsCount_Internal(Entity.EntityID);
 
         /// <summary>
         /// Current active tab
         /// </summary>
         public int ActiveTab
         {
-            get => GetActiveTab_Internal(Entity.ID);
-            set => SetActiveTab_Internal(Entity.ID, value);
+            get => GetActiveTab_Internal(Entity.EntityID);
+            set => SetActiveTab_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -26,7 +26,7 @@ namespace Steel
         /// </summary>
         public Entity GetTab(int index)
         {
-            return new Entity(GetTab_Internal(Entity.ID, index));
+            return new Entity(GetTab_Internal(Entity.EntityID, index));
         }
         
         /// <summary>
@@ -34,7 +34,7 @@ namespace Steel
         /// </summary>
         public Entity AddTab(string name)
         {
-            return new Entity(AddTab_Internal(Entity.ID, name));
+            return new Entity(AddTab_Internal(Entity.EntityID, name));
         }
         
         /// <summary>
@@ -42,7 +42,7 @@ namespace Steel
         /// </summary>
         public bool RemoveTab(int index)
         {
-            return RemoveTab_Internal(Entity.ID, index);
+            return RemoveTab_Internal(Entity.EntityID, index);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

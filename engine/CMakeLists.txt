@@ -93,7 +93,7 @@ set(SOURCE_FILES
         source/Steel/Rendering/MaterialSystem/Texture.cpp source/Steel/Rendering/MaterialSystem/Texture.h source/Steel/UI/UIElements/UILayoutElement.cpp
         source/Steel/Rendering/SceneRenderer.cpp source/Steel/Rendering/SceneRenderer.h source/Steel/Serialization/SerializationManager.cpp
         source/Steel/Serialization/SerializationManager.h source/Steel/Serialization/Serializable.h source/Steel/Serialization/AttributeInfo.h
-        source/Steel/Serialization/AttributeAccessor.h source/Steel/Common/StringUtils.h source/Steel/Serialization/SerializationConvert.h
+        source/Steel/Serialization/AttributeAccessorBase.h source/Steel/Common/StringUtils.h source/Steel/Serialization/SerializationConvert.h
         source/Steel/Core/TypeInfo.h source/Steel/Core/TypeInfo.cpp source/Steel/Serialization/TypeInfoStorage.cpp source/Steel/Serialization/TypeInfoStorage.h
         source/Steel/Scene/HierarchyParent.cpp source/Steel/Rendering/Core/DrawCall.h source/Steel/Rendering/Core/RenderList.cpp
         source/Steel/Rendering/Core/RenderList.h source/Steel/Rendering/Core/RenderContext.h source/Steel/Rendering/Core/VertexBuffer.cpp
@@ -102,7 +102,9 @@ set(SOURCE_FILES
         source/Steel/Rendering/UIDrawCallsSource.h source/Steel/Common/FlagType.h source/Steel/Rendering/Core/IndexBuffer.cpp source/Steel/Rendering/Core/IndexBuffer.h
         source/Steel/Rendering/Core/RendererEnums.h source/Steel/Rendering/Core/VertexAttribute.h source/Steel/Math/Sorting.h
         source/Steel/Rendering/MeshRenderer.cpp source/Steel/Rendering/MeshRenderer.h source/Steel/Rendering/Mesh.cpp source/Steel/Rendering/Mesh.h
-        source/Steel/Scripting/InternalStructures/MeshInternal.cpp source/Steel/Scripting/InternalStructures/MeshInternal.h)
+        source/Steel/Scripting/InternalStructures/MeshInternal.cpp source/Steel/Scripting/InternalStructures/MeshInternal.h source/Steel/Scene/IDComponent.cpp
+        source/Steel/Scene/IDComponent.h source/Steel/Serialization/SerializationContext.h source/Steel/Serialization/AttributeAccessor.h
+        source/Steel/Serialization/IDAttributeAccessor.h source/Steel/Scene/UUID.h source/Steel/Serialization/SerializationContext.cpp)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

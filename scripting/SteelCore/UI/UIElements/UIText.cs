@@ -13,8 +13,8 @@ namespace Steel
         /// </summary>
         public string Text
         {
-            get => GetText_Internal(Entity.ID);
-            set => SetText_Internal(Entity.ID, Encoding.UTF8.GetString(Encoding.Default.GetBytes(value)));
+            get => GetText_Internal(Entity.EntityID);
+            set => SetText_Internal(Entity.EntityID, Encoding.UTF8.GetString(Encoding.Default.GetBytes(value)));
         }
         
         /// <summary>
@@ -22,8 +22,8 @@ namespace Steel
         /// </summary>
         public int TextSize
         {
-            get => GetTextSize_Internal(Entity.ID);
-            set => SetTextSize_Internal(Entity.ID, value);
+            get => GetTextSize_Internal(Entity.EntityID);
+            set => SetTextSize_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -31,8 +31,8 @@ namespace Steel
         /// </summary>
         public float LineSpacing
         {
-            get => GetLineSpacing_Internal(Entity.ID);
-            set => SetLineSpacing_Internal(Entity.ID, value);
+            get => GetLineSpacing_Internal(Entity.EntityID);
+            set => SetLineSpacing_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -40,8 +40,8 @@ namespace Steel
         /// </summary>
         public Color Color
         {
-            get => GetColor_Internal(Entity.ID);
-            set => SetColor_Internal(Entity.ID, value);
+            get => GetColor_Internal(Entity.EntityID);
+            set => SetColor_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -49,8 +49,8 @@ namespace Steel
         /// </summary>
         public bool IsTextAutoSize
         {
-            get => GetIsTextAutoSize_Internal(Entity.ID);
-            set => SetIsTextAutoSize_Internal(Entity.ID, value);
+            get => GetIsTextAutoSize_Internal(Entity.EntityID);
+            set => SetIsTextAutoSize_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -58,8 +58,8 @@ namespace Steel
         /// </summary>
         public AlignmentType TextAlignment
         {
-            get => GetTextAlignment_Internal(Entity.ID);
-            set => SetTextAlignment_Internal(Entity.ID, value);
+            get => GetTextAlignment_Internal(Entity.EntityID);
+            set => SetTextAlignment_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -67,8 +67,8 @@ namespace Steel
         /// </summary>
         public OverflowMode TextOverflowMode
         {
-            get => GetTextOverflowMode_Internal(Entity.ID);
-            set => SetTextOverflowMode_Internal(Entity.ID, value);
+            get => GetTextOverflowMode_Internal(Entity.EntityID);
+            set => SetTextOverflowMode_Internal(Entity.EntityID, value);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

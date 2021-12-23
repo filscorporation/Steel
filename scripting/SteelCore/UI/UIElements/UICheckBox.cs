@@ -17,7 +17,7 @@ namespace Steel
                 if (onValueChanged == null)
                 {
                     onValueChanged = new CallbackList();
-                    EventManager.RegisterCallbacks(Entity.ID, CallbackType.CheckBoxChangeValue, onValueChanged);
+                    EventManager.RegisterCallbacks(Entity.EntityID, CallbackType.CheckBoxChangeValue, onValueChanged);
                 }
                 return onValueChanged;
             }
@@ -29,8 +29,8 @@ namespace Steel
         /// </summary>
         public bool Value
         {
-            get => GetValue_Internal(Entity.ID);
-            set => SetValue_Internal(Entity.ID, value);
+            get => GetValue_Internal(Entity.EntityID);
+            set => SetValue_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -38,8 +38,8 @@ namespace Steel
         /// </summary>
         public bool Interactable
         {
-            get => GetInteractable_Internal(Entity.ID);
-            set => SetInteractable_Internal(Entity.ID, value);
+            get => GetInteractable_Internal(Entity.EntityID);
+            set => SetInteractable_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -47,8 +47,8 @@ namespace Steel
         /// </summary>
         public TransitionsInfo Transition
         {
-            get => GetTransition_Internal(Entity.ID).ToTransitionsInfo();
-            set => SetTransition_Internal(Entity.ID, value.ToInternal());
+            get => GetTransition_Internal(Entity.EntityID).ToTransitionsInfo();
+            set => SetTransition_Internal(Entity.EntityID, value.ToInternal());
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

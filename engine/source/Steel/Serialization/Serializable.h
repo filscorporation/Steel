@@ -1,9 +1,11 @@
 #pragma once
 
 #include "AttributeInfo.h"
+#include "AttributeAccessor.h"
+#include "IDAttributeAccessor.h"
 #include "SerializationManager.h"
 #include "TypeInfoStorage.h"
-#include "../Core/TypeInfo.h"
+#include "Steel/Core/TypeInfo.h"
 
 class Serializable
 {
@@ -28,6 +30,18 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                           \
         name,                                                                                                   \
         new AttributeAccessor<className, type, AttributeTypedef<type>>(&className::getter, &className::setter), \
+        flags                                                                                                   \
+    )                                                                                                           \
+)
+
+#define REGISTER_ID_ATTRIBUTE(className, name, getter, setter, flags)                                           \
+SerializationManager::RegisterAttribute                                                                         \
+(                                                                                                               \
+    TYPE_ID(className),                                                                                         \
+    AttributeInfo                                                                                               \
+    (                                                                                                           \
+        name,                                                                                                   \
+        new IDAttributeAccessor<className>(&className::getter, &className::setter),                             \
         flags                                                                                                   \
     )                                                                                                           \
 )

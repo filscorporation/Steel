@@ -9,6 +9,7 @@
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Time.h"
 #include "Steel/Input/Input.h"
+#include "Steel/Math/Random.h"
 #include "Steel/Rendering/SpriteRenderer.h"
 #include "Steel/Rendering/MeshRenderer.h"
 #include "Steel/Rendering/Renderer.h"
@@ -28,6 +29,7 @@ Scene::Scene(const std::string& name)
 Scene::Scene(const Scene& scene) : HierarchyParent(scene)
 {
     _name = scene._name;
+    entitiesByUUID = scene.entitiesByUUID;
     entitiesRegistry = new EntitiesRegistry(*scene.entitiesRegistry);
     uiLayer = new UILayer(*scene.uiLayer);
     uiLayer->_scene = this;
@@ -125,7 +127,13 @@ EntityID Scene::CreateEntity(AsepriteData& data)
 
 EntityID Scene::CreateEmptyEntity()
 {
-    return entitiesRegistry->CreateNewEntity();
+    EntityID entity = entitiesRegistry->CreateNewEntity();
+    auto& uuidComponent = entitiesRegistry->AddComponent<IDComponent>(entity);
+    UUID uuid = Random::NextULong();
+    uuidComponent.SetUUID(uuid);
+    SetEntityByUUID(uuid, entity);
+
+    return entity;
 }
 
 void Scene::DestroyEntity(EntityID entity)
@@ -286,9 +294,25 @@ void Scene::CleanDestroyedEntities()
     entitiesRegistry->ClearRemoved();
 }
 
+EntityID Scene::GetEntityByUUID(UUID uuid)
+{
+    if (uuid == NULL_UUID || entitiesByUUID.find(uuid) == entitiesByUUID.end())
+        return NULL_ENTITY;
+    return entitiesByUUID[uuid];
+}
+
+void Scene::SetEntityByUUID(UUID uuid, EntityID entityID)
+{
+    if (uuid == NULL_UUID)
+        return;
+
+    entitiesByUUID[uuid] = entityID;
+}
+
 void Scene::CleanAllEntities()
 {
     entitiesRegistry->CleanAllEntities();
+    entitiesByUUID.clear();
 }
 
 void Scene::DestroyAndRemoveEntity(EntityID entity)
@@ -298,5 +322,16 @@ void Scene::DestroyAndRemoveEntity(EntityID entity)
 
 void Scene::DestroyEntityInner(EntityID entity)
 {
+    bool clearFromUUIDs = false;
+    UUID uuid;
+    if (entitiesRegistry->HasComponent<IDComponent>(entity))
+    {
+        clearFromUUIDs = true;
+        uuid = entitiesRegistry->GetComponent<IDComponent>(entity).GetUUID();
+    }
+
     entitiesRegistry->DeleteEntity(entity);
+
+    if (clearFromUUIDs)
+        entitiesByUUID.erase(uuid);
 }

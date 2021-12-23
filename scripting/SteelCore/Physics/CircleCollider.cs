@@ -12,8 +12,8 @@ namespace Steel
         /// </summary>
         public float Radius
         {
-            get => GetRadius_Internal(Entity.ID);
-            set => SetRadius_Internal(Entity.ID, value);
+            get => GetRadius_Internal(Entity.EntityID);
+            set => SetRadius_Internal(Entity.EntityID, value);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -12,8 +12,8 @@ namespace Steel
         /// </summary>
         public RigidBodyType RigidBodyType
         {
-            get => GetRigidBodyType_Internal(Entity.ID);
-            set => SetRigidBodyType_Internal(Entity.ID, value);
+            get => GetRigidBodyType_Internal(Entity.EntityID);
+            set => SetRigidBodyType_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -21,8 +21,8 @@ namespace Steel
         /// </summary>
         public float Mass
         {
-            get => GetMass_Internal(Entity.ID);
-            set => SetMass_Internal(Entity.ID, value);
+            get => GetMass_Internal(Entity.EntityID);
+            set => SetMass_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -32,10 +32,10 @@ namespace Steel
         {
             get
             {
-                GetVelocity_Internal(Entity.ID, out Vector2 velocity);
+                GetVelocity_Internal(Entity.EntityID, out Vector2 velocity);
                 return velocity;
             }
-            set => SetVelocity_Internal(Entity.ID, ref value);
+            set => SetVelocity_Internal(Entity.EntityID, ref value);
         }
         
         /// <summary>
@@ -43,8 +43,8 @@ namespace Steel
         /// </summary>
         public float AngularVelocity
         {
-            get => GetAngularVelocity_Internal(Entity.ID);
-            set => SetAngularVelocity_Internal(Entity.ID, value);
+            get => GetAngularVelocity_Internal(Entity.EntityID);
+            set => SetAngularVelocity_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -52,8 +52,8 @@ namespace Steel
         /// </summary>
         public float GravityScale
         {
-            get => GetGravityScale_Internal(Entity.ID);
-            set => SetGravityScale_Internal(Entity.ID, value);
+            get => GetGravityScale_Internal(Entity.EntityID);
+            set => SetGravityScale_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -61,8 +61,8 @@ namespace Steel
         /// </summary>
         public float Friction
         {
-            get => GetFriction_Internal(Entity.ID);
-            set => SetFriction_Internal(Entity.ID, value);
+            get => GetFriction_Internal(Entity.EntityID);
+            set => SetFriction_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -70,8 +70,8 @@ namespace Steel
         /// </summary>
         public float Restitution
         {
-            get => GetRestitution_Internal(Entity.ID);
-            set => SetRestitution_Internal(Entity.ID, value);
+            get => GetRestitution_Internal(Entity.EntityID);
+            set => SetRestitution_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -79,8 +79,8 @@ namespace Steel
         /// </summary>
         public float LinearDamping
         {
-            get => GetLinearDamping_Internal(Entity.ID);
-            set => SetLinearDamping_Internal(Entity.ID, value);
+            get => GetLinearDamping_Internal(Entity.EntityID);
+            set => SetLinearDamping_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -88,8 +88,8 @@ namespace Steel
         /// </summary>
         public float AngularDamping
         {
-            get => GetAngularDamping_Internal(Entity.ID);
-            set => SetAngularDamping_Internal(Entity.ID, value);
+            get => GetAngularDamping_Internal(Entity.EntityID);
+            set => SetAngularDamping_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -97,8 +97,8 @@ namespace Steel
         /// </summary>
         public bool FixedRotation
         {
-            get => GetFixedRotation_Internal(Entity.ID);
-            set => SetFixedRotation_Internal(Entity.ID, value);
+            get => GetFixedRotation_Internal(Entity.EntityID);
+            set => SetFixedRotation_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -106,47 +106,47 @@ namespace Steel
         /// </summary>
         public bool UseContinuousCollisionDetection
         {
-            get => GetUseContinuousCollisionDetection_Internal(Entity.ID);
-            set => SetUseContinuousCollisionDetection_Internal(Entity.ID, value);
+            get => GetUseContinuousCollisionDetection_Internal(Entity.EntityID);
+            set => SetUseContinuousCollisionDetection_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
         /// Apply a force to the center of mass
         /// </summary>
         /// <param name="force">Force vector</param>
-        public void ApplyForce(Vector2 force) => ApplyForce_Internal(Entity.ID, ref force);
+        public void ApplyForce(Vector2 force) => ApplyForce_Internal(Entity.EntityID, ref force);
         
         /// <summary>
         /// Apply a force at a world point
         /// </summary>
         /// <param name="force">Force vector</param>
         /// <param name="point">Point where force is applied</param>
-        public void ApplyForce(Vector2 force, Vector2 point) => ApplyForce_Internal2(Entity.ID, ref force, ref point);
+        public void ApplyForce(Vector2 force, Vector2 point) => ApplyForce_Internal2(Entity.EntityID, ref force, ref point);
         
         /// <summary>
         /// Apply a torque
         /// </summary>
         /// <param name="torque">Torque value (positive is clockwise)</param>
-        public void ApplyTorque(float torque) => ApplyTorque_Internal(Entity.ID, torque);
+        public void ApplyTorque(float torque) => ApplyTorque_Internal(Entity.EntityID, torque);
         
         /// <summary>
         /// Apply an impulse to the center of mass
         /// </summary>
         /// <param name="impulse">Impulse vector</param>
-        public void ApplyLinearImpulse(Vector2 impulse) => ApplyLinearImpulse_Internal(Entity.ID, ref impulse);
+        public void ApplyLinearImpulse(Vector2 impulse) => ApplyLinearImpulse_Internal(Entity.EntityID, ref impulse);
         
         /// <summary>
         /// Apply an impulse at a point
         /// </summary>
         /// <param name="impulse">Impulse vector</param>
         /// <param name="point">Point where impulse is applied</param>
-        public void ApplyLinearImpulse(Vector2 impulse, Vector2 point) => ApplyLinearImpulse_Internal2(Entity.ID, ref impulse, ref point);
+        public void ApplyLinearImpulse(Vector2 impulse, Vector2 point) => ApplyLinearImpulse_Internal2(Entity.EntityID, ref impulse, ref point);
         
         /// <summary>
         /// Apply an angular impulse
         /// </summary>
         /// <param name="torque">Impulse value (positive is clockwise)</param>
-        public void ApplyAngularImpulse(float torque) => ApplyAngularImpulse_Internal(Entity.ID, torque);
+        public void ApplyAngularImpulse(float torque) => ApplyAngularImpulse_Internal(Entity.EntityID, torque);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern RigidBodyType GetRigidBodyType_Internal(uint entityID);

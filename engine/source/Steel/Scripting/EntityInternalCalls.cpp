@@ -143,6 +143,14 @@ bool EntityInternalCalls::Entity_IsDestroyed(EntityID entityID)
     return !Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(entityID);
 }
 
+UUID EntityInternalCalls::Entity_GetUUID(EntityID id)
+{
+    if (!HasComponentS<IDComponent>(id))
+        return 0;
+
+    return GetComponentS<IDComponent>(id).GetUUID();
+}
+
 MonoString* EntityInternalCalls::Entity_GetName(EntityID id)
 {
     if (!HasComponentS<NameComponent>(id))

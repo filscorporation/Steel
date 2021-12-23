@@ -25,8 +25,8 @@ namespace Steel
         /// </summary>
         public float Width
         {
-            get => GetWidth_Internal(Entity.ID);
-            set => SetWidth_Internal(Entity.ID, value);
+            get => GetWidth_Internal(Entity.EntityID);
+            set => SetWidth_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -34,8 +34,8 @@ namespace Steel
         /// </summary>
         public float Height
         {
-            get => GetHeight_Internal(Entity.ID);
-            set => SetHeight_Internal(Entity.ID, value);
+            get => GetHeight_Internal(Entity.EntityID);
+            set => SetHeight_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace Steel
         /// </summary>
         public float NearClippingPlane
         {
-            get => GetNearClippingPlane_Internal(Entity.ID);
-            set => SetNearClippingPlane_Internal(Entity.ID, value);
+            get => GetNearClippingPlane_Internal(Entity.EntityID);
+            set => SetNearClippingPlane_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace Steel
         /// </summary>
         public float FarClippingPlane
         {
-            get => GetFarClippingPlane_Internal(Entity.ID);
-            set => SetFarClippingPlane_Internal(Entity.ID, value);
+            get => GetFarClippingPlane_Internal(Entity.EntityID);
+            set => SetFarClippingPlane_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -61,8 +61,8 @@ namespace Steel
         /// </summary>
         public CameraResizingMode ResizingMode
         {
-            get => GetResizingMode_Internal(Entity.ID);
-            set => SetResizingMode_Internal(Entity.ID, value);
+            get => GetResizingMode_Internal(Entity.EntityID);
+            set => SetResizingMode_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Steel
         /// <returns>Point in screen coordinates</returns>
         public Vector2 WorldToScreenPoint(Vector2 worldPoint)
         {
-            WorldToScreenPoint_Internal(Entity.ID, ref worldPoint, out Vector2 screenPoint);
+            WorldToScreenPoint_Internal(Entity.EntityID, ref worldPoint, out Vector2 screenPoint);
             return screenPoint;
         }
         
@@ -83,7 +83,7 @@ namespace Steel
         /// <returns>Point in world coordinates</returns>
         public Vector2 ScreenToWorldPoint(Vector2 screenPoint)
         {
-            ScreenToWorldPoint_Internal(Entity.ID, ref screenPoint, out Vector2 worldPoint);
+            ScreenToWorldPoint_Internal(Entity.EntityID, ref screenPoint, out Vector2 worldPoint);
             return worldPoint;
         }
 

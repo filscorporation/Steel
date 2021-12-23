@@ -1,7 +1,7 @@
 #include "HierarchyNode.h"
 #include "Hierarchy.h"
-#include "../Core/Application.h"
-#include "../UI/RectTransformation.h"
+#include "Steel/Core/Application.h"
+#include "Steel/UI/RectTransformation.h"
 
 bool lock = false;
 
@@ -9,13 +9,13 @@ void HierarchyNode::RegisterType()
 {
     REGISTER_TYPE(HierarchyNode);
     REGISTER_ATTRIBUTE(HierarchyNode, "childrenCount", GetChildrenCount, SetChildrenCount, uint32_t, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(HierarchyNode, "firstChildNode", GetFirstChildNode, SetFirstChildNode, EntityID, AttributeFlags::Public);
+    REGISTER_ID_ATTRIBUTE(HierarchyNode, "firstChildNode", GetFirstChildNode, SetFirstChildNode, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(HierarchyNode, "hierarchyDepth", GetHierarchyDepth, SetHierarchyDepth, uint32_t, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(HierarchyNode, "nodeIndex", GetNodeIndex, SetNodeIndex, uint32_t, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(HierarchyNode, "thickness", GetThickness, SetThickness, uint32_t, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(HierarchyNode, "previousNode", GetPreviousNode, SetPreviousNode, EntityID, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(HierarchyNode, "nextNode", GetNextNode, SetNextNode, EntityID, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(HierarchyNode, "parentNode", GetParentNode, SetParentNode, EntityID, AttributeFlags::Public);
+    REGISTER_ID_ATTRIBUTE(HierarchyNode, "previousNode", GetPreviousNode, SetPreviousNode, AttributeFlags::Public);
+    REGISTER_ID_ATTRIBUTE(HierarchyNode, "nextNode", GetNextNode, SetNextNode, AttributeFlags::Public);
+    REGISTER_ID_ATTRIBUTE(HierarchyNode, "parentNode", GetParentNode, SetParentNode, AttributeFlags::Public);
 }
 
 void HierarchyNode::OnRemoved(EntitiesRegistry* entitiesRegistry)

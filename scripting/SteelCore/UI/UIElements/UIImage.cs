@@ -14,10 +14,10 @@ namespace Steel
         {
             get
             {
-                uint spriteID = GetSprite_Internal(Entity.ID);
+                uint spriteID = GetSprite_Internal(Entity.EntityID);
                 return spriteID == Resource.NULL_RESOURCE_ID ? null : new Sprite(spriteID);
             }
-            set => SetSprite_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
+            set => SetSprite_Internal(Entity.EntityID, value?.ID ?? Resource.NULL_RESOURCE_ID);
         }
         
         /// <summary>
@@ -25,8 +25,8 @@ namespace Steel
         /// </summary>
         public Material Material
         {
-            get => new Material(GetMaterial_Internal(Entity.ID));
-            set => SetMaterial_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
+            get => new Material(GetMaterial_Internal(Entity.EntityID));
+            set => SetMaterial_Internal(Entity.EntityID, value?.ID ?? Resource.NULL_RESOURCE_ID);
         }
         
         /// <summary>
@@ -34,8 +34,8 @@ namespace Steel
         /// </summary>
         public Color Color
         {
-            get => GetColor_Internal(Entity.ID);
-            set => SetColor_Internal(Entity.ID, value);
+            get => GetColor_Internal(Entity.EntityID);
+            set => SetColor_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace Steel
         /// </summary>
         public bool ConsumeEvents
         {
-            get => GetConsumeEvents_Internal(Entity.ID);
-            set => SetConsumeEvents_Internal(Entity.ID, value);
+            get => GetConsumeEvents_Internal(Entity.EntityID);
+            set => SetConsumeEvents_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -54,10 +54,10 @@ namespace Steel
         {
             get
             {
-                GetCustomMaterialProperties_Internal(Entity.ID, out MaterialPropertyBlock_Internal properties);
+                GetCustomMaterialProperties_Internal(Entity.EntityID, out MaterialPropertyBlock_Internal properties);
                 return properties.ToMaterialPropertyBlock();
             }
-            set => SetCustomMaterialProperties_Internal(Entity.ID, value.ToMaterialPropertyBlockInternal());
+            set => SetCustomMaterialProperties_Internal(Entity.EntityID, value.ToMaterialPropertyBlockInternal());
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

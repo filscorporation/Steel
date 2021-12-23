@@ -56,6 +56,12 @@ namespace StringUtils
     }
 
     template<>
+    long FromString(const std::string& line)
+    {
+        return std::atol(line.c_str());
+    }
+
+    template<>
     bool FromString(const std::string& line)
     {
         return (bool)std::atoi(line.c_str());
@@ -74,9 +80,9 @@ namespace StringUtils
     }
 
     template<>
-    long FromString(const std::string& line)
+    uint64_t FromString(const std::string& line)
     {
-        return std::atol(line.c_str());
+        return (uint64_t)std::atol(line.c_str());
     }
 
     template<>

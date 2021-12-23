@@ -7,7 +7,7 @@ void Random::Init()
     randomEngine.seed(std::random_device{}());
 }
 
-uint64_t Random::NextUint()
+uint64_t Random::NextULong()
 {
     std::uniform_int_distribution<uint64_t> dist;
     return dist(randomEngine);

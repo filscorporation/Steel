@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../EntityComponentSystem/Component.h"
-#include "../EntityComponentSystem/Entity.h"
 #include "HierarchyParent.h"
+#include "Steel/EntityComponentSystem/Component.h"
+#include "Steel/EntityComponentSystem/Entity.h"
 
 #define DEFAULT_THICKNESS 1
 

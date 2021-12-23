@@ -14,10 +14,10 @@ namespace Steel
         {
             get
             {
-                GetSize_Internal(Entity.ID, out Vector2 size);
+                GetSize_Internal(Entity.EntityID, out Vector2 size);
                 return size;
             }
-            set => SetSize_Internal(Entity.ID, ref value);
+            set => SetSize_Internal(Entity.EntityID, ref value);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

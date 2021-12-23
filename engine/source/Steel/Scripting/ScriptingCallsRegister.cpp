@@ -89,6 +89,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.Entity::GetScriptComponent_Internal", (void*)EntityInternalCalls::Entity_GetScriptComponent);
     mono_add_internal_call("Steel.Entity::RemoveComponent_Internal", (void*)EntityInternalCalls::Entity_RemoveComponent);
     mono_add_internal_call("Steel.Entity::RemoveScriptComponent_Internal", (void*)EntityInternalCalls::Entity_RemoveScriptComponent);
+    mono_add_internal_call("Steel.Entity::GetUUID_Internal", (void*)EntityInternalCalls::Entity_GetUUID);
     mono_add_internal_call("Steel.Entity::GetName_Internal", (void*)EntityInternalCalls::Entity_GetName);
     mono_add_internal_call("Steel.Entity::SetName_Internal", (void*)EntityInternalCalls::Entity_SetName);
     mono_add_internal_call("Steel.Entity::GetParent_Internal", (void*)ComponentsInternalCalls::HierarchyNode_GetParent);

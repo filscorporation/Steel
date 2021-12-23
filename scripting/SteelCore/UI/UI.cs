@@ -29,7 +29,7 @@ namespace Steel
         /// <param name="parent">Entity's parent in the hierarchy</param>
         /// <returns>Created entity</returns>
         public static Entity CreateUIElement(string name, Entity parent)
-            => new Entity(CreateUIElement_Internal3(name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            => new Entity(CreateUIElement_Internal3(name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
         
         /// <summary>
         /// Creates new UI image in layout
@@ -54,7 +54,7 @@ namespace Steel
         public static UIImage CreateUIImage(Sprite sprite, string name, Entity parent)
         {
             Entity entity = new Entity(
-                CreateUIImage_Internal2(sprite?.ID ?? Resource.NULL_RESOURCE_ID, name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+                CreateUIImage_Internal2(sprite?.ID ?? Resource.NULL_RESOURCE_ID, name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
             UIImage image = new UIImage();
             image.Entity = entity;
 
@@ -84,7 +84,7 @@ namespace Steel
         public static UIButton CreateUIButton(Sprite sprite, string name, Entity parent)
         {
             Entity entity = new Entity(
-                CreateUIButton_Internal2(sprite?.ID ?? Resource.NULL_RESOURCE_ID, name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+                CreateUIButton_Internal2(sprite?.ID ?? Resource.NULL_RESOURCE_ID, name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
             UIButton button = new UIButton();
             button.Entity = entity;
 
@@ -113,7 +113,7 @@ namespace Steel
         /// <returns>Created text element</returns>
         public static UIText CreateUIText(string text, string name, Entity parent)
         {
-            Entity entity = new Entity(CreateUIText_Internal2(text, name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            Entity entity = new Entity(CreateUIText_Internal2(text, name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
             UIText uiText = new UIText();
             uiText.Entity = entity;
 
@@ -141,7 +141,7 @@ namespace Steel
         /// <returns>Created input field</returns>
         public static UIInputField CreateUIInputField(string name, Entity parent)
         {
-            Entity entity = new Entity(CreateUIInputField_Internal2(name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            Entity entity = new Entity(CreateUIInputField_Internal2(name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
             UIInputField field = new UIInputField();
             field.Entity = entity;
 
@@ -168,7 +168,7 @@ namespace Steel
         /// <returns>Created clipping element</returns>
         public static UIClipping CreateUIClipping(Entity parent)
         {
-            Entity entity = new Entity(CreateUIClipping_Internal2(parent?.ID ?? Entity.NULL_ENTITY_ID));
+            Entity entity = new Entity(CreateUIClipping_Internal2(parent?.EntityID ?? Entity.NULL_ENTITY_ID));
             UIClipping element = new UIClipping();
             element.Entity = entity;
 
@@ -197,7 +197,7 @@ namespace Steel
         /// <returns>Created element</returns>
         public static UICheckBox CreateUICheckBox(string label, string name, Entity parent)
         {
-            Entity entity = new Entity(CreateUICheckBox_Internal2(label, name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            Entity entity = new Entity(CreateUICheckBox_Internal2(label, name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
             UICheckBox element = new UICheckBox();
             element.Entity = entity;
 
@@ -226,7 +226,7 @@ namespace Steel
         /// <returns>Created element</returns>
         public static UITabs CreateUITabs(IEnumerable<string> tabs, string name, Entity parent)
         {
-            Entity entity = new Entity(CreateUITabs_Internal2(tabs.ToArray(), name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            Entity entity = new Entity(CreateUITabs_Internal2(tabs.ToArray(), name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
             UITabs element = new UITabs();
             element.Entity = entity;
 
@@ -255,7 +255,7 @@ namespace Steel
         /// <returns>Created element</returns>
         public static UILayoutGroup CreateUILayoutGroup(UILayoutGroup.LayoutType type, string name, Entity parent)
         {
-            Entity entity = new Entity(CreateUILayoutGroup_Internal2(type, name, parent?.ID ?? Entity.NULL_ENTITY_ID));
+            Entity entity = new Entity(CreateUILayoutGroup_Internal2(type, name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
             UILayoutGroup element = new UILayoutGroup();
             element.Entity = entity;
 

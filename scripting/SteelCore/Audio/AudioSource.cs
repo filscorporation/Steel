@@ -12,8 +12,8 @@ namespace Steel
         /// </summary>
         public float Volume
         {
-            get => GetVolume_Internal(Entity.ID);
-            set => SetVolume_Internal(Entity.ID, value);
+            get => GetVolume_Internal(Entity.EntityID);
+            set => SetVolume_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
@@ -21,20 +21,20 @@ namespace Steel
         /// </summary>
         public bool Loop
         {
-            get => GetLoop_Internal(Entity.ID);
-            set => SetLoop_Internal(Entity.ID, value);
+            get => GetLoop_Internal(Entity.EntityID);
+            set => SetLoop_Internal(Entity.EntityID, value);
         }
 
         /// <summary>
         /// Play audio track
         /// </summary>
         /// <param name="audioTrack">Track to play</param>
-        public void Play(AudioTrack audioTrack) => Play_Internal(Entity.ID, audioTrack?.ID ?? Resource.NULL_RESOURCE_ID);
+        public void Play(AudioTrack audioTrack) => Play_Internal(Entity.EntityID, audioTrack?.ID ?? Resource.NULL_RESOURCE_ID);
 
         /// <summary>
         /// Stops playing audio track
         /// </summary>
-        public void Stop() => Stop_Internal(Entity.ID);
+        public void Stop() => Stop_Internal(Entity.EntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float GetVolume_Internal(uint entityID);

@@ -4,15 +4,15 @@
 #include "Steel/Common/StringUtils.h"
 #include "Steel/EntityComponentSystem/Entity.h"
 
-// Template attribute accessor using getter setter functions
-template <typename T, typename U, typename Typedef>
-class AttributeAccessor : public AttributeAccessorBase
+// Attribute accessor for EntityID <-> UUID linked fields
+template <typename T>
+class IDAttributeAccessor : public AttributeAccessorBase
 {
 public:
-    typedef typename Typedef::ReturnType (T::*GetFunction)() const;
-    typedef void (T::*SetFunction)(typename Typedef::ParameterType);
+    typedef EntityID (T::*GetFunction)() const;
+    typedef void (T::*SetFunction)(EntityID);
 
-    AttributeAccessor(GetFunction getFunction, SetFunction setFunction)
+    IDAttributeAccessor(GetFunction getFunction, SetFunction setFunction)
             : _getFunction(getFunction), _setFunction(setFunction)
     {
 
@@ -20,32 +20,32 @@ public:
 
     void FromString(Serializable* object, const std::string& line, SerializationContext& context) override
     {
-        Set(object, StringUtils::FromString<U>(line));
+        Set(object, context.GetEntityID(StringUtils::FromString<UUID>(line)));
     }
 
     std::string ToString(Serializable* object, SerializationContext& context) const override
     {
-        return StringUtils::ToString(Get(object));
+        return StringUtils::ToString(context.GetUUID(Get(object)));
     }
 
     void Serialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override
     {
-        node[name] = Get(object);
+        node[name] = context.GetUUID(Get(object));
     }
 
     void Deserialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override
     {
-        Set(object, node[name].as<U>());
+        Set(object, context.GetEntityID(node[name].as<UUID>()));
     }
 
 private:
-    U Get(Serializable* object) const
+    EntityID Get(Serializable* object) const
     {
         T* castedObject = static_cast<T*>(object);
         return (castedObject->*_getFunction)();
     }
 
-    void Set(Serializable* object, const U& value) const
+    void Set(Serializable* object, const EntityID& value) const
     {
         T* castedObject = static_cast<T*>(object);
         (castedObject->*_setFunction)(value);

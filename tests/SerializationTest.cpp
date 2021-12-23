@@ -20,6 +20,9 @@ TEST(SerializationTest, ToString)
     component.SetVec3Attribute(glm::vec3(0.7f, 1.2f, -1.0f));
     component.SetVec4Attribute(glm::vec4(0.02f, 0.3f, 0.5f, 1.0f));
 
+    SerializationContext context;
+    context.SerializedScene = scene;
+
     auto& attributes = SerializationManager::GetAttributes<SerializedComponent>();
     int attributesCount = 0;
     for (auto& attribute : attributes)
@@ -27,43 +30,43 @@ TEST(SerializationTest, ToString)
         if (attribute.Name() == "integerAttribute")
         {
             attributesCount++;
-            EXPECT_EQ(StringUtils::FromString<int>(attribute.ToString(&component)), 71);
+            EXPECT_EQ(StringUtils::FromString<int>(attribute.ToString(&component, context)), 71);
         }
         if (attribute.Name() == "floatAttribute")
         {
             attributesCount++;
-            EXPECT_EQ(StringUtils::FromString<float>(attribute.ToString(&component)), 3.14f);
+            EXPECT_EQ(StringUtils::FromString<float>(attribute.ToString(&component, context)), 3.14f);
         }
         if (attribute.Name() == "boolAttribute")
         {
             attributesCount++;
-            EXPECT_EQ(StringUtils::FromString<bool>(attribute.ToString(&component)), true);
+            EXPECT_EQ(StringUtils::FromString<bool>(attribute.ToString(&component, context)), true);
         }
         if (attribute.Name() == "entityIDAttribute")
         {
             attributesCount++;
-            EXPECT_EQ(StringUtils::FromString<EntityID>(attribute.ToString(&component)), entityID);
+            EXPECT_EQ(StringUtils::FromString<EntityID>(attribute.ToString(&component, context)), entityID);
         }
         if (attribute.Name() == "stringAttribute")
         {
             attributesCount++;
-            EXPECT_EQ(StringUtils::FromString<std::string>(attribute.ToString(&component)), "Hello world!");
+            EXPECT_EQ(StringUtils::FromString<std::string>(attribute.ToString(&component, context)), "Hello world!");
         }
         if (attribute.Name() == "vec2Attribute")
         {
             attributesCount++;
-            auto result = attribute.ToString(&component);
-            EXPECT_EQ(StringUtils::FromString<glm::vec2>(attribute.ToString(&component)), glm::vec2(0.4f, 0.9f));
+            auto result = attribute.ToString(&component, context);
+            EXPECT_EQ(StringUtils::FromString<glm::vec2>(attribute.ToString(&component, context)), glm::vec2(0.4f, 0.9f));
         }
         if (attribute.Name() == "vec3Attribute")
         {
             attributesCount++;
-            EXPECT_EQ(StringUtils::FromString<glm::vec3>(attribute.ToString(&component)), glm::vec3(0.7f, 1.2f, -1.0f));
+            EXPECT_EQ(StringUtils::FromString<glm::vec3>(attribute.ToString(&component, context)), glm::vec3(0.7f, 1.2f, -1.0f));
         }
         if (attribute.Name() == "vec4Attribute")
         {
             attributesCount++;
-            EXPECT_EQ(StringUtils::FromString<glm::vec4>(attribute.ToString(&component)), glm::vec4(0.02f, 0.3f, 0.5f, 1.0f));
+            EXPECT_EQ(StringUtils::FromString<glm::vec4>(attribute.ToString(&component, context)), glm::vec4(0.02f, 0.3f, 0.5f, 1.0f));
         }
     }
 
@@ -80,6 +83,9 @@ TEST(SerializationTest, FromString)
     EntityID entityID = scene->CreateEntity();
     auto& component = registry->AddComponent<SerializedComponent>(entityID);
 
+    SerializationContext context;
+    context.SerializedScene = scene;
+
     auto& attributes = SerializationManager::GetAttributes<SerializedComponent>();
     int attributesCount = 0;
     for (auto& attribute : attributes)
@@ -87,42 +93,42 @@ TEST(SerializationTest, FromString)
         if (attribute.Name() == "integerAttribute")
         {
             attributesCount++;
-            attribute.FromString(&component, "71");
+            attribute.FromString(&component, "71", context);
         }
         if (attribute.Name() == "floatAttribute")
         {
             attributesCount++;
-            attribute.FromString(&component, "3.14f");
+            attribute.FromString(&component, "3.14f", context);
         }
         if (attribute.Name() == "boolAttribute")
         {
             attributesCount++;
-            attribute.FromString(&component, "1");
+            attribute.FromString(&component, "1", context);
         }
         if (attribute.Name() == "entityIDAttribute")
         {
             attributesCount++;
-            attribute.FromString(&component, StringUtils::ToString(entityID));
+            attribute.FromString(&component, StringUtils::ToString(entityID), context);
         }
         if (attribute.Name() == "stringAttribute")
         {
             attributesCount++;
-            attribute.FromString(&component, "Hello world!");
+            attribute.FromString(&component, "Hello world!", context);
         }
         if (attribute.Name() == "vec2Attribute")
         {
             attributesCount++;
-            attribute.FromString(&component, StringUtils::ToString(glm::vec2(0.4f, 0.9f)));
+            attribute.FromString(&component, StringUtils::ToString(glm::vec2(0.4f, 0.9f)), context);
         }
         if (attribute.Name() == "vec3Attribute")
         {
             attributesCount++;
-            attribute.FromString(&component, StringUtils::ToString(glm::vec3(0.7f, 1.2f, -1.0f)));
+            attribute.FromString(&component, StringUtils::ToString(glm::vec3(0.7f, 1.2f, -1.0f)), context);
         }
         if (attribute.Name() == "vec4Attribute")
         {
             attributesCount++;
-            attribute.FromString(&component, StringUtils::ToString(glm::vec4(0.02f, 0.3f, 0.5f, 1.0f)));
+            attribute.FromString(&component, StringUtils::ToString(glm::vec4(0.02f, 0.3f, 0.5f, 1.0f)), context);
         }
     }
 

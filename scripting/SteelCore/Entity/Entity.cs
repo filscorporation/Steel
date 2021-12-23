@@ -13,24 +13,29 @@ namespace Steel
     public class Entity
     {
         internal const uint NULL_ENTITY_ID = 0xffffffff;
-        
+
         /// <summary>
         /// Unique identifier
         /// </summary>
-        public uint ID { get; }
+        public ulong UUID => GetUUID_Internal(EntityID);
+        
+        /// <summary>
+        /// Engine internal entity identifier
+        /// </summary>
+        internal uint EntityID { get; }
         
         /// <summary>
         /// Name
         /// </summary>
         public string Name
         {
-            get => GetName_Internal(ID);
-            set => SetName_Internal(ID, value);
+            get => GetName_Internal(EntityID);
+            set => SetName_Internal(EntityID, value);
         }
 
-        internal Entity(uint id)
+        internal Entity(uint entityID)
         {
-            ID = id;
+            EntityID = entityID;
         }
         
         /// <summary>
@@ -39,7 +44,7 @@ namespace Steel
         /// <remarks>Note that UI elements should be created from <see cref="UI"/> class</remarks>
         public Entity()
         {
-            ID = CreateNewEntity_Internal();
+            EntityID = CreateNewEntity_Internal();
         }
         
         /// <summary>
@@ -48,7 +53,7 @@ namespace Steel
         /// <remarks>Note that UI elements should be created from <see cref="UI"/> class</remarks>
         public Entity(string name)
         {
-            ID = CreateNewEntity_Internal2(name);
+            EntityID = CreateNewEntity_Internal2(name);
         }
         
         /// <summary>
@@ -57,7 +62,7 @@ namespace Steel
         /// <remarks>Note that UI elements should be created from <see cref="UI"/> class</remarks>
         public Entity(string name, Entity parent)
         {
-            ID = CreateNewEntity_Internal3(name, parent?.ID ?? NULL_ENTITY_ID);
+            EntityID = CreateNewEntity_Internal3(name, parent?.EntityID ?? NULL_ENTITY_ID);
         }
 
         /// <summary>
@@ -68,21 +73,21 @@ namespace Steel
         /// <summary>
         /// Is entity active in the scene (including parents active status)
         /// </summary>
-        public bool IsActive => GetIsActive_Internal(ID);
+        public bool IsActive => GetIsActive_Internal(EntityID);
 
         /// <summary>
         /// Is entity active by itself in the scene
         /// </summary>
         public bool IsActiveSelf
         {
-            get => GetIsActiveSelf_Internal(ID);
-            set => SetIsActiveSelf_Internal(ID, value);
+            get => GetIsActiveSelf_Internal(EntityID);
+            set => SetIsActiveSelf_Internal(EntityID, value);
         }
 
         /// <summary>
         /// Requests to destroy entity in the end of the frame
         /// </summary>
-        public void Destroy() => DestroyEntity_Internal(ID);
+        public void Destroy() => DestroyEntity_Internal(EntityID);
         
         /// <summary>
         /// Attaches new components to the entity and returns it
@@ -99,18 +104,18 @@ namespace Steel
                 IntPtr scriptPointer = GCHandle.ToIntPtr(GCHandle.Alloc(component));
                 component.Entity = this;
                 
-                if (!AddScriptComponent_Internal(ID, typeof(T), scriptPointer))
+                if (!AddScriptComponent_Internal(EntityID, typeof(T), scriptPointer))
                 {
                     GCHandle.FromIntPtr(scriptPointer).Free();
                     
                     // TODO: can be done in one call
-                    return (T)GCHandle.FromIntPtr(GetScriptComponent_Internal(ID, typeof(T))).Target;
+                    return (T)GCHandle.FromIntPtr(GetScriptComponent_Internal(EntityID, typeof(T))).Target;
                 }
 
                 return component;
             }
             
-            if (!AddComponent_Internal(ID, typeof(T)))
+            if (!AddComponent_Internal(EntityID, typeof(T)))
                 return null;
 
             component = new T();
@@ -127,8 +132,8 @@ namespace Steel
         public bool HasComponent<T>() where T : Component, new()
         {
             return typeof(T).IsSubclassOf(typeof(ScriptComponent))
-                ? HasScriptComponent_Internal(ID, typeof(T))
-                : HasComponent_Internal(ID, typeof(T));
+                ? HasScriptComponent_Internal(EntityID, typeof(T))
+                : HasComponent_Internal(EntityID, typeof(T));
         }
         
         /// <summary>
@@ -140,13 +145,13 @@ namespace Steel
         {
             if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
             {
-                IntPtr scriptPointer = GetScriptComponent_Internal(ID, typeof(T));
+                IntPtr scriptPointer = GetScriptComponent_Internal(EntityID, typeof(T));
                 if (scriptPointer == IntPtr.Zero)
                     return null;
                 return (T)GCHandle.FromIntPtr(scriptPointer).Target;
             }
 
-            if (!HasComponent_Internal(ID, typeof(T)))
+            if (!HasComponent_Internal(EntityID, typeof(T)))
                 return null;
             
             T component = new T();
@@ -164,8 +169,8 @@ namespace Steel
         public bool RemoveComponent<T>() where T : Component
         {
             return typeof(T).IsSubclassOf(typeof(ScriptComponent))
-                ? RemoveScriptComponent_Internal(ID, typeof(T))
-                : RemoveComponent_Internal(ID, typeof(T));
+                ? RemoveScriptComponent_Internal(EntityID, typeof(T))
+                : RemoveComponent_Internal(EntityID, typeof(T));
         }
 
         internal static T GetInternalComponentByEntityID<T>(uint entityID) where T : Component, new()
@@ -186,11 +191,11 @@ namespace Steel
         {
             get
             {
-                uint parentEntityID = GetParent_Internal(ID);
+                uint parentEntityID = GetParent_Internal(EntityID);
 
                 return parentEntityID == NULL_ENTITY_ID ? null : new Entity(parentEntityID);
             }
-            set => SetParent_Internal(ID, value?.ID ?? NULL_ENTITY_ID);
+            set => SetParent_Internal(EntityID, value?.EntityID ?? NULL_ENTITY_ID);
         }
         
         /// <summary>
@@ -198,14 +203,14 @@ namespace Steel
         /// </summary>
         public IEnumerable<Entity> Children
         {
-            get { return GetChildren_Internal(ID).Select(childEntityID => new Entity(childEntityID)); }
+            get { return GetChildren_Internal(EntityID).Select(childEntityID => new Entity(childEntityID)); }
         }
 
         /// <summary>
         /// Check if entity already destroyed in the engine
         /// </summary>
         /// <returns>True if component was destroyed</returns>
-        public bool IsDestroyed() => IsDestroyed_Internal(ID);
+        public bool IsDestroyed() => IsDestroyed_Internal(EntityID);
 
         /// <summary>
         /// Starts coroutine on the current entity
@@ -214,7 +219,7 @@ namespace Steel
         /// <returns>Coroutine object</returns>
         public Coroutine StartCoroutine(IEnumerator coroutine)
         {
-            return CoroutinesManager.AddCoroutine(ID, coroutine);
+            return CoroutinesManager.AddCoroutine(EntityID, coroutine);
         }
         
         /// <summary>
@@ -231,7 +236,7 @@ namespace Steel
         /// </summary>
         public void StopAllCoroutines()
         {
-            CoroutinesManager.StopAllCoroutines(ID);
+            CoroutinesManager.StopAllCoroutines(EntityID);
         }
         
         internal static bool IsActiveByID(uint entityID) => GetIsActive_Internal(entityID);
@@ -242,19 +247,19 @@ namespace Steel
         public override bool Equals(object obj)
         {
             if (obj is Entity entity)
-                return ID == entity.ID;
+                return EntityID == entity.EntityID;
             
             return false;
         }
 
         public override int GetHashCode()
         {
-            return ID.GetHashCode();
+            return EntityID.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{Name} ({ID})";
+            return $"{Name} ({EntityID})";
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -298,6 +303,9 @@ namespace Steel
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool RemoveScriptComponent_Internal(uint entityID, Type type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern ulong GetUUID_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string GetName_Internal(uint entityID);

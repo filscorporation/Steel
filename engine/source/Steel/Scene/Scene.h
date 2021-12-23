@@ -3,6 +3,7 @@
 #include <list>
 
 #include "HierarchyParent.h"
+#include "IDComponent.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 #include "Steel/Resources/AsepriteData.h"
 #include "Steel/Rendering/SceneRenderer.h"
@@ -34,6 +35,9 @@ public:
     void DestroyEntity(EntityID entity);
     void CleanDestroyedEntities();
 
+    EntityID GetEntityByUUID(UUID uuid);
+    void SetEntityByUUID(UUID uuid, EntityID entityID);
+
     void Refresh();
     void Update();
     void PrepareDraw();
@@ -53,6 +57,8 @@ protected:
 private:
     std::string _name;
     bool systemsInitialized = false;
+
+    std::unordered_map<UUID, EntityID> entitiesByUUID;
     std::list<EntityID> entitiesToDelete;
     EntityID _mainCameraEntity = NULL_ENTITY;
 

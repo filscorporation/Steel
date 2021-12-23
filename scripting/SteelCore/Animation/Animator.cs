@@ -13,7 +13,7 @@ namespace Steel
         /// <param name="animation">Animation to play</param>
         public void Play(Animation animation)
         {
-            PlayAnimation_Internal(Entity.ID, animation.ID);
+            PlayAnimation_Internal(Entity.EntityID, animation.ID);
         }
         
         /// <summary>
@@ -22,7 +22,7 @@ namespace Steel
         /// <param name="animationName">Animation to play name</param>
         public void Play(string animationName)
         {
-            PlayAnimation_Internal2(Entity.ID, animationName);
+            PlayAnimation_Internal2(Entity.EntityID, animationName);
         }
         
         /// <summary>
@@ -30,7 +30,7 @@ namespace Steel
         /// </summary>
         public void Play()
         {
-            Play_Internal(Entity.ID);
+            Play_Internal(Entity.EntityID);
         }
         
         /// <summary>
@@ -38,7 +38,7 @@ namespace Steel
         /// </summary>
         public void Pause()
         {
-            Pause_Internal(Entity.ID);
+            Pause_Internal(Entity.EntityID);
         }
         
         /// <summary>
@@ -46,7 +46,7 @@ namespace Steel
         /// </summary>
         public void Stop()
         {
-            Stop_Internal(Entity.ID);
+            Stop_Internal(Entity.EntityID);
         }
         
         /// <summary>
@@ -54,7 +54,7 @@ namespace Steel
         /// </summary>
         public void Restart()
         {
-            Restart_Internal(Entity.ID);
+            Restart_Internal(Entity.EntityID);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -7,7 +7,7 @@ class Random
 public:
     static void Init();
 
-    static uint64_t NextUint();
+    static uint64_t NextULong();
     static float NextFloat();
     static float NextFloat(float min, float max);
     static int NextInt();

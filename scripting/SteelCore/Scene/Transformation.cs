@@ -12,8 +12,8 @@ namespace Steel
         /// </summary>
         public Vector3 Position
         {
-            get => GetPosition_Internal(Entity.ID);
-            set => SetPosition_Internal(Entity.ID, value);
+            get => GetPosition_Internal(Entity.EntityID);
+            set => SetPosition_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -21,8 +21,8 @@ namespace Steel
         /// </summary>
         public Vector3 LocalPosition
         {
-            get => GetLocalPosition_Internal(Entity.ID);
-            set => SetLocalPosition_Internal(Entity.ID, value);
+            get => GetLocalPosition_Internal(Entity.EntityID);
+            set => SetLocalPosition_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -30,8 +30,8 @@ namespace Steel
         /// </summary>
         public Vector3 Rotation
         {
-            get => GetRotation_Internal(Entity.ID);
-            set => SetRotation_Internal(Entity.ID, value);
+            get => GetRotation_Internal(Entity.EntityID);
+            set => SetRotation_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -39,8 +39,8 @@ namespace Steel
         /// </summary>
         public Vector3 LocalRotation
         {
-            get => GetLocalRotation_Internal(Entity.ID);
-            set => SetLocalRotation_Internal(Entity.ID, value);
+            get => GetLocalRotation_Internal(Entity.EntityID);
+            set => SetLocalRotation_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -48,8 +48,8 @@ namespace Steel
         /// </summary>
         public Vector3 Scale
         {
-            get => GetScale_Internal(Entity.ID);
-            set => SetScale_Internal(Entity.ID, value);
+            get => GetScale_Internal(Entity.EntityID);
+            set => SetScale_Internal(Entity.EntityID, value);
         }
         
         /// <summary>
@@ -57,8 +57,8 @@ namespace Steel
         /// </summary>
         public Vector3 LocalScale
         {
-            get => GetLocalScale_Internal(Entity.ID);
-            set => SetLocalScale_Internal(Entity.ID, value);
+            get => GetLocalScale_Internal(Entity.EntityID);
+            set => SetLocalScale_Internal(Entity.EntityID, value);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

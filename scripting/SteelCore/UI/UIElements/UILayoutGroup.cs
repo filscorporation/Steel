@@ -51,7 +51,7 @@ namespace Steel
         /// <returns>Element entity</returns>
         public Entity AddElement(ElementInfo info)
         {
-            return new Entity(AddElement_Internal(Entity.ID, info));
+            return new Entity(AddElement_Internal(Entity.EntityID, info));
         }
         
         /// <summary>
@@ -61,7 +61,7 @@ namespace Steel
         /// <returns>Element entity</returns>
         public Entity AddElement(Entity element)
         {
-            return new Entity(AddElement_Internal2(Entity.ID, element.ID));
+            return new Entity(AddElement_Internal2(Entity.EntityID, element.EntityID));
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

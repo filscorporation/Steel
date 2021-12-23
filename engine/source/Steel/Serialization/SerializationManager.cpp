@@ -8,6 +8,7 @@
 #include "../Scene/NameComponent.h"
 #include "../Scene/HierarchyNode.h"
 #include "../Rendering/Camera.h"
+#include "SerializationContext.h"
 // TODO: maybe move to different header
 
 std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> SerializationManager::_attributesInfo;
@@ -89,6 +90,9 @@ std::vector<AttributeInfo>& SerializationManager::GetAttributes(ComponentTypeID 
 
 bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
 {
+    SerializationContext context;
+    context.SerializedScene = scene;
+
     node["name"] = scene->_name;
     node["mainCamera"] = scene->_mainCameraEntity;
     node["childrenCount"] = scene->GetChildrenCount();
@@ -103,7 +107,9 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
         if (scene->entitiesRegistry->EntityExists(entity))
         {
             YAML::Node entityNode;
-            entityNode["id"] = entity;
+            entityNode["uuid"] = scene->entitiesRegistry->HasComponent<IDComponent>(entity)
+                    ? scene->entitiesRegistry->GetComponent<IDComponent>(entity).GetUUID()
+                    : NULL_UUID;
             entityNode["state"] = (uint32_t)scene->entitiesRegistry->EntityGetState(entity);
             YAML::Node componentsNode = entityNode["components"];
 
@@ -124,7 +130,7 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
 
                 for (auto attribute : _attributesInfo[typeInfo->ID])
                 {
-                    attribute.Serialize(object, componentNode);
+                    attribute.Serialize(object, componentNode, context);
                 }
 
                 componentsNode[typeInfo->TypeName] = componentNode;
@@ -134,42 +140,39 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
         }
     }
 
-    std::vector<EntityID> outEntityIDs;
-    int outFreeIDsCount;
-    EntityID outNextFreeID;
-    scene->entitiesRegistry->GetRegistryState(outEntityIDs, outFreeIDsCount, outNextFreeID);
-    auto registryStateNode = node["registry"];
-    registryStateNode["freeIDsCount"] = outFreeIDsCount;
-    registryStateNode["nextFreeID"] = outNextFreeID;
-    registryStateNode["entityIDs"] = outEntityIDs;
-    registryStateNode["entityIDs"].SetStyle(YAML::EmitterStyle::Flow);
-
     return true;
 }
 
 bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
 {
+    SerializationContext context;
+    context.SerializedScene = scene;
+
     scene->_name = node["name"].as<std::string>();
     scene->_mainCameraEntity = node["mainCamera"].as<EntityID>();
     scene->SetChildrenCount(node["childrenCount"].as<uint32_t>());
     scene->SetFirstChildNode(node["firstChildNode"].as<EntityID>());
 
-    auto registryStateNode = node["registry"];
-    std::vector<EntityID> inEntityIDs;
-    int inFreeIDsCount;
-    EntityID inNextFreeID;
-    inFreeIDsCount = registryStateNode["freeIDsCount"].as<int>();
-    inNextFreeID = registryStateNode["nextFreeID"].as<EntityID>();
-    inEntityIDs = registryStateNode["entityIDs"].as<std::vector<EntityID>>();
-    scene->entitiesRegistry->RestoreRegistryState(inEntityIDs, inFreeIDsCount, inNextFreeID);
-
     auto entitiesNode = node["entities"];
     Log::LogInfo("Entities count loaded: {0}", entitiesNode.size());
     if (entitiesNode)
     {
+        // Pre pass to fill UUID to EntityID map (for link attributes)
         for (auto entityNode : entitiesNode)
         {
-            auto entity = entityNode["id"].as<EntityID>();
+            auto entity = scene->entitiesRegistry->CreateNewEntity();
+            auto uuid = entityNode["uuid"].as<UUID>();
+            if (uuid != NULL_UUID)
+                scene->SetEntityByUUID(uuid, entity);
+        }
+
+        // Main pass
+        for (auto entityNode : entitiesNode)
+        {
+            auto uuid = entityNode["uuid"].as<UUID>();
+            auto entity = scene->GetEntityByUUID(uuid);
+            if (entity == NULL_ENTITY)
+                entity = scene->entitiesRegistry->CreateNewEntity();
             auto entityState = (EntityStates::EntityState)entityNode["state"].as<uint32_t>();
 
             if (!scene->entitiesRegistry->RestoreEntityState(entity, entityState))
@@ -207,7 +210,7 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
 
                     for (auto attribute : _attributesInfo[typeID])
                     {
-                        attribute.Deserialize(object, componentNode.second);
+                        attribute.Deserialize(object, componentNode.second, context);
                     }
 
                     // TODO: find out if we need to call OnCreate or something like this after attributes initialized
@@ -221,9 +224,10 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
 
 void SerializationManager::RegisterComponents()
 {
-    Camera::RegisterType();
+    IDComponent::RegisterType();
     NameComponent::RegisterType();
     HierarchyNode::RegisterType();
     Transformation::RegisterType();
+    Camera::RegisterType();
     // TODO: all types
 }

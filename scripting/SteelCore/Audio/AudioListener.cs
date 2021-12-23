@@ -13,8 +13,8 @@ namespace Steel
         /// </summary>
         public float Volume
         {
-            get => GetVolume_Internal(Entity.ID);
-            set => SetVolume_Internal(Entity.ID, value);
+            get => GetVolume_Internal(Entity.EntityID);
+            set => SetVolume_Internal(Entity.EntityID, value);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

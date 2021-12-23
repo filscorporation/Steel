@@ -12,8 +12,8 @@ namespace Steel
         /// </summary>
         public Sprite Sprite
         {
-            get => new Sprite(GetSprite_Internal(Entity.ID));
-            set => SetSprite_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
+            get => new Sprite(GetSprite_Internal(Entity.EntityID));
+            set => SetSprite_Internal(Entity.EntityID, value?.ID ?? Resource.NULL_RESOURCE_ID);
         }
         
         /// <summary>
@@ -21,8 +21,8 @@ namespace Steel
         /// </summary>
         public Material Material
         {
-            get => new Material(GetMaterial_Internal(Entity.ID));
-            set => SetMaterial_Internal(Entity.ID, value?.ID ?? Resource.NULL_RESOURCE_ID);
+            get => new Material(GetMaterial_Internal(Entity.EntityID));
+            set => SetMaterial_Internal(Entity.EntityID, value?.ID ?? Resource.NULL_RESOURCE_ID);
         }
         
         /// <summary>
@@ -32,10 +32,10 @@ namespace Steel
         {
             get
             {
-                GetCustomMaterialProperties_Internal(Entity.ID, out MaterialPropertyBlock_Internal properties);
+                GetCustomMaterialProperties_Internal(Entity.EntityID, out MaterialPropertyBlock_Internal properties);
                 return properties.ToMaterialPropertyBlock();
             }
-            set => SetCustomMaterialProperties_Internal(Entity.ID, value.ToMaterialPropertyBlockInternal());
+            set => SetCustomMaterialProperties_Internal(Entity.EntityID, value.ToMaterialPropertyBlockInternal());
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
