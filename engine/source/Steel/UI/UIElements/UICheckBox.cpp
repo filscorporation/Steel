@@ -4,6 +4,12 @@
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
 
+void UICheckBox::RegisterType()
+{
+    REGISTER_TYPE(UICheckBox);
+    // TODO
+}
+
 bool UICheckBox::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

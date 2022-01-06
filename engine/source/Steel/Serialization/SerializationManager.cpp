@@ -1,15 +1,9 @@
 #include "SerializationManager.h"
 #include "TypeInfoStorage.h"
-#include "../Core/Log.h"
-#include "../Resources/ResourcesManager.h"
-#include "../Scene/Scene.h"
-
-// Components
-#include "../Scene/NameComponent.h"
-#include "../Scene/HierarchyNode.h"
-#include "../Rendering/Camera.h"
-#include "SerializationContext.h"
-// TODO: maybe move to different header
+#include "Steel/Core/Log.h"
+#include "Steel/Core/Components.h"
+#include "Steel/Resources/ResourcesManager.h"
+#include "Steel/Scene/Scene.h"
 
 std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> SerializationManager::_attributesInfo;
 
@@ -224,10 +218,30 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
 
 void SerializationManager::RegisterComponents()
 {
+    // TODO: all types
+    Animator::RegisterType();
+    AudioListener::RegisterType();
+    AudioSource::RegisterType();
+    BoxCollider::RegisterType();
+    CircleCollider::RegisterType();
+    RigidBody::RegisterType();
+    Camera::RegisterType();
+    MeshRenderer::RegisterType();
+    SpriteRenderer::RegisterType();
+    HierarchyNode::RegisterType();
     IDComponent::RegisterType();
     NameComponent::RegisterType();
-    HierarchyNode::RegisterType();
     Transformation::RegisterType();
-    Camera::RegisterType();
-    // TODO: all types
+    ScriptComponent::RegisterType();
+    UIButton::RegisterType();
+    UICheckBox::RegisterType();
+    UIClipping::RegisterType();
+    UIImage::RegisterType();
+    UIInputField::RegisterType();
+    UILayoutElement::RegisterType();
+    UILayoutGroup::RegisterType();
+    UITabs::RegisterType();
+    UIText::RegisterType();
+    RectTransformation::RegisterType();
+    UIEventHandler::RegisterType();
 }

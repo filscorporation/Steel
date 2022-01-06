@@ -3,6 +3,12 @@
 #include "../Scene/Transformation.h"
 #include "../Scene/SceneHelper.h"
 
+void AudioListener::RegisterType()
+{
+    REGISTER_TYPE(AudioListener);
+    // TODO
+}
+
 void AudioListener::OnUpdate()
 {
     auto& transform = GetComponentS<Transformation>(Owner);

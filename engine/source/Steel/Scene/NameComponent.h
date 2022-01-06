@@ -10,8 +10,6 @@ class NameComponent : public Component
 public:
     explicit NameComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    static void RegisterType();
-
     const std::string& GetName() const;
     void SetName(const std::string& name);
     const std::string& GetTag() const;

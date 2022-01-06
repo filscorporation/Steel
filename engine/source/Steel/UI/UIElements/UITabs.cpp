@@ -4,6 +4,12 @@
 #include "../../Core/Application.h"
 #include "../../Core/Log.h"
 
+void UITabs::RegisterType()
+{
+    REGISTER_TYPE(UITabs);
+    // TODO
+}
+
 bool UITabs::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

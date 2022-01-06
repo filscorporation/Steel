@@ -7,6 +7,12 @@
 #include "Steel/Scene/Hierarchy.h"
 #include "Steel/Scene/SceneHelper.h"
 
+void UIText::RegisterType()
+{
+    REGISTER_TYPE(UIText);
+    // TODO
+}
+
 bool UIText::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

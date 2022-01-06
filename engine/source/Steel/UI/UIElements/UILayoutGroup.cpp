@@ -7,7 +7,13 @@
     ? (ILayoutElement&)entitiesRegistry->GetComponent<UILayoutGroup>(m_id) \
     : entitiesRegistry->HasComponent<UILayoutElement>(m_id) \
     ? (ILayoutElement&)entitiesRegistry->GetComponent<UILayoutElement>(m_id) \
-    : (ILayoutElement&)entitiesRegistry->AddComponent<UILayoutElement>(m_id)) \
+    : (ILayoutElement&)entitiesRegistry->AddComponent<UILayoutElement>(m_id))
+
+void UILayoutGroup::RegisterType()
+{
+    REGISTER_TYPE(UILayoutGroup);
+    // TODO
+}
 
 bool UILayoutGroup::Validate(EntitiesRegistry* entitiesRegistry)
 {

@@ -8,6 +8,12 @@
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
+void RigidBody::RegisterType()
+{
+    REGISTER_TYPE(RigidBody);
+    // TODO
+}
+
 void RigidBody::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     if (!PhysicsCore::Initialized())

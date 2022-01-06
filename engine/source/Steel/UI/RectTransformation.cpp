@@ -6,6 +6,12 @@
 
 #define TRANSFORM_EPS 0.000001f
 
+void RectTransformation::RegisterType()
+{
+    REGISTER_TYPE(RectTransformation);
+    // TODO
+}
+
 bool RectTransformation::Validate(EntitiesRegistry* entitiesRegistry)
 {
     if (entitiesRegistry->HasComponent<Transformation>(Owner))

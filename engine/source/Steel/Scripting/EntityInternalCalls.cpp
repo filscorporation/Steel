@@ -146,7 +146,7 @@ bool EntityInternalCalls::Entity_IsDestroyed(EntityID entityID)
 UUID EntityInternalCalls::Entity_GetUUID(EntityID id)
 {
     if (!HasComponentS<IDComponent>(id))
-        return 0;
+        return NULL_UUID;
 
     return GetComponentS<IDComponent>(id).GetUUID();
 }

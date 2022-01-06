@@ -1,6 +1,12 @@
 #include "SpriteRenderer.h"
 #include "Steel/Scene/SceneHelper.h"
 
+void SpriteRenderer::RegisterType()
+{
+    REGISTER_TYPE(SpriteRenderer);
+    // TODO
+}
+
 void SpriteRenderer::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
     isDirty = true;

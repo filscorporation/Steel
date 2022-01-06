@@ -10,6 +10,12 @@
 #include <string>
 #include <sstream>
 
+void UIInputField::RegisterType()
+{
+    REGISTER_TYPE(UIInputField);
+    // TODO
+}
+
 bool UIInputField::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

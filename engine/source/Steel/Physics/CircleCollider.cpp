@@ -7,6 +7,12 @@
 #include "PhysicsCore.h"
 #include "PhysicsInfo.h"
 
+void CircleCollider::RegisterType()
+{
+    REGISTER_TYPE(CircleCollider);
+    // TODO
+}
+
 void CircleCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     if (!PhysicsCore::Initialized())

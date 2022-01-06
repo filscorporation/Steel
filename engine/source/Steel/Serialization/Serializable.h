@@ -20,7 +20,9 @@ public:                                                     \
     {                                                       \
         static const TypeInfo typeInfoStatic(#typeName);    \
         return &typeInfoStatic;                             \
-    }
+    }                                                       \
+                                                            \
+    static void RegisterType();
 
 #define REGISTER_ATTRIBUTE(className, name, getter, setter, type, flags)                                        \
 SerializationManager::RegisterAttribute                                                                         \

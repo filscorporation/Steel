@@ -259,7 +259,7 @@ namespace Steel
 
         public override string ToString()
         {
-            return $"{Name} ({EntityID})";
+            return $"{Name} ({UUID})";
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

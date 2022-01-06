@@ -6,6 +6,12 @@
 
 #define SO_OFFSET 0.1f
 
+void UIClipping::RegisterType()
+{
+    REGISTER_TYPE(UIClipping);
+    // TODO
+}
+
 bool UIClipping::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

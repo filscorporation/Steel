@@ -4,6 +4,12 @@
 #include "ScriptingCore.h"
 #include "../UI/UIEventHandler.h"
 
+void ScriptComponent::RegisterType()
+{
+    REGISTER_TYPE(ScriptComponent);
+    // TODO
+}
+
 void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     if (entitiesRegistry->HasComponent<UIEventHandler>(Owner))

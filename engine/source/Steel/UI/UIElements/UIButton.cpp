@@ -4,6 +4,12 @@
 #include "../../Scripting/ScriptingCore.h"
 #include "../../Scripting/ScriptingSystem.h"
 
+void UIButton::RegisterType()
+{
+    REGISTER_TYPE(UIButton);
+    // TODO
+}
+
 bool UIButton::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

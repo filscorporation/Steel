@@ -7,6 +7,12 @@
 #include "PhysicsCore.h"
 #include "PhysicsInfo.h"
 
+void BoxCollider::RegisterType()
+{
+    REGISTER_TYPE(BoxCollider);
+    // TODO
+}
+
 void BoxCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     if (!PhysicsCore::Initialized())

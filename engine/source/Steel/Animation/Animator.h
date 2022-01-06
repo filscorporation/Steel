@@ -11,8 +11,6 @@ class Animator : public Component
 public:
     explicit Animator(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    static void RegisterType();
-
     void Play();
     void Play(const std::string& animationName);
     void Pause();

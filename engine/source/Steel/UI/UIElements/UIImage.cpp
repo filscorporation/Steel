@@ -4,6 +4,12 @@
 #include "Steel/Scene/SceneHelper.h"
 #include "Steel/UI/UIEventHandler.h"
 
+void UIImage::RegisterType()
+{
+    REGISTER_TYPE(UIImage);
+    // TODO
+}
+
 bool UIImage::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

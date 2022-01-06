@@ -2,6 +2,12 @@
 #include "Steel/Scene/SceneHelper.h"
 #include "Steel/Core/Log.h"
 
+void MeshRenderer::RegisterType()
+{
+    REGISTER_TYPE(MeshRenderer);
+    // TODO
+}
+
 void MeshRenderer::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
     isDirty = true;

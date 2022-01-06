@@ -4,6 +4,12 @@
 #include "../Scene/SceneHelper.h"
 #include "../Scene/Transformation.h"
 
+void AudioSource::RegisterType()
+{
+    REGISTER_TYPE(AudioSource);
+    // TODO
+}
+
 void AudioSource::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     sourceID = AudioCore::CreateSource();

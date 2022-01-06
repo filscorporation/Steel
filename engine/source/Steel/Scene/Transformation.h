@@ -17,8 +17,6 @@ class Transformation : public Component
 public:
     explicit Transformation(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
-    static void RegisterType();
-
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
 

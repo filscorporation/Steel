@@ -3,6 +3,12 @@
 #include "../Core/Time.h"
 #include "../Scripting/ScriptComponent.h"
 
+void UIEventHandler::RegisterType()
+{
+    REGISTER_TYPE(UIEventHandler);
+    // TODO
+}
+
 void UIEventHandler::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))

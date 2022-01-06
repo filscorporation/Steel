@@ -13,8 +13,6 @@ class HierarchyNode : public Component, public HierarchyParent
 public:
     explicit HierarchyNode(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    static void RegisterType();
-
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnDisabled(EntitiesRegistry* entitiesRegistry) override;

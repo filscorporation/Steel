@@ -26,8 +26,6 @@ class Camera : public Component
 public:
     explicit Camera(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    static void RegisterType();
-
     RenderMask GetRenderMask() const;
     void SetRenderMask(RenderMask mask);
     float GetWidth() const;
