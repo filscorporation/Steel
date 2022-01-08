@@ -86,17 +86,8 @@ ResourceID CoreInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
 
 ResourceID CoreInternalCalls::ResourcesManager_LoadShader(MonoString* vsPath, MonoString* fsPath)
 {
-    // TODO: move path concat
-    std::string fullVSPathString = Application::Instance->GetResourcesManager()->GetResourcesPath();
-    fullVSPathString += ScriptingCore::ToString(vsPath);
-    std::string fullFSPathString = Application::Instance->GetResourcesManager()->GetResourcesPath();
-    fullFSPathString += ScriptingCore::ToString(fsPath);
-
-    auto shader = Shader::FromFilePaths(fullVSPathString.c_str(), fullFSPathString.c_str());
-    if (shader == nullptr)
-        return NULL_RESOURCE;
-    Application::Instance->GetResourcesManager()->AddShader(shader);
-    return shader->ID;
+    auto shader = Application::Instance->GetResourcesManager()->LoadShader(ScriptingCore::ToString(vsPath), ScriptingCore::ToString(fsPath));
+    return shader == nullptr ? NULL_RESOURCE : shader->ID;
 }
 
 ResourceID CoreInternalCalls::ResourcesManager_CreateMaterial(ResourceID shaderID)
@@ -104,7 +95,7 @@ ResourceID CoreInternalCalls::ResourcesManager_CreateMaterial(ResourceID shaderI
     auto shader = Application::Instance->GetResourcesManager()->GetShader(shaderID);
     auto material = new Material();
     material->MainShader = shader;
-    Application::Instance->GetResourcesManager()->AddMaterial(material);
+    Application::Instance->GetResourcesManager()->AddResource(material);
     return material->ID;
 }
 
@@ -202,7 +193,11 @@ ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, flo
         return NULL_RESOURCE;
 
     auto animation = new Animation(sprite, length);
-    Application::Instance->GetResourcesManager()->AddAnimation(animation);
+    if (animation->Name.empty())
+    {
+        animation->Name = std::to_string(animation->ID);
+    }
+    Application::Instance->GetResourcesManager()->AddResource(animation);
 
     return animation->ID;
 }
@@ -210,7 +205,7 @@ ResourceID CoreInternalCalls::Animation_FromSpriteSheet(ResourceID spriteID, flo
 ResourceID CoreInternalCalls::Animation_FromSprites(MonoArray* spritesIDs, float length)
 {
     std::vector<ResourceID> ids;
-    ScriptingCore::FromMonoUInt32Array(spritesIDs, ids);
+    ScriptingCore::FromMonoUInt64Array(spritesIDs, ids);
 
     std::vector<Sprite*> sprites;
     sprites.reserve(ids.size());
@@ -219,7 +214,11 @@ ResourceID CoreInternalCalls::Animation_FromSprites(MonoArray* spritesIDs, float
         sprites.push_back(Application::Instance->GetResourcesManager()->GetSprite(id));
     }
     auto animation = new Animation(sprites, length);
-    Application::Instance->GetResourcesManager()->AddAnimation(animation);
+    if (animation->Name.empty())
+    {
+        animation->Name = std::to_string(animation->ID);
+    }
+    Application::Instance->GetResourcesManager()->AddResource(animation);
 
     return animation->ID;
 }
@@ -284,14 +283,14 @@ MonoArray* CoreInternalCalls::AsepriteData_GetSprites(ResourceID resourceID)
     if (data == nullptr)
         return nullptr;
 
-    std::vector<uint32_t> spritesIDs;
+    std::vector<uint64_t> spritesIDs;
     spritesIDs.reserve(data->Sprites.size());
     for (auto sprite : data->Sprites)
     {
         spritesIDs.push_back(sprite->ID);
     }
 
-    return ScriptingCore::ToMonoUInt32Array(spritesIDs);
+    return ScriptingCore::ToMonoUInt64Array(spritesIDs);
 }
 
 MonoArray* CoreInternalCalls::AsepriteData_GetAnimations(ResourceID resourceID)
@@ -300,14 +299,14 @@ MonoArray* CoreInternalCalls::AsepriteData_GetAnimations(ResourceID resourceID)
     if (data == nullptr)
         return nullptr;
 
-    std::vector<uint32_t> animationsIDs;
+    std::vector<uint64_t> animationsIDs;
     animationsIDs.reserve(data->Animations.size());
     for (auto animation : data->Animations)
     {
         animationsIDs.push_back(animation->ID);
     }
 
-    return ScriptingCore::ToMonoUInt32Array(animationsIDs);
+    return ScriptingCore::ToMonoUInt64Array(animationsIDs);
 }
 
 EntityID CoreInternalCalls::AsepriteData_CreateEntityFromAsepriteData(ResourceID resourceID)

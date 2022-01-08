@@ -8,6 +8,8 @@
 
 Shader::Shader(const char* vertexCode, const char* fragmentCode)
 {
+    Type = ResourceTypes::Shader;
+
     GLuint vertex, fragment;
     GLint success;
     GLchar infoLog[512];
@@ -65,6 +67,7 @@ Shader* Shader::FromFilePaths(const char* vertexPath, const char* fragmentPath)
         if (!vShaderFile.good() || !fShaderFile.good())
         {
             Log::LogError("Shader error: file does not exist");
+            return nullptr;
         }
         else
         {

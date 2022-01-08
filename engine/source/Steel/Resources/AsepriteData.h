@@ -3,11 +3,12 @@
 #include "../Rendering/Sprite.h"
 #include "../Animation/Animation.h"
 
-struct AsepriteData
+class AsepriteData : public Resource
 {
 public:
-    ResourceID ID;
-    const char* Name;
+    AsepriteData();
+
+    const char* Name = nullptr;
     std::vector<Sprite*> Sprites;
     std::vector<Animation*> Animations;
 };

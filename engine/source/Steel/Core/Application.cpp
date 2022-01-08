@@ -79,6 +79,7 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     context->ScreenParams.IsDirty = false;
 
     context->Resources = new ResourcesManager();
+    context->Resources->LoadResources();
     context->Resources->LoadDefaultResources();
 
     context->Scenes = new SceneManager();

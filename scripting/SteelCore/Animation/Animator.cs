@@ -58,7 +58,7 @@ namespace Steel
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void PlayAnimation_Internal(uint entityID, uint animationID);
+        private static extern void PlayAnimation_Internal(uint entityID, ulong animationID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void PlayAnimation_Internal2(uint entityID, string animationName);

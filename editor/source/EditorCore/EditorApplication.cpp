@@ -28,6 +28,7 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->ScreenParams.IsDirty = false;
 
     AppContext->Resources = new ResourcesManager();
+    AppContext->Resources->LoadResources();
     AppContext->Resources->LoadDefaultResources();
 
     AppContext->Scenes = new EditorSceneManager();

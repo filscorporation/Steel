@@ -102,7 +102,8 @@ void GetCelData(std::ifstream& file, uint32_t celType, char* imageData, uint32_t
     }
 }
 
-Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLeft, uint32_t width, uint32_t height)
+Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLeft, uint32_t width, uint32_t height,
+                                     const std::string& dataPath, int imageIndex)
 {
     char buffer[4];
 
@@ -168,12 +169,13 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
 
     Fill(fullImageData, width, height, (unsigned char*)imageData, celWidth, celHeight, celX, celY);
     Texture* texture = Texture::CreateImageTexture(fullImageData, (uint32_t)width, (uint32_t)height);
-    Application::Context()->Resources->AddTexture(texture);
+    texture->Path = dataPath + "@TEXTURE" + std::to_string(imageIndex);
+    Application::Context()->Resources->AddResource(texture);
 
     auto image = new Sprite(texture);
     image->IsTransparent = IsImageTransparent(fullImageData, width, height);
 
-    Application::Context()->Resources->AddSprite(image);
+    Application::Context()->Resources->AddResource(image);
 
     delete[] fullImageData;
     delete[] imageData;
@@ -181,7 +183,8 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
     return image;
 }
 
-bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& inSprites, std::vector<uint32_t>& inDurations, bool loopAll, std::vector<Animation*>& outAnimations)
+bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& inSprites, std::vector<uint32_t>& inDurations,
+                                   bool loopAll, std::vector<Animation*>& outAnimations, const std::string& dataPath)
 {
     char buffer[4];
 
@@ -251,7 +254,8 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
         }
 
         animation->Loop = loopAll;
-        Application::Instance->GetResourcesManager()->AddAnimation(animation);
+        animation->Path = dataPath + "@" + animation->Name;
+        Application::Instance->GetResourcesManager()->AddResource(animation);
         outAnimations.push_back(animation);
     }
 
@@ -316,6 +320,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
     std::vector<uint32_t> framesDurations;
     framesDurations.reserve(framesCount);
 
+    int imagesCount = 0;
     for (uint32_t i = 0; i < framesCount; ++i)
     {
         file.ignore(6); // Ignore frame size and magic number
@@ -376,11 +381,11 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
             {
                 case 0x2005: // Cel Chunk
                 {
-                    auto image = ReadCelChunk(file, chunkSizeLeft, width, height);
+                    auto image = ReadCelChunk(file, chunkSizeLeft, width, height, outData.Path, imagesCount);
                     if (image == nullptr)
                         return false;
 
-                    image->Path = filePath;
+                    imagesCount++;
                     outData.Sprites.push_back(image);
 
                     break;
@@ -411,7 +416,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
         file.clear();
         file.seekg(bytesBeforeTags);
 
-        if (!ReadTagsChunk(file, outData.Sprites, framesDurations, loopAll, outData.Animations))
+        if (!ReadTagsChunk(file, outData.Sprites, framesDurations, loopAll, outData.Animations, outData.Path))
         {
             return false;
         }
@@ -422,8 +427,9 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
         auto animation = new Animation(outData.Sprites, framesDurations);
 
         animation->Name = "Animation";
+        animation->Path = outData.Path + "@MAIN_ANIMATION";
         animation->Loop = loopAll;
-        Application::Instance->GetResourcesManager()->AddAnimation(animation);
+        Application::Instance->GetResourcesManager()->AddResource(animation);
         outData.Animations.push_back(animation);
     }
 

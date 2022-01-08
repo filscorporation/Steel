@@ -5,9 +5,9 @@
     /// </summary>
     public class Resource
     {
-        internal const uint NULL_RESOURCE_ID = 0xffffffff;
+        internal const ulong NULL_RESOURCE_ID = 0xffffffffffffffff;
         
-        internal Resource(uint id)
+        internal Resource(ulong id)
         {
             ID = id;
         }
@@ -15,6 +15,6 @@
         /// <summary>
         /// Resource unique identificator
         /// </summary>
-        public uint ID { get; private set; }
+        public ulong ID { get; private set; }
     }
 }

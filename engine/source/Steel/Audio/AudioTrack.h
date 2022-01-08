@@ -2,13 +2,14 @@
 
 #include <cstdint>
 
-#include "../Resources/ResourceID.h"
+#include "Steel/Resources/Resource.h"
 
-struct AudioTrack
+class AudioTrack : public Resource
 {
 public:
-    ResourceID ID;
-    const char* Path;
+    AudioTrack();
+    ~AudioTrack() override;
+
     uint32_t BufferID;
     int SampleRate;
     int BitsPerSample;

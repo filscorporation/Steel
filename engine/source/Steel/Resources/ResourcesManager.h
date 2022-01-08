@@ -25,39 +25,34 @@ public:
     ResourcesManager();
     ~ResourcesManager();
 
-    void LoadDefaultResources();
     const char* GetResourcesPath();
 
+    void LoadResources();
+    void LoadDefaultResources();
+
+    void AddResource(Resource* resource);
+    bool ResourceExists(ResourceTypes::ResourceType type, ResourceID resourceID);
+    void UnloadResource(ResourceTypes::ResourceType type, ResourceID resourceID);
+
     Sprite* LoadSprite(const char* filePath, bool engineResource = false);
-    void AddSprite(Sprite* sprite);
-    Sprite* GetSprite(ResourceID imageID);
-    void UnloadSprite(ResourceID imageID);
-
-    void AddTexture(Texture* texture);
-    Texture* GetTexture(ResourceID textureID);
-    void UnloadTexture(ResourceID textureID);
-
-    AsepriteData* LoadAsepriteData(const char* filePath, bool loopAll);
-    AsepriteData* GetAsepriteData(ResourceID resourceID);
-
+    AsepriteData* LoadAsepriteData(const char* filePath, bool loopAll = false);
     AudioTrack* LoadAudioTrack(const char* filePath);
-    AudioTrack* GetAudioTrack(ResourceID audioID);
-    void UnloadAudioTrack(ResourceID audioID);
-
-    void AddAnimation(Animation* animation);
-    Animation* GetAnimation(ResourceID animationID);
-    void RemoveAnimation(ResourceID animationID);
-
     Font* LoadFont(const char* fontPath, bool engineResource = false);
+    Shader* LoadShader(const char* fileVSPath, const char* fileFSPath);
+
+    Sprite* GetSprite(ResourceID imageID);
+    Texture* GetTexture(ResourceID textureID);
+    AsepriteData* GetAsepriteData(ResourceID resourceID);
+    AudioTrack* GetAudioTrack(ResourceID audioID);
+    Animation* GetAnimation(ResourceID animationID);
     Font* GetFont(ResourceID fontID);
+    Shader* GetShader(ResourceID shaderID);
+
     Font* DefaultFont();
 
-    void AddShader(Shader* shader);
-    Shader* GetShader(ResourceID shaderID);
     Shader* DefaultSpriteShader();
     Shader* DefaultUIShader();
 
-    void AddMaterial(Material* material);
     Material* GetMaterial(ResourceID materialID);
     Material* DefaultSpriteMaterial();
     Material* DefaultMeshMaterial();
@@ -65,18 +60,11 @@ public:
     Material* DefaultUIClippingMaterial();
 
 private:
-    ResourceID nextResourceID = 0;
-    ResourceID GetNextResourceID();
-    void FreeResourceID(ResourceID resourceID);
+    void TryLoadResource(const std::string& path);
 
-    std::unordered_map<ResourceID, Sprite*> sprites;
-    std::unordered_map<ResourceID, Texture*> textures;
-    std::unordered_map<ResourceID, AudioTrack*> audioTracks;
-    std::unordered_map<ResourceID, Animation*> animations;
-    std::unordered_map<ResourceID, Font*> fonts;
-    std::unordered_map<ResourceID, AsepriteData*> asepriteDatas;
-    std::unordered_map<ResourceID, Shader*> shaders;
-    std::unordered_map<ResourceID, Material*> materials;
+    Resource* GetResource(ResourceTypes::ResourceType type, ResourceID resourceID);
+
+    std::vector<std::unordered_map<ResourceID, Resource*>> resources;
 
     Font* defaultFont;
     Shader* defaultSpriteShader;

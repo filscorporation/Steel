@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.3)
 project(Steel VERSION 0.2)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -ldl -lpthread -lm")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -ldl -lpthread -lm")
 endif()
 
 if (${CMAKE_BUILD_TYPE} MATCHES Debug)
@@ -104,7 +104,8 @@ set(SOURCE_FILES
         source/Steel/Rendering/MeshRenderer.cpp source/Steel/Rendering/MeshRenderer.h source/Steel/Rendering/Mesh.cpp source/Steel/Rendering/Mesh.h
         source/Steel/Scripting/InternalStructures/MeshInternal.cpp source/Steel/Scripting/InternalStructures/MeshInternal.h source/Steel/Scene/IDComponent.cpp
         source/Steel/Scene/IDComponent.h source/Steel/Serialization/SerializationContext.h source/Steel/Serialization/AttributeAccessor.h
-        source/Steel/Serialization/IDAttributeAccessor.h source/Steel/Scene/UUID.h source/Steel/Serialization/SerializationContext.cpp source/Steel/Core/Components.h)
+        source/Steel/Serialization/IDAttributeAccessor.h source/Steel/Scene/UUID.h source/Steel/Serialization/SerializationContext.cpp source/Steel/Core/Components.h
+        source/Steel/Resources/ResourceType.h source/Steel/Resources/Resource.h source/Steel/Resources/AsepriteData.cpp)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

@@ -49,7 +49,7 @@ namespace Steel
         private static extern void SetLoop_Internal(uint entityID, bool loop);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Play_Internal(uint entityID, uint audioTrackID);
+        private static extern float Play_Internal(uint entityID, ulong audioTrackID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Stop_Internal(uint entityID);

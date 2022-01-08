@@ -68,6 +68,7 @@ AudioTrack* WavLoader::LoadWavFileHeader(std::ifstream& file)
     if (!file.read(buffer, 4))
     {
         Log::LogError("Could not read sample rate");
+        delete audioTrack;
         return nullptr;
     }
     audioTrack->SampleRate = ConvertToInt(buffer, 4);
@@ -75,18 +76,21 @@ AudioTrack* WavLoader::LoadWavFileHeader(std::ifstream& file)
     if (!file.read(buffer, 4))
     {
         Log::LogError("Could not read (sampleRate * bitsPerSample * channels) / 8");
+        delete audioTrack;
         return nullptr;
     }
 
     if (!file.read(buffer, 2))
     {
         Log::LogError("Could not read wave structure");
+        delete audioTrack;
         return nullptr;
     }
 
     if (!file.read(buffer, 2))
     {
         Log::LogError("Could not read bits per sample");
+        delete audioTrack;
         return nullptr;
     }
     audioTrack->BitsPerSample = ConvertToInt(buffer, 2);
@@ -94,17 +98,20 @@ AudioTrack* WavLoader::LoadWavFileHeader(std::ifstream& file)
     if (!file.read(buffer, 4))
     {
         Log::LogError("Could not read data chunk header");
+        delete audioTrack;
         return nullptr;
     }
     if (std::strncmp(buffer, "data", 4) != 0)
     {
         Log::LogError("File is not a valid WAVE file (doesn't have 'data' tag)");
+        delete audioTrack;
         return nullptr;
     }
 
     if (!file.read(buffer, 4))
     {
         Log::LogError("Could not read data size");
+        delete audioTrack;
         return nullptr;
     }
     audioTrack->NumberOfSamples = ConvertToInt(buffer, 4);
@@ -112,11 +119,13 @@ AudioTrack* WavLoader::LoadWavFileHeader(std::ifstream& file)
     if (file.eof())
     {
         Log::LogError("Reached EOF on the file");
+        delete audioTrack;
         return nullptr;
     }
     if (file.fail())
     {
         Log::LogError("Fail state set on the file");
+        delete audioTrack;
         return nullptr;
     }
 

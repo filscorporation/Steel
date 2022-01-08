@@ -14,7 +14,7 @@ namespace Steel
         {
             get
             {
-                uint spriteID = GetSprite_Internal(Entity.EntityID);
+                ulong spriteID = GetSprite_Internal(Entity.EntityID);
                 return spriteID == Resource.NULL_RESOURCE_ID ? null : new Sprite(spriteID);
             }
             set => SetSprite_Internal(Entity.EntityID, value?.ID ?? Resource.NULL_RESOURCE_ID);
@@ -61,16 +61,16 @@ namespace Steel
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint GetSprite_Internal(uint entityID);
+        private static extern ulong GetSprite_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetSprite_Internal(uint entityID, uint spriteID);
+        private static extern void SetSprite_Internal(uint entityID, ulong spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint GetMaterial_Internal(uint entityID);
+        private static extern ulong GetMaterial_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetMaterial_Internal(uint entityID, uint materialID);
+        private static extern void SetMaterial_Internal(uint entityID, ulong materialID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Color GetColor_Internal(uint entityID);

@@ -10,8 +10,6 @@ public:
     explicit SerializedComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
 public:
-    static void RegisterType();
-
     int GetIntegerAttribute() const;
     float GetFloatAttribute() const;
     bool GetBoolAttribute() const;

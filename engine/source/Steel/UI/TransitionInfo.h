@@ -27,14 +27,14 @@ namespace TransitionStates
 
 struct TransitionData
 {
-    uint32_t Value;
+    uint64_t Value;
 
     glm::vec4 ToColor() const
     {
-        return {Math::Clamp01((Value >> 24) / 255.0f),
-                Math::Clamp01((Value << 8 >> 24) / 255.0f),
-                Math::Clamp01((Value << 16 >> 24) / 255.0f),
-                Math::Clamp01((Value << 24 >> 24) / 255.0f)};
+        return {Math::Clamp01((float)((uint32_t)Value >> 24) / 255.0f),
+                Math::Clamp01((float)((uint32_t)Value << 8 >> 24) / 255.0f),
+                Math::Clamp01((float)((uint32_t)Value << 16 >> 24) / 255.0f),
+                Math::Clamp01((float)((uint32_t)Value << 24 >> 24) / 255.0f)};
     }
 
     void FromColor(glm::vec4 color)

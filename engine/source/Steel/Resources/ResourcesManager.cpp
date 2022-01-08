@@ -2,65 +2,70 @@
 #include "AsepriteLoader.h"
 #include "PngLoader.h"
 #include "Steel/Core/Log.h"
+#include "Steel/Math/Math.h"
+#include "Steel/Math/Random.h"
 #include "Steel/Audio/AudioCore.h"
 #include "Steel/Audio/WavLoader.h"
 #include "Steel/Rendering/MaterialSystem/BuiltInShaders.h"
-#include "Steel/Rendering/Core/OpenGLAPI.h"
 #include "Steel/UI/FontManager.h"
 
-#include <fstream>
-// TODO: remove al dependency into AudioCore
-#include <AL/al.h>
+#include <filesystem>
 
 ResourcesManager::ResourcesManager()
 {
+    resources.resize(RESOURCE_TYPES_COUNT);
+
     FontManager::Init();
 }
 
 ResourcesManager::~ResourcesManager()
 {
-    for (auto sprite : sprites)
+    for (const auto& resourceStorage : resources)
     {
-        delete sprite.second;
+        for (auto resource : resourceStorage)
+        {
+            delete resource.second;
+        }
     }
-
-    for (auto texture : textures)
-    {
-        delete texture.second;
-    }
-
-    for (auto audioTrack : audioTracks)
-    {
-        alDeleteBuffers(1, &audioTrack.second->BufferID);
-        delete audioTrack.second;
-    }
-
-    for (auto animation : animations)
-    {
-        delete animation.second;
-    }
-
-    for (auto font : fonts)
-    {
-        delete font.second;
-    }
-
-    for (auto data : asepriteDatas)
-    {
-        delete data.second;
-    }
-
-    for (auto shader : shaders)
-    {
-        delete shader.second;
-    }
-
-    for (auto material : materials)
-    {
-        delete material.second;
-    }
+    resources.clear();
 
     FontManager::Terminate();
+}
+
+void ResourcesManager::LoadResources()
+{
+    if (!std::filesystem::exists(RESOURCES_PATH))
+    {
+        Log::LogWarning("Resources not found in path: \"{0}\"", RESOURCES_PATH);
+        return;
+    }
+
+    for (std::filesystem::recursive_directory_iterator i(RESOURCES_PATH), end; i != end; ++i)
+        if (!is_directory(i->path()))
+            TryLoadResource(i->path().filename());
+}
+
+void ResourcesManager::TryLoadResource(const std::string& path)
+{
+    std::string extension = path.substr(path.find_last_of('.') + 1);
+    if (extension == "png")
+        LoadSprite(path.c_str());
+    else if (extension == "wav")
+        LoadAudioTrack(path.c_str());
+    else if (extension == "ttf")
+        LoadFont(path.c_str());
+    else if (extension == "aseprite")
+        LoadAsepriteData(path.c_str());
+    else if (extension == "vs")
+    {
+        // TODO: combine shaders into one file
+        std::string fsPath = path;
+        fsPath.replace(path.length() - 2, 2, "fs");
+        std::ifstream infile(fsPath);
+        if (infile.good())
+            // Load only if there is fragment shader file with the same name
+            LoadAsepriteData(path.c_str());
+    }
 }
 
 void ResourcesManager::LoadDefaultResources()
@@ -70,32 +75,40 @@ void ResourcesManager::LoadDefaultResources()
         defaultFont->AddSizeIfNotExists(32);
 
     defaultSpriteShader = new Shader(BuiltInShaders::DefaultSpriteVS, BuiltInShaders::DefaultSpriteFS);
-    AddShader(defaultSpriteShader);
+    defaultSpriteShader->Path = "@defaultSpriteShader";
+    AddResource(defaultSpriteShader);
 
     defaultMeshShader = new Shader(BuiltInShaders::DefaultMeshVS, BuiltInShaders::DefaultMeshFS);
-    AddShader(defaultMeshShader);
+    defaultMeshShader->Path = "@defaultMeshShader";
+    AddResource(defaultMeshShader);
 
     defaultUIShader = new Shader(BuiltInShaders::DefaultUIVS, BuiltInShaders::DefaultUIFS);
-    AddShader(defaultUIShader);
+    defaultUIShader->Path = "@defaultUIShader";
+    AddResource(defaultUIShader);
 
     defaultUIClippingShader = new Shader(BuiltInShaders::DefaultUIClippingVS, BuiltInShaders::DefaultUIClippingFS);
-    AddShader(defaultUIClippingShader);
+    defaultUIClippingShader->Path = "@defaultUIClippingShader";
+    AddResource(defaultUIClippingShader);
 
     defaultSpriteMaterial = new Material();
     defaultSpriteMaterial->MainShader = defaultSpriteShader;
-    AddMaterial(defaultSpriteMaterial);
+    defaultSpriteMaterial->Path = "@defaultSpriteMaterial";
+    AddResource(defaultSpriteMaterial);
 
     defaultMeshMaterial = new Material();
     defaultMeshMaterial->MainShader = defaultMeshShader;
-    AddMaterial(defaultMeshMaterial);
+    defaultMeshMaterial->Path = "@defaultMeshMaterial";
+    AddResource(defaultMeshMaterial);
 
     defaultUIMaterial = new Material();
     defaultUIMaterial->MainShader = defaultUIShader;
-    AddMaterial(defaultUIMaterial);
+    defaultUIMaterial->Path = "@defaultUIMaterial";
+    AddResource(defaultUIMaterial);
 
     defaultUIClippingMaterial = new Material();
     defaultUIClippingMaterial->MainShader = defaultUIClippingShader;
-    AddMaterial(defaultUIClippingMaterial);
+    defaultUIClippingMaterial->Path = "@defaultUIClippingMaterial";
+    AddResource(defaultUIClippingMaterial);
 }
 
 const char* ResourcesManager::GetResourcesPath()
@@ -103,8 +116,86 @@ const char* ResourcesManager::GetResourcesPath()
     return RESOURCES_PATH;
 }
 
+std::string ResourceTypeToString(ResourceTypes::ResourceType type)
+{
+    switch(type)
+    {
+        case ResourceTypes::Undefined:
+            return "Undefined";
+        case ResourceTypes::Sprite:
+            return "Sprite";
+        case ResourceTypes::Texture:
+            return "Texture";
+        case ResourceTypes::AudioTrack:
+            return "AudioTrack";
+        case ResourceTypes::Animation:
+            return "Animation";
+        case ResourceTypes::Font:
+            return "Font";
+        case ResourceTypes::AsepriteData:
+            return "AsepriteData";
+        case ResourceTypes::Shader:
+            return "Shader";
+        case ResourceTypes::Material:
+            return "Material";
+    }
+
+    return "";
+}
+
+bool ResourcesManager::ResourceExists(ResourceTypes::ResourceType type, ResourceID resourceID)
+{
+    return resourceID != NULL_RESOURCE && type != ResourceTypes::Undefined
+        && resources[(int)type].find(resourceID) != resources[(int)type].end();
+}
+
+void ResourcesManager::AddResource(Resource* resource)
+{
+    if (resource->Type == ResourceTypes::Undefined)
+    {
+        Log::LogError("Error adding resource: type is undefined");
+        return;
+    }
+
+    resource->ID = resource->Path.empty() ? Random::NextULong() : Math::StringHash(resource->Path.c_str());
+
+    if (resource->Type == ResourceTypes::Animation)
+        Log::LogInfo("Animation ID {0}", resource->ID);
+
+    if (resources[(int)resource->Type].find(resource->ID) != resources[(int)resource->Type].end())
+    {
+        Log::LogWarning("Replacing existing resource {0} ({1})", resource->ID, ResourceTypeToString(resource->Type));
+        UnloadResource(resource->Type, resource->ID);
+    }
+
+    resources[(int)resource->Type][resource->ID] = resource;
+}
+
+Resource* ResourcesManager::GetResource(ResourceTypes::ResourceType type, ResourceID resourceID)
+{
+    if (!ResourceExists(type, resourceID))
+        return nullptr;
+
+    return resources[(int)type][resourceID];
+}
+
+void ResourcesManager::UnloadResource(ResourceTypes::ResourceType type, ResourceID resourceID)
+{
+    auto resource = GetResource(type, resourceID);
+    if (resource == nullptr)
+        return;
+
+    resources[(int)type].erase(resourceID);
+    delete resource;
+}
+
 Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
 {
+    std::string path = engineResource ? std::string(ENGINE_RESOURCES_PATH) + filePath : filePath;
+
+    if (ResourceExists(ResourceTypes::Sprite, Math::StringHash(path.c_str())))
+        return GetSprite(Math::StringHash(path.c_str()));
+
     std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
     fullPathString += filePath;
     std::string fullPath = fullPathString;
@@ -120,15 +211,17 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
     std::string extension = fullPath.substr(fullPath.find_last_of('.') + 1);
     if (extension == "png")
     {
-        image = PngLoader::LoadImage(fullPath.c_str());
+        image = PngLoader::LoadImage(fullPath.c_str(), path.c_str());
         if (image == nullptr)
             return nullptr;
 
-        AddSprite(image);
+        image->Path = path;
+        AddResource(image);
     }
     else if (extension == "aseprite")
     {
         AsepriteData data;
+        data.Path = path;
         if (!AsepriteLoader::LoadAsepriteData(fullPath.c_str(), false, data))
             return nullptr;
 
@@ -153,79 +246,32 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
     return image;
 }
 
-void ResourcesManager::AddSprite(Sprite* sprite)
-{
-    sprite->ID = GetNextResourceID();
-    sprites[sprite->ID] = sprite;
-}
-
 Sprite* ResourcesManager::GetSprite(ResourceID imageID)
 {
-    if (imageID == NULL_RESOURCE)
-        return nullptr;
-
-    if (sprites.find(imageID) == sprites.end())
-    {
-        Log::LogError("Image {0} does not exist", imageID);
-        return nullptr;
-    }
-
-    return sprites[imageID];
-}
-
-void ResourcesManager::UnloadSprite(ResourceID imageID)
-{
-    auto sprite = GetSprite(imageID);
-    if (sprite == nullptr)
-        return;
-
-    sprites.erase(imageID);
-    FreeResourceID(imageID);
-    delete sprite;
-}
-
-void ResourcesManager::AddTexture(Texture* texture)
-{
-    texture->ID = GetNextResourceID();
-    textures[texture->ID] = texture;
+    return (Sprite*)(GetResource(ResourceTypes::Sprite, imageID));
 }
 
 Texture* ResourcesManager::GetTexture(ResourceID textureID)
 {
-    if (textureID == NULL_RESOURCE)
-        return nullptr;
-
-    if (textures.find(textureID) == textures.end())
-    {
-        Log::LogError("Texture {0} does not exist", textureID);
-        return nullptr;
-    }
-
-    return textures[textureID];
-}
-
-void ResourcesManager::UnloadTexture(ResourceID textureID)
-{
-    auto texture = GetTexture(textureID);
-    if (texture == nullptr)
-        return;
-
-    textures.erase(textureID);
-    FreeResourceID(textureID);
-    delete texture;
+    return (Texture*)(GetResource(ResourceTypes::Texture, textureID));
 }
 
 AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loopAll)
 {
+    if (ResourceExists(ResourceTypes::AsepriteData, Math::StringHash(filePath)))
+        return GetAsepriteData(Math::StringHash(filePath));
+
     std::string fullPathString = RESOURCES_PATH;
     fullPathString += filePath;
     std::string fullPath = fullPathString;
     auto data = new AsepriteData();
+    data->Path = filePath;
 
     std::ifstream infile(fullPath);
     if (!infile.good())
     {
         Log::LogError("Error loading aseprite file: file {0} does not exist", fullPath);
+        delete data;
         return nullptr;
     }
 
@@ -233,6 +279,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
     if (extension != "aseprite")
     {
         Log::LogError("Error loading aseprite file: .{0} files not supported", extension);
+        delete data;
         return nullptr;
     }
 
@@ -242,8 +289,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
         return nullptr;
     }
 
-    data->ID = GetNextResourceID();
-    asepriteDatas[data->ID] = data;
+    AddResource(data);
 
     Log::LogDebug("Aseprite file loaded: {0}, {1}", fullPath, data->ID);
 
@@ -252,40 +298,14 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
 
 AsepriteData* ResourcesManager::GetAsepriteData(ResourceID resourceID)
 {
-    if (resourceID == NULL_RESOURCE)
-        return nullptr;
-
-    if (asepriteDatas.find(resourceID) == asepriteDatas.end())
-    {
-        Log::LogError("Aseprite data {0} does not exist", resourceID);
-        return nullptr;
-    }
-
-    return asepriteDatas[resourceID];
-}
-
-static inline ALenum ToALFormat(int channels, int samples)
-{
-    bool stereo = (channels > 1);
-
-    switch (samples) {
-        case 16:
-            if (stereo)
-                return AL_FORMAT_STEREO16;
-            else
-                return AL_FORMAT_MONO16;
-        case 8:
-            if (stereo)
-                return AL_FORMAT_STEREO8;
-            else
-                return AL_FORMAT_MONO8;
-        default:
-            return -1;
-    }
+    return (AsepriteData*)(GetResource(ResourceTypes::AsepriteData, resourceID));
 }
 
 AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
 {
+    if (ResourceExists(ResourceTypes::AudioTrack, Math::StringHash(filePath)))
+        return GetAudioTrack(Math::StringHash(filePath));
+
     std::string fullPathString = RESOURCES_PATH;
     fullPathString += filePath;
     const char* fullPath = fullPathString.c_str();
@@ -297,37 +317,21 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
         return nullptr;
     }
 
-    if (!AudioCore::Initialized())
-    {
-        Log::LogError("Can't load audio: audio system is not initialized");
-        return nullptr;
-    }
-
-    ALuint audioBuffer;
     char* data;
-    auto audioTrack = WavLoader::LoadWav(fullPath, &data);
+    AudioTrack* audioTrack = WavLoader::LoadWav(fullPath, &data);
     if (audioTrack == nullptr)
         return nullptr;
 
-    alGenBuffers((ALuint)1, &audioBuffer);
-    if (AudioCore::CheckForErrors())
+    if (!AudioCore::InitAudioTrack(audioTrack, data))
     {
-        Log::LogError("Error generating audio buffer");
-        return nullptr;
-    }
-    alBufferData(audioBuffer, ToALFormat(audioTrack->NumberOfChannels, audioTrack->BitsPerSample),
-                 data, (ALsizei)audioTrack->NumberOfSamples, audioTrack->SampleRate);
-    delete data;
-    if (AudioCore::CheckForErrors())
-    {
-        Log::LogError("Error loading audio data to buffer");
+        delete[] data;
         delete audioTrack;
         return nullptr;
     }
+    delete[] data;
 
-    audioTrack->ID = GetNextResourceID();
-    audioTrack->BufferID = audioBuffer;
-    audioTracks[audioTrack->BufferID] = audioTrack;
+    audioTrack->Path = filePath;
+    AddResource(audioTrack);
 
     Log::LogDebug("Audio track loaded: {0}, {1}", fullPath, audioTrack->ID);
 
@@ -336,67 +340,21 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
 
 AudioTrack* ResourcesManager::GetAudioTrack(ResourceID audioID)
 {
-    if (audioID == NULL_RESOURCE)
-        return nullptr;
-
-    if (audioTracks.find(audioID) == audioTracks.end())
-    {
-        Log::LogError("Audio track {0} does not exist", audioID);
-        return nullptr;
-    }
-
-    return audioTracks[audioID];
-}
-
-void ResourcesManager::UnloadAudioTrack(ResourceID audioID)
-{
-    auto audioTrack = GetAudioTrack(audioID);
-    if (audioTrack == nullptr)
-        return;
-
-    alDeleteBuffers(1, &audioTrack->BufferID);
-    audioTracks.erase(audioID);
-    FreeResourceID(audioID);
-    delete audioTrack;
-}
-
-void ResourcesManager::AddAnimation(Animation* animation)
-{
-    animation->ID = GetNextResourceID();
-    if (animation->Name.empty())
-    {
-        animation->Name = std::to_string(animation->ID);
-    }
-    animations[animation->ID] = animation;
+    return (AudioTrack*)(GetResource(ResourceTypes::AudioTrack, audioID));
 }
 
 Animation* ResourcesManager::GetAnimation(ResourceID animationID)
 {
-    if (animationID == NULL_RESOURCE)
-        return nullptr;
-
-    if (animations.find(animationID) == animations.end())
-    {
-        Log::LogError("Animation {0} does not exist", animationID);
-        return nullptr;
-    }
-
-    return animations[animationID];
-}
-
-void ResourcesManager::RemoveAnimation(ResourceID animationID)
-{
-    auto animation = GetAnimation(animationID);
-    if (animation == nullptr)
-        return;
-
-    animations.erase(animationID);
-    FreeResourceID(animationID);
-    delete animation;
+    return (Animation*)(GetResource(ResourceTypes::Animation, animationID));
 }
 
 Font* ResourcesManager::LoadFont(const char* fontPath, bool engineResource)
 {
+    std::string path = engineResource ? std::string(ENGINE_RESOURCES_PATH) + fontPath : fontPath;
+
+    if (ResourceExists(ResourceTypes::Font, Math::StringHash(path.c_str())))
+        return GetFont(Math::StringHash(path.c_str()));
+
     std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
     fullPathString += fontPath;
     const char* fullPath = fullPathString.c_str();
@@ -414,13 +372,13 @@ Font* ResourcesManager::LoadFont(const char* fontPath, bool engineResource)
         return nullptr;
     }
 
-    auto font = FontManager::FontFromPath(fullPath);
+    Font* font = FontManager::FontFromPath(fullPath);
 
     if (font == nullptr)
         return nullptr;
 
-    font->ID = GetNextResourceID();
-    fonts[font->ID] = font;
+    font->Path = path;
+    AddResource(font);
 
     Log::LogDebug("Font loaded: {0}, {1}", fullPath, font->ID);
 
@@ -429,16 +387,7 @@ Font* ResourcesManager::LoadFont(const char* fontPath, bool engineResource)
 
 Font* ResourcesManager::GetFont(ResourceID fontID)
 {
-    if (fontID == NULL_RESOURCE)
-        return nullptr;
-
-    if (fonts.find(fontID) == fonts.end())
-    {
-        Log::LogError("Font {0} does not exist", fontID);
-        return nullptr;
-    }
-
-    return fonts[fontID];
+    return (Font*)(GetResource(ResourceTypes::Font, fontID));
 }
 
 Font* ResourcesManager::DefaultFont()
@@ -446,24 +395,33 @@ Font* ResourcesManager::DefaultFont()
     return defaultFont;
 }
 
-void ResourcesManager::AddShader(Shader* shader)
+Shader* ResourcesManager::LoadShader(const char* fileVSPath, const char* fileFSPath)
 {
-    shader->ID = GetNextResourceID();
-    shaders[shader->ID] = shader;
+    std::string path = std::string(fileVSPath) + "@" + fileFSPath;
+
+    if (ResourceExists(ResourceTypes::Shader, Math::StringHash(path.c_str())))
+        return GetShader(Math::StringHash(path.c_str()));
+
+    std::string fullVSPathString = RESOURCES_PATH;
+    fullVSPathString += fileVSPath;
+    const char* fullVSPath = fullVSPathString.c_str();
+    std::string fullFSPathString = RESOURCES_PATH;
+    fullFSPathString += fileFSPath;
+    const char* fullFSPath = fullFSPathString.c_str();
+
+    Shader* shader = Shader::FromFilePaths(fullVSPath, fullFSPath);
+    if (shader == nullptr)
+        return nullptr;
+
+    shader->Path = path;
+    AddResource(shader);
+
+    return shader;
 }
 
 Shader* ResourcesManager::GetShader(ResourceID shaderID)
 {
-    if (shaderID == NULL_RESOURCE)
-        return nullptr;
-
-    if (shaders.find(shaderID) == shaders.end())
-    {
-        Log::LogError("Shader {0} does not exist", shaderID);
-        return nullptr;
-    }
-
-    return shaders[shaderID];
+    return (Shader*)(GetResource(ResourceTypes::Shader, shaderID));
 }
 
 Shader* ResourcesManager::DefaultSpriteShader()
@@ -476,24 +434,9 @@ Shader* ResourcesManager::DefaultUIShader()
     return defaultUIShader;
 }
 
-void ResourcesManager::AddMaterial(Material* material)
-{
-    material->ID = GetNextResourceID();
-    materials[material->ID] = material;
-}
-
 Material* ResourcesManager::GetMaterial(ResourceID materialID)
 {
-    if (materialID == NULL_RESOURCE)
-        return nullptr;
-
-    if (materials.find(materialID) == materials.end())
-    {
-        Log::LogError("Material {0} does not exist", materialID);
-        return nullptr;
-    }
-
-    return materials[materialID];
+    return (Material*)(GetResource(ResourceTypes::Material, materialID));
 }
 
 Material* ResourcesManager::DefaultSpriteMaterial()
@@ -514,18 +457,4 @@ Material* ResourcesManager::DefaultUIMaterial()
 Material* ResourcesManager::DefaultUIClippingMaterial()
 {
     return defaultUIClippingMaterial;
-}
-
-ResourceID ResourcesManager::GetNextResourceID()
-{
-    if (nextResourceID == (uint32_t)-1)
-    {
-        Log::LogError("Resource ID overflow");
-    }
-    return nextResourceID++;
-}
-
-void ResourcesManager::FreeResourceID(ResourceID resourceID)
-{
-    // TODO: recycle resource IDs
 }

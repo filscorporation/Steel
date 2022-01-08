@@ -770,6 +770,18 @@ MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t>& inArray
     return outArray;
 }
 
+MonoArray* ScriptingCore::ToMonoUInt64Array(const std::vector<uint64_t>& inArray)
+{
+    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_uint64_class(), inArray.size());
+
+    for (uint32_t i = 0; i < inArray.size(); ++i)
+    {
+        mono_array_set(outArray, uint64_t, i, inArray[i]);
+    }
+
+    return outArray;
+}
+
 MonoArray* ScriptingCore::ToMonoIntPtrArray(const std::vector<intptr_t>& inArray)
 {
     MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_intptr_class(), inArray.size());
@@ -826,6 +838,17 @@ void ScriptingCore::FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t
     for (uint32_t i = 0; i < length; i++)
     {
         outArray.push_back(mono_array_get(inArray, uint32_t, i));
+    }
+}
+
+void ScriptingCore::FromMonoUInt64Array(MonoArray* inArray, std::vector<uint64_t>& outArray)
+{
+    uint32_t length = mono_array_length(inArray);
+    outArray.reserve(length);
+
+    for (uint32_t i = 0; i < length; i++)
+    {
+        outArray.push_back(mono_array_get(inArray, uint64_t, i));
     }
 }
 

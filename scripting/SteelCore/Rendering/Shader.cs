@@ -5,6 +5,6 @@
     /// </summary>
     public class Shader : Resource
     {
-        internal Shader(uint id) : base(id) { }
+        internal Shader(ulong id) : base(id) { }
     }
 }

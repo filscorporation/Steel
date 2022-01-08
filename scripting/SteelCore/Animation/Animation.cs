@@ -9,7 +9,7 @@ namespace Steel
     /// </summary>
     public class Animation : Resource
     {
-        internal Animation(uint id) : base(id) { }
+        internal Animation(ulong id) : base(id) { }
 
         /// <summary>
         /// Animation name
@@ -49,7 +49,7 @@ namespace Steel
         /// <remarks>Sprites will be put evenly on the timeline depending on length</remarks>
         public static Animation FromSpriteSheet(Sprite sprite, float length)
         {
-            uint animationID = FromSpriteSheet_Internal(sprite.ID, length);
+            ulong animationID = FromSpriteSheet_Internal(sprite.ID, length);
             
             return animationID == NULL_RESOURCE_ID ? null : new Animation(animationID);
         }
@@ -63,7 +63,7 @@ namespace Steel
         /// <remarks>Sprites will be put evenly on the timeline depending on length</remarks>
         public static Animation FromSprites(IEnumerable<Sprite> sprites, float length)
         {
-            uint animationID = FromSprites_Internal(sprites.Select(s => s?.ID ?? Resource.NULL_RESOURCE_ID).ToArray(), length);
+            ulong animationID = FromSprites_Internal(sprites.Select(s => s?.ID ?? Resource.NULL_RESOURCE_ID).ToArray(), length);
             
             return animationID == NULL_RESOURCE_ID ? null : new Animation(animationID);
         }
@@ -74,27 +74,27 @@ namespace Steel
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint FromSpriteSheet_Internal(uint spriteID, float length);
+        private static extern ulong FromSpriteSheet_Internal(ulong spriteID, float length);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint FromSprites_Internal(uint[] spritesIDs, float length);
+        private static extern ulong FromSprites_Internal(ulong[] spritesIDs, float length);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern string GetName_Internal(uint animationID);
+        private static extern string GetName_Internal(ulong animationID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetName_Internal(uint animationID, string name);
+        private static extern void SetName_Internal(ulong animationID, string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool GetLoop_Internal(uint animationID);
+        private static extern bool GetLoop_Internal(ulong animationID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetLoop_Internal(uint animationID, bool loop);
+        private static extern void SetLoop_Internal(ulong animationID, bool loop);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetLength_Internal(uint animationID);
+        private static extern float GetLength_Internal(ulong animationID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float EndWithEmptyFrame_Internal(uint animationID);
+        private static extern float EndWithEmptyFrame_Internal(ulong animationID);
     }
 }

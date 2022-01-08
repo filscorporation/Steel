@@ -2,11 +2,13 @@
 
 Animation::Animation()
 {
-
+    Type = ResourceTypes::Animation;
 }
 
 Animation::Animation(Sprite* sourceSprite, float animationLength)
 {
+    Type = ResourceTypes::Animation;
+
     length = animationLength;
     Curve curve;
     if (sourceSprite == nullptr)
@@ -30,6 +32,8 @@ Animation::Animation(Sprite* sourceSprite, float animationLength)
 
 Animation::Animation(std::vector<Sprite*>& sourceSprites, float animationLength)
 {
+    Type = ResourceTypes::Animation;
+
     if (sourceSprites.empty())
     {
         length = 0.0f;
@@ -49,6 +53,8 @@ Animation::Animation(std::vector<Sprite*>& sourceSprites, float animationLength)
 
 Animation::Animation(std::vector<Sprite*>& sourceSprites, std::vector<uint32_t>& framesDurations)
 {
+    Type = ResourceTypes::Animation;
+
     if (sourceSprites.empty())
     {
         length = 0.0f;

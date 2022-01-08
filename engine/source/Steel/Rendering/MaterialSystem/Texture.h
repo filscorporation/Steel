@@ -2,15 +2,13 @@
 
 #include <cstdint>
 
-#include "Steel/Resources/ResourceID.h"
+#include "Steel/Resources/Resource.h"
 
-class Texture
+class Texture : public Resource
 {
 public:
     explicit Texture();
-    ~Texture();
-
-    ResourceID ID;
+    ~Texture() override;
 
     static Texture* CreateImageTexture(unsigned char* imageData, uint32_t width, uint32_t height);
     static Texture* CreateColorAttachment(uint32_t width, uint32_t height);

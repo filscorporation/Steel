@@ -42,13 +42,13 @@ namespace Steel
         private static extern uint GetSprite_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetSprite_Internal(uint entityID, uint spriteID);
+        private static extern void SetSprite_Internal(uint entityID, ulong spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetMaterial_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetMaterial_Internal(uint entityID, uint materialID);
+        private static extern void SetMaterial_Internal(uint entityID, ulong materialID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void GetCustomMaterialProperties_Internal(uint entityID, out MaterialPropertyBlock_Internal properties);

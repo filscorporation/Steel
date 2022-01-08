@@ -280,13 +280,13 @@ namespace Steel
         private static extern uint CreateUIImage_Internal();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint CreateUIImage_Internal2(uint spriteID, string name, uint parentEntityID);
+        private static extern uint CreateUIImage_Internal2(ulong spriteID, string name, uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUIButton_Internal();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint CreateUIButton_Internal2(uint spriteID, string name, uint parentEntityID);
+        private static extern uint CreateUIButton_Internal2(ulong spriteID, string name, uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUIText_Internal();

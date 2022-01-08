@@ -16,17 +16,17 @@ namespace Steel
 
     internal struct TransitionData
     {
-        public TransitionData(uint value)
+        public TransitionData(ulong value)
         {
             Value = value;
         }
         
-        public uint Value;
+        public ulong Value;
 
         public Color ToColor()
         {
-            return new Color((Value >> 24) / 255.0f, (Value << 8 >> 24) / 255.0f,
-                (Value << 16 >> 24) / 255.0f, (Value << 24 >> 24) / 255.0f);
+            return new Color(((uint)Value >> 24) / 255.0f, ((uint)Value << 8 >> 24) / 255.0f,
+                ((uint)Value << 16 >> 24) / 255.0f, ((uint)Value << 24 >> 24) / 255.0f);
         }
 
         public static TransitionData FromColor(Color color)
@@ -191,27 +191,27 @@ namespace Steel
         /// <summary>
         /// Normal element state
         /// </summary>
-        public uint Normal;
+        public ulong Normal;
         
         /// <summary>
         /// Element state when under the mouse cursor
         /// </summary>
-        public uint Hovered;
+        public ulong Hovered;
         
         /// <summary>
         /// Selected element state
         /// </summary>
-        public uint Selected;
+        public ulong Selected;
         
         /// <summary>
         /// Element state when it gets clicked
         /// </summary>
-        public uint Clicked;
+        public ulong Clicked;
         
         /// <summary>
         /// Element state when it was set as not interactable
         /// </summary>
-        public uint Disabled;
+        public ulong Disabled;
 
         internal override TransitionsInfo_Internal ToInternal()
         {

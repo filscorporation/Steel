@@ -12,32 +12,25 @@ namespace SteelCustom
             This is temporary solution before editor and scene serialization will be added to engine.
             Some code examples:
 
-            -Create entity:
+            //PrecisionTest();
+            //MultilineTextTest();
+            //InputFieldTest();
+            //MultilineInputTextTest();
+            //ClippingTest();
+            //AlphaBlendingTest();
+            //CheckBoxTest();
+            //TabsTest();
+            //LayoutTest();
+            //UIAnimationsTest();
+            //UIEventsTest();
+
             Entity entity = new Entity();
-
-            -Add sprite renderer
-            entity.AddComponent<SpriteRenderer>();
-
-            -Set it's sprite
-            Sprite sprite = ResourcesManager.LoadImage("my_image.png");
-            entity.GetComponent<SpriteRenderer>().Sprite = sprite;
-
-            -Move object
-            entity.Transformation.Position += new Vector3(0, Time.DeltaTime, 0);
-
-            -Your custom components can be created and added to entities:
-            public class MyComponent : ScriptComponent
-            {
-                public void override OnCreate()
-                {
-                    // Will be called when component is attached to entity
-                }
-                public void override OnUpdate()
-                {
-                    // Will be called once per frame
-                }
-            }
-            */
+            //entity.AddComponent<Benchmark>();
+            entity.AddComponent<PhysicsTest>();
+            //entity.AddComponent<ClippingTest>();
+            //entity.AddComponent<MeshTest>();
+            
+            Log.LogInfo("UUID " + entity.UUID);
 
             Log.LogInfo("EntryPoint completed");
         }

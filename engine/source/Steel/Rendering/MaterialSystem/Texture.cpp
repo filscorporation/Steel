@@ -3,7 +3,7 @@
 
 Texture::Texture()
 {
-
+    Type = ResourceTypes::Texture;
 }
 
 Texture::~Texture()

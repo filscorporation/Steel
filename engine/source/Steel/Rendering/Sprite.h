@@ -6,17 +6,14 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "Steel/Resources/ResourceID.h"
 #include "Steel/Rendering/MaterialSystem/Texture.h"
 
-struct Sprite
+class Sprite : public Resource
 {
 public:
     explicit Sprite(Texture* texture);
-    ~Sprite();
+    ~Sprite() override;
 
-    ResourceID ID;
-    const char* Path;
     Texture* SpriteTexture = nullptr;
     int PixelsPerUnit = 32;
     glm::vec2 Pivot = { 0.5f, 0.5f };
@@ -32,7 +29,7 @@ public:
     int SliceLeftOffset = 0;
     int SliceRightOffset = 0;
 
-    // TODO: add some kind of apply method to for the pivot and ppu fields
+    // TODO: add some kind of apply method to the pivot and ppu fields
     void SetAsNormal();
     void SetAsSpriteSheet(int tileWidth, int tileHeight);
     void SetAsSliced(int offset);

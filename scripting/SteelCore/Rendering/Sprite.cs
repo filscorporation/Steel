@@ -7,7 +7,7 @@ namespace Steel
     /// </summary>
     public class Sprite : Resource
     {
-        internal Sprite(uint id) : base(id) { }
+        internal Sprite(ulong id) : base(id) { }
 
         /// <summary>
         /// Texture ID in GPU
@@ -89,36 +89,36 @@ namespace Steel
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint GetTextureID_Internal(uint spriteID);
+        private static extern uint GetTextureID_Internal(ulong spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern int GetWidth_Internal(uint spriteID);
+        private static extern int GetWidth_Internal(ulong spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern int GetHeight_Internal(uint spriteID);
+        private static extern int GetHeight_Internal(ulong spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern int GetPixelsPerUnit_Internal(uint spriteID);
+        private static extern int GetPixelsPerUnit_Internal(ulong spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetPixelsPerUnit_Internal(uint spriteID, int pixelsPerUnit);
+        private static extern void SetPixelsPerUnit_Internal(ulong spriteID, int pixelsPerUnit);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 GetPivot_Internal(uint entityID, out Vector2 pivot);
+        private static extern Vector2 GetPivot_Internal(ulong spriteID, out Vector2 pivot);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetPivot_Internal(uint entityID, ref Vector2 pivot);
+        private static extern void SetPivot_Internal(ulong spriteID, ref Vector2 pivot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAsSpriteSheet_Internal(uint spriteID, int tileWidth, int tileHeight);
+        private static extern void SetAsSpriteSheet_Internal(ulong spriteID, int tileWidth, int tileHeight);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAsNormal_Internal(uint spriteID);
+        private static extern void SetAsNormal_Internal(ulong spriteID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAs9Sliced_Internal(uint spriteID, int offset);
+        private static extern void SetAs9Sliced_Internal(ulong spriteID, int offset);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetAs9Sliced_Internal2(uint spriteID, int offsetTop, int offsetBottom, int offsetLeft, int offsetRight);
+        private static extern void SetAs9Sliced_Internal2(ulong spriteID, int offsetTop, int offsetBottom, int offsetLeft, int offsetRight);
     }
 }

@@ -6,10 +6,11 @@
 #include "Shader.h"
 #include "Steel/Rendering/Sprite.h"
 
-class Material
+class Material : public Resource
 {
 public:
-    ResourceID ID = NULL_RESOURCE;
+    Material();
+
     Shader* MainShader = nullptr;
     MaterialPropertyBlock Properties;
 };

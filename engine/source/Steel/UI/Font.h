@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
-#include "../Resources/ResourceID.h"
+#include "Steel/Resources/Resource.h"
 
 struct FontData;
 
@@ -33,18 +33,16 @@ struct CharactersAtlas
     }
 };
 
-class Font
+class Font : public Resource
 {
 public:
     Font();
-    ~Font();
+    ~Font() override;
 
     unsigned int TextureID(uint32_t size);
 
     void AddSizeIfNotExists(uint32_t size);
     void FreeSize(uint32_t size);
-
-    ResourceID ID;
 
     bool FreeAtlasOnZeroRef = true;
 

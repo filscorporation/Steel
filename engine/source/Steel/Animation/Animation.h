@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../Rendering/Sprite.h"
+#include "Steel/Rendering/Sprite.h"
 
 // TODO: make type independent keyframes
 struct Keyframe
@@ -10,7 +10,7 @@ struct Keyframe
     Keyframe(float time, ResourceID spriteID, uint32_t tileIndex);
 
     float Time;
-    uint32_t SpriteID;
+    ResourceID SpriteID;
     uint32_t TileIndex;
 };
 
@@ -19,8 +19,9 @@ struct Curve
     std::vector<Keyframe> Keyframes;
 };
 
-struct Animation
+class Animation : public Resource
 {
+public:
     Animation();
     Animation(Sprite* sourceSprite, float animationLength);
     Animation(std::vector<Sprite*>& sourceSprites, float animationLength);
@@ -30,7 +31,6 @@ struct Animation
 
     float Length() const;
 
-    ResourceID ID = NULL_RESOURCE;
     std::string Name;
     bool Loop = false;
     std::vector<Curve> Curves;

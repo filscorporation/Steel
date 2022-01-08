@@ -105,7 +105,7 @@ bool AudioCore::CheckForErrors()
     ALenum error = alGetError();
     if(error != AL_NO_ERROR)
     {
-        switch(error)
+        switch (error)
         {
             case AL_INVALID_NAME:
                 Log::LogError("AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function");
@@ -267,4 +267,54 @@ void AudioCore::StopSource(uint32_t sourceID)
     {
         Log::LogError("Error stopping source {0}", sourceID);
     }
+}
+
+static inline ALenum ToALFormat(int channels, int samples)
+{
+    bool stereo = (channels > 1);
+
+    switch (samples)
+    {
+        case 16:
+            if (stereo)
+                return AL_FORMAT_STEREO16;
+            else
+                return AL_FORMAT_MONO16;
+        case 8:
+            if (stereo)
+                return AL_FORMAT_STEREO8;
+            else
+                return AL_FORMAT_MONO8;
+        default:
+            return -1;
+    }
+}
+
+bool AudioCore::InitAudioTrack(AudioTrack* audioTrack, char* trackData)
+{
+    if (AssertInitialized())
+        return false;
+
+    ALuint audioBuffer;
+    alGenBuffers((ALuint)1, &audioBuffer);
+    if (AudioCore::CheckForErrors())
+    {
+        Log::LogError("Error generating audio buffer");
+
+        return false;
+    }
+
+    alBufferData(audioBuffer, ToALFormat(audioTrack->NumberOfChannels, audioTrack->BitsPerSample),
+                 trackData, (ALsizei)audioTrack->NumberOfSamples, audioTrack->SampleRate);
+
+    if (AudioCore::CheckForErrors())
+    {
+        Log::LogError("Error loading audio data to buffer");
+
+        return false;
+    }
+
+    audioTrack->BufferID = audioBuffer;
+
+    return true;
 }

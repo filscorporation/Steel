@@ -8,7 +8,7 @@ namespace Steel
     /// </summary>
     public class AsepriteData : Resource
     {
-        internal AsepriteData(uint id) : base(id) { }
+        internal AsepriteData(ulong id) : base(id) { }
 
         /// <summary>
         /// Sprites parsed from aseprite file
@@ -17,7 +17,7 @@ namespace Steel
         {
             get
             {
-                foreach (uint spriteID in GetSprites_Internal(ID))
+                foreach (ulong spriteID in GetSprites_Internal(ID))
                 {
                     if (spriteID == NULL_RESOURCE_ID)
                         yield return null;
@@ -33,7 +33,7 @@ namespace Steel
         {
             get
             {
-                foreach (uint animationID in GetAnimations_Internal(ID))
+                foreach (ulong animationID in GetAnimations_Internal(ID))
                 {
                     if (animationID == NULL_RESOURCE_ID)
                         yield return null;
@@ -53,12 +53,12 @@ namespace Steel
         }
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint[] GetSprites_Internal(uint resourceID);
+        private static extern ulong[] GetSprites_Internal(ulong resourceID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint[] GetAnimations_Internal(uint resourceID);
+        private static extern ulong[] GetAnimations_Internal(ulong resourceID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint CreateEntityFromAsepriteData_Internal(uint resourceID);
+        private static extern uint CreateEntityFromAsepriteData_Internal(ulong resourceID);
     }
 }

@@ -14,11 +14,11 @@ Framebuffer::Framebuffer(uint32_t width, uint32_t height)
     OpenGLAPI::BindFramebuffer(framebufferID);
 
     colorAttachment = Texture::CreateColorAttachment(width, height);
-    Application::Context()->Resources->AddTexture(colorAttachment);
+    Application::Context()->Resources->AddResource(colorAttachment);
     OpenGLAPI::SetFramebufferColorAttachment(colorAttachment->GetTextureID());
 
     depthStencilAttachment = Texture::CreateDSAttachment(width, height);
-    Application::Context()->Resources->AddTexture(depthStencilAttachment);
+    Application::Context()->Resources->AddResource(depthStencilAttachment);
     OpenGLAPI::SetFramebufferDSAttachment(depthStencilAttachment->GetTextureID());
 
     if (!OpenGLAPI::FramebufferComplete())
@@ -38,9 +38,9 @@ Framebuffer::~Framebuffer()
     if (framebufferID != DEFAULT_FRAMEBUFFER_ID)
         OpenGLAPI::DeleteFramebuffer(framebufferID);
     if (colorAttachment != nullptr)
-        Application::Context()->Resources->UnloadTexture(colorAttachment->ID);
+        Application::Context()->Resources->UnloadResource(ResourceTypes::Texture, colorAttachment->ID);
     if (depthStencilAttachment != nullptr)
-        Application::Context()->Resources->UnloadTexture(depthStencilAttachment->ID);
+        Application::Context()->Resources->UnloadResource(ResourceTypes::Texture, depthStencilAttachment->ID);
 }
 
 void Framebuffer::Resize(uint32_t width, uint32_t height)
@@ -49,18 +49,18 @@ void Framebuffer::Resize(uint32_t width, uint32_t height)
     _height = height;
 
     if (colorAttachment != nullptr)
-        Application::Context()->Resources->UnloadTexture(colorAttachment->ID);
+        Application::Context()->Resources->UnloadResource(ResourceTypes::Texture, colorAttachment->ID);
     if (depthStencilAttachment != nullptr)
-        Application::Context()->Resources->UnloadTexture(depthStencilAttachment->ID);
+        Application::Context()->Resources->UnloadResource(ResourceTypes::Texture, depthStencilAttachment->ID);
 
     OpenGLAPI::BindFramebuffer(framebufferID);
 
     colorAttachment = Texture::CreateColorAttachment(width, height);
-    Application::Context()->Resources->AddTexture(colorAttachment);
+    Application::Context()->Resources->AddResource(colorAttachment);
     OpenGLAPI::SetFramebufferColorAttachment(colorAttachment->GetTextureID());
 
     depthStencilAttachment = Texture::CreateDSAttachment(width, height);
-    Application::Context()->Resources->AddTexture(depthStencilAttachment);
+    Application::Context()->Resources->AddResource(depthStencilAttachment);
     OpenGLAPI::SetFramebufferDSAttachment(depthStencilAttachment->GetTextureID());
 
     if (!OpenGLAPI::FramebufferComplete())

@@ -2,6 +2,6 @@
 
 #include <stdint.h>
 
-#define NULL_RESOURCE 0xffffffff
+#define NULL_RESOURCE 0xffffffffffffffff
 
-using ResourceID = uint32_t;
+using ResourceID = uint64_t;

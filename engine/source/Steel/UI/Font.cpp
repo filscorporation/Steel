@@ -16,6 +16,7 @@ struct FontData
 
 Font::Font()
 {
+    Type = ResourceTypes::Font;
     _data = new FontData();
 }
 

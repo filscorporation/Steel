@@ -1,8 +1,9 @@
 #include "Animator.h"
-#include "../Core/Time.h"
-#include "../Rendering/SpriteRenderer.h"
-#include "../Scene/SceneHelper.h"
-#include "../UI/UIElements/UIImage.h"
+#include "Steel/Core/Time.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Rendering/SpriteRenderer.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/UI/UIElements/UIImage.h"
 
 void Animator::RegisterType()
 {
@@ -90,6 +91,7 @@ void Animator::AddAndPlay(Animation* animation)
 
 void ApplyFrame(EntityID entity, Keyframe keyframe)
 {
+    Log::LogInfo("Apply frame {0}", keyframe.Time);
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
     if (entitiesRegistry->HasComponent<SpriteRenderer>(entity))

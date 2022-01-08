@@ -49,10 +49,10 @@ namespace Steel
         private static extern void SetMesh_Internal(uint entityID, Mesh mesh);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint GetMaterial_Internal(uint entityID);
+        private static extern ulong GetMaterial_Internal(uint entityID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetMaterial_Internal(uint entityID, uint materialID);
+        private static extern void SetMaterial_Internal(uint entityID, ulong materialID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void GetCustomMaterialProperties_Internal(uint entityID, out MaterialPropertyBlock_Internal properties);

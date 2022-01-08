@@ -7,7 +7,7 @@ namespace Steel
     /// </summary>
     public class AudioTrack : Resource
     {
-        internal AudioTrack(uint id) : base(id) { }
+        internal AudioTrack(ulong id) : base(id) { }
 
         /// <summary>
         /// Track length in seconds
@@ -15,6 +15,6 @@ namespace Steel
         public float Length => GetLength_Internal(ID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float GetLength_Internal(uint audioTrackID);
+        private static extern float GetLength_Internal(ulong audioTrackID);
     }
 }

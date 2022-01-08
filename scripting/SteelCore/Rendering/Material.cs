@@ -7,7 +7,7 @@ namespace Steel
     /// </summary>
     public class Material : Resource
     {
-        internal Material(uint id) : base(id) { }
+        internal Material(ulong id) : base(id) { }
         
         /// <summary>
         /// Shader
@@ -32,15 +32,15 @@ namespace Steel
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint GetShader_Internal(uint resourceID);
+        private static extern ulong GetShader_Internal(ulong resourceID);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetShader_Internal(uint resourceID, uint shaderID);
+        private static extern void SetShader_Internal(ulong resourceID, ulong shaderID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetProperties_Internal(uint resourceID, out MaterialPropertyBlock_Internal properties);
+        private static extern void GetProperties_Internal(ulong resourceID, out MaterialPropertyBlock_Internal properties);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void SetProperties_Internal(uint resourceID, MaterialPropertyBlock_Internal properties);
+        private static extern void SetProperties_Internal(ulong resourceID, MaterialPropertyBlock_Internal properties);
     }
 }

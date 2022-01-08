@@ -2,8 +2,9 @@
 
 #include <glm/glm.hpp>
 
-#include "../EntityComponentSystem/Entity.h"
-#include "../EntityComponentSystem/EntitiesRegistry.h"
+#include "Steel/EntityComponentSystem/Entity.h"
+#include "Steel/EntityComponentSystem/EntitiesRegistry.h"
+#include "AudioTrack.h"
 
 class AudioCore
 {
@@ -27,6 +28,8 @@ public:
     static void SetSourceBuffer(uint32_t sourceID, int bufferID);
     static void PlaySource(uint32_t sourceID);
     static void StopSource(uint32_t sourceID);
+
+    static bool InitAudioTrack(AudioTrack* audioTrack, char* trackData);
 
 private:
     static bool AssertInitialized();

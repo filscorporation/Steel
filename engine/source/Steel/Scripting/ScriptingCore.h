@@ -124,6 +124,7 @@ public:
     static const char* ToString(MonoString* monoString);
 
     static MonoArray* ToMonoUInt32Array(const std::vector<uint32_t>& inArray);
+    static MonoArray* ToMonoUInt64Array(const std::vector<uint64_t>& inArray);
     static MonoArray* ToMonoIntPtrArray(const std::vector<intptr_t>& inArray);
     static MonoArray* ToMonoStringArray(const std::vector<std::string>& inArray);
     static MonoArray* ToMonoFloatArray(const std::vector<float>& inArray);
@@ -131,6 +132,7 @@ public:
     template<typename T> static MonoArray* ToMonoDataTypeArray(const std::vector<T>& inArray, int cachedDataTypeID);
 
     static void FromMonoUInt32Array(MonoArray* inArray, std::vector<uint32_t>& outArray);
+    static void FromMonoUInt64Array(MonoArray* inArray, std::vector<uint64_t>& outArray);
     static void FromMonoStringArray(MonoArray* inArray, std::vector<std::string>& outArray);
     static void FromMonoFloatArray(MonoArray* inArray, std::vector<float>& outArray);
     static void FromMonoIntArray(MonoArray* inArray, std::vector<int>& outArray);

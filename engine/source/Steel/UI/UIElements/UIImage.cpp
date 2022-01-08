@@ -129,7 +129,7 @@ void UIImage::RebuildInner(RectTransformation& transformation)
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     _sortingOrder = transformation.GetSortingOrder();
 
-    _customProperties.SetTexture(MAIN_TEX, _image->SpriteTexture->GetTextureID());
+    _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->SpriteTexture->GetTextureID());
     _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
     _customProperties.UpdateHash();
 

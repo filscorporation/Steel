@@ -6,20 +6,20 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "Steel/Resources/ResourceID.h"
+#include "Steel/Resources/Resource.h"
 
-class Shader
+class Shader : public Resource
 {
 public:
-    ResourceID ID;
-    uint32_t Program;
     Shader(const char* vertexCode, const char* fragmentCode);
+
     static Shader* FromFilePaths(const char* vertexPath, const char* fragmentPath);
     void Use() const;
 
     int GetUniformLocation(const std::string& name);
     int GetTextureSlot(int uniformID);
 
+    uint32_t Program;
     bool GlobalUniformsSet = false;
 
 private:

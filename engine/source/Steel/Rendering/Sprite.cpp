@@ -2,6 +2,7 @@
 
 Sprite::Sprite(Texture* texture)
 {
+    Type = ResourceTypes::Sprite;
     SpriteTexture = texture;
 }
 
