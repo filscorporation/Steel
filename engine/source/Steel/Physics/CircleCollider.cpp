@@ -1,16 +1,15 @@
 #include <box2d/box2d.h>
 
-#include "../Rendering/SpriteRenderer.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scene/Transformation.h"
 #include "CircleCollider.h"
 #include "PhysicsCore.h"
 #include "PhysicsInfo.h"
+#include "Steel/Rendering/SpriteRenderer.h"
+#include "Steel/Scene/SceneHelper.h"
 
 void CircleCollider::RegisterType()
 {
     REGISTER_TYPE(CircleCollider);
-    // TODO
+    REGISTER_ATTRIBUTE(CircleCollider, "radius", GetRadius, SetRadius, float, AttributeFlags::Public);
 }
 
 void CircleCollider::OnCreated(EntitiesRegistry* entitiesRegistry)

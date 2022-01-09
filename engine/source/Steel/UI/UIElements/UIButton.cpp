@@ -1,13 +1,15 @@
 #include "UIButton.h"
-#include "../../Core/Log.h"
-#include "../../Scene/SceneHelper.h"
-#include "../../Scripting/ScriptingCore.h"
-#include "../../Scripting/ScriptingSystem.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scripting/ScriptingCore.h"
+#include "Steel/Scripting/ScriptingSystem.h"
 
 void UIButton::RegisterType()
 {
     REGISTER_TYPE(UIButton);
-    // TODO
+    //REGISTER_ATTRIBUTE(UIButton, "transitionInfo", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public); TODO
+    REGISTER_ID_ATTRIBUTE(UIButton, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIButton, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public);
 }
 
 bool UIButton::Validate(EntitiesRegistry* entitiesRegistry)

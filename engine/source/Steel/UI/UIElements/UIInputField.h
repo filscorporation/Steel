@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../UIComponent.h"
-#include "../UIEvent.h"
-#include "../UIEventHandler.h"
-#include "../UIInteractable.h"
 #include "UIText.h"
+#include "Steel/UI/UIComponent.h"
+#include "Steel/UI/UIEvent.h"
+#include "Steel/UI/UIEventHandler.h"
+#include "Steel/UI/UIInteractable.h"
 
 namespace TextTypes
 {
@@ -26,6 +26,7 @@ class UIInputField : public UIInteractable
 public:
     explicit UIInputField(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { }
 
+    void OnCopied() override;
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
@@ -40,16 +41,16 @@ public:
     EntityID GetTargetText() const;
     void SetCursorWidth(uint32_t width);
     uint32_t GetCursorWidth() const;
-    void SetCursorColor(glm::vec4 color);
-    glm::vec4 GetCursorColor() const;
+    void SetCursorColor(const glm::vec4& color);
+    const glm::vec4& GetCursorColor() const;
     void SetCursorAutoColor(bool isAuto);
     bool GetCursorAutoColor() const;
     void SetIsMultiline(bool isMultiline);
     bool GetIsMultiline() const;
     void SetTextType(TextTypes::TextType type);
     TextTypes::TextType GetTextType() const;
-    void SetSelectionColor(glm::vec4 color);
-    glm::vec4 GetSelectionColor() const;
+    void SetSelectionColor(const glm::vec4& color);
+    const glm::vec4& GetSelectionColor() const;
 
     static bool IsInt(const std::string& text, int& value);
     static bool IsFloat(const std::string& text, float& value);

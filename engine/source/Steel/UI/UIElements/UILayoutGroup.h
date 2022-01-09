@@ -22,6 +22,7 @@ public:
     LayoutElementInfo GetInfo() override;
 
     void SetType(LayoutGroupTypes::LayoutGroupType type);
+    LayoutGroupTypes::LayoutGroupType GetType() const;
     EntityID AddElement(LayoutElementInfo info);
     EntityID AddElement(EntityID elementID);
 

@@ -1,16 +1,16 @@
 #include <box2d/box2d.h>
 
-#include "../Rendering/SpriteRenderer.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scene/Transformation.h"
 #include "BoxCollider.h"
 #include "PhysicsCore.h"
 #include "PhysicsInfo.h"
+#include "Steel/Rendering/SpriteRenderer.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scene/Transformation.h"
 
 void BoxCollider::RegisterType()
 {
     REGISTER_TYPE(BoxCollider);
-    // TODO
+    REGISTER_ATTRIBUTE(BoxCollider, "size", GetSize, SetSize, glm::vec2, AttributeFlags::Public);
 }
 
 void BoxCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
@@ -61,12 +61,12 @@ void BoxCollider::SetSizeAutomatically()
     }
 }
 
-glm::vec2 BoxCollider::GetSize() const
+const glm::vec2& BoxCollider::GetSize() const
 {
     return _size;
 }
 
-void BoxCollider::SetSize(glm::vec2 size)
+void BoxCollider::SetSize(const glm::vec2& size)
 {
     if (std::abs(size.x) > SHAPE_EPS && std::abs(size.y) > SHAPE_EPS)
     {

@@ -13,6 +13,7 @@ class UIImage : public UIComponent
 public:
     explicit UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
+    void OnCopied() override;
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
@@ -22,13 +23,13 @@ public:
     void Draw(RenderContext* renderContext);
 
     void SetMaterial(Material* material);
-    Material* GetMaterial();
+    Material* GetMaterial() const;
     void SetCustomProperties(const MaterialPropertyBlock& properties);
     const MaterialPropertyBlock& GetCustomProperties();
     void SetImage(Sprite* image);
-    Sprite* GetImage();
-    void SetColor(glm::vec4 color);
-    glm::vec4 GetColor();
+    Sprite* GetImage() const;
+    void SetColor(const glm::vec4& color);
+    const glm::vec4& GetColor() const;
     void SetImageTileIndex(uint32_t index);
     uint32_t GetImageTileIndex() const;
     void SetClippingLevel(short clippingLevel);

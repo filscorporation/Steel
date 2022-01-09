@@ -1,17 +1,25 @@
-#include <box2d/box2d.h>
-
 #include "RigidBody.h"
 #include "PhysicsCore.h"
 #include "BoxCollider.h"
 #include "PhysicsInfo.h"
-#include "../Core/Log.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scene/Transformation.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scene/Transformation.h"
+
+#include <box2d/box2d.h>
 
 void RigidBody::RegisterType()
 {
     REGISTER_TYPE(RigidBody);
-    // TODO
+    //REGISTER_ATTRIBUTE(RigidBody, "type", GetMass, SetMass, float, AttributeFlags::Public); TODO
+    REGISTER_ATTRIBUTE(RigidBody, "mass", GetMass, SetMass, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RigidBody, "gravityScale", GetGravityScale, SetGravityScale, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RigidBody, "friction", GetFriction, SetFriction, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RigidBody, "restitution", GetRestitution, SetRestitution, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RigidBody, "linearDamping", GetLinearDamping, SetLinearDamping, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RigidBody, "angularDamping", GetAngularDamping, SetAngularDamping, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RigidBody, "isFixedRotation", GetIsFixedRotation, SetIsFixedRotation, bool, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RigidBody, "useCCD", GetUseContinuousCollisionDetection, SetUseContinuousCollisionDetection, bool, AttributeFlags::Public);
 }
 
 void RigidBody::OnCreated(EntitiesRegistry* entitiesRegistry)
@@ -342,7 +350,7 @@ void RigidBody::SetAngularDamping(float damping)
     info->Body->SetAwake(true);
 }
 
-float RigidBody::GetIsFixedRotation() const
+bool RigidBody::GetIsFixedRotation() const
 {
     return _isFixedRotation;
 }
@@ -358,7 +366,7 @@ void RigidBody::SetIsFixedRotation(bool isFixed)
     info->Body->SetAwake(true);
 }
 
-float RigidBody::GetUseContinuousCollisionDetection() const
+bool RigidBody::GetUseContinuousCollisionDetection() const
 {
     return _useCCD;
 }

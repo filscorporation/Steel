@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../UIComponent.h"
+#include "Steel/UI/UIComponent.h"
 
 struct LayoutElementInfo
 {
@@ -15,7 +15,11 @@ class ILayoutElement
 public:
     virtual LayoutElementInfo GetInfo() = 0;
 
-    EntityID GroupID = NULL_ENTITY;
+    EntityID GetGroupID() const;
+    void SetGroupID(EntityID groupID);
+
+protected:
+    EntityID _groupID = NULL_ENTITY;
 };
 
 class UILayoutElement : public UIComponent, public ILayoutElement

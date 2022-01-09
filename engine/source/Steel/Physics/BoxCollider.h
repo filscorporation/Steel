@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
 #include "Collider.h"
 
 class BoxCollider : public Component
@@ -18,8 +19,8 @@ public:
     void Init();
 
     void SetSizeAutomatically();
-    glm::vec2 GetSize() const;
-    void SetSize(glm::vec2 size);
+    const glm::vec2& GetSize() const;
+    void SetSize(const glm::vec2& size);
 
 private:
     BoxColliderInfo* info = nullptr;

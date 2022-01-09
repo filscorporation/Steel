@@ -1,5 +1,6 @@
 #include "SerializationManager.h"
 #include "TypeInfoStorage.h"
+#include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Components.h"
 #include "Steel/Resources/ResourcesManager.h"
@@ -86,6 +87,7 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
 {
     SerializationContext context;
     context.SerializedScene = scene;
+    context.ResourcesSource = Application::Context()->Resources;
 
     node["name"] = scene->_name;
     node["mainCamera"] = scene->_mainCameraEntity;
@@ -114,17 +116,14 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
                 auto object = static_cast<Serializable*>(dataPair.second);
                 auto typeInfo = scene->entitiesRegistry->GetTypeInfoByID(dataPair.first);
 
-                if (_attributesInfo.find(typeInfo->ID) == _attributesInfo.end())
-                {
-                    Log::LogError("Attribute info for type {0} not found. Check if type was registered", typeInfo->TypeName);
-                    continue;
-                }
-
                 YAML::Node componentNode;
 
-                for (auto attribute : _attributesInfo[typeInfo->ID])
+                if (_attributesInfo.find(typeInfo->ID) != _attributesInfo.end())
                 {
-                    attribute.Serialize(object, componentNode, context);
+                    for (auto attribute : _attributesInfo[typeInfo->ID])
+                    {
+                        attribute.Serialize(object, componentNode, context);
+                    }
                 }
 
                 componentsNode[typeInfo->TypeName] = componentNode;
@@ -141,6 +140,7 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
 {
     SerializationContext context;
     context.SerializedScene = scene;
+    context.ResourcesSource = Application::Context()->Resources;
 
     scene->_name = node["name"].as<std::string>();
     scene->_mainCameraEntity = node["mainCamera"].as<EntityID>();
@@ -183,12 +183,6 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
                     auto typeName = componentNode.first.as<std::string>();
                     auto typeID = Math::StringHash(typeName.c_str());
 
-                    if (_attributesInfo.find(typeID) == _attributesInfo.end())
-                    {
-                        Log::LogError("Attribute info for type {0} not found. Check if type was registered", typeName);
-                        continue;
-                    }
-
                     // This will add component map to registry, so we can add component of deserialized type without template arguments
                     if (!TypeInfoStorage::CheckTypeRegistered(typeID, scene->entitiesRegistry))
                     {
@@ -202,12 +196,16 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
                         continue;
                     }
 
-                    for (auto attribute : _attributesInfo[typeID])
+                    if (_attributesInfo.find(typeID) != _attributesInfo.end())
                     {
-                        attribute.Deserialize(object, componentNode.second, context);
+                        for (auto attribute : _attributesInfo[typeID])
+                        {
+                            attribute.Deserialize(object, componentNode.second, context);
+                        }
                     }
 
                     // TODO: find out if we need to call OnCreate or something like this after attributes initialized
+                    // (required for components like UIEventHandler (from UIButton and other UI elements))
                 }
             }
         }
@@ -218,7 +216,6 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
 
 void SerializationManager::RegisterComponents()
 {
-    // TODO: all types
     Animator::RegisterType();
     AudioListener::RegisterType();
     AudioSource::RegisterType();

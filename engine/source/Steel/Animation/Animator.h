@@ -1,8 +1,9 @@
 #pragma once
 
 #include <vector>
+
 #include "Animation.h"
-#include "../EntityComponentSystem/Component.h"
+#include "Steel/EntityComponentSystem/Component.h"
 
 class Animator : public Component
 {

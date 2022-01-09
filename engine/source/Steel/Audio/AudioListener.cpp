@@ -1,12 +1,12 @@
 #include "AudioListener.h"
 #include "AudioCore.h"
-#include "../Scene/Transformation.h"
-#include "../Scene/SceneHelper.h"
+#include "Steel/Scene/Transformation.h"
+#include "Steel/Scene/SceneHelper.h"
 
 void AudioListener::RegisterType()
 {
     REGISTER_TYPE(AudioListener);
-    // TODO
+    REGISTER_ATTRIBUTE(AudioListener, "listenerVolume", GetVolume, SetVolume, float, AttributeFlags::Public);
 }
 
 void AudioListener::OnUpdate()

@@ -30,6 +30,7 @@ public:
     void LoadResources();
     void LoadDefaultResources();
 
+    Resource* GetResource(ResourceTypes::ResourceType type, ResourceID resourceID);
     void AddResource(Resource* resource);
     bool ResourceExists(ResourceTypes::ResourceType type, ResourceID resourceID);
     void UnloadResource(ResourceTypes::ResourceType type, ResourceID resourceID);
@@ -61,8 +62,6 @@ public:
 
 private:
     void TryLoadResource(const std::string& path);
-
-    Resource* GetResource(ResourceTypes::ResourceType type, ResourceID resourceID);
 
     std::vector<std::unordered_map<ResourceID, Resource*>> resources;
 

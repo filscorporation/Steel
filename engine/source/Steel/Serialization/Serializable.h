@@ -3,6 +3,7 @@
 #include "AttributeInfo.h"
 #include "AttributeAccessor.h"
 #include "IDAttributeAccessor.h"
+#include "ResourceAttributeAccessor.h"
 #include "SerializationManager.h"
 #include "TypeInfoStorage.h"
 #include "Steel/Core/TypeInfo.h"
@@ -44,6 +45,18 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                           \
         name,                                                                                                   \
         new IDAttributeAccessor<className>(&className::getter, &className::setter),                             \
+        flags                                                                                                   \
+    )                                                                                                           \
+)
+
+#define REGISTER_RESOURCE_ATTRIBUTE(className, name, getter, setter, type, resourceType, flags)                 \
+SerializationManager::RegisterAttribute                                                                         \
+(                                                                                                               \
+    TYPE_ID(className),                                                                                         \
+    AttributeInfo                                                                                               \
+    (                                                                                                           \
+        name,                                                                                                   \
+        new ResourceAttributeAccessor<className, type>(&className::getter, &className::setter, resourceType),   \
         flags                                                                                                   \
     )                                                                                                           \
 )

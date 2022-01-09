@@ -1,13 +1,14 @@
 #include "AudioSource.h"
 #include "AudioCore.h"
-#include "../Core/Log.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scene/Transformation.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scene/Transformation.h"
 
 void AudioSource::RegisterType()
 {
     REGISTER_TYPE(AudioSource);
-    // TODO
+    REGISTER_ATTRIBUTE(AudioSource, "sourceVolume", GetVolume, SetVolume, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(AudioSource, "isLoop", GetIsLoop, SetIsLoop, bool, AttributeFlags::Public);
 }
 
 void AudioSource::OnCreated(EntitiesRegistry* entitiesRegistry)
@@ -58,7 +59,7 @@ void AudioSource::Stop()
     AudioCore::StopSource(sourceID);
 }
 
-bool AudioSource::GetIsLoop()
+bool AudioSource::GetIsLoop() const
 {
     return sourceIsLoop;
 }
@@ -72,7 +73,7 @@ void AudioSource::SetIsLoop(bool isLoop)
     }
 }
 
-float AudioSource::GetVolume()
+float AudioSource::GetVolume() const
 {
     return sourceVolume;
 }

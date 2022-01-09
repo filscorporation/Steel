@@ -67,7 +67,22 @@ public:
     ~ComponentsPoolWrapper() override = default;
     ComponentsPoolWrapper<T>* Clone() const override
     {
-        return new ComponentsPoolWrapper<T>(*this);
+        auto copy = new ComponentsPoolWrapper<T>(*this);
+        copy->AfterCopy();
+
+        return copy;
+    }
+
+    void AfterCopy()
+    {
+        for (auto& component : Storage)
+        {
+            component.OnCopied();
+        }
+        for (auto& component : InactiveStorage)
+        {
+            component.OnCopied();
+        }
     }
 
     const TypeInfo* GetTypeInfo() override { return T::GetTypeInfo(); }

@@ -4,7 +4,15 @@
 void SpriteRenderer::RegisterType()
 {
     REGISTER_TYPE(SpriteRenderer);
-    // TODO
+    REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public);
+    REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
+}
+
+void SpriteRenderer::OnCopied()
+{
+    isDirty = true;
+    vb.Refresh();
+    ib.Refresh();
 }
 
 void SpriteRenderer::OnEnabled(EntitiesRegistry* entitiesRegistry)
@@ -48,7 +56,7 @@ void SpriteRenderer::SetMaterial(Material* material)
     isDirty = true;
 }
 
-Material* SpriteRenderer::GetMaterial()
+Material* SpriteRenderer::GetMaterial() const
 {
     return _material;
 }
@@ -73,7 +81,7 @@ void SpriteRenderer::SetImage(Sprite* image)
     isDirty = true;
 }
 
-Sprite* SpriteRenderer::GetImage()
+Sprite* SpriteRenderer::GetImage() const
 {
     return _image;
 }

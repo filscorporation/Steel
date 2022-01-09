@@ -3,11 +3,11 @@
 #include <functional>
 
 #include "UIImage.h"
-#include "../UIEvent.h"
-#include "../UIEventHandler.h"
-#include "../UIInteractable.h"
-#include "../TransitionInfo.h"
-#include "../../Rendering/Sprite.h"
+#include "Steel/Rendering/Sprite.h"
+#include "Steel/UI/UIEvent.h"
+#include "Steel/UI/UIEventHandler.h"
+#include "Steel/UI/UIInteractable.h"
+#include "Steel/UI/TransitionInfo.h"
 
 typedef std::function<void(EntityID)> CheckBoxCallback;
 

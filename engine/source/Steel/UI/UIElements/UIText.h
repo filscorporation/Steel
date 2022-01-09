@@ -39,6 +39,7 @@ class UIText : public UIComponent
 public:
     explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 
+    void OnCopied() override;
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
@@ -50,12 +51,12 @@ public:
 
     Font* GetFont() const;
     void SetFont(Font* font);
-    std::string GetText() const;
+    const std::string& GetText() const;
+    void SetText(const std::string& text);
     uint32_t GetTextSize() const;
     void SetTextSize(uint32_t size);
     float GetLineSpacing() const;
     void SetLineSpacing(float spacing);
-    void SetText(const std::string& text);
     const glm::vec4& GetColor() const;
     void SetColor(glm::vec4 color);
     bool GetIsTextAutoSize() const;

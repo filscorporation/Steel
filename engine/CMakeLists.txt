@@ -105,7 +105,8 @@ set(SOURCE_FILES
         source/Steel/Scripting/InternalStructures/MeshInternal.cpp source/Steel/Scripting/InternalStructures/MeshInternal.h source/Steel/Scene/IDComponent.cpp
         source/Steel/Scene/IDComponent.h source/Steel/Serialization/SerializationContext.h source/Steel/Serialization/AttributeAccessor.h
         source/Steel/Serialization/IDAttributeAccessor.h source/Steel/Scene/UUID.h source/Steel/Serialization/SerializationContext.cpp source/Steel/Core/Components.h
-        source/Steel/Resources/ResourceType.h source/Steel/Resources/Resource.h source/Steel/Resources/AsepriteData.cpp)
+        source/Steel/Resources/ResourceType.h source/Steel/Resources/Resource.h source/Steel/Resources/AsepriteData.cpp
+        source/Steel/Serialization/ResourceAttributeAccessor.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

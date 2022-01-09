@@ -9,7 +9,16 @@
 void UIClipping::RegisterType()
 {
     REGISTER_TYPE(UIClipping);
-    // TODO
+}
+
+void UIClipping::OnCopied()
+{
+    isDirty = true;
+    for (int i = 0; i < 4; ++i)
+    {
+        vb[i].Refresh();
+        ib[i].Refresh();
+    }
 }
 
 bool UIClipping::Validate(EntitiesRegistry* entitiesRegistry)

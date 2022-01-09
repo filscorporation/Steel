@@ -5,7 +5,16 @@
 void MeshRenderer::RegisterType()
 {
     REGISTER_TYPE(MeshRenderer);
-    // TODO
+    REGISTER_RESOURCE_ATTRIBUTE(MeshRenderer, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public);
+    // For now mesh is fully procedural structure therefor it is not serialized or stored.
+    // Maybe later mesh will become resource
+}
+
+void MeshRenderer::OnCopied()
+{
+    isDirty = true;
+    vb.Refresh();
+    ib.Refresh();
 }
 
 void MeshRenderer::OnEnabled(EntitiesRegistry* entitiesRegistry)
@@ -68,7 +77,7 @@ void MeshRenderer::SetMaterial(Material* material)
     isDirty = true;
 }
 
-Material* MeshRenderer::GetMaterial()
+Material* MeshRenderer::GetMaterial() const
 {
     return _material;
 }

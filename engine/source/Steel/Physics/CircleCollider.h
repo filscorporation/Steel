@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
 #include "Collider.h"
 
 class CircleCollider : public Component

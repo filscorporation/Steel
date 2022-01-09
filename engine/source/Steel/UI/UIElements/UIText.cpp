@@ -10,7 +10,16 @@
 void UIText::RegisterType()
 {
     REGISTER_TYPE(UIText);
+    REGISTER_ATTRIBUTE(UIText, "text", GetText, SetText, std::string, AttributeFlags::Public);
+    REGISTER_RESOURCE_ATTRIBUTE(UIText, "font", GetFont, SetFont, Font*, ResourceTypes::Font, AttributeFlags::Public);
     // TODO
+}
+
+void UIText::OnCopied()
+{
+    SetDirty();
+    vb.Refresh();
+    ib.Refresh();
 }
 
 bool UIText::Validate(EntitiesRegistry* entitiesRegistry)
@@ -72,11 +81,16 @@ Font* UIText::GetFont() const
 
 void UIText::SetFont(Font* font)
 {
+    if (font == nullptr && _font != nullptr && _textSizeRef != 0)
+    {
+        _font->FreeSize(_textSizeRef);
+        _textSizeRef = 0;
+    }
     _font = font;
     SetDirty();
 }
 
-std::string UIText::GetText() const
+const std::string& UIText::GetText() const
 {
     return _text;
 }
@@ -357,15 +371,7 @@ void UIText::RebuildInner(RectTransformation& transformation)
     lettersDimensions.clear();
 
     if (_font == nullptr)
-    {
-        if (_textSizeRef != 0)
-        {
-            _font->FreeSize(_textSizeRef);
-            _textSizeRef = 0;
-        }
-
         return;
-    }
 
     if (_textSizeRef != 0 && _textSizeRef != _textSize)
         _font->FreeSize(_textSizeRef);

@@ -1,15 +1,22 @@
 #include "RectTransformation.h"
-#include "../Rendering/Screen.h"
-#include "../Core/Application.h"
-#include "../Core/Log.h"
-#include "../Scene/Transformation.h"
+#include "Steel/Rendering/Screen.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Scene/Transformation.h"
 
 #define TRANSFORM_EPS 0.000001f
 
 void RectTransformation::RegisterType()
 {
     REGISTER_TYPE(RectTransformation);
-    // TODO
+    REGISTER_ATTRIBUTE(RectTransformation, "anchorMin", GetAnchorMin, SetAnchorMin, glm::vec2, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RectTransformation, "anchorMax", GetAnchorMax, SetAnchorMax, glm::vec2, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RectTransformation, "anchoredPosition", GetAnchoredPosition, SetAnchoredPosition, glm::vec2, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RectTransformation, "offsetMin", GetOffsetMin, SetOffsetMin, glm::vec2, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RectTransformation, "offsetMax", GetOffsetMax, SetOffsetMax, glm::vec2, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RectTransformation, "size", GetSize, SetSize, glm::vec2, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RectTransformation, "pivot", GetPivot, SetPivot, glm::vec2, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RectTransformation, "localRotation", GetLocalRotation, SetLocalRotation, glm::vec3, AttributeFlags::Public);
 }
 
 bool RectTransformation::Validate(EntitiesRegistry* entitiesRegistry)
@@ -28,7 +35,7 @@ void RectTransformation::OnEnabled(EntitiesRegistry* entitiesRegistry)
     SetTransformationChanged(true);
 }
 
-glm::vec2 RectTransformation::GetAnchorMin() const
+const glm::vec2& RectTransformation::GetAnchorMin() const
 {
     return _anchorMin;
 }
@@ -47,7 +54,7 @@ void RectTransformation::SetAnchorMin(const glm::vec2& anchor)
     sizeChanged = true;
 }
 
-glm::vec2 RectTransformation::GetAnchorMax() const
+const glm::vec2& RectTransformation::GetAnchorMax() const
 {
     return _anchorMax;
 }
@@ -66,7 +73,7 @@ void RectTransformation::SetAnchorMax(const glm::vec2& anchor)
     sizeChanged = true;
 }
 
-glm::vec2 RectTransformation::GetAnchoredPosition() const
+const glm::vec2& RectTransformation::GetAnchoredPosition() const
 {
     return _anchoredPosition;
 }
@@ -82,7 +89,7 @@ void RectTransformation::SetAnchoredPosition(const glm::vec2& position)
     SetTransformationChanged(true);
 }
 
-glm::vec2 RectTransformation::GetOffsetMin() const
+const glm::vec2& RectTransformation::GetOffsetMin() const
 {
     return _offsetMin;
 }
@@ -99,7 +106,7 @@ void RectTransformation::SetOffsetMin(const glm::vec2& offset)
     sizeChanged = true;
 }
 
-glm::vec2 RectTransformation::GetOffsetMax() const
+const glm::vec2& RectTransformation::GetOffsetMax() const
 {
     return _offsetMax;
 }
@@ -116,12 +123,12 @@ void RectTransformation::SetOffsetMax(const glm::vec2& offset)
     sizeChanged = true;
 }
 
-glm::vec2 RectTransformation::GetSize() const
+const glm::vec2& RectTransformation::GetSize() const
 {
     return _size;
 }
 
-glm::vec2 RectTransformation::GetRealSizeCached() const
+const glm::vec2& RectTransformation::GetRealSizeCached() const
 {
     return _realSize;
 }
@@ -138,7 +145,7 @@ void RectTransformation::SetSize(const glm::vec2& size)
     sizeChanged = true;
 }
 
-glm::vec2 RectTransformation::GetPivot() const
+const glm::vec2& RectTransformation::GetPivot() const
 {
     return _pivot;
 }
@@ -154,7 +161,7 @@ void RectTransformation::RectTransformation::SetPivot(const glm::vec2& pivot)
     SetTransformationChanged(true);
 }
 
-glm::vec3 RectTransformation::GetRotation()
+const glm::vec3& RectTransformation::GetRotation()
 {
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& node = registry->GetComponent<HierarchyNode>(Owner);
@@ -192,7 +199,7 @@ void RectTransformation::SetRotation(const glm::vec3& rotation)
     SetTransformationChanged(true);
 }
 
-glm::vec3 RectTransformation::GetLocalRotation() const
+const glm::vec3& RectTransformation::GetLocalRotation() const
 {
     return _localRotation;
 }

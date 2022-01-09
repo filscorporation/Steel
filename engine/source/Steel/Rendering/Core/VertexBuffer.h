@@ -11,6 +11,7 @@ struct VertexBuffer
     void Create(glm::vec3 vertices[4], glm::vec4 color, glm::vec2 textureCoords[4]);
     void Create(float* data, uint32_t size, const std::vector<VertexAttribute>& attributes);
     void Clear();
+    void Refresh();
     bool IsEmpty() const;
 
     float* Data = nullptr;

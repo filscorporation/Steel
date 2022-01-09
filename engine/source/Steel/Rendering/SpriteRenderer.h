@@ -1,12 +1,12 @@
 #pragma once
 
-#include <glm/vec2.hpp>
-
 #include "Sprite.h"
 #include "Core/RenderContext.h"
 #include "Steel/EntityComponentSystem/Component.h"
 #include "Steel/Rendering/MaterialSystem/Material.h"
 #include "Steel/Scene/Transformation.h"
+
+#include <glm/vec2.hpp>
 
 class SpriteRenderer : public Component
 {
@@ -15,6 +15,7 @@ class SpriteRenderer : public Component
 public:
     explicit SpriteRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
+    void OnCopied() override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
 
@@ -22,11 +23,11 @@ public:
     void Draw(RenderContext* renderContext);
 
     void SetMaterial(Material* material);
-    Material* GetMaterial();
+    Material* GetMaterial() const;
     void SetCustomProperties(const MaterialPropertyBlock& properties);
     const MaterialPropertyBlock& GetCustomProperties();
     void SetImage(Sprite* image);
-    Sprite* GetImage();
+    Sprite* GetImage() const;
     void SetImageTileIndex(uint32_t index);
     uint32_t GetImageTileIndex() const;
     glm::vec2 GetWorldSize();

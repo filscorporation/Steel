@@ -53,9 +53,9 @@ public:
     void SetLinearDamping(float damping);
     float GetAngularDamping() const;
     void SetAngularDamping(float damping);
-    float GetIsFixedRotation() const;
+    bool GetIsFixedRotation() const;
     void SetIsFixedRotation(bool isFixed);
-    float GetUseContinuousCollisionDetection() const;
+    bool GetUseContinuousCollisionDetection() const;
     void SetUseContinuousCollisionDetection(bool useCCD);
 
     void ApplyForce(const glm::vec2& force);

@@ -14,6 +14,7 @@ class UIClipping : public UIComponent
 public:
     explicit UIClipping(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
+    void OnCopied() override;
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;

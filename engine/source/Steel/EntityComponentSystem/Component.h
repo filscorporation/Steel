@@ -12,6 +12,8 @@ public:
     explicit Component(EntityID ownerEntityID);
     virtual ~Component() = default;
 
+    virtual void OnCopied() { }
+
     bool IsAlive() const;
 
     virtual bool Validate(EntitiesRegistry* entitiesRegistry) { return true; }

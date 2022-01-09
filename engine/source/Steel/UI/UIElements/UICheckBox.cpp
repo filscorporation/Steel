@@ -7,7 +7,10 @@
 void UICheckBox::RegisterType()
 {
     REGISTER_TYPE(UICheckBox);
-    // TODO
+    REGISTER_ATTRIBUTE(UICheckBox, "value", GetValue, SetValue, bool, AttributeFlags::Public);
+    //REGISTER_ATTRIBUTE(UICheckBox, "transitionInfo", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public); TODO
+    REGISTER_ID_ATTRIBUTE(UICheckBox, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UICheckBox, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public);
 }
 
 bool UICheckBox::Validate(EntitiesRegistry* entitiesRegistry)

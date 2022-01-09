@@ -6,9 +6,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include "../EntityComponentSystem/Component.h"
-#include "../EntityComponentSystem/EntitiesRegistry.h"
 #include "HierarchyNode.h"
+#include "Steel/EntityComponentSystem/Component.h"
+#include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 
 class Transformation : public Component
 {

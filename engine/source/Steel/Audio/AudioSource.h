@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../EntityComponentSystem/Component.h"
 #include "AudioTrack.h"
+#include "Steel/EntityComponentSystem/Component.h"
 
 class AudioSource : public Component
 {
@@ -18,9 +18,9 @@ public:
 
     void Play(AudioTrack* audioTrack);
     void Stop();
-    bool GetIsLoop();
+    bool GetIsLoop() const;
     void SetIsLoop(bool isLoop);
-    float GetVolume();
+    float GetVolume() const;
     void SetVolume(float volume);
 
 private:
@@ -28,6 +28,4 @@ private:
     float sourceVolume = 1.0f;
     bool sourceIsLoop = false;
     ResourceID currentTrackID = NULL_RESOURCE;
-
-    friend class AudioSystem;
 };

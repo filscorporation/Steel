@@ -7,7 +7,16 @@
 void UIImage::RegisterType()
 {
     REGISTER_TYPE(UIImage);
-    // TODO
+    REGISTER_RESOURCE_ATTRIBUTE(UIImage, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public);
+    REGISTER_RESOURCE_ATTRIBUTE(UIImage, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIImage, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public);
+}
+
+void UIImage::OnCopied()
+{
+    isDirty = true;
+    vb.Refresh();
+    ib.Refresh();
 }
 
 bool UIImage::Validate(EntitiesRegistry* entitiesRegistry)
@@ -62,7 +71,7 @@ void UIImage::SetMaterial(Material* material)
     isDirty = true;
 }
 
-Material* UIImage::GetMaterial()
+Material* UIImage::GetMaterial() const
 {
     return _material;
 }
@@ -86,18 +95,18 @@ void UIImage::SetImage(Sprite* image)
     isDirty = true;
 }
 
-Sprite* UIImage::GetImage()
+Sprite* UIImage::GetImage() const
 {
     return _image;
 }
 
-void UIImage::SetColor(glm::vec4 color)
+void UIImage::SetColor(const glm::vec4& color)
 {
     _color = color;
     isDirty = true;
 }
 
-glm::vec4 UIImage::GetColor()
+const glm::vec4& UIImage::GetColor() const
 {
     return _color;
 }

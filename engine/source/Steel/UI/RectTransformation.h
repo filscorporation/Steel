@@ -7,9 +7,9 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "UILayer.h"
-#include "../EntityComponentSystem/Component.h"
-#include "../EntityComponentSystem/EntitiesRegistry.h"
-#include "../Scene/HierarchyNode.h"
+#include "Steel/EntityComponentSystem/Component.h"
+#include "Steel/EntityComponentSystem/EntitiesRegistry.h"
+#include "Steel/Scene/HierarchyNode.h"
 
 #define PIXEL_CORRECTION true
 
@@ -23,28 +23,28 @@ public:
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
 
-    glm::vec2 GetAnchorMin() const;
+    const glm::vec2& GetAnchorMin() const;
     void SetAnchorMin(const glm::vec2& anchor);
-    glm::vec2 GetAnchorMax() const;
+    const glm::vec2& GetAnchorMax() const;
     void SetAnchorMax(const glm::vec2& anchor);
-    glm::vec2 GetAnchoredPosition() const;
+    const glm::vec2& GetAnchoredPosition() const;
     void SetAnchoredPosition(const glm::vec2& position);
-    glm::vec2 GetOffsetMin() const;
+    const glm::vec2& GetOffsetMin() const;
     void SetOffsetMin(const glm::vec2& offset);
-    glm::vec2 GetOffsetMax() const;
+    const glm::vec2& GetOffsetMax() const;
     void SetOffsetMax(const glm::vec2& offset);
-    glm::vec2 GetSize() const;
-    glm::vec2 GetRealSizeCached() const;
+    const glm::vec2& GetSize() const;
     void SetSize(const glm::vec2& size);
-    glm::vec2 GetPivot() const;
+    const glm::vec2& GetPivot() const;
     void SetPivot(const glm::vec2& pivot);
-    glm::vec3 GetRotation();
+    const glm::vec3& GetRotation();
     void SetRotation(const glm::vec3& rotation);
-    glm::vec3 GetLocalRotation() const;
+    const glm::vec3& GetLocalRotation() const;
     void SetLocalRotation(const glm::vec3& rotation);
 
     bool Contains(const glm::vec2& point) const;
 
+    const glm::vec2& GetRealSizeCached() const;
     const glm::mat4& GetTransformationMatrixCached();
     void UpdateTransformation(UILayer* layer, ComponentAccessor<RectTransformation>& rtAccessor, HierarchyNode& hierarchyNode);
     const glm::vec2& GetRealPositionCached();

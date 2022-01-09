@@ -12,6 +12,7 @@
 void UILayoutGroup::RegisterType()
 {
     REGISTER_TYPE(UILayoutGroup);
+    REGISTER_ID_ATTRIBUTE(UILayoutGroup, "groupID", GetGroupID, SetGroupID, AttributeFlags::Public);
     // TODO
 }
 
@@ -174,9 +175,9 @@ EntityID UILayoutGroup::AddElement(EntityID elementID)
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     auto& element = GET_ELEMENT(elementID);
 
-    if (element.GroupID != NULL_ENTITY)
+    if (element.GetGroupID() != NULL_ENTITY)
         Log::LogError("Changing layout element {0} group ID", elementID);
-    element.GroupID = Owner;
+    element.SetGroupID(Owner);
 
     elements.emplace_back(elementID);
 
@@ -186,4 +187,9 @@ EntityID UILayoutGroup::AddElement(EntityID elementID)
 void UILayoutGroup::SetType(LayoutGroupTypes::LayoutGroupType type)
 {
     _type = type;
+}
+
+LayoutGroupTypes::LayoutGroupType UILayoutGroup::GetType() const
+{
+    return _type;
 }

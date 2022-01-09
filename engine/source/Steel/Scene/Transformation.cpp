@@ -1,7 +1,7 @@
 #include "Transformation.h"
 #include "SceneHelper.h"
-#include "../Core/Log.h"
-#include "../UI/RectTransformation.h"
+#include "Steel/Core/Log.h"
+#include "Steel/UI/RectTransformation.h"
 
 #define TRANSFORM_EPS 0.000001f
 

@@ -13,6 +13,7 @@ class MeshRenderer : public Component
 public:
     explicit MeshRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
+    void OnCopied() override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
 
@@ -22,7 +23,7 @@ public:
     void SetMesh(const Mesh& mesh);
     const Mesh& GetMesh();
     void SetMaterial(Material* material);
-    Material* GetMaterial();
+    Material* GetMaterial() const;
     void SetCustomProperties(const MaterialPropertyBlock& properties);
     const MaterialPropertyBlock& GetCustomProperties();
 

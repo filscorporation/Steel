@@ -1,5 +1,4 @@
 #include "UIInputField.h"
-#include "Steel/Core/Log.h"
 #include "Steel/Core/Time.h"
 #include "Steel/Input/Input.h"
 #include "Steel/Scene/SceneHelper.h"
@@ -13,7 +12,25 @@
 void UIInputField::RegisterType()
 {
     REGISTER_TYPE(UIInputField);
-    // TODO
+    REGISTER_ID_ATTRIBUTE(UIInputField, "targetText", GetTargetText, SetTargetText, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIInputField, "cursorWidth", GetCursorWidth, SetCursorWidth, uint32_t, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIInputField, "cursorColor", GetCursorColor, SetCursorColor, glm::vec4, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIInputField, "cursorAutoColor", GetCursorAutoColor, SetCursorAutoColor, bool, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIInputField, "isMultiline", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public);
+    //REGISTER_ATTRIBUTE(UIInputField, "textType", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public); TODO
+    REGISTER_ATTRIBUTE(UIInputField, "selectionColor", GetSelectionColor, SetSelectionColor, glm::vec4, AttributeFlags::Public);
+    //REGISTER_ATTRIBUTE(UIInputField, "transitionInfo", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public); TODO
+    REGISTER_ID_ATTRIBUTE(UIInputField, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIInputField, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public);
+}
+
+void UIInputField::OnCopied()
+{
+    isSelectionDirty = true;
+    isCursorDirty = true;
+    vbCursor.Refresh();
+    vbSelection.Refresh();
+    ibSelection.Refresh();
 }
 
 bool UIInputField::Validate(EntitiesRegistry* entitiesRegistry)
@@ -149,14 +166,14 @@ uint32_t UIInputField::GetCursorWidth() const
     return cursorWidth;
 }
 
-void UIInputField::SetCursorColor(glm::vec4 color)
+void UIInputField::SetCursorColor(const glm::vec4& color)
 {
     cursorColor = color;
     autoCursorColor = false;
     isCursorDirty = true;
 }
 
-glm::vec4 UIInputField::GetCursorColor() const
+const glm::vec4& UIInputField::GetCursorColor() const
 {
     return cursorColor;
 }
@@ -214,13 +231,13 @@ TextTypes::TextType UIInputField::GetTextType() const
     return textType;
 }
 
-void UIInputField::SetSelectionColor(glm::vec4 color)
+void UIInputField::SetSelectionColor(const glm::vec4& color)
 {
     selectionColor = color;
     isSelectionDirty = true;
 }
 
-glm::vec4 UIInputField::GetSelectionColor() const
+const glm::vec4& UIInputField::GetSelectionColor() const
 {
     return selectionColor;
 }
@@ -495,7 +512,8 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
             }
             else if (cursorPosition > 0 && !uiText.GetText().empty())
             {
-                int diff = SetText(uiText, uiText.GetText().erase(cursorPosition - 1, 1));
+                auto text = uiText.GetText();
+                int diff = SetText(uiText, text.erase(cursorPosition - 1, 1));
                 SetCursorPosition(cursorPosition + diff);
                 cursorHorizontalOffset = -1;
             }
@@ -508,7 +526,8 @@ void UIInputField::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent
             }
             else if (cursorPosition < uiText.GetText().size() && !uiText.GetText().empty())
             {
-                SetText(uiText, uiText.GetText().erase(cursorPosition, 1));
+                auto text = uiText.GetText();
+                SetText(uiText, text.erase(cursorPosition, 1));
             }
         }
         if (Input::IsKeyJustPressed(KeyCodes::Enter))
@@ -608,7 +627,8 @@ void UIInputField::AddText(UIText& uiText, const std::string& text)
         uint32_t from = std::min(selectionStart, selectionEnd);
         uint32_t len = std::abs((int)selectionStart - (int)selectionEnd);
         diffFromSelected = len;
-        newText = uiText.GetText().erase(from, len);
+        newText = uiText.GetText();
+        newText = newText.erase(from, len);
         SetCursorPosition(from);
         cursorHorizontalOffset = -1;
     }
@@ -768,7 +788,8 @@ void UIInputField::RemoveSelectedText(UIText& uiText)
 
     uint32_t from = std::min(selectionStart, selectionEnd);
     uint32_t len = std::abs((int)selectionStart - (int)selectionEnd);
-    SetText(uiText, uiText.GetText().erase(from, len));
+    auto text = uiText.GetText();
+    SetText(uiText, text.erase(from, len));
     SetCursorPosition(from);
     selectionStart = from;
     selectionEnd = from;

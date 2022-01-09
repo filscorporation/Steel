@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../EntityComponentSystem/Component.h"
+#include "Steel/EntityComponentSystem/Component.h"
 
 class AudioListener : public Component
 {
