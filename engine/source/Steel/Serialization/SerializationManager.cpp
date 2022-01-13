@@ -203,9 +203,6 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
                             attribute.Deserialize(object, componentNode.second, context);
                         }
                     }
-
-                    // TODO: find out if we need to call OnCreate or something like this after attributes initialized
-                    // (required for components like UIEventHandler (from UIButton and other UI elements))
                 }
             }
         }

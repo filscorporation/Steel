@@ -12,7 +12,8 @@ void UIText::RegisterType()
     REGISTER_TYPE(UIText);
     REGISTER_ATTRIBUTE(UIText, "text", GetText, SetText, std::string, AttributeFlags::Public);
     REGISTER_RESOURCE_ATTRIBUTE(UIText, "font", GetFont, SetFont, Font*, ResourceTypes::Font, AttributeFlags::Public);
-    // TODO
+    REGISTER_ENUM_ATTRIBUTE(UIText, "alignmentType", GetTextAlignment, SetTextAlignment, AlignmentTypes::AlignmentType, AttributeFlags::Public);
+    REGISTER_ENUM_ATTRIBUTE(UIText, "overflowMode", GetOverflowMode, SetOverflowMode, OverflowModes::OverflowMode, AttributeFlags::Public);
 }
 
 void UIText::OnCopied()
@@ -27,9 +28,14 @@ bool UIText::Validate(EntitiesRegistry* entitiesRegistry)
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
 }
 
+void UIText::SetDefault(EntitiesRegistry* entitiesRegistry)
+{
+    _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
+    _font = Application::Instance->GetResourcesManager()->DefaultFont();
+}
+
 void UIText::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    _font = Application::Instance->GetResourcesManager()->DefaultFont();
     _clippingLevel = GetClippingLevelUpwards(entitiesRegistry, Owner);
 }
 
@@ -363,14 +369,11 @@ void UIText::RebuildInner(RectTransformation& transformation)
 
     _sortingOrder = transformation.GetSortingOrder();
 
-    if (_material == nullptr)
-        _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
-
     ib.Clear();
     vb.Clear();
     lettersDimensions.clear();
 
-    if (_font == nullptr)
+    if (_font == nullptr || _material == nullptr)
         return;
 
     if (_textSizeRef != 0 && _textSizeRef != _textSize)

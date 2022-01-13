@@ -18,21 +18,22 @@ void Physics::CreatePhysicsScene(EntitiesRegistry* entitiesRegistry)
     for (int i = 0; i < boxColliders.Size(); ++i)
     {
         if (boxColliders[i].IsAlive())
-            boxColliders[i].Init();
+            boxColliders[i].ApplyPhysicsProperties();
     }
 
     auto circleColliders = entitiesRegistry->GetComponentIterator<CircleCollider>();
     for (int i = 0; i < circleColliders.Size(); ++i)
     {
         if (circleColliders[i].IsAlive())
-            circleColliders[i].Init();
+            circleColliders[i].ApplyPhysicsProperties();
     }
 
+    // TODO: solve for inactive physics objects when this is called at the start
     auto rigidBodies = entitiesRegistry->GetComponentIterator<RigidBody>();
     for (int i = 0; i < rigidBodies.Size(); ++i)
     {
         if (rigidBodies[i].IsAlive())
-            rigidBodies[i].Init();
+            rigidBodies[i].ApplyPhysicsProperties();
     }
 
     Log::LogDebug("Physics initialized");

@@ -13,7 +13,7 @@ void UILayoutGroup::RegisterType()
 {
     REGISTER_TYPE(UILayoutGroup);
     REGISTER_ID_ATTRIBUTE(UILayoutGroup, "groupID", GetGroupID, SetGroupID, AttributeFlags::Public);
-    // TODO
+    REGISTER_ENUM_ATTRIBUTE(UILayoutGroup, "type", GetType, SetType, LayoutGroupTypes::LayoutGroupType, AttributeFlags::Public);
 }
 
 bool UILayoutGroup::Validate(EntitiesRegistry* entitiesRegistry)

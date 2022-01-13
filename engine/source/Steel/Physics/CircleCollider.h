@@ -16,7 +16,7 @@ public:
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
 
-    void Init();
+    void ApplyPhysicsProperties();
 
     void SetSizeAutomatically();
     float GetRadius() const;

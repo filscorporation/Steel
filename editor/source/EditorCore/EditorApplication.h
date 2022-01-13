@@ -20,6 +20,7 @@ public:
 
     void Init(ApplicationSettings settings) override;
     void RunUpdate() override;
+    bool IsRunning() override;
 
     EditorStates::EditorState GetState() const;
     void SetState(EditorStates::EditorState newState);

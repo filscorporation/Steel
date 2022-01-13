@@ -26,7 +26,8 @@ public:
     void RestoreTransition();
 
 protected:
-    void Init(UpdateInteractable callback);
+    void SetDefaultTransitionInfo();
+    void InitTransitionInfo(UpdateInteractable callback);
     void PlayTransition(TransitionStates::TransitionState state);
     bool UpdateTransition();
 

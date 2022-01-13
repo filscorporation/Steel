@@ -10,15 +10,15 @@
 #include "Application.h"
 #include "Log.h"
 #include "Time.h"
-#include "../Audio/AudioCore.h"
-#include "../Animation/Animator.h"
-#include "../Input/Input.h"
-#include "../Math/Random.h"
-#include "../Physics/Physics.h"
-#include "../Rendering/Renderer.h"
-#include "../Rendering/SceneRenderer.h"
-#include "../Scripting/ScriptingSystem.h"
-#include "../Serialization/SerializationManager.h"
+#include "Steel/Audio/AudioCore.h"
+#include "Steel/Animation/Animator.h"
+#include "Steel/Input/Input.h"
+#include "Steel/Math/Random.h"
+#include "Steel/Physics/Physics.h"
+#include "Steel/Rendering/Renderer.h"
+#include "Steel/Rendering/SceneRenderer.h"
+#include "Steel/Scripting/ScriptingSystem.h"
+#include "Steel/Serialization/SerializationManager.h"
 
 Application* Application::Instance;
 
@@ -99,9 +99,9 @@ void Application::Run()
 
     Log::LogDebug("Running application");
 
-    IsRunning = true;
+    IsRunningInternal = true;
 
-    while (IsRunning)
+    while (IsRunningInternal)
     {
         RunUpdate();
     }
@@ -111,7 +111,7 @@ void Application::Run()
 
 void Application::RunUpdate()
 {
-    if (!IsRunning)
+    if (!IsRunningInternal)
         return; // When updated not from Run()
 
     // Set scene we will update and render
@@ -141,7 +141,7 @@ void Application::RunUpdate()
     Screen::SwapBuffers();
 
     if (Screen::WindowShouldClose())
-        IsRunning = false;
+        IsRunningInternal = false;
 }
 
 void Application::Terminate()
@@ -160,7 +160,12 @@ void Application::Terminate()
 
 void Application::Quit()
 {
-    IsRunning = false;
+    IsRunningInternal = false;
+}
+
+bool Application::IsRunning()
+{
+    return IsRunningInternal;
 }
 
 ScreenParameters& Application::ScreenParametersForUpdate()

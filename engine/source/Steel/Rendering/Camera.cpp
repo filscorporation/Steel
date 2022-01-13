@@ -1,7 +1,6 @@
 #include "Camera.h"
 #include "Screen.h"
-#include "../Scene/Transformation.h"
-#include "../Scene/SceneHelper.h"
+#include "Steel/Scene/SceneHelper.h"
 
 void Camera::RegisterType()
 {
@@ -11,8 +10,8 @@ void Camera::RegisterType()
     REGISTER_ATTRIBUTE(Camera, "height", GetHeight, SetHeight, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(Camera, "nearClippingPlane", GetNearClippingPlane, SetNearClippingPlane, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(Camera, "farClippingPlane", GetFarClippingPlane, SetFarClippingPlane, float, AttributeFlags::Public);
-    //REGISTER_ATTRIBUTE(Camera, "resizeMode", GetResizeMode, SetResizeMode, CameraResizeModes::CameraResizeMode, AttributeFlags::Public);
-    //REGISTER_ATTRIBUTE(Camera, "clearFlag", GetClearFlag, SetClearFlag, ClearFlags::ClearFlag, AttributeFlags::Public);
+    REGISTER_ENUM_ATTRIBUTE(Camera, "resizeMode", GetResizeMode, SetResizeMode, CameraResizeModes::CameraResizeMode, AttributeFlags::Public);
+    REGISTER_ENUM_ATTRIBUTE(Camera, "clearFlag", GetClearFlag, SetClearFlag, ClearFlags::ClearFlag, AttributeFlags::Public);
 }
 
 RenderMask Camera::GetRenderMask() const

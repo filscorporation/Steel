@@ -31,7 +31,7 @@ public:
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
-    void Init();
+    void ApplyPhysicsProperties();
 
     RigidBodyTypes::RigidBodyType GetType() const;
     void SetType(RigidBodyTypes::RigidBodyType type);

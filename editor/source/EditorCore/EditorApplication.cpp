@@ -71,7 +71,7 @@ void EditorApplication::Init(ApplicationSettings settings)
 
 void EditorApplication::RunUpdate()
 {
-    if (!IsRunning)
+    if (!IsRunningInternal)
         return; // When updated not from Run()
 
     SwitchContext(EditorContext);
@@ -108,7 +108,7 @@ void EditorApplication::RunUpdate()
     Screen::SwapBuffers();
 
     if (Screen::WindowShouldClose())
-        IsRunning = false;
+        IsRunningInternal = false;
 }
 
 void EditorApplication::Terminate()
@@ -177,4 +177,9 @@ void EditorApplication::CreateEditorViewCamera()
     camera.SetHeight(3.0f);
     auto& transform = EditorContext->Scenes->GetActiveScene()->GetEntitiesRegistry()->GetComponent<Transformation>(EditorViewCameraEntity);
     transform.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+}
+
+bool EditorApplication::IsRunning()
+{
+    return IsRunningInternal && state == EditorStates::Playing;
 }

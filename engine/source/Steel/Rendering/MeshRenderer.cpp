@@ -17,6 +17,11 @@ void MeshRenderer::OnCopied()
     ib.Refresh();
 }
 
+void MeshRenderer::SetDefault(EntitiesRegistry* entitiesRegistry)
+{
+    _material = Application::Instance->GetResourcesManager()->DefaultMeshMaterial();
+}
+
 void MeshRenderer::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
     isDirty = true;
@@ -107,10 +112,7 @@ void MeshRenderer::RebuildInner(Transformation& transformation)
     ib.Clear();
     vb.Clear();
 
-    if (_material == nullptr)
-        _material = Application::Instance->GetResourcesManager()->DefaultMeshMaterial();
-
-    if (_mesh.IsEmpty())
+    if (_material == nullptr || _mesh.IsEmpty())
         return;
 
     bool hasColors = !_mesh.Colors.empty();

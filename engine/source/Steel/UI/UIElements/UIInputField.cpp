@@ -17,7 +17,7 @@ void UIInputField::RegisterType()
     REGISTER_ATTRIBUTE(UIInputField, "cursorColor", GetCursorColor, SetCursorColor, glm::vec4, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIInputField, "cursorAutoColor", GetCursorAutoColor, SetCursorAutoColor, bool, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIInputField, "isMultiline", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public);
-    //REGISTER_ATTRIBUTE(UIInputField, "textType", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public); TODO
+    REGISTER_ENUM_ATTRIBUTE(UIInputField, "textType", GetTextType, SetTextType, TextTypes::TextType, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIInputField, "selectionColor", GetSelectionColor, SetSelectionColor, glm::vec4, AttributeFlags::Public);
     //REGISTER_ATTRIBUTE(UIInputField, "transitionInfo", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public); TODO
     REGISTER_ID_ATTRIBUTE(UIInputField, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public);
@@ -38,6 +38,11 @@ bool UIInputField::Validate(EntitiesRegistry* entitiesRegistry)
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
 }
 
+void UIInputField::SetDefault(EntitiesRegistry* entitiesRegistry)
+{
+    UIInteractable::SetDefaultTransitionInfo();
+}
+
 void UIInputField::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     auto& eventHandler = entitiesRegistry->AddComponent<UIEventHandler>(Owner);
@@ -47,7 +52,7 @@ void UIInputField::OnCreated(EntitiesRegistry* entitiesRegistry)
                               UIEventTypes::MouseDragBegin | UIEventTypes::MouseDrag | UIEventTypes::MouseDragEnd |
                               UIEventTypes::MouseJustPressedAnywhere;
 
-    UIInteractable::Init(UpdateTransition);
+    UIInteractable::InitTransitionInfo(UpdateTransition);
 }
 
 void UIInputField::OnRemoved(EntitiesRegistry* entitiesRegistry)

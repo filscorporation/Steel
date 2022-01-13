@@ -1,8 +1,8 @@
 #include "UICheckBox.h"
-#include "../../Core/Log.h"
-#include "../../Scene/SceneHelper.h"
-#include "../../Scripting/ScriptingCore.h"
-#include "../../Scripting/ScriptingSystem.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scripting/ScriptingCore.h"
+#include "Steel/Scripting/ScriptingSystem.h"
 
 void UICheckBox::RegisterType()
 {
@@ -18,13 +18,18 @@ bool UICheckBox::Validate(EntitiesRegistry* entitiesRegistry)
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
 }
 
+void UICheckBox::SetDefault(EntitiesRegistry* entitiesRegistry)
+{
+    UIInteractable::SetDefaultTransitionInfo();
+}
+
 void UICheckBox::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     auto& eventHandler = entitiesRegistry->AddComponent<UIEventHandler>(Owner);
     eventHandler.EventCallback = UICheckBox::HandleEvent;
     eventHandler.EventsMask = UIEventTypes::MouseEnter | UIEventTypes::MouseExit | UIEventTypes::MouseJustPressed;
 
-    UIInteractable::Init(UpdateTransition);
+    UIInteractable::InitTransitionInfo(UpdateTransition);
 }
 
 void UICheckBox::OnRemoved(EntitiesRegistry* entitiesRegistry)

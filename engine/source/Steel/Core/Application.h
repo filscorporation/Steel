@@ -52,6 +52,7 @@ public:
     void Run();
     virtual void RunUpdate();
     void Quit();
+    virtual bool IsRunning();
 
     ScreenParameters& ScreenParametersForUpdate();
     ResourcesManager* GetResourcesManager();
@@ -63,7 +64,7 @@ public:
 
 protected:
     bool IsInitialized = false;
-    bool IsRunning;
+    bool IsRunningInternal;
     bool EntryPointCalled = false;
     ApplicationContext* CurrentContext = nullptr;
     ApplicationContext* AppContext = nullptr;

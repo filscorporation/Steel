@@ -24,6 +24,11 @@ bool UIImage::Validate(EntitiesRegistry* entitiesRegistry)
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
 }
 
+void UIImage::SetDefault(EntitiesRegistry* entitiesRegistry)
+{
+    _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
+}
+
 void UIImage::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     entitiesRegistry->AddComponent<UIEventHandler>(Owner);
@@ -135,18 +140,19 @@ void UIImage::RebuildInner(RectTransformation& transformation)
 {
     isDirty = false;
 
-    glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     _sortingOrder = transformation.GetSortingOrder();
+
+    ib.Clear();
+    vb.Clear();
+
+    if (_material == nullptr)
+        return;
+
+    glm::mat4 matrix = transformation.GetTransformationMatrixCached();
 
     _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->SpriteTexture->GetTextureID());
     _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
     _customProperties.UpdateHash();
-
-    if (_image != nullptr && _material == nullptr)
-        _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
-
-    ib.Clear();
-    vb.Clear();
 
     if (_image != nullptr && _image->SpriteTexture != nullptr)
     {

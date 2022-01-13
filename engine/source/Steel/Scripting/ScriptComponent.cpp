@@ -2,7 +2,8 @@
 
 #include "ScriptComponent.h"
 #include "ScriptingCore.h"
-#include "../UI/UIEventHandler.h"
+#include "Steel/Core/Application.h"
+#include "Steel/UI/UIEventHandler.h"
 
 void ScriptComponent::RegisterType()
 {
@@ -26,6 +27,7 @@ void ScriptComponent::OnRemoved(EntitiesRegistry* entitiesRegistry)
     }
 
     OnDestroy();
+
     for (auto script : Scripts)
         ScriptingCore::FreeScriptHandle(script.Pointer);
 }
@@ -53,6 +55,7 @@ bool ScriptComponent::HasScriptType(ScriptTypeInfo* typeInfo)
 
 void ScriptComponent::AddScript(ScriptPointer scriptPointer, ScriptTypeInfo* typeInfo)
 {
+    // TODO: rework with scripts being added and removed in edit mode in mind (should store only type, no handle)
     ScriptData data { scriptPointer, typeInfo };
     Scripts.emplace_back(data);
     ScriptsMask = ScriptsMask | typeInfo->Mask;
@@ -100,11 +103,17 @@ ScriptPointer ScriptComponent::GetScriptPointer(ScriptTypeInfo* typeInfo)
 
 void ScriptComponent::OnCreate()
 {
+    if (!Application::Instance->IsRunning())
+        return;
+
     CALL_IF_MASK(OnCreate)
 }
 
 void ScriptComponent::OnDestroy()
 {
+    if (!Application::Instance->IsRunning())
+        return;
+
     CALL_IF_MASK(OnDestroy)
 }
 
@@ -125,11 +134,17 @@ void ScriptComponent::OnFixedUpdate()
 
 void ScriptComponent::OnEnabled()
 {
+    if (!Application::Instance->IsRunning())
+        return;
+
     CALL_IF_MASK(OnEnabled)
 }
 
 void ScriptComponent::OnDisabled()
 {
+    if (!Application::Instance->IsRunning())
+        return;
+
     CALL_IF_MASK(OnDisabled)
 }
 

@@ -14,6 +14,10 @@ void CircleCollider::RegisterType()
 
 void CircleCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
+    // TODO: probably temporary before serialization copy
+    if (info != nullptr)
+        return;
+
     if (!PhysicsCore::Initialized())
         return;
 
@@ -29,7 +33,7 @@ void CircleCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
     delete info;
 }
 
-void CircleCollider::Init()
+void CircleCollider::ApplyPhysicsProperties()
 {
     info = new CircleCollider::CircleColliderInfo();
     info->CircleShape = new b2CircleShape();

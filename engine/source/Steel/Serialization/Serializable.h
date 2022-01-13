@@ -3,6 +3,7 @@
 #include "AttributeInfo.h"
 #include "AttributeAccessor.h"
 #include "IDAttributeAccessor.h"
+#include "EnumAttributeAccessor.h"
 #include "ResourceAttributeAccessor.h"
 #include "SerializationManager.h"
 #include "TypeInfoStorage.h"
@@ -33,6 +34,18 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                           \
         name,                                                                                                   \
         new AttributeAccessor<className, type, AttributeTypedef<type>>(&className::getter, &className::setter), \
+        flags                                                                                                   \
+    )                                                                                                           \
+)
+
+#define REGISTER_ENUM_ATTRIBUTE(className, name, getter, setter, type, flags)                                   \
+SerializationManager::RegisterAttribute                                                                         \
+(                                                                                                               \
+    TYPE_ID(className),                                                                                         \
+    AttributeInfo                                                                                               \
+    (                                                                                                           \
+        name,                                                                                                   \
+        new EnumAttributeAccessor<className, type>(&className::getter, &className::setter),                     \
         flags                                                                                                   \
     )                                                                                                           \
 )

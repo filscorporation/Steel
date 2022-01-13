@@ -15,6 +15,7 @@ void EditorSceneManager::EditActiveScene()
     isEditMode = true;
 
     delete editedScene;
+    // TODO: change to serialized fields based copying
     editedScene = new Scene(*activeScene);
 }
 
@@ -45,4 +46,5 @@ void EditorSceneManager::LoadSceneToEdit(Scene* scene)
 {
     delete editedScene;
     editedScene = scene;
+    editedScene->InitForEdit();
 }

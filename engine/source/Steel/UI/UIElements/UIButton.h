@@ -19,6 +19,7 @@ public:
     explicit UIButton(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { };
 
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void SetDefault(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;

@@ -1,8 +1,8 @@
 #include "UITabs.h"
 #include "UIButton.h"
 #include "UIText.h"
-#include "../../Core/Application.h"
-#include "../../Core/Log.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
 
 void UITabs::RegisterType()
 {
@@ -15,11 +15,16 @@ bool UITabs::Validate(EntitiesRegistry* entitiesRegistry)
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
 }
 
-void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
+void UITabs::SetDefault(EntitiesRegistry* entitiesRegistry)
 {
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
     _tabOpenedSprite = layer->UIResources.DefaultTabOpenedSprite;
     _tabClosedSprite = layer->UIResources.DefaultTabClosedSprite;
+}
+
+void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
     buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();
     buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetHeight();
 
@@ -36,6 +41,7 @@ void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void UITabs::SetTabsSprites(Sprite* tabOpenedSprite, Sprite* tabClosedSprite)
 {
+    // TODO: make serializable
     _tabOpenedSprite = tabOpenedSprite;
     _tabClosedSprite = tabClosedSprite;
     buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();

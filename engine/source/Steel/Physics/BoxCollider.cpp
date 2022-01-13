@@ -15,6 +15,10 @@ void BoxCollider::RegisterType()
 
 void BoxCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
+    // TODO: probably temporary before serialization copy
+    if (info != nullptr)
+        return;
+
     if (!PhysicsCore::Initialized())
         return;
 
@@ -30,7 +34,7 @@ void BoxCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
     delete info;
 }
 
-void BoxCollider::Init()
+void BoxCollider::ApplyPhysicsProperties()
 {
     info = new BoxCollider::BoxColliderInfo();
     info->BoxShape = new b2PolygonShape();

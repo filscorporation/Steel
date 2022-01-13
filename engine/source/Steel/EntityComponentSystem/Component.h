@@ -16,7 +16,11 @@ public:
 
     bool IsAlive() const;
 
+    // Called when component is added to check conflicting or necessary components or data
     virtual bool Validate(EntitiesRegistry* entitiesRegistry) { return true; }
+    // Called after component is added to set default values
+    virtual void SetDefault(EntitiesRegistry* entitiesRegistry) { }
+
     virtual void OnCreated(EntitiesRegistry* entitiesRegistry) { }
     virtual void OnRemoved(EntitiesRegistry* entitiesRegistry) { }
     virtual void OnEnabled(EntitiesRegistry* entitiesRegistry) { }

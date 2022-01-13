@@ -54,6 +54,16 @@ void Scene::Init()
     Physics::CreatePhysicsScene(entitiesRegistry);
     AudioCore::CreateAudioScene(entitiesRegistry);
     systemsInitialized = true;
+
+    // Call on create for all loaded with scene objects
+    entitiesRegistry->OnCreateAll();
+}
+
+void Scene::InitForEdit()
+{
+    // TODO: maybe init audio?
+    // Call on create for all loaded with scene objects
+    entitiesRegistry->OnCreateAll();
 }
 
 void Scene::CreateMainCamera()

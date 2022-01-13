@@ -17,6 +17,11 @@ bool UIButton::Validate(EntitiesRegistry* entitiesRegistry)
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);
 }
 
+void UIButton::SetDefault(EntitiesRegistry* entitiesRegistry)
+{
+    UIInteractable::SetDefaultTransitionInfo();
+}
+
 void UIButton::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     auto& eventHandler = entitiesRegistry->AddComponent<UIEventHandler>(Owner);
@@ -24,7 +29,7 @@ void UIButton::OnCreated(EntitiesRegistry* entitiesRegistry)
     eventHandler.EventsMask = UIEventTypes::MouseEnter | UIEventTypes::MouseExit
                               | UIEventTypes::MouseJustPressed | UIEventTypes::MouseJustReleased;
 
-    UIInteractable::Init(UpdateTransition);
+    UIInteractable::InitTransitionInfo(UpdateTransition);
 }
 
 void UIButton::OnRemoved(EntitiesRegistry* entitiesRegistry)

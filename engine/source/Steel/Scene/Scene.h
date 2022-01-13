@@ -21,6 +21,7 @@ public:
     Scene(const Scene& scene);
     ~Scene() override;
     void Init();
+    void InitForEdit();
 
     void CreateMainCamera();
     EntityID GetMainCamera();

@@ -11,7 +11,7 @@
 void RigidBody::RegisterType()
 {
     REGISTER_TYPE(RigidBody);
-    //REGISTER_ATTRIBUTE(RigidBody, "type", GetMass, SetMass, float, AttributeFlags::Public); TODO
+    REGISTER_ENUM_ATTRIBUTE(RigidBody, "type", GetType, SetType, RigidBodyTypes::RigidBodyType, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(RigidBody, "mass", GetMass, SetMass, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(RigidBody, "gravityScale", GetGravityScale, SetGravityScale, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(RigidBody, "friction", GetFriction, SetFriction, float, AttributeFlags::Public);
@@ -24,6 +24,10 @@ void RigidBody::RegisterType()
 
 void RigidBody::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
+    // TODO: probably temporary before serialization copy
+    if (info != nullptr)
+        return;
+
     if (!PhysicsCore::Initialized())
         return;
 
@@ -61,7 +65,7 @@ void RigidBody::OnDisabled(EntitiesRegistry* entitiesRegistry)
     info = nullptr;
 }
 
-void RigidBody::Init()
+void RigidBody::ApplyPhysicsProperties()
 {
     // Init info and apply type
     info = new RigidBody::RigidBodyInfo();

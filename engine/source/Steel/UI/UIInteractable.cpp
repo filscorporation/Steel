@@ -1,12 +1,11 @@
 #include "UIInteractable.h"
 
 #include "UIElements/UIImage.h"
-#include "../Core/Log.h"
-#include "../Core/Time.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Core/Time.h"
 
-void UIInteractable::Init(UpdateInteractable callback)
+void UIInteractable::SetDefaultTransitionInfo()
 {
-    updateCallback = callback;
     currentTransitionsInfo.TransitionType = TransitionTypes::ColorShift;
     currentTransitionsInfo.TransitionDuration = 0.1f;
     currentTransitionsInfo.Normal.FromColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -14,6 +13,11 @@ void UIInteractable::Init(UpdateInteractable callback)
     currentTransitionsInfo.Selected.FromColor(glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
     currentTransitionsInfo.Clicked.FromColor(glm::vec4(0.55f, 0.55f, 0.55f, 1.0f));
     currentTransitionsInfo.Disabled.FromColor(glm::vec4(0.35f, 0.35f, 0.35f, 1.0f));
+}
+
+void UIInteractable::InitTransitionInfo(UpdateInteractable callback)
+{
+    updateCallback = callback;
 
     startingTransitionData = currentTransitionsInfo.Normal;
     targetTransitionData = currentTransitionsInfo.Normal;

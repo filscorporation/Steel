@@ -24,6 +24,7 @@ public:
     explicit UITabs(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
+    void SetDefault(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
 
     void SetTabsSprites(Sprite* tabOpenedSprite, Sprite* tabClosedSprite);

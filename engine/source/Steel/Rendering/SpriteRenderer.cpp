@@ -15,6 +15,11 @@ void SpriteRenderer::OnCopied()
     ib.Refresh();
 }
 
+void SpriteRenderer::SetDefault(EntitiesRegistry* entitiesRegistry)
+{
+    _material = Application::Instance->GetResourcesManager()->DefaultSpriteMaterial();
+}
+
 void SpriteRenderer::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
     isDirty = true;
@@ -117,13 +122,10 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
     _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->SpriteTexture->GetTextureID());
     _customProperties.UpdateHash();
 
-    if (_image != nullptr && _material == nullptr)
-        _material = Application::Instance->GetResourcesManager()->DefaultSpriteMaterial();
-
     ib.Clear();
     vb.Clear();
 
-    if (_image != nullptr && _image->SpriteTexture != nullptr)
+    if (_image != nullptr && _material != nullptr && _image->SpriteTexture != nullptr)
     {
         glm::vec2 texCoords[4];
         if (_image->IsSpriteSheet)

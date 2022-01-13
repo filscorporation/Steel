@@ -48,6 +48,7 @@ public:
     virtual bool ExistsByID(EntityID id) = 0;
     virtual void* GetRawByID(EntityID id) = 0;
     virtual void* AddRawByID(EntityID id, EntityID entityID, bool active) = 0;
+    virtual void OnCreateAll() = 0;
 
 protected:
     EntitiesRegistry* _entitiesRegistry = nullptr;
@@ -189,6 +190,18 @@ public:
             if (InactiveStorage.Has(id))
                 return nullptr;
             return &(InactiveStorage.Add(id, entityID));
+        }
+    }
+
+    void OnCreateAll() override
+    {
+        for (auto& component : Storage)
+        {
+            component.OnCreated(_entitiesRegistry);
+        }
+        for (auto& component : InactiveStorage)
+        {
+            component.OnCreated(_entitiesRegistry);
         }
     }
 };
@@ -575,6 +588,7 @@ public:
         }
         else
         {
+            component.SetDefault(this);
             component.OnCreated(this);
         }
 
@@ -664,22 +678,6 @@ public:
 
     // Serialization methods
 
-    void GetRegistryState(std::vector<EntityID>& outEntityIDs, int& outFreeIDsCount, EntityID& outNextFreeID)
-    {
-        outEntityIDs = std::vector<EntityID>(entityIDs);
-        outFreeIDsCount = freeIDsCount;
-        outNextFreeID = nextFreeID;
-    }
-
-    void RestoreRegistryState(std::vector<EntityID> rEntityIDs, int rFreeIDsCount, EntityID rNextFreeID)
-    {
-        entityIDs.clear();
-        entityIDs = std::vector<EntityID>(rEntityIDs);
-        entityStates.resize(entityIDs.size());
-        freeIDsCount = rFreeIDsCount;
-        nextFreeID = rNextFreeID;
-    }
-
     bool RestoreEntityState(EntityID entityID, EntityStates::EntityState entityState)
     {
         if (!EntityExists(entityID))
@@ -709,6 +707,14 @@ public:
             return nullptr;
 
         return componentsMap[typeID]->AddRawByID(id, entityID, EntityGetState(entityID) & EntityStates::IsActive);
+    }
+
+    void OnCreateAll()
+    {
+        for (auto component : componentsMap)
+        {
+            component.second->OnCreateAll();
+        }
     }
 };
 
