@@ -26,17 +26,6 @@ Scene::Scene(const std::string& name)
     uiLayer->LoadDefaultResources();
 }
 
-Scene::Scene(const Scene& scene) : HierarchyParent(scene)
-{
-    _name = scene._name;
-    entitiesByUUID = scene.entitiesByUUID;
-    entitiesRegistry = new EntitiesRegistry(*scene.entitiesRegistry);
-    uiLayer = new UILayer(*scene.uiLayer);
-    uiLayer->_scene = this;
-
-    _mainCameraEntity = scene._mainCameraEntity;
-}
-
 Scene::~Scene()
 {
     delete uiLayer;

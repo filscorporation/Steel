@@ -26,7 +26,6 @@ class UIInputField : public UIInteractable
 public:
     explicit UIInputField(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { }
 
-    void OnCopied() override;
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void SetDefault(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;

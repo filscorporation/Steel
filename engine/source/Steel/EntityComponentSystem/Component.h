@@ -12,8 +12,6 @@ public:
     explicit Component(EntityID ownerEntityID);
     virtual ~Component() = default;
 
-    virtual void OnCopied() { }
-
     bool IsAlive() const;
 
     // Called when component is added to check conflicting or necessary components or data

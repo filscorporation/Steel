@@ -14,12 +14,6 @@ void IndexBuffer::Clear()
     Size = 0;
 }
 
-void IndexBuffer::Refresh()
-{
-    Data = nullptr;
-    Size = 0;
-}
-
 bool IndexBuffer::IsEmpty() const
 {
     return Size == 0;

@@ -16,13 +16,6 @@ void UIText::RegisterType()
     REGISTER_ENUM_ATTRIBUTE(UIText, "overflowMode", GetOverflowMode, SetOverflowMode, OverflowModes::OverflowMode, AttributeFlags::Public);
 }
 
-void UIText::OnCopied()
-{
-    SetDirty();
-    vb.Refresh();
-    ib.Refresh();
-}
-
 bool UIText::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

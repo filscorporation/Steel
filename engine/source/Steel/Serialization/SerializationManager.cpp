@@ -73,6 +73,19 @@ Scene* SerializationManager::DeserializeScene(const std::string& filePath)
     return scene;
 }
 
+Scene* SerializationManager::CopyScene(Scene* sceneFrom)
+{
+    auto scene = new Scene("");
+
+    if (!CopySceneInner(sceneFrom, scene))
+    {
+        Log::LogError("Error copying the scene");
+        return nullptr;
+    }
+
+    return scene;
+}
+
 void SerializationManager::RegisterAttribute(ComponentTypeID classTypeID, const AttributeInfo& attributeInfo)
 {
     _attributesInfo[classTypeID].emplace_back(attributeInfo);
@@ -154,10 +167,12 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
         // Pre pass to fill UUID to EntityID map (for link attributes)
         for (auto entityNode : entitiesNode)
         {
-            auto entity = scene->entitiesRegistry->CreateNewEntity();
             auto uuid = entityNode["uuid"].as<UUID>();
             if (uuid != NULL_UUID)
+            {
+                auto entity = scene->entitiesRegistry->CreateNewEntity();
                 scene->SetEntityByUUID(uuid, entity);
+            }
         }
 
         // Main pass
@@ -202,6 +217,90 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
                         {
                             attribute.Deserialize(object, componentNode.second, context);
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
+{
+    SerializationContext contextFrom;
+    contextFrom.SerializedScene = sceneFrom;
+    contextFrom.ResourcesSource = Application::Context()->Resources;
+
+    SerializationContext contextTo;
+    contextTo.SerializedScene = sceneTo;
+    contextTo.ResourcesSource = Application::Context()->Resources;
+
+    sceneTo->_name = sceneFrom->_name;
+    sceneTo->_mainCameraEntity = sceneFrom->_mainCameraEntity;
+    sceneTo->SetChildrenCount(sceneFrom->GetChildrenCount());
+    sceneTo->SetFirstChildNode(sceneFrom->GetFirstChildNode());
+
+    // Pre pass to fill UUID to EntityID map (for link attributes)
+    for (int i = 0; i < sceneFrom->entitiesRegistry->EntityGetMaxID(); ++i)
+    {
+        EntityID entityFrom = sceneFrom->entitiesRegistry->EntityActual(i);
+        auto uuid = sceneFrom->entitiesRegistry->HasComponent<IDComponent>(entityFrom)
+                    ? sceneFrom->entitiesRegistry->GetComponent<IDComponent>(entityFrom).GetUUID()
+                    : NULL_UUID;
+        if (uuid != NULL_UUID)
+        {
+            auto entityTo = sceneTo->entitiesRegistry->CreateNewEntity();
+            sceneTo->SetEntityByUUID(uuid, entityTo);
+        }
+    }
+
+    // Main pass
+    for (int i = 0; i < sceneFrom->entitiesRegistry->EntityGetMaxID(); ++i)
+    {
+        EntityID entityFrom = sceneFrom->entitiesRegistry->EntityActual(i);
+
+        if (sceneFrom->entitiesRegistry->EntityExists(entityFrom))
+        {
+            auto uuid = sceneFrom->entitiesRegistry->HasComponent<IDComponent>(entityFrom)
+                        ? sceneFrom->entitiesRegistry->GetComponent<IDComponent>(entityFrom).GetUUID()
+                        : NULL_UUID;
+            auto entityTo = sceneTo->GetEntityByUUID(uuid);
+            if (entityTo == NULL_ENTITY)
+                entityTo = sceneTo->entitiesRegistry->CreateNewEntity();
+            auto entityState = sceneFrom->entitiesRegistry->EntityGetState(entityFrom);
+
+            if (!sceneTo->entitiesRegistry->RestoreEntityState(entityTo, entityState))
+            {
+                Log::LogError("Entity {0} state was not restored correctly", entityTo);
+                continue;
+            }
+
+            std::vector<std::pair<ComponentTypeID, void*>> rawData;
+            sceneFrom->entitiesRegistry->GetAllComponentsForEntity(entityFrom, rawData);
+            for (auto dataPair : rawData)
+            {
+                auto objectFrom = static_cast<Serializable*>(dataPair.second);
+                auto typeInfo = sceneFrom->entitiesRegistry->GetTypeInfoByID(dataPair.first);
+
+                // This will add component map to registry, so we can add component of deserialized type without template arguments
+                if (!TypeInfoStorage::CheckTypeRegistered(typeInfo->ID, sceneTo->entitiesRegistry))
+                {
+                    Log::LogError("Type {0} not registered", typeInfo->TypeName);
+                    continue;
+                }
+                auto objectTo = static_cast<Serializable*>(sceneTo->entitiesRegistry->RestoreComponent(typeInfo->ID, entityTo));
+                if (!objectTo)
+                {
+                    Log::LogError("Object of type {0} was not restored properly", typeInfo->TypeName);
+                    continue;
+                }
+
+                if (_attributesInfo.find(typeInfo->ID) != _attributesInfo.end())
+                {
+                    for (auto attribute : _attributesInfo[typeInfo->ID])
+                    {
+                        attribute.Copy(objectFrom, objectTo, contextFrom, contextTo);
                     }
                 }
             }

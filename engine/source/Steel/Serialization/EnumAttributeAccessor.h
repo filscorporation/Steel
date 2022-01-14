@@ -38,6 +38,11 @@ public:
         Set(object, static_cast<U>(node[name].as<int>()));
     }
 
+    void Copy(Serializable* objectFrom, Serializable* objectTo, SerializationContext& contextFrom, SerializationContext& contextTo) override
+    {
+        Set(objectTo, Get(objectFrom));
+    }
+
 private:
     U Get(Serializable* object) const
     {

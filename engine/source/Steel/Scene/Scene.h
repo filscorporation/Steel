@@ -18,7 +18,6 @@ public:
     UILayer* GetUILayer();
 
     explicit Scene(const std::string& name);
-    Scene(const Scene& scene);
     ~Scene() override;
     void Init();
     void InitForEdit();

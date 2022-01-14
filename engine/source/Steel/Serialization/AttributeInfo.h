@@ -52,6 +52,11 @@ public:
         _accessor->Deserialize(object, _name, node, context);
     }
 
+    void Copy(Serializable* objectFrom, Serializable* objectTo, SerializationContext& contextFrom, SerializationContext& contextTo)
+    {
+        _accessor->Copy(objectFrom, objectTo, contextFrom, contextTo);
+    }
+
 private:
     std::string _name;
     AttributeAccessorBase* _accessor = nullptr;

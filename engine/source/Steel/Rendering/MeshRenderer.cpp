@@ -10,13 +10,6 @@ void MeshRenderer::RegisterType()
     // Maybe later mesh will become resource
 }
 
-void MeshRenderer::OnCopied()
-{
-    isDirty = true;
-    vb.Refresh();
-    ib.Refresh();
-}
-
 void MeshRenderer::SetDefault(EntitiesRegistry* entitiesRegistry)
 {
     _material = Application::Instance->GetResourcesManager()->DefaultMeshMaterial();

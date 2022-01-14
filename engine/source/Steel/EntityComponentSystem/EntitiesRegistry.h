@@ -32,7 +32,6 @@ class ComponentsPoolWrapperBase
 public:
     explicit ComponentsPoolWrapperBase(EntitiesRegistry* entitiesRegistry) { _entitiesRegistry = entitiesRegistry; }
     virtual ~ComponentsPoolWrapperBase() = default;
-    virtual ComponentsPoolWrapperBase* Clone() const = 0;
 
     virtual const TypeInfo* GetTypeInfo() = 0;
 
@@ -66,25 +65,6 @@ public:
 
     explicit ComponentsPoolWrapper(EntitiesRegistry* entitiesRegistry) : ComponentsPoolWrapperBase(entitiesRegistry) { }
     ~ComponentsPoolWrapper() override = default;
-    ComponentsPoolWrapper<T>* Clone() const override
-    {
-        auto copy = new ComponentsPoolWrapper<T>(*this);
-        copy->AfterCopy();
-
-        return copy;
-    }
-
-    void AfterCopy()
-    {
-        for (auto& component : Storage)
-        {
-            component.OnCopied();
-        }
-        for (auto& component : InactiveStorage)
-        {
-            component.OnCopied();
-        }
-    }
 
     const TypeInfo* GetTypeInfo() override { return T::GetTypeInfo(); }
 
@@ -243,21 +223,6 @@ class EntitiesRegistry
 {
 public:
     EntitiesRegistry() = default;
-    EntitiesRegistry(const EntitiesRegistry& entitiesRegistry)
-    {
-        entityIDs = std::vector<EntityID>(entitiesRegistry.entityIDs);
-        entityStates = std::vector<EntityStates::EntityState>(entitiesRegistry.entityStates);
-
-        for (auto& pair : entitiesRegistry.componentsMap)
-        {
-            componentsMap[pair.first] = pair.second->Clone();
-            componentsMap[pair.first]->_entitiesRegistry = this;
-        }
-
-        freeIDsCount = entitiesRegistry.freeIDsCount;
-        nextFreeID = entitiesRegistry.nextFreeID;
-        isCleared = entitiesRegistry.isCleared;
-    }
     ~EntitiesRegistry()
     {
         isCleared = true;

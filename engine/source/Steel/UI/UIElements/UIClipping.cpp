@@ -11,16 +11,6 @@ void UIClipping::RegisterType()
     REGISTER_TYPE(UIClipping);
 }
 
-void UIClipping::OnCopied()
-{
-    isDirty = true;
-    for (int i = 0; i < 4; ++i)
-    {
-        vb[i].Refresh();
-        ib[i].Refresh();
-    }
-}
-
 bool UIClipping::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

@@ -13,7 +13,6 @@ class MeshRenderer : public Component
 public:
     explicit MeshRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    void OnCopied() override;
     void SetDefault(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;

@@ -24,15 +24,6 @@ void UIInputField::RegisterType()
     REGISTER_ATTRIBUTE(UIInputField, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public);
 }
 
-void UIInputField::OnCopied()
-{
-    isSelectionDirty = true;
-    isCursorDirty = true;
-    vbCursor.Refresh();
-    vbSelection.Refresh();
-    ibSelection.Refresh();
-}
-
 bool UIInputField::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

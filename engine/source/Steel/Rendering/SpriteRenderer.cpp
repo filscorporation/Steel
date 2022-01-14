@@ -8,13 +8,6 @@ void SpriteRenderer::RegisterType()
     REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
 }
 
-void SpriteRenderer::OnCopied()
-{
-    isDirty = true;
-    vb.Refresh();
-    ib.Refresh();
-}
-
 void SpriteRenderer::SetDefault(EntitiesRegistry* entitiesRegistry)
 {
     _material = Application::Instance->GetResourcesManager()->DefaultSpriteMaterial();

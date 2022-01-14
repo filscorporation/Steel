@@ -12,13 +12,6 @@ void UIImage::RegisterType()
     REGISTER_ATTRIBUTE(UIImage, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public);
 }
 
-void UIImage::OnCopied()
-{
-    isDirty = true;
-    vb.Refresh();
-    ib.Refresh();
-}
-
 bool UIImage::Validate(EntitiesRegistry* entitiesRegistry)
 {
     return Component::Validate(entitiesRegistry) && CheckRectTransformation(entitiesRegistry);

@@ -39,7 +39,6 @@ class UIText : public UIComponent
 public:
     explicit UIText(EntityID ownerEntityID) : UIComponent(ownerEntityID) { }
 
-    void OnCopied() override;
     bool Validate(EntitiesRegistry* entitiesRegistry) override;
     void SetDefault(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;

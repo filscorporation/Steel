@@ -1,4 +1,5 @@
 #include "EditorSceneManager.h"
+#include "EditorApplication.h"
 
 EditorSceneManager::~EditorSceneManager()
 {
@@ -15,8 +16,7 @@ void EditorSceneManager::EditActiveScene()
     isEditMode = true;
 
     delete editedScene;
-    // TODO: change to serialized fields based copying
-    editedScene = new Scene(*activeScene);
+    editedScene = SerializationManager::CopyScene(activeScene);
 }
 
 void EditorSceneManager::StartTestEditedScene()
@@ -27,7 +27,7 @@ void EditorSceneManager::StartTestEditedScene()
     isEditMode = false;
 
     delete activeScene;
-    activeScene = new Scene(*editedScene);
+    activeScene = SerializationManager::CopyScene(editedScene);
     activeScene->Init();
 }
 

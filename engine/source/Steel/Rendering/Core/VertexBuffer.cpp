@@ -53,14 +53,6 @@ void VertexBuffer::Clear()
     BlockSize = 0;
 }
 
-void VertexBuffer::Refresh()
-{
-    Data = nullptr;
-    Size = 0;
-    Attributes.clear();
-    BlockSize = 0;
-}
-
 bool VertexBuffer::IsEmpty() const
 {
     return Size == 0;
