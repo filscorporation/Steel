@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Screen.h"
 #include "Core/RenderContext.h"
 #include "Core/RenderList.h"
 #include "Steel/Core/Log.h"
@@ -35,6 +36,7 @@ void Renderer::Draw(RenderTask& renderTask)
     // Collect and execute draw calls
     RenderContext renderContext;
     renderContext.Task = &renderTask;
+    renderContext.List.ClearColor = Screen::GetColor();
 
     renderTask.Source->CollectDrawCalls(&renderContext);
     renderContext.List.SortDrawCalls(&renderContext);

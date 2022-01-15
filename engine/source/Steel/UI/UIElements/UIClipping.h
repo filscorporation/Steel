@@ -36,6 +36,7 @@ private:
     EntityID closingEH = NULL_ENTITY;
     // This is used to prevent clipping recalculation process initiated by this element to count it in
     bool wasRemoved = false;
+    Material* _material = nullptr;
     MaterialPropertyBlock _customProperties[2];
 
     bool isDirty = true;

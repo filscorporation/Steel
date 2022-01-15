@@ -52,37 +52,37 @@ namespace StringUtils
     template<>
     int FromString(const std::string& line)
     {
-        return std::atoi(line.c_str());
+        return std::stoi(line);
     }
 
     template<>
     long FromString(const std::string& line)
     {
-        return std::atol(line.c_str());
+        return std::stol(line);
     }
 
     template<>
     bool FromString(const std::string& line)
     {
-        return (bool)std::atoi(line.c_str());
+        return (bool)std::stoi(line);
     }
 
     template<>
     float FromString(const std::string& line)
     {
-        return (float)std::atof(line.c_str());
+        return std::stof(line);
     }
 
     template<>
     uint32_t FromString(const std::string& line)
     {
-        return (uint32_t)std::atol(line.c_str());
+        return std::stoul(line);
     }
 
     template<>
     uint64_t FromString(const std::string& line)
     {
-        return (uint64_t)std::atol(line.c_str());
+        return std::stoull(line);
     }
 
     template<>

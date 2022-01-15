@@ -5,6 +5,28 @@
 #include "Steel/Core/Application.h"
 #include "Steel/UI/UIEventHandler.h"
 
+#define CALL_IF_MASK(m_method) \
+{ \
+    if (!(ScriptsMask & ScriptEventTypes::m_method)) \
+        return; \
+    for (auto script : Scripts) \
+    { \
+        if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
+            ScriptingCore::CallMethod(script.Pointer, ScriptingCore::EngineCalls.call##m_method); \
+    } \
+}
+
+#define CALL_IF_MASK_PARAM(m_method, m_param) \
+{ \
+    if (!(ScriptsMask & ScriptEventTypes::m_method)) \
+        return; \
+    for (auto script : Scripts) \
+    { \
+        if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
+            ScriptingCore::CallMethod(script.Pointer, ScriptingCore::EngineCalls.call##m_method, m_param); \
+    } \
+}
+
 void ScriptComponent::RegisterType()
 {
     REGISTER_TYPE(ScriptComponent);

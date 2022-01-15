@@ -367,7 +367,12 @@ void UIText::RebuildInner(RectTransformation& transformation)
     lettersDimensions.clear();
 
     if (_font == nullptr || _material == nullptr)
+    {
+        _customProperties.SetTexture(MAIN_TEX, 0);
+        _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
+        _customProperties.UpdateHash();
         return;
+    }
 
     if (_textSizeRef != 0 && _textSizeRef != _textSize)
         _font->FreeSize(_textSizeRef);

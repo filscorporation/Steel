@@ -53,6 +53,8 @@ void CircleCollider::SetSizeAutomatically()
         else
             size = GetComponentS<Transformation>(Owner).GetScale();
     }
+    else
+        size = glm::vec2(_radius, _radius);
 
     if (std::abs(size.x) > SHAPE_EPS && std::abs(size.y) > SHAPE_EPS)
     {
@@ -70,7 +72,7 @@ float CircleCollider::GetRadius() const
 
 void CircleCollider::SetRadius(float radius)
 {
-    if (std::abs(_radius) > SHAPE_EPS)
+    if (std::abs(radius) > SHAPE_EPS)
     {
         _radius = radius;
         autoSize = false;

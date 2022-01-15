@@ -109,41 +109,42 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
 
     auto entitiesNode = node["entities"];
 
-    for (int i = 0; i < scene->entitiesRegistry->EntityGetMaxID(); ++i)
+    auto activeIterator = scene->entitiesRegistry->GetComponentIterator<IDComponent>();
+    auto inactiveIterator = scene->entitiesRegistry->GetComponentIterator<IDComponent>(false);
+    int activeCount = activeIterator.Size();
+    int entitiesCount = activeIterator.Size() + inactiveIterator.Size();
+
+    for (int i = 0; i < entitiesCount; ++i)
     {
-        EntityID entity = scene->entitiesRegistry->EntityActual(i);
+        auto& uuidComponent = i < activeCount ? activeIterator[i] : inactiveIterator[i - activeCount];
+        EntityID entity = uuidComponent.Owner;
 
-        if (scene->entitiesRegistry->EntityExists(entity))
+        YAML::Node entityNode;
+        entityNode["uuid"] = uuidComponent.GetUUID();
+        entityNode["state"] = (uint32_t)scene->entitiesRegistry->EntityGetState(entity);
+        YAML::Node componentsNode = entityNode["components"];
+
+        std::vector<std::pair<ComponentTypeID, void*>> rawData;
+        scene->entitiesRegistry->GetAllComponentsForEntity(entity, rawData);
+        for (auto dataPair : rawData)
         {
-            YAML::Node entityNode;
-            entityNode["uuid"] = scene->entitiesRegistry->HasComponent<IDComponent>(entity)
-                    ? scene->entitiesRegistry->GetComponent<IDComponent>(entity).GetUUID()
-                    : NULL_UUID;
-            entityNode["state"] = (uint32_t)scene->entitiesRegistry->EntityGetState(entity);
-            YAML::Node componentsNode = entityNode["components"];
+            auto object = static_cast<Serializable*>(dataPair.second);
+            auto typeInfo = scene->entitiesRegistry->GetTypeInfoByID(dataPair.first);
 
-            std::vector<std::pair<ComponentTypeID, void*>> rawData;
-            scene->entitiesRegistry->GetAllComponentsForEntity(entity, rawData);
-            for (auto dataPair : rawData)
+            YAML::Node componentNode;
+
+            if (_attributesInfo.find(typeInfo->ID) != _attributesInfo.end())
             {
-                auto object = static_cast<Serializable*>(dataPair.second);
-                auto typeInfo = scene->entitiesRegistry->GetTypeInfoByID(dataPair.first);
-
-                YAML::Node componentNode;
-
-                if (_attributesInfo.find(typeInfo->ID) != _attributesInfo.end())
+                for (auto attribute : _attributesInfo[typeInfo->ID])
                 {
-                    for (auto attribute : _attributesInfo[typeInfo->ID])
-                    {
-                        attribute.Serialize(object, componentNode, context);
-                    }
+                    attribute.Serialize(object, componentNode, context);
                 }
-
-                componentsNode[typeInfo->TypeName] = componentNode;
             }
 
-            entitiesNode.push_back(entityNode);
+            componentsNode[typeInfo->TypeName] = componentNode;
         }
+
+        entitiesNode.push_back(entityNode);
     }
 
     return true;
@@ -241,13 +242,17 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
     sceneTo->SetChildrenCount(sceneFrom->GetChildrenCount());
     sceneTo->SetFirstChildNode(sceneFrom->GetFirstChildNode());
 
+    auto activeIterator = sceneFrom->entitiesRegistry->GetComponentIterator<IDComponent>();
+    auto inactiveIterator = sceneFrom->entitiesRegistry->GetComponentIterator<IDComponent>(false);
+    int activeCount = activeIterator.Size();
+    int entitiesCount = activeIterator.Size() + inactiveIterator.Size();
+
     // Pre pass to fill UUID to EntityID map (for link attributes)
-    for (int i = 0; i < sceneFrom->entitiesRegistry->EntityGetMaxID(); ++i)
+    for (int i = 0; i < entitiesCount; ++i)
     {
-        EntityID entityFrom = sceneFrom->entitiesRegistry->EntityActual(i);
-        auto uuid = sceneFrom->entitiesRegistry->HasComponent<IDComponent>(entityFrom)
-                    ? sceneFrom->entitiesRegistry->GetComponent<IDComponent>(entityFrom).GetUUID()
-                    : NULL_UUID;
+        auto& uuidComponent = i < activeCount ? activeIterator[i] : inactiveIterator[i - activeCount];
+        UUID uuid = uuidComponent.GetUUID();
+
         if (uuid != NULL_UUID)
         {
             auto entityTo = sceneTo->entitiesRegistry->CreateNewEntity();
@@ -256,9 +261,10 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
     }
 
     // Main pass
-    for (int i = 0; i < sceneFrom->entitiesRegistry->EntityGetMaxID(); ++i)
+    for (int i = 0; i < entitiesCount; ++i)
     {
-        EntityID entityFrom = sceneFrom->entitiesRegistry->EntityActual(i);
+        auto& uuidComponent = i < activeCount ? activeIterator[i] : inactiveIterator[i - activeCount];
+        EntityID entityFrom = uuidComponent.Owner;
 
         if (sceneFrom->entitiesRegistry->EntityExists(entityFrom))
         {

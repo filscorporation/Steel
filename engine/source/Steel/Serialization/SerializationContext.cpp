@@ -7,7 +7,9 @@ UUID SerializationContext::GetUUID(EntityID entityID) const
     if (entityID == NULL_ENTITY)
         return NULL_UUID;
     auto registry = SerializedScene->GetEntitiesRegistry();
-    return registry->GetComponent<IDComponent>(entityID).GetUUID();
+    return registry->HasComponent<IDComponent>(entityID)
+            ? registry->GetComponent<IDComponent>(entityID).GetUUID()
+            : NULL_UUID;
 }
 
 EntityID SerializationContext::GetEntityID(UUID uuid) const

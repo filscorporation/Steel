@@ -6,7 +6,6 @@
 #include "Steel/Core/Log.h"
 #include "Steel/Math/Math.h"
 #include "Steel/Math/Sorting.h"
-#include "Steel/Rendering/Screen.h"
 
 #include <algorithm>
 #include <glm/gtc/type_ptr.hpp>
@@ -176,11 +175,11 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
     ClearBuffers();
 }
 
-void RenderList::Clear(ClearFlags::ClearFlag clearFlag)
+void RenderList::Clear(ClearFlags::ClearFlag clearFlag) const
 {
     if (clearFlag & ClearFlags::Color)
     {
-        auto color = Screen::GetColor();
+        auto color = ClearColor;
         OpenGLAPI::SetClearColor(color.r, color.g, color.b, 1.0f);
         OpenGLAPI::ClearColor();
     }

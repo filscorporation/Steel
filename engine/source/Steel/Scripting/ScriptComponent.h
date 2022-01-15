@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "ScriptingCommon.h"
-#include "../EntityComponentSystem/Component.h"
-#include "../Physics/Collision.h"
+#include "Steel/EntityComponentSystem/Component.h"
+#include "Steel/Physics/Collision.h"
 
 struct Collision;
 
@@ -59,25 +59,3 @@ public:
     std::vector<ScriptData> Scripts;
     ScriptEventTypes::ScriptEventType ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
 };
-
-#define CALL_IF_MASK(m_method) \
-{ \
-    if (!(ScriptsMask & ScriptEventTypes::m_method)) \
-        return; \
-    for (auto script : Scripts) \
-    { \
-        if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
-            ScriptingCore::CallMethod(script.Pointer, ScriptingCore::EngineCalls.call##m_method); \
-    } \
-}
-
-#define CALL_IF_MASK_PARAM(m_method, m_param) \
-{ \
-    if (!(ScriptsMask & ScriptEventTypes::m_method)) \
-        return; \
-    for (auto script : Scripts) \
-    { \
-        if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
-            ScriptingCore::CallMethod(script.Pointer, ScriptingCore::EngineCalls.call##m_method, m_param); \
-    } \
-}

@@ -3,6 +3,7 @@
 #include "Steel/Core/Log.h"
 #include "Steel/Scene/Hierarchy.h"
 #include "Steel/UI/UIEventHandler.h"
+#include "Steel/Scene/SceneHelper.h"
 
 #define SO_OFFSET 0.1f
 
@@ -92,15 +93,21 @@ void UIClipping::Rebuild(UILayer* layer, RectTransformation& transformation, boo
 
 void UIClipping::Draw(RenderContext* renderContext)
 {
-    if (vb[0].IsEmpty() || ib[0].IsEmpty() || vb[1].IsEmpty() || ib[1].IsEmpty())
-        return;
+    if (isDirty)
+        RebuildInner(GetComponentS<RectTransformation>(Owner));
+
+    for (int i = 0; i < 4; ++i)
+    {
+        if (vb[i].IsEmpty() || ib[i].IsEmpty())
+            return;
+    }
 
     for (int i = 0; i < 4; ++i)
     {
         DrawCall drawCall;
         drawCall.VB = vb[i];
         drawCall.IB = ib[i];
-        drawCall.RenderMaterial = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
+        drawCall.RenderMaterial = _material;
         drawCall.CustomProperties = i == 0 || i == 2 ? _customProperties[0] : _customProperties[1];
         drawCall.SortingOrder = i == 0 || i == 3 ? _sortingOrder[0] : _sortingOrder[1];
         drawCall.Queue = i < 2 ? RenderingQueue::Opaque : RenderingQueue::Transparent;
@@ -123,7 +130,10 @@ void UIClipping::RebuildInner(RectTransformation& transformation)
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
     float sortingOrder = transformation.GetSortingOrder();
     float dz = 1.0f / (float)layer->GetLayerThickness();
-    float thickness = transformation.GetChildrenThickness();
+    auto thickness = (float)transformation.GetChildrenThickness();
+
+    if (_material == nullptr)
+        _material = Application::Instance->GetResourcesManager()->DefaultUIClippingMaterial();
 
     std::vector<VertexAttribute> attributes;
     attributes.reserve(1);

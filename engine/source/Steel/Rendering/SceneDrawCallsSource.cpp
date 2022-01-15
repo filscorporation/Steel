@@ -12,13 +12,11 @@ void SceneDrawCallsSource::CollectDrawCalls(RenderContext* renderContext)
 {
     auto spriteRenderers = _scene->GetEntitiesRegistry()->GetComponentIterator<SpriteRenderer>();
     renderContext->List.Reserve(spriteRenderers.Size());
-
     for (int i = 0; i < spriteRenderers.Size(); ++i)
         spriteRenderers[i].Draw(renderContext);
 
     auto meshRenderers = _scene->GetEntitiesRegistry()->GetComponentIterator<MeshRenderer>();
     renderContext->List.Reserve(meshRenderers.Size());
-
     for (int i = 0; i < meshRenderers.Size(); ++i)
         meshRenderers[i].Draw(renderContext);
 }

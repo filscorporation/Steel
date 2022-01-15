@@ -13,9 +13,11 @@ public:
     void AddDrawCall(const DrawCall& drawCall);
     void SortDrawCalls(RenderContext* renderContext);
     void ExecuteDrawCalls(RenderContext* renderContext);
+
+    glm::vec3 ClearColor = glm::vec3(0.0f, 0.0f, 0.0f);
 private:
 
-    static void Clear(ClearFlags::ClearFlag clearFlag);
+    void Clear(ClearFlags::ClearFlag clearFlag) const;
     static bool CanBatch(const DrawCall& drawCall1, const DrawCall& drawCall2);
     void PrepareBuffers();
     void ClearBuffers();

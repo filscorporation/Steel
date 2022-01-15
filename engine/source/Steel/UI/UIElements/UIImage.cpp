@@ -138,14 +138,14 @@ void UIImage::RebuildInner(RectTransformation& transformation)
     ib.Clear();
     vb.Clear();
 
+    _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->SpriteTexture->GetTextureID());
+    _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
+    _customProperties.UpdateHash();
+
     if (_material == nullptr)
         return;
 
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
-
-    _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->SpriteTexture->GetTextureID());
-    _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
-    _customProperties.UpdateHash();
 
     if (_image != nullptr && _image->SpriteTexture != nullptr)
     {
