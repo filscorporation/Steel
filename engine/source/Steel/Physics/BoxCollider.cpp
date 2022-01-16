@@ -1,11 +1,11 @@
-#include <box2d/box2d.h>
-
 #include "BoxCollider.h"
 #include "PhysicsCore.h"
 #include "PhysicsInfo.h"
 #include "Steel/Rendering/SpriteRenderer.h"
 #include "Steel/Scene/SceneHelper.h"
 #include "Steel/Scene/Transformation.h"
+
+#include <box2d/box2d.h>
 
 void BoxCollider::RegisterType()
 {
@@ -15,16 +15,18 @@ void BoxCollider::RegisterType()
 
 void BoxCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    // TODO: probably temporary before serialization copy
-    if (info != nullptr)
-        return;
+    if (PhysicsCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
+    {
+        PrepareColliderInfo();
+    }
+}
 
-    if (!PhysicsCore::Initialized())
-        return;
-
-    info = new BoxCollider::BoxColliderInfo();
-    info->BoxShape = new b2PolygonShape();
-    SetSizeAutomatically();
+void BoxCollider::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    if (PhysicsCore::Initialized() && info != nullptr)
+    {
+        ApplyPhysicsProperties();
+    }
 }
 
 void BoxCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
@@ -32,13 +34,6 @@ void BoxCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
     if (info != nullptr)
         delete info->BoxShape;
     delete info;
-}
-
-void BoxCollider::ApplyPhysicsProperties()
-{
-    info = new BoxCollider::BoxColliderInfo();
-    info->BoxShape = new b2PolygonShape();
-    SetSizeAutomatically();
 }
 
 void BoxCollider::SetSizeAutomatically()
@@ -80,4 +75,17 @@ void BoxCollider::SetSize(const glm::vec2& size)
         if (PhysicsCore::Initialized())
             info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
     }
+}
+
+void BoxCollider::PrepareColliderInfo()
+{
+    info = new BoxCollider::BoxColliderInfo();
+    info->BoxShape = new b2PolygonShape();
+
+    ApplyPhysicsProperties();
+}
+
+void BoxCollider::ApplyPhysicsProperties()
+{
+    SetSizeAutomatically();
 }

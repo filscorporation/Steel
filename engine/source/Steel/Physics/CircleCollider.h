@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "Collider.h"
+
+#include <glm/glm.hpp>
 
 class CircleCollider : public Component
 {
@@ -14,15 +14,17 @@ public:
     explicit CircleCollider(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
-
-    void ApplyPhysicsProperties();
 
     void SetSizeAutomatically();
     float GetRadius() const;
     void SetRadius(float radius);
 
 private:
+    void PrepareColliderInfo();
+    void ApplyPhysicsProperties();
+
     CircleColliderInfo* info = nullptr;
     float _radius = 0.0f;
     bool autoSize = true;

@@ -13,33 +13,59 @@ void AudioSource::RegisterType()
 
 void AudioSource::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    sourceID = AudioCore::CreateSource();
+    if (AudioCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
+    {
+        sourceID = AudioCore::CreateSource();
+        sourceCreated = true;
+
+        ApplyAudioProperties();
+    }
 }
 
 void AudioSource::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    AudioCore::DeleteSource(sourceID);
+    if (sourceCreated)
+    {
+        AudioCore::DeleteSource(sourceID);
+        sourceCreated = false;
+    }
 }
 
 void AudioSource::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
-    sourceID = AudioCore::CreateSource();
+    if (AudioCore::Initialized())
+    {
+        sourceID = AudioCore::CreateSource();
+        sourceCreated = true;
+
+        ApplyAudioProperties();
+    }
 }
 
 void AudioSource::OnDisabled(EntitiesRegistry* entitiesRegistry)
 {
-    AudioCore::DeleteSource(sourceID);
+    if (sourceCreated)
+    {
+        AudioCore::DeleteSource(sourceID);
+        sourceCreated = false;
+    }
 }
 
 void AudioSource::OnUpdate()
 {
     auto& transform = GetComponentS<Transformation>(Owner);
-    if (transform.DidTransformationChange())
+    if (transform.DidTransformationChange() && sourceCreated)
         AudioCore::SetSourcePosition(sourceID, transform.GetPosition());
 }
 
 void AudioSource::Play(AudioTrack* audioTrack)
 {
+    if (!sourceCreated)
+    {
+        Log::LogError("Audio source is not created");
+        return;
+    }
+
     if (audioTrack == nullptr)
     {
         Log::LogError("Audio track is null");
@@ -56,6 +82,12 @@ void AudioSource::Play(AudioTrack* audioTrack)
 
 void AudioSource::Stop()
 {
+    if (!sourceCreated)
+    {
+        Log::LogError("Audio source is not created");
+        return;
+    }
+
     AudioCore::StopSource(sourceID);
 }
 
@@ -66,11 +98,10 @@ bool AudioSource::GetIsLoop() const
 
 void AudioSource::SetIsLoop(bool isLoop)
 {
-    if (sourceIsLoop != isLoop)
-    {
-        sourceIsLoop = isLoop;
+    sourceIsLoop = isLoop;
+
+    if (sourceCreated && AudioCore::Initialized())
         AudioCore::SetSourceIsLoop(sourceID, isLoop);
-    }
 }
 
 float AudioSource::GetVolume() const
@@ -80,9 +111,13 @@ float AudioSource::GetVolume() const
 
 void AudioSource::SetVolume(float volume)
 {
-    if (sourceVolume != volume)
-    {
-        sourceVolume = volume;
+    sourceVolume = volume;
+    if (sourceCreated && AudioCore::Initialized())
         AudioCore::SetSourceVolume(sourceID, volume);
-    }
+}
+
+void AudioSource::ApplyAudioProperties()
+{
+    SetIsLoop(sourceIsLoop);
+    SetVolume(sourceVolume);
 }

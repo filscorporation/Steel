@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "Collider.h"
+
+#include <glm/glm.hpp>
 
 class BoxCollider : public Component
 {
@@ -14,15 +14,17 @@ public:
     explicit BoxCollider(EntityID ownerEntityID) : Component(ownerEntityID) { };
 
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
+    void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
-
-    void ApplyPhysicsProperties();
 
     void SetSizeAutomatically();
     const glm::vec2& GetSize() const;
     void SetSize(const glm::vec2& size);
 
 private:
+    void PrepareColliderInfo();
+    void ApplyPhysicsProperties();
+
     BoxColliderInfo* info = nullptr;
     glm::vec2 _size = glm::vec2(0.0f);
     bool autoSize = true;

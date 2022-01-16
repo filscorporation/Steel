@@ -1,10 +1,10 @@
-#include <box2d/box2d.h>
-
 #include "CircleCollider.h"
 #include "PhysicsCore.h"
 #include "PhysicsInfo.h"
 #include "Steel/Rendering/SpriteRenderer.h"
 #include "Steel/Scene/SceneHelper.h"
+
+#include <box2d/box2d.h>
 
 void CircleCollider::RegisterType()
 {
@@ -14,16 +14,18 @@ void CircleCollider::RegisterType()
 
 void CircleCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    // TODO: probably temporary before serialization copy
-    if (info != nullptr)
-        return;
+    if (PhysicsCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
+    {
+        PrepareColliderInfo();
+    }
+}
 
-    if (!PhysicsCore::Initialized())
-        return;
-
-    info = new CircleCollider::CircleColliderInfo();
-    info->CircleShape = new b2CircleShape();
-    SetSizeAutomatically();
+void CircleCollider::OnEnabled(EntitiesRegistry* entitiesRegistry)
+{
+    if (PhysicsCore::Initialized() && info != nullptr)
+    {
+        ApplyPhysicsProperties();
+    }
 }
 
 void CircleCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
@@ -31,13 +33,6 @@ void CircleCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
     if (info != nullptr)
         delete info->CircleShape;
     delete info;
-}
-
-void CircleCollider::ApplyPhysicsProperties()
-{
-    info = new CircleCollider::CircleColliderInfo();
-    info->CircleShape = new b2CircleShape();
-    SetSizeAutomatically();
 }
 
 void CircleCollider::SetSizeAutomatically()
@@ -80,4 +75,19 @@ void CircleCollider::SetRadius(float radius)
         if (PhysicsCore::Initialized())
             info->CircleShape->m_radius = _radius;
     }
+}
+
+void CircleCollider::PrepareColliderInfo()
+{
+    info = new CircleCollider::CircleColliderInfo();
+    info->CircleShape = new b2CircleShape();
+
+    ApplyPhysicsProperties();
+}
+
+void CircleCollider::ApplyPhysicsProperties()
+{
+    info = new CircleCollider::CircleColliderInfo();
+    info->CircleShape = new b2CircleShape();
+    SetSizeAutomatically();
 }

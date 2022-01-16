@@ -24,35 +24,33 @@ void RigidBody::RegisterType()
 
 void RigidBody::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    // TODO: probably temporary before serialization copy
-    if (info != nullptr)
-        return;
+    if (PhysicsCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
+    {
+        info = new RigidBody::RigidBodyInfo();
 
-    if (!PhysicsCore::Initialized())
-        return;
-
-    info = new RigidBody::RigidBodyInfo();
+        ApplyPhysicsProperties();
+    }
 }
 
 void RigidBody::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
-    if (info == nullptr || !PhysicsCore::Initialized())
+    if (info == nullptr)
         return;
 
-    PhysicsCore::GetWorld()->DestroyBody(info->Body);
+    if (info->Body != nullptr)
+        PhysicsCore::GetWorld()->DestroyBody(info->Body);
     delete info;
     info = nullptr;
 }
 
 void RigidBody::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
-    if (!PhysicsCore::Initialized())
-        return;
+    if (PhysicsCore::Initialized())
+    {
+        info = new RigidBody::RigidBodyInfo();
 
-    info = new RigidBody::RigidBodyInfo();
-    auto typeBackup = _type;
-    _type = RigidBodyTypes::None;
-    SetType(typeBackup);
+        ApplyPhysicsProperties();
+    }
 }
 
 void RigidBody::OnDisabled(EntitiesRegistry* entitiesRegistry)
@@ -60,15 +58,15 @@ void RigidBody::OnDisabled(EntitiesRegistry* entitiesRegistry)
     if (info == nullptr || !PhysicsCore::Initialized())
         return;
 
-    PhysicsCore::GetWorld()->DestroyBody(info->Body);
+    if (info->Body != nullptr)
+        PhysicsCore::GetWorld()->DestroyBody(info->Body);
     delete info;
     info = nullptr;
 }
 
 void RigidBody::ApplyPhysicsProperties()
 {
-    // Init info and apply type
-    info = new RigidBody::RigidBodyInfo();
+    // Apply type
     auto typeBackup = _type;
     _type = RigidBodyTypes::None;
     SetType(typeBackup);
@@ -169,6 +167,7 @@ void RigidBody::SetAutoFixture()
     if (HasComponentS<BoxCollider>(Owner))
     {
         auto& bc = GetComponentS<BoxCollider>(Owner);
+        bc.PrepareColliderInfo();
         b2FixtureDef fixtureDef;
         fixtureDef.shape = bc.info->BoxShape;
         fixtureDef.density = 1;
@@ -179,6 +178,7 @@ void RigidBody::SetAutoFixture()
     if (HasComponentS<CircleCollider>(Owner))
     {
         auto& cc = GetComponentS<CircleCollider>(Owner);
+        cc.PrepareColliderInfo();
         b2FixtureDef fixtureDef;
         fixtureDef.shape = cc.info->CircleShape;
         fixtureDef.density = 1;
@@ -199,11 +199,10 @@ void RigidBody::SetMass(float mass)
 {
     _mass = mass;
 
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
-    if (_type != RigidBodyTypes::None)
-        SetMassInner();
+    SetMassInner();
 }
 
 void RigidBody::SetMassInner()
@@ -226,7 +225,7 @@ void RigidBody::SetMassInner()
 
 glm::vec2 RigidBody::GetVelocity() const
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return glm::vec2(0.0f);
 
     auto& v = info->Body->GetLinearVelocity();
@@ -235,7 +234,7 @@ glm::vec2 RigidBody::GetVelocity() const
 
 void RigidBody::SetVelocity(glm::vec2 velocity)
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     auto v = b2Vec2(velocity.x, velocity.y);
@@ -245,7 +244,7 @@ void RigidBody::SetVelocity(glm::vec2 velocity)
 
 float RigidBody::GetAngularVelocity() const
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return 0.0f;
 
     return info->Body->GetAngularVelocity();
@@ -253,7 +252,7 @@ float RigidBody::GetAngularVelocity() const
 
 void RigidBody::SetAngularVelocity(float velocity)
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->SetAngularVelocity(velocity);
@@ -269,7 +268,7 @@ void RigidBody::SetGravityScale(float gravityScale)
 {
     _gravityScale = gravityScale;
 
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->SetGravityScale(gravityScale);
@@ -285,10 +284,7 @@ void RigidBody::SetFriction(float friction)
 {
     _friction = friction;
 
-    if (!PhysicsCore::Initialized())
-        return;
-
-    if (_type == RigidBodyTypes::None)
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     b2Fixture* fixture = info->Body->GetFixtureList();
@@ -308,10 +304,7 @@ void RigidBody::SetRestitution(float restitution)
 {
     _restitution = restitution;
 
-    if (!PhysicsCore::Initialized())
-        return;
-
-    if (_type == RigidBodyTypes::None)
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     b2Fixture* fixture = info->Body->GetFixtureList();
@@ -331,7 +324,7 @@ void RigidBody::SetLinearDamping(float damping)
 {
     _linearDamping = damping;
 
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->SetLinearDamping(damping);
@@ -347,7 +340,7 @@ void RigidBody::SetAngularDamping(float damping)
 {
     _angularDamping = damping;
 
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->SetAngularDamping(damping);
@@ -363,7 +356,7 @@ void RigidBody::SetIsFixedRotation(bool isFixed)
 {
     _isFixedRotation = isFixed;
 
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->SetFixedRotation(_isFixedRotation);
@@ -379,7 +372,7 @@ void RigidBody::SetUseContinuousCollisionDetection(bool useCCD)
 {
     _useCCD = useCCD;
 
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->SetBullet(useCCD);
@@ -388,7 +381,7 @@ void RigidBody::SetUseContinuousCollisionDetection(bool useCCD)
 
 void RigidBody::ApplyForce(const glm::vec2& force)
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
@@ -396,7 +389,7 @@ void RigidBody::ApplyForce(const glm::vec2& force)
 
 void RigidBody::ApplyForce(const glm::vec2& force, const glm::vec2& point)
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->ApplyForce(b2Vec2(force.x, force.y), b2Vec2(point.x, point.y), true);
@@ -404,7 +397,7 @@ void RigidBody::ApplyForce(const glm::vec2& force, const glm::vec2& point)
 
 void RigidBody::ApplyTorque(float torque)
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->ApplyTorque(torque, true);
@@ -412,7 +405,7 @@ void RigidBody::ApplyTorque(float torque)
 
 void RigidBody::ApplyLinearImpulse(const glm::vec2& impulse)
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->ApplyLinearImpulseToCenter(b2Vec2(impulse.x, impulse.y), true);
@@ -420,7 +413,7 @@ void RigidBody::ApplyLinearImpulse(const glm::vec2& impulse)
 
 void RigidBody::ApplyLinearImpulse(const glm::vec2& impulse, const glm::vec2& point)
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->ApplyLinearImpulse(b2Vec2(impulse.x, impulse.y), b2Vec2(point.x, point.y), true);
@@ -428,7 +421,7 @@ void RigidBody::ApplyLinearImpulse(const glm::vec2& impulse, const glm::vec2& po
 
 void RigidBody::ApplyAngularImpulse(float impulse)
 {
-    if (!PhysicsCore::Initialized())
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None)
         return;
 
     info->Body->ApplyAngularImpulse(impulse, true);
@@ -436,7 +429,7 @@ void RigidBody::ApplyAngularImpulse(float impulse)
 
 void RigidBody::GetPhysicsTransformation()
 {
-    if (_type == RigidBodyTypes::Static)
+    if (_type == RigidBodyTypes::Static || _type == RigidBodyTypes::None)
         return;
 
     inGetTransformation = true;

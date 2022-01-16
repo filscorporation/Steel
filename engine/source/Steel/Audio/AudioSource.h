@@ -24,8 +24,12 @@ public:
     void SetVolume(float volume);
 
 private:
+    void ApplyAudioProperties();
+
     uint32_t sourceID = 0;
     float sourceVolume = 1.0f;
     bool sourceIsLoop = false;
     ResourceID currentTrackID = NULL_RESOURCE;
+
+    bool sourceCreated = false;
 };

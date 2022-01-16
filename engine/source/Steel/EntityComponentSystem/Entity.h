@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
-
 #include "Steel/Common/FlagType.h"
+
+#include <cstdint>
 
 #define NULL_ENTITY 0xffffffff
 
@@ -12,7 +12,9 @@ namespace EntityStates
 {
     enum EntityState
     {
+        // Entity is active in hierarchy
         IsActive =      1 << 0,
+        // Entity is active by itself
         IsActiveSelf =  1 << 1,
     };
 

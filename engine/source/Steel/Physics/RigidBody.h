@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Steel/EntityComponentSystem/Component.h"
+#include "Collision.h"
+
 #include <unordered_map>
 #include <glm/vec2.hpp>
-
-#include "../EntityComponentSystem/Component.h"
-#include "Collision.h"
 
 namespace RigidBodyTypes
 {
@@ -30,8 +30,6 @@ public:
     void OnRemoved(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
-
-    void ApplyPhysicsProperties();
 
     RigidBodyTypes::RigidBodyType GetType() const;
     void SetType(RigidBodyTypes::RigidBodyType type);
@@ -71,6 +69,15 @@ public:
     std::unordered_map<EntityID, Collision> ActiveContacts;
 
 private:
+    void ApplyPhysicsProperties();
+
+    void SetDynamic();
+    void SetStatic();
+    void SetKinematic();
+
+    void SetAutoFixture();
+    bool AssertInitialized();
+
     bool initialized = false;
     RigidBodyInfo* info = nullptr;
     bool inGetTransformation = false;
@@ -83,11 +90,4 @@ private:
     bool _isFixedRotation = false;
     bool _useCCD = false;
     RigidBodyTypes::RigidBodyType _type = RigidBodyTypes::None;
-
-    void SetDynamic();
-    void SetStatic();
-    void SetKinematic();
-
-    void SetAutoFixture();
-    bool AssertInitialized();
 };

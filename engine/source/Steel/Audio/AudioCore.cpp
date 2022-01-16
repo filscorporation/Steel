@@ -1,11 +1,11 @@
-#include <AL/al.h>
-#include <AL/alc.h>
-
 #include "AudioCore.h"
 #include "AudioListener.h"
-#include "../Core/Log.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scene/Transformation.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scene/Transformation.h"
+
+#include <AL/al.h>
+#include <AL/alc.h>
 
 // Fixing openal low default volume
 const float VOLUME_MULTIPLIER = 32.0f;

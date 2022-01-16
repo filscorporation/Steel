@@ -20,7 +20,8 @@ bool UIClipping::Validate(EntitiesRegistry* entitiesRegistry)
 void UIClipping::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     entitiesRegistry->AddComponent<UIEventHandler>(Owner);
-    InitCaps(entitiesRegistry);
+    if (entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
+        InitCaps(entitiesRegistry);
 }
 
 void UIClipping::OnRemoved(EntitiesRegistry* entitiesRegistry)

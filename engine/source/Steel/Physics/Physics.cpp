@@ -14,28 +14,6 @@ void Physics::CreatePhysicsScene(EntitiesRegistry* entitiesRegistry)
 {
     PhysicsCore::CreateWorld();
 
-    auto boxColliders = entitiesRegistry->GetComponentIterator<BoxCollider>();
-    for (int i = 0; i < boxColliders.Size(); ++i)
-    {
-        if (boxColliders[i].IsAlive())
-            boxColliders[i].ApplyPhysicsProperties();
-    }
-
-    auto circleColliders = entitiesRegistry->GetComponentIterator<CircleCollider>();
-    for (int i = 0; i < circleColliders.Size(); ++i)
-    {
-        if (circleColliders[i].IsAlive())
-            circleColliders[i].ApplyPhysicsProperties();
-    }
-
-    // TODO: solve for inactive physics objects when this is called at the start
-    auto rigidBodies = entitiesRegistry->GetComponentIterator<RigidBody>();
-    for (int i = 0; i < rigidBodies.Size(); ++i)
-    {
-        if (rigidBodies[i].IsAlive())
-            rigidBodies[i].ApplyPhysicsProperties();
-    }
-
     Log::LogDebug("Physics initialized");
 }
 
