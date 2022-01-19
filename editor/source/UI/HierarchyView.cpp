@@ -7,6 +7,11 @@
 
 #include <Steel.h>
 
+void HierarchyView::RegisterType()
+{
+    REGISTER_TYPE(HierarchyView);
+}
+
 void HierarchyView::Init(EntitiesRegistry* entitiesRegistry)
 {
     auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();

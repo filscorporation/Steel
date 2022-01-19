@@ -1,223 +1,27 @@
 #pragma once
 
+#include "ComponentAccessor.h"
+#include "ComponentIterator.h"
+#include "ComponentsPoolWrapper.h"
+#include "Entity.h"
+#include "EntitiesIterator.h"
+#include "SparseDataSet.h"
+#include "TypeInfo.h"
+#include "Steel/Core/Log.h"
+
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
-#include "Entity.h"
-
-#include "SparseDataSet.h"
 
 #define DEBUG_GET
 #ifdef DEBUG_GET
 #include <iostream>
 #endif
 
-#define ENTITY_ID_MASK 0xFFFFFu
-#define ENTITY_VERSION_MASK 0xFFFu
-#define ENTITY_ID_SHIFT 12u
-
 #define TYPE_ID(m_type) m_type::GetTypeInfo()->ID
-using ComponentTypeID = uint64_t;
+#define TYPE_NAME(m_type) m_type::GetTypeInfo()->TypeName
 
-// Stores all components of one type by entityID
-template <typename T>
-using ComponentsPool = SparseDataSet<T>;
-
-class EntitiesRegistry;
 class TypeInfo;
-
-// Base class to store components pool
-class ComponentsPoolWrapperBase
-{
-public:
-    explicit ComponentsPoolWrapperBase(EntitiesRegistry* entitiesRegistry) { _entitiesRegistry = entitiesRegistry; }
-    virtual ~ComponentsPoolWrapperBase() = default;
-
-    virtual const TypeInfo* GetTypeInfo() = 0;
-
-    virtual void ClearRemoved() = 0;
-    virtual bool MoveFromActiveToInactive(EntityID entityID, EntityID id) = 0;
-    virtual bool MoveFromInactiveToActive(EntityID entityID, EntityID id) = 0;
-
-    virtual void BeforeDeleteByEntityID(EntityID entityID, EntityID id) = 0;
-    virtual void BeforeDeleteAll() = 0;
-    virtual void DeleteByEntityID(EntityID entityID, EntityID id) = 0;
-    virtual void AfterEntitySetActive(EntityID entityID, EntityID id, bool isActive) = 0;
-
-    virtual bool ExistsByID(EntityID id) = 0;
-    virtual void* GetRawByID(EntityID id) = 0;
-    virtual void* AddRawByID(EntityID id, EntityID entityID, bool active) = 0;
-    virtual void OnCreateAll() = 0;
-
-protected:
-    EntitiesRegistry* _entitiesRegistry = nullptr;
-
-    friend class EntitiesRegistry;
-};
-
-// Wrapper around ComponentsPool
-template <typename T>
-class ComponentsPoolWrapper : public ComponentsPoolWrapperBase
-{
-public:
-    ComponentsPool<T> Storage;
-    ComponentsPool<T> InactiveStorage;
-
-    explicit ComponentsPoolWrapper(EntitiesRegistry* entitiesRegistry) : ComponentsPoolWrapperBase(entitiesRegistry) { }
-    ~ComponentsPoolWrapper() override = default;
-
-    const TypeInfo* GetTypeInfo() override { return T::GetTypeInfo(); }
-
-    void ClearRemoved() override
-    {
-        Storage.Condense();
-        InactiveStorage.Condense();
-    }
-
-    bool MoveFromActiveToInactive(EntityID entityID, EntityID id) override
-    {
-        if (!Storage.Has(id))
-            return false;
-
-        std::swap(Storage.Get(id), InactiveStorage.Add(id, entityID));
-        Storage.Remove(id);
-
-        return true;
-    }
-
-    bool MoveFromInactiveToActive(EntityID entityID, EntityID id) override
-    {
-        if (!InactiveStorage.Has(id))
-            return false;
-
-        std::swap(InactiveStorage.Get(id), Storage.Add(id, entityID));
-        InactiveStorage.Remove(id);
-
-        return true;
-    }
-
-    void BeforeDeleteByEntityID(EntityID entityID, EntityID id) override
-    {
-        if (Storage.Has(id))
-        {
-            Storage.Get(id).OnRemoved(_entitiesRegistry);
-        }
-        if (InactiveStorage.Has(id))
-        {
-            InactiveStorage.Get(id).OnRemoved(_entitiesRegistry);
-        }
-    }
-
-    void BeforeDeleteAll() override
-    {
-        for (auto& component : Storage)
-        {
-            component.OnRemoved(_entitiesRegistry);
-        }
-        for (auto& component : InactiveStorage)
-        {
-            component.OnRemoved(_entitiesRegistry);
-        }
-    }
-
-    void DeleteByEntityID(EntityID entityID, EntityID id) override
-    {
-        if (Storage.Has(id))
-            Storage.Remove(id);
-        if (InactiveStorage.Has(id))
-            InactiveStorage.Remove(id);
-    }
-
-    void AfterEntitySetActive(EntityID entityID, EntityID id, bool isActive) override
-    {
-        if (!(isActive && Storage.Has(id) || !isActive && InactiveStorage.Has(id)))
-            return;
-
-        if (isActive)
-        {
-            Storage.Get(id).OnEnabled(_entitiesRegistry);
-        }
-        else
-        {
-            InactiveStorage.Get(id).OnDisabled(_entitiesRegistry);
-        }
-    }
-
-    bool ExistsByID(EntityID id) override
-    {
-        return Storage.Has(id) || InactiveStorage.Has(id);
-    }
-
-    void* GetRawByID(EntityID id) override
-    {
-        if (Storage.Has(id))
-            return &(Storage.Get(id));
-        if (InactiveStorage.Has(id))
-            return &(InactiveStorage.Get(id));
-        return nullptr;
-    }
-
-    void* AddRawByID(EntityID id, EntityID entityID, bool active) override
-    {
-        if (active)
-        {
-            if (Storage.Has(id))
-                return nullptr;
-            return &(Storage.Add(id, entityID));
-        }
-        else
-        {
-            if (InactiveStorage.Has(id))
-                return nullptr;
-            return &(InactiveStorage.Add(id, entityID));
-        }
-    }
-
-    void OnCreateAll() override
-    {
-        for (auto& component : Storage)
-        {
-            component.OnCreated(_entitiesRegistry);
-        }
-        for (auto& component : InactiveStorage)
-        {
-            component.OnCreated(_entitiesRegistry);
-        }
-    }
-};
-
-// Stores all components pools by Component type ID
-using ComponentsMap = std::unordered_map<ComponentTypeID, ComponentsPoolWrapperBase*>;
-
-// Allows iterating over certain component in ACTIVE entities
-template <typename T>
-struct ComponentIterator
-{
-public:
-    explicit ComponentIterator(ComponentsPoolWrapper<T>* pool, bool active) { _pool = pool;  _active = active; }
-
-    T& operator[] (int index)
-    {
-        return _active ? _pool->Storage[index] : _pool->InactiveStorage[index];
-    }
-
-    int Size()
-    {
-        return _pool == nullptr ? 0 : (_active ? _pool->Storage.Size() : _pool->InactiveStorage.Size());
-    }
-
-    using Iterator = typename ComponentsPool<T>::Iterator;
-    Iterator begin() { return _active ? _pool->Storage.begin() : _pool->InactiveStorage.begin(); }
-    Iterator end() { return _active ? _pool->Storage.end() : _pool->InactiveStorage.end(); }
-
-protected:
-    ComponentsPoolWrapper<T>* _pool;
-    bool _active;
-};
-
-// Allows access to certain component type without using components types hashmap
-template <typename T>
-class ComponentAccessor;
 
 class EntitiesRegistry
 {
@@ -238,7 +42,8 @@ private:
     std::vector<EntityID> entityIDs;
     std::vector<EntityStates::EntityState> entityStates;
 
-    ComponentsMap componentsMap;
+    // Stores all components pools by Component type ID
+    std::unordered_map<ComponentTypeID, ComponentsPoolWrapperBase*> componentsMap;
 
     int freeIDsCount = 0;
     EntityID nextFreeID = 0;
@@ -246,47 +51,24 @@ private:
     bool isCleared = false;
 
 public:
-    static EntityID EntityIDCombine(EntityID id, EntityID version)
-    {
-        return (id << ENTITY_ID_SHIFT) + version;
-    }
-
-    static EntityID EntityIDIncrementVersion(EntityID id)
-    {
-        return EntityIDGetVersion(id) == ENTITY_VERSION_MASK
-            ? EntityIDCombine(EntityIDGetID(id), 1)
-            : id + 1;
-    }
-
-    static EntityID EntityIDGetID(EntityID entityID)
-    {
-        return (entityID & ENTITY_ID_MASK << ENTITY_ID_SHIFT) >> ENTITY_ID_SHIFT;
-    }
-
-    static EntityID EntityIDGetVersion(EntityID entityID)
-    {
-        return entityID & ENTITY_VERSION_MASK;
-    }
-
-public:
     EntityID CreateNewEntity()
     {
         EntityID result;
         if (freeIDsCount == 0)
         {
-            result = EntityIDCombine(entityIDs.size(), 1);
+            result = Entity::EntityIDCombine(entityIDs.size(), 1);
             entityIDs.emplace_back(result);
             entityStates.emplace_back(EntityStates::IsActive | EntityStates::IsActiveSelf);
         }
         else
         {
             freeIDsCount--;
-            result = EntityIDCombine(nextFreeID, EntityIDGetVersion(entityIDs[nextFreeID]));
+            result = Entity::EntityIDCombine(nextFreeID, Entity::EntityIDGetVersion(entityIDs[nextFreeID]));
             if (freeIDsCount > 0)
             {
-                nextFreeID = EntityIDGetID(entityIDs[nextFreeID]);
-                entityIDs[EntityIDGetID(result)] = result;
-                entityStates[EntityIDGetID(result)] = EntityStates::IsActive | EntityStates::IsActiveSelf;
+                nextFreeID = Entity::EntityIDGetID(entityIDs[nextFreeID]);
+                entityIDs[Entity::EntityIDGetID(result)] = result;
+                entityStates[Entity::EntityIDGetID(result)] = EntityStates::IsActive | EntityStates::IsActiveSelf;
             }
         }
 
@@ -297,38 +79,30 @@ public:
     {
         if (entityID == NULL_ENTITY)
             return false;
-        EntityID id = EntityIDGetID(entityID);
-        return id < entityIDs.size() && EntityIDGetVersion(entityIDs[id]) == EntityIDGetVersion(entityID);
-    }
-
-    EntityID EntityActual(EntityID id)
-    {
-        return entityIDs[id];
-    }
-
-    EntityID EntityGetMaxID()
-    {
-        return entityIDs.size();
+        EntityID id = Entity::EntityIDGetID(entityID);
+        return id < entityIDs.size() && Entity::EntityIDGetVersion(entityIDs[id]) == Entity::EntityIDGetVersion(entityID);
     }
 
     void GetAllComponentsForEntity(EntityID entityID, std::vector<std::pair<ComponentTypeID, void*>>& componentsData)
     {
-        auto id = EntityIDGetID(entityID);
+        auto id = Entity::EntityIDGetID(entityID);
         for (auto pool : componentsMap)
         {
-            if (pool.second->ExistsByID(id))
+            if (pool.second->HasByID(id))
             {
                 componentsData.emplace_back(pool.first, pool.second->GetRawByID(id));
             }
         }
     }
 
-    const TypeInfo* GetTypeInfoByID(ComponentTypeID typeID)
+    template<class T>
+    void RegisteredType()
     {
-        if (componentsMap.find(typeID) == componentsMap.end())
-            return nullptr;
+        auto typeID = TYPE_ID(T);
+        if (componentsMap.find(typeID) != componentsMap.end())
+            return;
 
-        return componentsMap[typeID]->GetTypeInfo();
+        componentsMap[typeID] = new ComponentsPoolWrapper<T>(this);
     }
 
     void EntitySetActive(EntityID entityID, bool active, bool self)
@@ -336,7 +110,7 @@ public:
         if (!EntityExists(entityID))
             return;
 
-        auto id = EntityIDGetID(entityID);
+        auto id = Entity::EntityIDGetID(entityID);
         EntityStates::EntityState state = entityStates[id];
 
         if (active)
@@ -377,7 +151,7 @@ public:
 
     EntityStates::EntityState EntityGetState(EntityID entityID)
     {
-        return EntityExists(entityID) ? entityStates[EntityIDGetID(entityID)] : (EntityStates::EntityState)0;
+        return EntityExists(entityID) ? entityStates[Entity::EntityIDGetID(entityID)] : (EntityStates::EntityState)0;
     }
 
     void DeleteEntity(EntityID entityID)
@@ -386,23 +160,23 @@ public:
             return;
 
         // Increase this entityID version by one
-        entityIDs[EntityIDGetID(entityID)] = EntityIDIncrementVersion(entityID);
+        entityIDs[Entity::EntityIDGetID(entityID)] = Entity::EntityIDIncrementVersion(entityID);
         if (freeIDsCount != 0)
         {
             // If there are any free ids already, create link from current deleted id to previously deleted
-            entityIDs[EntityIDGetID(entityID)] = EntityIDCombine(nextFreeID, EntityIDGetVersion(entityIDs[EntityIDGetID(entityID)]));
+            entityIDs[Entity::EntityIDGetID(entityID)] = Entity::EntityIDCombine(nextFreeID, Entity::EntityIDGetVersion(entityIDs[Entity::EntityIDGetID(entityID)]));
         }
         // Next free id is current deleted
-        nextFreeID = EntityIDGetID(entityID);
+        nextFreeID = Entity::EntityIDGetID(entityID);
         freeIDsCount++;
 
         for (auto component : componentsMap)
         {
-            component.second->BeforeDeleteByEntityID(entityID, EntityIDGetID(entityID));
+            component.second->BeforeDeleteByEntityID(entityID, Entity::EntityIDGetID(entityID));
         }
         for (auto component : componentsMap)
         {
-            component.second->DeleteByEntityID(entityID, EntityIDGetID(entityID));
+            component.second->DeleteByEntityID(entityID, Entity::EntityIDGetID(entityID));
         }
     }
 
@@ -416,13 +190,13 @@ public:
         {
             delete poolPair.second;
         }
+        componentsMap.clear();
         entityIDs.clear();
         entityStates.clear();
         nextFreeID = 0;
         freeIDsCount = 0;
     }
 
-public:
     template <typename T>
     int32_t GetComponentsCount()
     {
@@ -448,6 +222,16 @@ public:
         }
 
         return ComponentIterator<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID], active);
+    }
+
+    EntitiesIterator GetEntitiesIterator(ComponentTypeID typeID, bool active = true)
+    {
+        if (componentsMap.find(typeID) == componentsMap.end())
+        {
+            return EntitiesIterator(nullptr, active);
+        }
+
+        return EntitiesIterator(componentsMap[typeID], active);
     }
 
     template <typename T>
@@ -484,7 +268,7 @@ public:
         // Restore links
         for (uint32_t i = 0; i < pool->Storage.size; ++i)
         {
-            pool->Storage.dense[i] = EntityIDGetID(pool->Storage.data[i].Owner);
+            pool->Storage.dense[i] = Entity::EntityIDGetID(pool->Storage.data[i].Owner);
             pool->Storage.sparse[pool->Storage.dense[i]] = i;
         }
 
@@ -509,7 +293,7 @@ public:
         int currentID = 0;
         for (uint32_t i = 0; i < sourcePool->Storage.size; ++i)
         {
-            EntityID id = EntityIDGetID(sourcePool->Storage.data[i].Owner);
+            EntityID id = Entity::EntityIDGetID(sourcePool->Storage.data[i].Owner);
             if (targetPool->Storage.Has(id))
             {
                 targetPool->Storage.Swap(targetPool->Storage.sparse[id], currentID);
@@ -521,69 +305,49 @@ public:
     template<class T>
     T& AddComponent(EntityID entityID)
     {
-        auto typeID = TYPE_ID(T);
-        EntityID id = EntityIDGetID(entityID);
+        AddComponent(entityID, TYPE_ID(T));
 
-        ComponentsPoolWrapper<T>* pool;
+        return GetComponent<T>(entityID);
+    }
+
+    bool AddComponent(EntityID entityID, ComponentTypeID typeID)
+    {
         if (componentsMap.find(typeID) == componentsMap.end())
         {
-            pool = new ComponentsPoolWrapper<T>(this);
-            componentsMap[typeID] = pool;
-        }
-        else
-        {
-            pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
+            Log::LogError("Error adding component: type {0} is not registered", typeID);
+            return false;
         }
 
-        if (pool->Storage.Has(id))
-            return pool->Storage.Get(id);
+        EntityID id = Entity::EntityIDGetID(entityID);
 
-        if (pool->InactiveStorage.Has(id))
-            return pool->InactiveStorage.Get(id);
-
-        auto& component = entityStates[id] & EntityStates::IsActive
-                ? pool->Storage.Add(id, entityID)
-                : pool->InactiveStorage.Add(id, entityID);
-        if (!component.Validate(this))
-        {
-            if (entityStates[id] & EntityStates::IsActive)
-                pool->Storage.Remove(id);
-            else
-                pool->InactiveStorage.Remove(id);
-        }
-        else
-        {
-            component.SetDefault(this);
-            component.OnCreated(this);
-        }
-
-        return component;
+        return componentsMap[typeID]->AddByID(entityID, id, entityStates[id] & EntityStates::IsActive);
     }
 
     template<class T>
     bool HasComponent(EntityID entityID)
     {
-        auto typeID = TYPE_ID(T);
-        EntityID id = EntityIDGetID(entityID);
+        return HasComponent(entityID, TYPE_ID(T));
+    }
 
-        ComponentsPoolWrapper<T>* pool;
+    bool HasComponent(EntityID entityID, ComponentTypeID typeID)
+    {
+        EntityID id = Entity::EntityIDGetID(entityID);
+
         if (componentsMap.find(typeID) == componentsMap.end())
             return false;
-        else
-            pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
 
-        return pool->Storage.Has(id) || pool->InactiveStorage.Has(id);
+        return componentsMap[typeID]->HasByID(id);
     }
 
     template<class T>
     T& GetComponent(EntityID entityID)
     {
-        EntityID id = EntityIDGetID(entityID);
+        EntityID id = Entity::EntityIDGetID(entityID);
 
 #ifdef DEBUG_GET
         if (!HasComponent<T>(entityID))
         {
-            std::cout << "ERROR:: GET COMPONENT ON NON EXISTING WILL LEAD TO UNDEFINED BEHAVIOUR" << std::endl;
+            Log::LogError("Get component on non existing type {0} will lead to undefined behavior", TYPE_NAME(T));
         }
 #endif
 
@@ -597,30 +361,17 @@ public:
     template<class T>
     bool RemoveComponent(EntityID entityID)
     {
-        auto typeID = TYPE_ID(T);
-        EntityID id = EntityIDGetID(entityID);
+        return RemoveComponent(entityID, TYPE_ID(T));
+    }
 
-        ComponentsPoolWrapper<T>* pool;
-        if (componentsMap.find(typeID) != componentsMap.end())
-        {
-            pool = (ComponentsPoolWrapper<T>*)componentsMap[typeID];
+    bool RemoveComponent(EntityID entityID, ComponentTypeID typeID)
+    {
+        EntityID id = Entity::EntityIDGetID(entityID);
 
-            if (!pool->Storage.Has(id) && !pool->InactiveStorage.Has(id))
-                return false;
+        if (componentsMap.find(typeID) == componentsMap.end())
+            return false;
 
-            bool active = entityStates[id] & EntityStates::IsActive;
-            auto& component = active ? pool->Storage.Get(id) : pool->InactiveStorage.Get(id);
-            component.OnRemoved(this);
-
-            if (active)
-                pool->Storage.Remove(id);
-            else
-                pool->InactiveStorage.Remove(id);
-
-            return true;
-        }
-
-        return false;
+        return componentsMap[typeID]->RemoveByID(id, entityStates[id] & EntityStates::IsActive);
     }
 
     void ClearRemoved()
@@ -648,23 +399,13 @@ public:
         if (!EntityExists(entityID))
             return false;
 
-        entityStates[EntityIDGetID(entityID)] = entityState;
+        entityStates[Entity::EntityIDGetID(entityID)] = entityState;
         return true;
-    }
-
-    template<class T>
-    void CheckTypeRegistered()
-    {
-        auto typeID = TYPE_ID(T);
-        if (componentsMap.find(typeID) != componentsMap.end())
-            return;
-
-        componentsMap[typeID] = new ComponentsPoolWrapper<T>(this);
     }
 
     void* RestoreComponent(ComponentTypeID typeID, EntityID entityID)
     {
-        EntityID id = EntityIDGetID(entityID);
+        EntityID id = Entity::EntityIDGetID(entityID);
         if (!EntityExists(entityID))
             return nullptr;
 
@@ -681,43 +422,4 @@ public:
             component.second->OnCreateAll();
         }
     }
-};
-
-// Allows access to certain component type without using components types hashmap
-template <typename T>
-class ComponentAccessor
-{
-public:
-    explicit ComponentAccessor(ComponentsPoolWrapper<T>* componentsPool) { _componentsPool = componentsPool; }
-
-    bool Has(EntityID entityID) const
-    {
-        if (_componentsPool == nullptr)
-            return false;
-        EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
-        return _componentsPool->Storage.Has(id);
-    }
-
-    T& Get(EntityID entityID) const
-    {
-        EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
-        return _componentsPool->Storage.Get(id);
-    }
-
-    bool HasInactive(EntityID entityID) const
-    {
-        if (_componentsPool == nullptr)
-            return false;
-        EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
-        return _componentsPool->InactiveStorage.Has(id);
-    }
-
-    T& GetInactive(EntityID entityID) const
-    {
-        EntityID id = EntitiesRegistry::EntityIDGetID(entityID);
-        return _componentsPool->InactiveStorage.Get(id);
-    }
-
-private:
-    ComponentsPoolWrapper<T>* _componentsPool;
 };

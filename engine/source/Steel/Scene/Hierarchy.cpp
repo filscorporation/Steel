@@ -1,11 +1,11 @@
 #include "Hierarchy.h"
 #include "Transformation.h"
-#include "../Core/Application.h"
-#include "../Core/Log.h"
-#include "../UI/RectTransformation.h"
-#include "../UI/UIElements/UIClipping.h"
-#include "../UI/UIElements/UIImage.h"
-#include "../UI/UIElements/UIText.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
+#include "Steel/UI/RectTransformation.h"
+#include "Steel/UI/UIElements/UIClipping.h"
+#include "Steel/UI/UIElements/UIImage.h"
+#include "Steel/UI/UIElements/UIText.h"
 
 void UpdateChildrenDepthAndSetDirty(EntitiesRegistry* registry, HierarchyNode& parentNode)
 {

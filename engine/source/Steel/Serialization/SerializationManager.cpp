@@ -1,8 +1,7 @@
 #include "SerializationManager.h"
-#include "TypeInfoStorage.h"
 #include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
-#include "Steel/Core/Components.h"
+#include "Steel/EntityComponentSystem/TypeInfoStorage.h"
 #include "Steel/Resources/ResourcesManager.h"
 #include "Steel/Scene/Scene.h"
 
@@ -10,8 +9,6 @@ std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> SerializationMan
 
 void SerializationManager::Init()
 {
-    RegisterComponents();
-
     Log::LogDebug("Serialization manager initialized");
 }
 
@@ -25,8 +22,6 @@ void SerializationManager::Terminate()
         }
     }
     _attributesInfo.clear();
-
-    TypeInfoStorage::Clear();
 }
 
 void SerializationManager::SerializeScene(Scene* scene, const std::string& filePath)
@@ -117,19 +112,19 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
     for (int i = 0; i < entitiesCount; ++i)
     {
         auto& uuidComponent = i < activeCount ? activeIterator[i] : inactiveIterator[i - activeCount];
-        EntityID entity = uuidComponent.Owner;
+        EntityID entityID = uuidComponent.Owner;
 
         YAML::Node entityNode;
         entityNode["uuid"] = uuidComponent.GetUUID();
-        entityNode["state"] = (uint32_t)scene->entitiesRegistry->EntityGetState(entity);
+        entityNode["state"] = (uint32_t)scene->entitiesRegistry->EntityGetState(entityID);
         YAML::Node componentsNode = entityNode["components"];
 
         std::vector<std::pair<ComponentTypeID, void*>> rawData;
-        scene->entitiesRegistry->GetAllComponentsForEntity(entity, rawData);
+        scene->entitiesRegistry->GetAllComponentsForEntity(entityID, rawData);
         for (auto dataPair : rawData)
         {
             auto object = static_cast<Serializable*>(dataPair.second);
-            auto typeInfo = scene->entitiesRegistry->GetTypeInfoByID(dataPair.first);
+            auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.first);
 
             YAML::Node componentNode;
 
@@ -199,12 +194,6 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
                     auto typeName = componentNode.first.as<std::string>();
                     auto typeID = Math::StringHash(typeName.c_str());
 
-                    // This will add component map to registry, so we can add component of deserialized type without template arguments
-                    if (!TypeInfoStorage::CheckTypeRegistered(typeID, scene->entitiesRegistry))
-                    {
-                        Log::LogError("Type {0} not registered", typeName);
-                        continue;
-                    }
                     auto object = static_cast<Serializable*>(scene->entitiesRegistry->RestoreComponent(typeID, entity));
                     if (!object)
                     {
@@ -287,14 +276,8 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
             for (auto dataPair : rawData)
             {
                 auto objectFrom = static_cast<Serializable*>(dataPair.second);
-                auto typeInfo = sceneFrom->entitiesRegistry->GetTypeInfoByID(dataPair.first);
+                auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.first);
 
-                // This will add component map to registry, so we can add component of deserialized type without template arguments
-                if (!TypeInfoStorage::CheckTypeRegistered(typeInfo->ID, sceneTo->entitiesRegistry))
-                {
-                    Log::LogError("Type {0} not registered", typeInfo->TypeName);
-                    continue;
-                }
                 auto objectTo = static_cast<Serializable*>(sceneTo->entitiesRegistry->RestoreComponent(typeInfo->ID, entityTo));
                 if (!objectTo)
                 {
@@ -314,33 +297,4 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
     }
 
     return true;
-}
-
-void SerializationManager::RegisterComponents()
-{
-    Animator::RegisterType();
-    AudioListener::RegisterType();
-    AudioSource::RegisterType();
-    BoxCollider::RegisterType();
-    CircleCollider::RegisterType();
-    RigidBody::RegisterType();
-    Camera::RegisterType();
-    MeshRenderer::RegisterType();
-    SpriteRenderer::RegisterType();
-    HierarchyNode::RegisterType();
-    IDComponent::RegisterType();
-    NameComponent::RegisterType();
-    Transformation::RegisterType();
-    ScriptComponent::RegisterType();
-    UIButton::RegisterType();
-    UICheckBox::RegisterType();
-    UIClipping::RegisterType();
-    UIImage::RegisterType();
-    UIInputField::RegisterType();
-    UILayoutElement::RegisterType();
-    UILayoutGroup::RegisterType();
-    UITabs::RegisterType();
-    UIText::RegisterType();
-    RectTransformation::RegisterType();
-    UIEventHandler::RegisterType();
 }

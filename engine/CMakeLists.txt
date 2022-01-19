@@ -94,7 +94,7 @@ set(SOURCE_FILES
         source/Steel/Rendering/SceneRenderer.cpp source/Steel/Rendering/SceneRenderer.h source/Steel/Serialization/SerializationManager.cpp
         source/Steel/Serialization/SerializationManager.h source/Steel/Serialization/Serializable.h source/Steel/Serialization/AttributeInfo.h
         source/Steel/Serialization/AttributeAccessorBase.h source/Steel/Common/StringUtils.h source/Steel/Serialization/SerializationConvert.h
-        source/Steel/Core/TypeInfo.h source/Steel/Core/TypeInfo.cpp source/Steel/Serialization/TypeInfoStorage.cpp source/Steel/Serialization/TypeInfoStorage.h
+        source/Steel/EntityComponentSystem/TypeInfo.h source/Steel/EntityComponentSystem/TypeInfo.cpp source/Steel/EntityComponentSystem/TypeInfoStorage.cpp source/Steel/EntityComponentSystem/TypeInfoStorage.h
         source/Steel/Scene/HierarchyParent.cpp source/Steel/Rendering/Core/DrawCall.h source/Steel/Rendering/Core/RenderList.cpp
         source/Steel/Rendering/Core/RenderList.h source/Steel/Rendering/Core/RenderContext.h source/Steel/Rendering/Core/VertexBuffer.cpp
         source/Steel/Rendering/Core/VertexBuffer.h source/Steel/Rendering/Core/RenderTask.h source/Steel/Rendering/Core/DrawCallsSource.h
@@ -106,7 +106,10 @@ set(SOURCE_FILES
         source/Steel/Scene/IDComponent.h source/Steel/Serialization/SerializationContext.h source/Steel/Serialization/AttributeAccessor.h
         source/Steel/Serialization/IDAttributeAccessor.h source/Steel/Scene/UUID.h source/Steel/Serialization/SerializationContext.cpp source/Steel/Core/Components.h
         source/Steel/Resources/ResourceType.h source/Steel/Resources/Resource.h source/Steel/Resources/AsepriteData.cpp
-        source/Steel/Serialization/ResourceAttributeAccessor.h source/Steel/Serialization/EnumAttributeAccessor.h)
+        source/Steel/Serialization/ResourceAttributeAccessor.h source/Steel/Serialization/EnumAttributeAccessor.h source/Steel/EntityComponentSystem/CoreTypeSystem.cpp
+        source/Steel/EntityComponentSystem/CoreTypeSystem.h source/Steel/Scripting/SimpleAPITypes.h source/Steel/EntityComponentSystem/ComponentsPoolWrapper.h
+        source/Steel/EntityComponentSystem/ComponentIterator.h source/Steel/EntityComponentSystem/ComponentAccessor.h source/Steel/EntityComponentSystem/Entity.cpp
+        source/Steel/EntityComponentSystem/EntitiesIterator.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

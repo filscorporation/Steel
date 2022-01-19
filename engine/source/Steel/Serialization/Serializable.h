@@ -6,25 +6,13 @@
 #include "EnumAttributeAccessor.h"
 #include "ResourceAttributeAccessor.h"
 #include "SerializationManager.h"
-#include "TypeInfoStorage.h"
-#include "Steel/Core/TypeInfo.h"
+#include "Steel/EntityComponentSystem/TypeInfoStorage.h"
+#include "Steel/EntityComponentSystem/TypeInfo.h"
 
 class Serializable
 {
 
 };
-
-#define REGISTER_TYPE(typeName) TypeInfoStorage::RegisterTypeInStorage<typeName>()
-
-#define COMPONENT(typeName)                                 \
-public:                                                     \
-    static const TypeInfo* GetTypeInfo()                    \
-    {                                                       \
-        static const TypeInfo typeInfoStatic(#typeName);    \
-        return &typeInfoStatic;                             \
-    }                                                       \
-                                                            \
-    static void RegisterType();
 
 #define REGISTER_ATTRIBUTE(className, name, getter, setter, type, flags)                                        \
 SerializationManager::RegisterAttribute                                                                         \

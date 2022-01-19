@@ -3,6 +3,11 @@
 
 #include <Steel.h>
 
+void StatsWindow::RegisterType()
+{
+    REGISTER_TYPE(StatsWindow);
+}
+
 void StatsWindow::UpdateInfo()
 {
     auto editor = (EditorApplication*)Application::Instance;

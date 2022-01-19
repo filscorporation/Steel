@@ -31,3 +31,6 @@ include_directories(../engine/includes/glm)
 
 # yaml cpp
 include_directories(../engine/includes/yaml-cpp/include)
+
+# spdlog
+include_directories(../engine/includes/spdlog/include)

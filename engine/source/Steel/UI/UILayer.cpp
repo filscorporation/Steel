@@ -43,7 +43,7 @@ void UILayer::Update()
         for (int i = _updateQueue.Size() - 1; i >= 0; --i)
         {
             if (!_updateQueue[i].Callback(_updateQueue[i].Owner))
-                _updateQueue.Remove(EntitiesRegistry::EntityIDGetID(_updateQueue[i].Owner));
+                _updateQueue.Remove(Entity::EntityIDGetID(_updateQueue[i].Owner));
         }
         _updateQueue.Condense();
     }
@@ -139,14 +139,14 @@ void UILayer::PollEvent(UIEvent& uiEvent)
 
 void UILayer::AddToUpdateQueue(EntityID entityID, UpdateInteractable callback)
 {
-    auto id = EntitiesRegistry::EntityIDGetID(entityID);
+    auto id = Entity::EntityIDGetID(entityID);
     if (!_updateQueue.Has(id))
         _updateQueue.Add(id, callback, entityID);
 }
 
 void UILayer::RemoveFromUpdateQueue(EntityID entityID)
 {
-    auto id = EntitiesRegistry::EntityIDGetID(entityID);
+    auto id = Entity::EntityIDGetID(entityID);
     if (_updateQueue.Has(id))
         _updateQueue.Remove(id);
     _updateQueue.Condense();

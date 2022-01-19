@@ -35,12 +35,7 @@ bool EntityInternalCalls::Entity_AddComponent(EntityID id, void* type)
         return false;
     }
 
-    bool success = false;
-    ScriptingCore::AddComponentFromType(id, type, success);
-    if (!success)
-        return false;
-
-    return true;
+    return ScriptingCore::AddComponentFromType(id, type);
 }
 
 bool EntityInternalCalls::Entity_AddScriptComponent(EntityID id, void* type, ScriptPointer scriptPointer)
@@ -62,12 +57,7 @@ bool EntityInternalCalls::Entity_HasComponent(EntityID id, void* type)
         return false;
     }
 
-    bool success = false;
-    bool result = ScriptingCore::HasComponentFromType(id, type, success);
-    if (!success)
-        Log::LogError("Error getting component for entity {0}", id);
-
-    return result;
+    return ScriptingCore::HasComponentFromType(id, type);
 }
 
 bool EntityInternalCalls::Entity_HasScriptComponent(EntityID id, void* type)
@@ -101,12 +91,7 @@ bool EntityInternalCalls::Entity_RemoveComponent(EntityID id, void* type)
         return false;
     }
 
-    bool success = false;
-    bool result = ScriptingCore::RemoveComponentFromType(id, type, success);
-    if (!success)
-        return false;
-
-    return result;
+    return ScriptingCore::RemoveComponentFromType(id, type);
 }
 
 bool EntityInternalCalls::Entity_RemoveScriptComponent(EntityID id, void* type)

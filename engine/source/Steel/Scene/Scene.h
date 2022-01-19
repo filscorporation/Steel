@@ -32,7 +32,7 @@ public:
     EntityID CreateEntity(const char* name, EntityID parent);
     EntityID CreateEntity(AsepriteData& data);
     EntityID CreateEmptyEntity();
-    void DestroyEntity(EntityID entity);
+    void DestroyEntity(EntityID entityID);
     void CleanDestroyedEntities();
 
     EntityID GetEntityByUUID(UUID uuid);
@@ -66,8 +66,8 @@ private:
     void UpdateGlobalTransformation();
     void RefreshTransformation();
     void CleanAllEntities();
-    void DestroyAndRemoveEntity(EntityID entity);
-    void DestroyEntityInner(EntityID entity);
+    void DestroyAndRemoveEntity(EntityID entityID);
+    void DestroyEntityInner(EntityID entityID);
 
     friend class SceneRenderer;
     friend class SerializationManager;

@@ -4,8 +4,6 @@
 
 TEST(SerializationTest, ToString)
 {
-    SerializedComponent::RegisterType();
-
     auto scene = Application::Instance->GetCurrentScene();
     auto registry = scene->GetEntitiesRegistry();
 
@@ -75,8 +73,6 @@ TEST(SerializationTest, ToString)
 
 TEST(SerializationTest, FromString)
 {
-    SerializedComponent::RegisterType();
-
     auto scene = Application::Instance->GetCurrentScene();
     auto registry = scene->GetEntitiesRegistry();
 

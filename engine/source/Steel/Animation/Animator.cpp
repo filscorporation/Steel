@@ -89,14 +89,14 @@ void Animator::AddAndPlay(Animation* animation)
     Restart();
 }
 
-void ApplyFrame(EntityID entity, Keyframe keyframe)
+void ApplyFrame(EntityID entityID, Keyframe keyframe)
 {
     Log::LogInfo("Apply frame {0}", keyframe.Time);
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    if (entitiesRegistry->HasComponent<SpriteRenderer>(entity))
+    if (entitiesRegistry->HasComponent<SpriteRenderer>(entityID))
     {
-        auto& sr = entitiesRegistry->GetComponent<SpriteRenderer>(entity);
+        auto& sr = entitiesRegistry->GetComponent<SpriteRenderer>(entityID);
         if (sr.GetImage() == nullptr && keyframe.SpriteID != NULL_RESOURCE
         || sr.GetImage() != nullptr && sr.GetImage()->ID != keyframe.SpriteID)
         {
@@ -108,9 +108,9 @@ void ApplyFrame(EntityID entity, Keyframe keyframe)
 
         sr.SetImageTileIndex(keyframe.TileIndex);
     }
-    if (entitiesRegistry->HasComponent<UIImage>(entity))
+    if (entitiesRegistry->HasComponent<UIImage>(entityID))
     {
-        auto& iui = entitiesRegistry->GetComponent<UIImage>(entity);
+        auto& iui = entitiesRegistry->GetComponent<UIImage>(entityID);
         if (iui.GetImage() == nullptr && keyframe.SpriteID != NULL_RESOURCE
         || iui.GetImage() != nullptr && iui.GetImage()->ID != keyframe.SpriteID)
         {

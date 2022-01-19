@@ -4,6 +4,11 @@
 #include "../EditorCore/EditorSceneManager.h"
 #include "HierarchyView.h"
 
+void ControlPanel::RegisterType()
+{
+    REGISTER_TYPE(ControlPanel);
+}
+
 void ControlPanel::Init()
 {
     auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();

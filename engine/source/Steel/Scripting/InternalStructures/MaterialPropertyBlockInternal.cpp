@@ -49,7 +49,7 @@ void MaterialPropertyBlockInternal::FromMaterialPropertyBlock(const MaterialProp
         colorValues.emplace_back(pair.second);
     }
     colorPropertiesKeys = ScriptingCore::ToMonoStringArray(colorKeys);
-    colorPropertiesValues = ScriptingCore::ToMonoDataTypeArray(colorValues, 1);
+    colorPropertiesValues = ScriptingCore::ToMonoSimpleTypeArray(colorValues, SimpleAPITypes::Color);
 
     depthMask = properties.depthMask;
     depthFunction = properties.depthFunc;
@@ -88,7 +88,7 @@ void MaterialPropertyBlockInternal::ToMaterialPropertyBlock(MaterialPropertyBloc
     std::vector<std::string> colorKeys;
     std::vector<glm::vec4> colorValues;
     ScriptingCore::FromMonoStringArray(colorPropertiesKeys, colorKeys);
-    ScriptingCore::FromMonoDataTypeArray(colorPropertiesValues, colorValues, 1);
+    ScriptingCore::FromMonoSimpleTypeArray(colorPropertiesValues, colorValues, SimpleAPITypes::Color);
     for (uint32_t i = 0; i < colorKeys.size(); ++i)
         outProperties.SetColor(colorKeys[i], colorValues[i]);
 

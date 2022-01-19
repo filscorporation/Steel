@@ -11,7 +11,7 @@
 #include "Log.h"
 #include "Time.h"
 #include "Steel/Audio/AudioCore.h"
-#include "Steel/Animation/Animator.h"
+#include "Steel/EntityComponentSystem/CoreTypeSystem.h"
 #include "Steel/Input/Input.h"
 #include "Steel/Math/Random.h"
 #include "Steel/Physics/Physics.h"
@@ -53,8 +53,9 @@ void Application::InitSystems(int width, int height, glm::vec3 color, bool fulls
     Random::Init();
     Screen::Init(width, height, color, fullscreen, doubleBuffer);
 
-    ScriptingSystem::Init();
+    CoreTypeSystem::Init();
     SerializationManager::Init();
+    ScriptingSystem::Init();
     Renderer::Init();
     AudioCore::Init();
 }
@@ -154,8 +155,9 @@ void Application::Terminate()
     AudioCore::Terminate();
     Renderer::Terminate();
     Screen::Terminate();
-    SerializationManager::Terminate();
     ScriptingSystem::Terminate();
+    SerializationManager::Terminate();
+    CoreTypeSystem::Terminate();
 }
 
 void Application::Quit()

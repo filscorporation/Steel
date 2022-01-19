@@ -20,3 +20,14 @@ namespace EntityStates
 
     FLAG_TYPE(EntityState)
 }
+
+namespace Entity
+{
+    EntityID EntityIDGetID(EntityID entityID);
+
+    EntityID EntityIDGetVersion(EntityID entityID);
+
+    EntityID EntityIDCombine(EntityID id, EntityID version);
+
+    EntityID EntityIDIncrementVersion(EntityID id);
+}

@@ -5,6 +5,7 @@
 TEST(EntitiesRegistryTest, Entities)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     EXPECT_FALSE(registry.EntityExists(0));
     EntityID entityID = registry.CreateNewEntity();
@@ -25,25 +26,26 @@ TEST(EntitiesRegistryTest, Entities)
 TEST(EntitiesRegistryTest, Versions)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     registry.CreateNewEntity();
     EntityID entityID = registry.CreateNewEntity();
     registry.CreateNewEntity();
-    EXPECT_EQ(entityID, registry.EntityActual(registry.EntityIDGetID(entityID)));
-    EXPECT_EQ(entityID, EntitiesRegistry::EntityIDCombine(
-            registry.EntityIDGetID(entityID), registry.EntityIDGetVersion(entityID)));
+    EXPECT_EQ(entityID, Entity::EntityIDCombine(
+            Entity::EntityIDGetID(entityID), Entity::EntityIDGetVersion(entityID)));
 
-    auto version = EntitiesRegistry::EntityIDGetVersion(entityID);
-    auto id = EntitiesRegistry::EntityIDGetID(entityID);
+    auto version = Entity::EntityIDGetVersion(entityID);
+    auto id = Entity::EntityIDGetID(entityID);
     registry.DeleteEntity(entityID);
     entityID = registry.CreateNewEntity();
-    EXPECT_NE(version, registry.EntityIDGetVersion(entityID));
-    EXPECT_EQ(id, registry.EntityIDGetID(entityID));
+    EXPECT_NE(version, Entity::EntityIDGetVersion(entityID));
+    EXPECT_EQ(id, Entity::EntityIDGetID(entityID));
 }
 
 TEST(EntitiesRegistryTest, VersionOverflow)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     EntityID entityID = registry.CreateNewEntity();
     for (uint32_t i = 0; i < (uint32_t)0xFFF; ++i)
@@ -63,6 +65,7 @@ TEST(EntitiesRegistryTest, VersionOverflow)
 TEST(EntitiesRegistryTest, AddGetComponents)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     EntityID entityID = registry.CreateNewEntity();
     EXPECT_FALSE(registry.HasComponent<TestComponent1>(entityID));
@@ -87,6 +90,7 @@ TEST(EntitiesRegistryTest, AddGetComponents)
 TEST(EntitiesRegistryTest, RemoveComponents)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     EntityID entityID = registry.CreateNewEntity();
     registry.AddComponent<TestComponent1>(entityID);
@@ -115,6 +119,7 @@ TEST(EntitiesRegistryTest, RemoveComponents)
 TEST(EntitiesRegistryTest, ClearRemoved)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     EntityID entityID = registry.CreateNewEntity();
     registry.AddComponent<TestComponent1>(entityID);
@@ -140,6 +145,7 @@ TEST(EntitiesRegistryTest, ClearRemoved)
 TEST(EntitiesRegistryTest, ComponentSystems)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     EntityID entityID = registry.CreateNewEntity();
     registry.AddComponent<TestComponent1>(entityID);
@@ -166,6 +172,7 @@ TEST(EntitiesRegistryTest, ComponentSystems)
 TEST(EntitiesRegistryTest, Iterator)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     for (int i = 0; i < 30; ++i)
     {
@@ -229,6 +236,7 @@ TEST(EntitiesRegistryTest, Iterator)
 TEST(EntitiesRegistryTest, Accessor)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     EntityID entityID = registry.CreateNewEntity();
     registry.AddComponent<TestComponent1>(entityID).IntegerValue = 8;
@@ -271,6 +279,7 @@ TEST(EntitiesRegistryTest, Accessor)
 TEST(EntitiesRegistryTest, Sorting)
 {
     EntitiesRegistry registry;
+    TypeInfoStorage::InitializeTypesFromStorage(&registry);
 
     int values[] = { 73, 8, 94, 1, 57, 60, 19, 49, 10, 35, 90, 8, 8, 7, 29, 43, 9, 73, 17, 19 };
     for (int i = 0; i < 20; i ++)

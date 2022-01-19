@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../EntityComponentSystem/Entity.h"
-#include "../EntityComponentSystem/EntitiesRegistry.h"
+#include "Steel/EntityComponentSystem/Entity.h"
+#include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 #include "HierarchyNode.h"
 
 template<typename Function>

@@ -29,7 +29,6 @@ private:
     static bool SerializeScene(Scene* scene, YAML::Node& node);
     static bool DeserializeScene(Scene* scene, YAML::Node& node);
     static bool CopySceneInner(Scene* sceneFrom, Scene* sceneTo);
-    static void RegisterComponents();
 
     static std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> _attributesInfo;
 };

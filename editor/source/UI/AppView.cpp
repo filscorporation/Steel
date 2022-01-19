@@ -8,6 +8,11 @@
 
 #undef LoadImage
 
+void AppView::RegisterType()
+{
+    REGISTER_TYPE(AppView);
+}
+
 void AppView::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
     UpdateView(entitiesRegistry);

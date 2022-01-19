@@ -450,7 +450,8 @@ MonoArray* CoreInternalCalls::Physics_AABBCast(glm::vec2* center, glm::vec2* siz
 
 MonoArray* CoreInternalCalls::Physics_LineCast(glm::vec2* pointA, glm::vec2* pointB)
 {
-    return ScriptingCore::ToMonoDataTypeArray<RayCastHit>(Physics::LineCast(*pointA, *pointB), 0);
+    return ScriptingCore::ToMonoSimpleTypeArray<RayCastHit>(
+            Physics::LineCast(*pointA, *pointB), SimpleAPITypes::RayCastHit);
 }
 
 float CoreInternalCalls::Random_NextFloat(float min, float max)

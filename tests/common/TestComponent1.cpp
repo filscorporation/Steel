@@ -1,5 +1,10 @@
 #include "TestComponent1.h"
 
+void TestComponent1::RegisterType()
+{
+    REGISTER_TYPE(TestComponent1);
+}
+
 void TestComponent1::OnCreated(EntitiesRegistry *entitiesRegistry)
 {
     Component::OnCreated(entitiesRegistry);

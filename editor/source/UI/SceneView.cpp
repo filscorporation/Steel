@@ -4,6 +4,11 @@
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
 
+void SceneView::RegisterType()
+{
+    REGISTER_TYPE(SceneView);
+}
+
 void SceneView::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
     isDirty = true;

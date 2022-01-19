@@ -1,37 +1,19 @@
 #include "ScriptingCore.h"
 #include "ScriptComponent.h"
 #include "ScriptingCallsRegister.h"
-#include "Steel/Animation/Animator.h"
-#include "Steel/Audio/AudioListener.h"
-#include "Steel/Audio/AudioSource.h"
 #include "Steel/Core/Log.h"
-#include "Steel/Physics/BoxCollider.h"
-#include "Steel/Physics/CircleCollider.h"
-#include "Steel/Physics/RigidBody.h"
-#include "Steel/Rendering/Camera.h"
-#include "Steel/Rendering/SpriteRenderer.h"
-#include "Steel/Rendering/MeshRenderer.h"
-#include "Steel/UI/RectTransformation.h"
-#include "Steel/UI/UIElements/UIImage.h"
-#include "Steel/UI/UIElements/UIButton.h"
-#include "Steel/UI/UIElements/UIInputField.h"
-#include "Steel/UI/UIElements/UIClipping.h"
-#include "Steel/UI/UIElements/UILayoutGroup.h"
-#include "Steel/UI/UIElements/UITabs.h"
-#include "Steel/UI/UIElements/UIText.h"
-#include "Steel/UI/UIElements/UICheckBox.h"
-#include "Steel/Scene/SceneHelper.h"
-#include "Steel/Scene/NameComponent.h"
+#include "Steel/Core/Application.h"
+
+#define NAMESPACE_NAME "Steel"
 
 EngineCallsMethods ScriptingCore::EngineCalls;
 EventManagerMethods ScriptingCore::EventManagerCalls;
 CoroutinesManagerMethods ScriptingCore::CoroutinesManagerCalls;
-CachedData* ScriptingCore::cachedAPITypes;
-std::vector<MonoClass*> ScriptingCore::cachedDataTypes;
+std::unordered_map<MonoClass*, const TypeInfo*> ScriptingCore::cachedAPITypes;
+std::unordered_map<SimpleAPITypes::SimpleAPIType, MonoClass*> ScriptingCore::cachedSimpleAPITypes;
 std::unordered_map<MonoClass*, ScriptTypeInfo*> ScriptingCore::scriptsInfo;
 std::unordered_map<ScriptEventTypes::ScriptEventType, MonoMethodDesc*> ScriptingCore::eventMethodsDescriptions;
 MonoClass* ScriptingCore::baseScriptClass = nullptr;
-Component nullComponent = Component(NULL_ENTITY);
 
 void ScriptingCore::Init(MonoImage* image)
 {
@@ -41,7 +23,7 @@ void ScriptingCore::Init(MonoImage* image)
     LoadCoroutinesManagerMethods(image);
     RegisterInternalCalls();
     CacheAPITypes(image);
-    CacheDataTypes(image);
+    CacheSimpleAPITypes(image);
 }
 
 void ScriptingCore::Terminate()
@@ -50,12 +32,11 @@ void ScriptingCore::Terminate()
         mono_method_desc_free(desc.second);
     for (auto info : scriptsInfo)
         delete info.second;
-    delete cachedAPITypes;
 }
 
 void ScriptingCore::LoadEventMethodsDescriptions(MonoImage* image)
 {
-    baseScriptClass = mono_class_from_name(image, "Steel", "ScriptComponent");
+    baseScriptClass = mono_class_from_name(image, NAMESPACE_NAME, "ScriptComponent");
 
     eventMethodsDescriptions[ScriptEventTypes::OnUpdate] = mono_method_desc_new("*:OnUpdate ()", true);
     eventMethodsDescriptions[ScriptEventTypes::OnCreate] = mono_method_desc_new("*:OnCreate ()", true);
@@ -83,7 +64,7 @@ void ScriptingCore::LoadEventMethodsDescriptions(MonoImage* image)
 
 void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
 {
-    MonoClass* klass = mono_class_from_name(image, "Steel", "ComponentEngineCalls");
+    MonoClass* klass = mono_class_from_name(image, NAMESPACE_NAME, "ComponentEngineCalls");
 
     EngineCalls.freeScriptHandle = mono_class_get_method_from_name(klass, "FreeScriptHandle", 1);
 
@@ -116,7 +97,7 @@ void ScriptingCore::LoadEngineCallsMethods(MonoImage* image)
 
 void ScriptingCore::LoadEventManagerMethods(MonoImage* image)
 {
-    MonoClass* klass = mono_class_from_name(image, "Steel", "EventManager");
+    MonoClass* klass = mono_class_from_name(image, NAMESPACE_NAME, "EventManager");
 
     EventManagerCalls.callInvokeCallbacks = mono_class_get_method_from_name(klass, "InvokeCallbacks", 2);
     EventManagerCalls.callDeregisterCallbacks = mono_class_get_method_from_name(klass, "DeregisterCallbacks", 2);
@@ -124,7 +105,7 @@ void ScriptingCore::LoadEventManagerMethods(MonoImage* image)
 
 void ScriptingCore::LoadCoroutinesManagerMethods(MonoImage* image)
 {
-    MonoClass* klass = mono_class_from_name(image, "Steel", "CoroutinesManager");
+    MonoClass* klass = mono_class_from_name(image, NAMESPACE_NAME, "CoroutinesManager");
 
     CoroutinesManagerCalls.callUpdate = mono_class_get_method_from_name(klass, "Update", 0);
 }
@@ -136,37 +117,28 @@ void ScriptingCore::RegisterInternalCalls()
 
 void ScriptingCore::CacheAPITypes(MonoImage* image)
 {
-    cachedAPITypes = new CachedData();
+    std::vector<const TypeInfo*> typeInfos;
+    TypeInfoStorage::GetTypeInfos(typeInfos);
 
-    CACHE_CLASS(Transformation, API_CLASS(Transformation))
-    CACHE_CLASS(NameComponent, API_CLASS(NameComponent))
-    CACHE_CLASS(BoxCollider, API_CLASS(BoxCollider))
-    CACHE_CLASS(CircleCollider, API_CLASS(CircleCollider))
-    CACHE_CLASS(RigidBody, API_CLASS(RigidBody))
-    CACHE_CLASS(SpriteRenderer, API_CLASS(SpriteRenderer))
-    CACHE_CLASS(MeshRenderer, API_CLASS(MeshRenderer))
-    CACHE_CLASS(Camera, API_CLASS(Camera))
-    CACHE_CLASS(AudioListener, API_CLASS(AudioListener))
-    CACHE_CLASS(AudioSource, API_CLASS(AudioSource))
-    CACHE_CLASS(Animator, API_CLASS(Animator))
-    CACHE_CLASS(RectTransformation, API_CLASS(RectTransformation))
-    CACHE_CLASS(UIImage, API_CLASS(UIImage))
-    CACHE_CLASS(UIButton, API_CLASS(UIButton))
-    CACHE_CLASS(UIText, API_CLASS(UIText))
-    CACHE_CLASS(UIInputField, API_CLASS(UIInputField))
-    CACHE_CLASS(UIClipping, API_CLASS(UIClipping))
-    CACHE_CLASS(UICheckBox, API_CLASS(UICheckBox))
-    CACHE_CLASS(UITabs, API_CLASS(UITabs))
-    CACHE_CLASS(UILayoutGroup, API_CLASS(UILayoutGroup))
+    for (auto typeInfo : typeInfos)
+    {
+        MonoClass* klass = mono_class_from_name(image, NAMESPACE_NAME, typeInfo->TypeName);
+        if (klass == nullptr)
+        {
+            // It's ok if some types are not presented in scripting project
+            continue;
+        }
+
+        cachedAPITypes[klass] = typeInfo;
+    }
 }
 
-void ScriptingCore::CacheDataTypes(MonoImage* image)
+void ScriptingCore::CacheSimpleAPITypes(MonoImage* image)
 {
-    // TODO: very inconvenient
-    cachedDataTypes.push_back(API_CLASS(RayCastHit));
-    cachedDataTypes.push_back(API_CLASS(Color));
-    cachedDataTypes.push_back(API_CLASS(Vector2));
-    cachedDataTypes.push_back(API_CLASS(Vector3));
+    CACHE_SIMPLE_TYPE(Vector2);
+    CACHE_SIMPLE_TYPE(Vector3);
+    CACHE_SIMPLE_TYPE(Color);
+    CACHE_SIMPLE_TYPE(RayCastHit);
 }
 
 void ScriptingCore::FreeScriptHandle(ScriptPointer scriptPointer)
@@ -189,188 +161,73 @@ void ScriptingCore::FreeScriptHandle(ScriptPointer scriptPointer)
     }
 }
 
-Component& ScriptingCore::AddComponentFromType(EntityID entity, void* type, bool& success)
-{
-    MonoClass* monoClass = TypeToMonoClass(type);
-    if (monoClass == nullptr)
-        return nullComponent;
-
-    return ScriptingCore::AddComponentFromMonoClass(entity, monoClass, success);
-}
-
-Component& ScriptingCore::AddComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
-{
-    success = true;
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    if (monoClass == CACHED_CLASS(NameComponent))
-        return entitiesRegistry->AddComponent<NameComponent>(entity);
-    if (monoClass == CACHED_CLASS(Transformation))
-        return entitiesRegistry->AddComponent<Transformation>(entity);
-    if (monoClass == CACHED_CLASS(RectTransformation))
-        return entitiesRegistry->AddComponent<RectTransformation>(entity);
-    if (monoClass == CACHED_CLASS(BoxCollider))
-        return entitiesRegistry->AddComponent<BoxCollider>(entity);
-    if (monoClass == CACHED_CLASS(CircleCollider))
-        return entitiesRegistry->AddComponent<CircleCollider>(entity);
-    if (monoClass == CACHED_CLASS(RigidBody))
-        return entitiesRegistry->AddComponent<RigidBody>(entity);
-    if (monoClass == CACHED_CLASS(SpriteRenderer))
-        return entitiesRegistry->AddComponent<SpriteRenderer>(entity);
-    if (monoClass == CACHED_CLASS(MeshRenderer))
-        return entitiesRegistry->AddComponent<MeshRenderer>(entity);
-    if (monoClass == CACHED_CLASS(Camera))
-        return entitiesRegistry->AddComponent<Camera>(entity);
-    if (monoClass == CACHED_CLASS(AudioListener))
-        return entitiesRegistry->AddComponent<AudioListener>(entity);
-    if (monoClass == CACHED_CLASS(AudioSource))
-        return entitiesRegistry->AddComponent<AudioSource>(entity);
-    if (monoClass == CACHED_CLASS(Animator))
-        return entitiesRegistry->AddComponent<Animator>(entity);
-    if (monoClass == CACHED_CLASS(UIImage))
-        return entitiesRegistry->AddComponent<UIImage>(entity);
-    if (monoClass == CACHED_CLASS(UIButton))
-        return entitiesRegistry->AddComponent<UIButton>(entity);
-    if (monoClass == CACHED_CLASS(UIText))
-        return entitiesRegistry->AddComponent<UIText>(entity);
-    if (monoClass == CACHED_CLASS(UIInputField))
-        return entitiesRegistry->AddComponent<UIInputField>(entity);
-    if (monoClass == CACHED_CLASS(UIClipping))
-        return entitiesRegistry->AddComponent<UIClipping>(entity);
-    if (monoClass == CACHED_CLASS(UICheckBox))
-        return entitiesRegistry->AddComponent<UICheckBox>(entity);
-    if (monoClass == CACHED_CLASS(UITabs))
-        return entitiesRegistry->AddComponent<UITabs>(entity);
-    if (monoClass == CACHED_CLASS(UILayoutGroup))
-        return entitiesRegistry->AddComponent<UILayoutGroup>(entity);
-
-    Log::LogError("Could not find cached class");
-
-    success = false;
-    return nullComponent;
-}
-
-bool ScriptingCore::HasComponentFromType(EntityID entity, void* type, bool& success)
+bool ScriptingCore::AddComponentFromType(EntityID entityID, void* type)
 {
     MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
         return false;
 
-    success = true;
-    return ScriptingCore::HasComponentFromMonoClass(entity, monoClass);
+    return ScriptingCore::AddComponentFromMonoClass(entityID, monoClass);
 }
 
-bool ScriptingCore::HasComponentFromMonoClass(EntityID entity, MonoClass* monoClass)
+bool ScriptingCore::AddComponentFromMonoClass(EntityID entityID, MonoClass* monoClass)
 {
+    if (cachedAPITypes.find(monoClass) == cachedAPITypes.end())
+    {
+        Log::LogError("Could not find cached class");
+
+        return false;
+    }
+
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    
-    if (monoClass == CACHED_CLASS(NameComponent))
-        return entitiesRegistry->HasComponent<NameComponent>(entity);
-    if (monoClass == CACHED_CLASS(Transformation))
-        return entitiesRegistry->HasComponent<Transformation>(entity);
-    if (monoClass == CACHED_CLASS(RectTransformation))
-        return entitiesRegistry->HasComponent<RectTransformation>(entity);
-    if (monoClass == CACHED_CLASS(BoxCollider))
-        return entitiesRegistry->HasComponent<BoxCollider>(entity);
-    if (monoClass == CACHED_CLASS(CircleCollider))
-        return entitiesRegistry->HasComponent<CircleCollider>(entity);
-    if (monoClass == CACHED_CLASS(RigidBody))
-        return entitiesRegistry->HasComponent<RigidBody>(entity);
-    if (monoClass == CACHED_CLASS(SpriteRenderer))
-        return entitiesRegistry->HasComponent<SpriteRenderer>(entity);
-    if (monoClass == CACHED_CLASS(MeshRenderer))
-        return entitiesRegistry->HasComponent<MeshRenderer>(entity);
-    if (monoClass == CACHED_CLASS(Camera))
-        return entitiesRegistry->HasComponent<Camera>(entity);
-    if (monoClass == CACHED_CLASS(AudioListener))
-        return entitiesRegistry->HasComponent<AudioListener>(entity);
-    if (monoClass == CACHED_CLASS(AudioSource))
-        return entitiesRegistry->HasComponent<AudioSource>(entity);
-    if (monoClass == CACHED_CLASS(Animator))
-        return entitiesRegistry->HasComponent<Animator>(entity);
-    if (monoClass == CACHED_CLASS(RectTransformation))
-        return entitiesRegistry->HasComponent<RectTransformation>(entity);
-    if (monoClass == CACHED_CLASS(UIImage))
-        return entitiesRegistry->HasComponent<UIImage>(entity);
-    if (monoClass == CACHED_CLASS(UIButton))
-        return entitiesRegistry->HasComponent<UIButton>(entity);
-    if (monoClass == CACHED_CLASS(UIText))
-        return entitiesRegistry->HasComponent<UIText>(entity);
-    if (monoClass == CACHED_CLASS(UIInputField))
-        return entitiesRegistry->HasComponent<UIInputField>(entity);
-    if (monoClass == CACHED_CLASS(UIClipping))
-        return entitiesRegistry->HasComponent<UIClipping>(entity);
-    if (monoClass == CACHED_CLASS(UICheckBox))
-        return entitiesRegistry->HasComponent<UICheckBox>(entity);
-    if (monoClass == CACHED_CLASS(UITabs))
-        return entitiesRegistry->HasComponent<UITabs>(entity);
-    if (monoClass == CACHED_CLASS(UILayoutGroup))
-        return entitiesRegistry->HasComponent<UILayoutGroup>(entity);
 
-    Log::LogError("Could not find cached class");
-
-    return false;
+    return entitiesRegistry->AddComponent(entityID, cachedAPITypes[monoClass]->ID);
 }
 
-bool ScriptingCore::RemoveComponentFromType(EntityID entity, void* type, bool& success)
+bool ScriptingCore::HasComponentFromType(EntityID entityID, void* type)
 {
     MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
         return false;
 
-    return ScriptingCore::RemoveComponentFromMonoClass(entity, monoClass, success);
+    return ScriptingCore::HasComponentFromMonoClass(entityID, monoClass);
 }
 
-bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
+bool ScriptingCore::HasComponentFromMonoClass(EntityID entityID, MonoClass* monoClass)
 {
+    if (cachedAPITypes.find(monoClass) == cachedAPITypes.end())
+    {
+        Log::LogError("Could not find cached class");
+
+        return false;
+    }
+
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    success = true;
-    
-    if (monoClass == CACHED_CLASS(NameComponent))
-        return entitiesRegistry->RemoveComponent<NameComponent>(entity);
-    if (monoClass == CACHED_CLASS(Transformation))
-        return entitiesRegistry->RemoveComponent<Transformation>(entity);
-    if (monoClass == CACHED_CLASS(RectTransformation))
-        return entitiesRegistry->RemoveComponent<RectTransformation>(entity);
-    if (monoClass == CACHED_CLASS(BoxCollider))
-        return entitiesRegistry->RemoveComponent<BoxCollider>(entity);
-    if (monoClass == CACHED_CLASS(CircleCollider))
-        return entitiesRegistry->RemoveComponent<CircleCollider>(entity);
-    if (monoClass == CACHED_CLASS(RigidBody))
-        return entitiesRegistry->RemoveComponent<RigidBody>(entity);
-    if (monoClass == CACHED_CLASS(SpriteRenderer))
-        return entitiesRegistry->RemoveComponent<SpriteRenderer>(entity);
-    if (monoClass == CACHED_CLASS(MeshRenderer))
-        return entitiesRegistry->RemoveComponent<MeshRenderer>(entity);
-    if (monoClass == CACHED_CLASS(Camera))
-        return entitiesRegistry->RemoveComponent<Camera>(entity);
-    if (monoClass == CACHED_CLASS(AudioListener))
-        return entitiesRegistry->RemoveComponent<AudioListener>(entity);
-    if (monoClass == CACHED_CLASS(AudioSource))
-        return entitiesRegistry->RemoveComponent<AudioSource>(entity);
-    if (monoClass == CACHED_CLASS(Animator))
-        return entitiesRegistry->RemoveComponent<Animator>(entity);
-    if (monoClass == CACHED_CLASS(UIImage))
-        return entitiesRegistry->RemoveComponent<UIImage>(entity);
-    if (monoClass == CACHED_CLASS(UIButton))
-        return entitiesRegistry->RemoveComponent<UIButton>(entity);
-    if (monoClass == CACHED_CLASS(UIText))
-        return entitiesRegistry->RemoveComponent<UIText>(entity);
-    if (monoClass == CACHED_CLASS(UIInputField))
-        return entitiesRegistry->RemoveComponent<UIInputField>(entity);
-    if (monoClass == CACHED_CLASS(UIClipping))
-        return entitiesRegistry->RemoveComponent<UIClipping>(entity);
-    if (monoClass == CACHED_CLASS(UICheckBox))
-        return entitiesRegistry->RemoveComponent<UICheckBox>(entity);
-    if (monoClass == CACHED_CLASS(UITabs))
-        return entitiesRegistry->RemoveComponent<UITabs>(entity);
-    if (monoClass == CACHED_CLASS(UILayoutGroup))
-        return entitiesRegistry->RemoveComponent<UILayoutGroup>(entity);
 
-    Log::LogError("Could not find cached class");
+    return entitiesRegistry->HasComponent(entityID, cachedAPITypes[monoClass]->ID);
+}
 
-    success = false;
-    return false;
+bool ScriptingCore::RemoveComponentFromType(EntityID entityID, void* type)
+{
+    MonoClass* monoClass = TypeToMonoClass(type);
+    if (monoClass == nullptr)
+        return false;
+
+    return ScriptingCore::RemoveComponentFromMonoClass(entityID, monoClass);
+}
+
+bool ScriptingCore::RemoveComponentFromMonoClass(EntityID entityID, MonoClass* monoClass)
+{
+    if (cachedAPITypes.find(monoClass) == cachedAPITypes.end())
+    {
+        Log::LogError("Could not find cached class");
+
+        return false;
+    }
+
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    return entitiesRegistry->RemoveComponent(entityID, cachedAPITypes[monoClass]->ID);
 }
 
 bool ScriptingCore::ComponentOwnersFromType(void* type, std::vector<EntityID>& result)
@@ -385,68 +242,41 @@ bool ScriptingCore::ComponentOwnersFromType(void* type, std::vector<EntityID>& r
 
 bool ScriptingCore::ComponentOwnersFromMonoClass(MonoClass* monoClass, std::vector<EntityID>& result)
 {
+    if (cachedAPITypes.find(monoClass) == cachedAPITypes.end())
+    {
+        Log::LogError("Could not find cached class");
+
+        return false;
+    }
+
     EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    if (monoClass == CACHED_CLASS(NameComponent))
-        RETURN_COMPONENT_OWNERS(NameComponent)
-    if (monoClass == CACHED_CLASS(Transformation))
-        RETURN_COMPONENT_OWNERS(Transformation)
-    if (monoClass == CACHED_CLASS(RectTransformation))
-        RETURN_COMPONENT_OWNERS(RectTransformation)
-    if (monoClass == CACHED_CLASS(BoxCollider))
-        RETURN_COMPONENT_OWNERS(BoxCollider)
-    if (monoClass == CACHED_CLASS(CircleCollider))
-        RETURN_COMPONENT_OWNERS(CircleCollider)
-    if (monoClass == CACHED_CLASS(RigidBody))
-        RETURN_COMPONENT_OWNERS(RigidBody)
-    if (monoClass == CACHED_CLASS(SpriteRenderer))
-        RETURN_COMPONENT_OWNERS(SpriteRenderer)
-    if (monoClass == CACHED_CLASS(MeshRenderer))
-        RETURN_COMPONENT_OWNERS(MeshRenderer)
-    if (monoClass == CACHED_CLASS(Camera))
-        RETURN_COMPONENT_OWNERS(Camera)
-    if (monoClass == CACHED_CLASS(AudioListener))
-        RETURN_COMPONENT_OWNERS(AudioListener)
-    if (monoClass == CACHED_CLASS(AudioSource))
-        RETURN_COMPONENT_OWNERS(AudioSource)
-    if (monoClass == CACHED_CLASS(Animator))
-        RETURN_COMPONENT_OWNERS(Animator)
-    if (monoClass == CACHED_CLASS(UIImage))
-        RETURN_COMPONENT_OWNERS(UIImage)
-    if (monoClass == CACHED_CLASS(UIButton))
-        RETURN_COMPONENT_OWNERS(UIButton)
-    if (monoClass == CACHED_CLASS(UIText))
-        RETURN_COMPONENT_OWNERS(UIText)
-    if (monoClass == CACHED_CLASS(UIInputField))
-        RETURN_COMPONENT_OWNERS(UIInputField)
-    if (monoClass == CACHED_CLASS(UIClipping))
-        RETURN_COMPONENT_OWNERS(UIClipping)
-    if (monoClass == CACHED_CLASS(UICheckBox))
-        RETURN_COMPONENT_OWNERS(UICheckBox)
-    if (monoClass == CACHED_CLASS(UITabs))
-        RETURN_COMPONENT_OWNERS(UITabs)
-    if (monoClass == CACHED_CLASS(UILayoutGroup))
-        RETURN_COMPONENT_OWNERS(UILayoutGroup)
+    auto entitiesIterator = entitiesRegistry->GetEntitiesIterator(cachedAPITypes[monoClass]->ID, true);
+    result.reserve(entitiesIterator.Size());
 
-    Log::LogError("Could not find cached class");
+    for (int i = 0; i < entitiesIterator.Size(); ++i)
+    {
+        result.push_back(entitiesIterator[i]);
+    }
 
-    return false;
+    return true;
 }
 
-bool ScriptingCore::AddScriptComponentFromType(EntityID entity, void* type, ScriptPointer scriptPointer)
+bool ScriptingCore::AddScriptComponentFromType(EntityID entityID, void* type, ScriptPointer scriptPointer)
 {
     MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
         return false;
 
-    return AddScriptComponentFromMonoClass(entity, monoClass, scriptPointer);
+    return AddScriptComponentFromMonoClass(entityID, monoClass, scriptPointer);
 }
 
-bool ScriptingCore::AddScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass, ScriptPointer scriptPointer)
+bool ScriptingCore::AddScriptComponentFromMonoClass(EntityID entityID, MonoClass* monoClass, ScriptPointer scriptPointer)
 {
     ScriptTypeInfo* typeInfo = ScriptParseRecursive(monoClass);
 
-    auto& scriptComponent = AddComponentS<ScriptComponent>(entity);
+    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& scriptComponent = entitiesRegistry->AddComponent<ScriptComponent>(entityID);
     if (scriptComponent.HasScriptType(typeInfo))
         // We can support multiple script instances of the same type later if needed, for now return false
         return false;
@@ -456,16 +286,16 @@ bool ScriptingCore::AddScriptComponentFromMonoClass(EntityID entity, MonoClass* 
     return true;
 }
 
-bool ScriptingCore::HasScriptComponentFromType(EntityID entity, void* type)
+bool ScriptingCore::HasScriptComponentFromType(EntityID entityID, void* type)
 {
     MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
         return false;
 
-    return HasScriptComponentFromMonoClass(entity, monoClass);
+    return HasScriptComponentFromMonoClass(entityID, monoClass);
 }
 
-bool ScriptingCore::HasScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass)
+bool ScriptingCore::HasScriptComponentFromMonoClass(EntityID entityID, MonoClass* monoClass)
 {
     ScriptTypeInfo* typeInfo;
     if (scriptsInfo.find(monoClass) == scriptsInfo.end())
@@ -479,24 +309,24 @@ bool ScriptingCore::HasScriptComponentFromMonoClass(EntityID entity, MonoClass* 
 
     EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
+    if (!entitiesRegistry->HasComponent<ScriptComponent>(entityID))
         return false;
 
-    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
+    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entityID);
 
     return scriptComponent.HasScriptType(typeInfo);
 }
 
-ScriptPointer ScriptingCore::GetScriptComponentFromType(EntityID entity, void* type, bool& success)
+ScriptPointer ScriptingCore::GetScriptComponentFromType(EntityID entityID, void* type, bool& success)
 {
     MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
         return 0;
 
-    return GetScriptComponentFromMonoClass(entity, monoClass, success);
+    return GetScriptComponentFromMonoClass(entityID, monoClass, success);
 }
 
-ScriptPointer ScriptingCore::GetScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass, bool& success)
+ScriptPointer ScriptingCore::GetScriptComponentFromMonoClass(EntityID entityID, MonoClass* monoClass, bool& success)
 {
     success = false;
     ScriptTypeInfo* typeInfo;
@@ -511,10 +341,10 @@ ScriptPointer ScriptingCore::GetScriptComponentFromMonoClass(EntityID entity, Mo
 
     EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
+    if (!entitiesRegistry->HasComponent<ScriptComponent>(entityID))
         return 0;
 
-    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
+    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entityID);
 
     if (!scriptComponent.HasScriptType(typeInfo))
         return 0;
@@ -523,16 +353,16 @@ ScriptPointer ScriptingCore::GetScriptComponentFromMonoClass(EntityID entity, Mo
     return scriptComponent.GetScriptPointer(typeInfo);
 }
 
-bool ScriptingCore::RemoveScriptComponentFromType(EntityID entity, void* type)
+bool ScriptingCore::RemoveScriptComponentFromType(EntityID entityID, void* type)
 {
     MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
         return false;
 
-    return RemoveScriptComponentFromMonoClass(entity, monoClass);
+    return RemoveScriptComponentFromMonoClass(entityID, monoClass);
 }
 
-bool ScriptingCore::RemoveScriptComponentFromMonoClass(EntityID entity, MonoClass* monoClass)
+bool ScriptingCore::RemoveScriptComponentFromMonoClass(EntityID entityID, MonoClass* monoClass)
 {
     ScriptTypeInfo* typeInfo;
     if (scriptsInfo.find(monoClass) == scriptsInfo.end())
@@ -546,16 +376,16 @@ bool ScriptingCore::RemoveScriptComponentFromMonoClass(EntityID entity, MonoClas
 
     EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    if (!entitiesRegistry->HasComponent<ScriptComponent>(entity))
+    if (!entitiesRegistry->HasComponent<ScriptComponent>(entityID))
         return false;
 
-    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entity);
+    auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entityID);
     if (!scriptComponent.HasScriptType(typeInfo))
         return false;
 
     scriptComponent.RemoveScript(typeInfo);
     if (scriptComponent.Scripts.empty())
-        entitiesRegistry->RemoveComponent<ScriptComponent>(entity);
+        entitiesRegistry->RemoveComponent<ScriptComponent>(entityID);
 
     return true;
 }
@@ -633,7 +463,7 @@ ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
 
 MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)
 {
-    MonoMethodDesc* description = mono_method_desc_new(methodName, NULL);
+    MonoMethodDesc* description = mono_method_desc_new(methodName, 0);
     if (!description)
     {
         Log::LogError("Unable to get method description {0}", methodName);

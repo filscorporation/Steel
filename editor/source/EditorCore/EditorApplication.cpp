@@ -5,10 +5,12 @@
 #include "EditorBuilder.h"
 #include "EditorSceneManager.h"
 #include "EditorSceneRenderer.h"
+#include "EditorTypeSystem.h"
 
 void EditorApplication::Init(ApplicationSettings settings)
 {
     InitSystems(1400, 800, glm::vec3(0.0f, 0.0f, 0.0f), settings.Fullscreen, settings.DoubleBuffer);
+    EditorTypeSystem::Init();
 
     // Application
     AppContext = new ApplicationContext();
@@ -121,6 +123,7 @@ void EditorApplication::Terminate()
     delete EditorContext->Resources;
     delete EditorContext;
 
+    EditorTypeSystem::Terminate();
     Application::Terminate();
 }
 

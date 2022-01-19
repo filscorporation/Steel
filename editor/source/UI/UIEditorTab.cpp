@@ -3,6 +3,11 @@
 #include <Steel/UI/UIElements/UITabs.h>
 #include "UIEditorTab.h"
 
+void UIEditorTab::RegisterType()
+{
+    REGISTER_TYPE(UIEditorTab);
+}
+
 void UIEditorTab::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     auto& eventHandler = entitiesRegistry->AddComponent<UIEventHandler>(Owner);

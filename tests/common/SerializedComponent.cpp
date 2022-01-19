@@ -1,13 +1,8 @@
 #include "SerializedComponent.h"
 
-bool registered = false;
-
 void SerializedComponent::RegisterType()
 {
-    if (registered)
-        return;
-    registered = true;
-
+    REGISTER_TYPE(SerializedComponent);
     REGISTER_ATTRIBUTE(SerializedComponent, "integerAttribute", GetIntegerAttribute, SetIntegerAttribute, int, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(SerializedComponent, "floatAttribute", GetFloatAttribute, SetFloatAttribute, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(SerializedComponent, "boolAttribute", GetBoolAttribute, SetBoolAttribute, bool, AttributeFlags::Public);

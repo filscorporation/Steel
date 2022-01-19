@@ -3,6 +3,11 @@
 
 #include <Steel/Scene/NameComponent.h>
 
+void HierarchyElement::RegisterType()
+{
+    REGISTER_TYPE(HierarchyElement);
+}
+
 void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry, UILayer* layer,
                             const HierarchyView& hierarchyView, EntityID nodeEntity, const HierarchyViewNode& node)
 {

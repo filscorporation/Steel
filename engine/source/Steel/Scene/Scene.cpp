@@ -126,18 +126,18 @@ EntityID Scene::CreateEntity(AsepriteData& data)
 
 EntityID Scene::CreateEmptyEntity()
 {
-    EntityID entity = entitiesRegistry->CreateNewEntity();
-    auto& uuidComponent = entitiesRegistry->AddComponent<IDComponent>(entity);
+    EntityID entityID = entitiesRegistry->CreateNewEntity();
+    auto& uuidComponent = entitiesRegistry->AddComponent<IDComponent>(entityID);
     UUID uuid = Random::NextULong();
     uuidComponent.SetUUID(uuid);
-    SetEntityByUUID(uuid, entity);
+    SetEntityByUUID(uuid, entityID);
 
-    return entity;
+    return entityID;
 }
 
-void Scene::DestroyEntity(EntityID entity)
+void Scene::DestroyEntity(EntityID entityID)
 {
-    entitiesToDelete.push_back(entity);
+    entitiesToDelete.push_back(entityID);
 }
 
 void Scene::Refresh()
@@ -314,22 +314,22 @@ void Scene::CleanAllEntities()
     entitiesByUUID.clear();
 }
 
-void Scene::DestroyAndRemoveEntity(EntityID entity)
+void Scene::DestroyAndRemoveEntity(EntityID entityID)
 {
-    DestroyEntityInner(entity);
+    DestroyEntityInner(entityID);
 }
 
-void Scene::DestroyEntityInner(EntityID entity)
+void Scene::DestroyEntityInner(EntityID entityID)
 {
     bool clearFromUUIDs = false;
     UUID uuid;
-    if (entitiesRegistry->HasComponent<IDComponent>(entity))
+    if (entitiesRegistry->HasComponent<IDComponent>(entityID))
     {
         clearFromUUIDs = true;
-        uuid = entitiesRegistry->GetComponent<IDComponent>(entity).GetUUID();
+        uuid = entitiesRegistry->GetComponent<IDComponent>(entityID).GetUUID();
     }
 
-    entitiesRegistry->DeleteEntity(entity);
+    entitiesRegistry->DeleteEntity(entityID);
 
     if (clearFromUUIDs)
         entitiesByUUID.erase(uuid);

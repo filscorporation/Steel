@@ -1,5 +1,5 @@
 #include "TypeInfo.h"
-#include "../Math/Math.h"
+#include "Steel/Math/Math.h"
 
 TypeInfo::TypeInfo(const char* typeName)
 {
