@@ -21,6 +21,7 @@ Scene::Scene(const std::string& name)
 {
     _name = name;
     entitiesRegistry = new EntitiesRegistry();
+    TypeInfoStorage::InitializeTypesFromStorage(entitiesRegistry);
 
     uiLayer = new UILayer(this);
     uiLayer->LoadDefaultResources();

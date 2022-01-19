@@ -1,4 +1,4 @@
-#include "IDComponent.h"Compon
+#include "IDComponent.h"
 
 void IDComponent::RegisterType()
 {
