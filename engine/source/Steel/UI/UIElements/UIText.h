@@ -58,7 +58,7 @@ public:
     float GetLineSpacing() const;
     void SetLineSpacing(float spacing);
     const glm::vec4& GetColor() const;
-    void SetColor(glm::vec4 color);
+    void SetColor(const glm::vec4& color);
     bool GetIsTextAutoSize() const;
     void SetIsTextAutoSize(bool isAutoSize);
     AlignmentTypes::AlignmentType GetTextAlignment() const;

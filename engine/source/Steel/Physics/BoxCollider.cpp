@@ -79,8 +79,11 @@ void BoxCollider::SetSize(const glm::vec2& size)
 
 void BoxCollider::PrepareColliderInfo()
 {
-    info = new BoxCollider::BoxColliderInfo();
-    info->BoxShape = new b2PolygonShape();
+    if (info == nullptr)
+    {
+        info = new BoxCollider::BoxColliderInfo();
+        info->BoxShape = new b2PolygonShape();
+    }
 
     ApplyPhysicsProperties();
 }

@@ -1,17 +1,21 @@
-#include <vector>
-#include <cctype>
-
 #include "UIText.h"
 #include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Scene/Hierarchy.h"
 #include "Steel/Scene/SceneHelper.h"
 
+#include <vector>
+#include <cctype>
+
 void UIText::RegisterType()
 {
     REGISTER_TYPE(UIText);
-    REGISTER_ATTRIBUTE(UIText, "text", GetText, SetText, std::string, AttributeFlags::Public);
     REGISTER_RESOURCE_ATTRIBUTE(UIText, "font", GetFont, SetFont, Font*, ResourceTypes::Font, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIText, "text", GetText, SetText, std::string, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIText, "textSize", GetTextSize, SetTextSize, uint32_t, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIText, "lineSpacing", GetLineSpacing, SetLineSpacing, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIText, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIText, "isAutoSize", GetIsTextAutoSize, SetIsTextAutoSize, bool, AttributeFlags::Public);
     REGISTER_ENUM_ATTRIBUTE(UIText, "alignmentType", GetTextAlignment, SetTextAlignment, AlignmentTypes::AlignmentType, AttributeFlags::Public);
     REGISTER_ENUM_ATTRIBUTE(UIText, "overflowMode", GetOverflowMode, SetOverflowMode, OverflowModes::OverflowMode, AttributeFlags::Public);
 }
@@ -23,12 +27,12 @@ bool UIText::Validate(EntitiesRegistry* entitiesRegistry)
 
 void UIText::SetDefault(EntitiesRegistry* entitiesRegistry)
 {
-    _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
     _font = Application::Instance->GetResourcesManager()->DefaultFont();
 }
 
 void UIText::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
+    _material = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
     _clippingLevel = GetClippingLevelUpwards(entitiesRegistry, Owner);
 }
 
@@ -136,7 +140,7 @@ const glm::vec4& UIText::GetColor() const
     return _color;
 }
 
-void UIText::SetColor(glm::vec4 color)
+void UIText::SetColor(const glm::vec4& color)
 {
     if (_color == color)
         return;

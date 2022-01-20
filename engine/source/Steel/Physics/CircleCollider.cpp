@@ -79,8 +79,11 @@ void CircleCollider::SetRadius(float radius)
 
 void CircleCollider::PrepareColliderInfo()
 {
-    info = new CircleCollider::CircleColliderInfo();
-    info->CircleShape = new b2CircleShape();
+    if (info == nullptr)
+    {
+        info = new CircleCollider::CircleColliderInfo();
+        info->CircleShape = new b2CircleShape();
+    }
 
     ApplyPhysicsProperties();
 }
