@@ -7,7 +7,7 @@
 void UIButton::RegisterType()
 {
     REGISTER_TYPE(UIButton);
-    //REGISTER_ATTRIBUTE(UIButton, "transitionInfo", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public); TODO
+    REGISTER_ATTRIBUTE(UIButton, "transitionInfo", GetTransitionsInfo, SetTransitionsInfo, TransitionsInfo, AttributeFlags::Public);
     REGISTER_ID_ATTRIBUTE(UIButton, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIButton, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public);
 }

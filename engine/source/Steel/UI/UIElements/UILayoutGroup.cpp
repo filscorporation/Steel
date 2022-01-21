@@ -14,6 +14,7 @@ void UILayoutGroup::RegisterType()
     REGISTER_TYPE(UILayoutGroup);
     REGISTER_ID_ATTRIBUTE(UILayoutGroup, "groupID", GetGroupID, SetGroupID, AttributeFlags::Public);
     REGISTER_ENUM_ATTRIBUTE(UILayoutGroup, "type", GetType, SetType, LayoutGroupTypes::LayoutGroupType, AttributeFlags::Public);
+    // TODO: elements attribute
 }
 
 bool UILayoutGroup::Validate(EntitiesRegistry* entitiesRegistry)

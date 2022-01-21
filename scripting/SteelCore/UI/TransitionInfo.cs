@@ -156,11 +156,11 @@ namespace Steel
             {
                 TransitionType = TransitionType.SpriteChange,
                 TransitionDuration = TransitionDuration,
-                Normal = new TransitionData(Normal.ID),
-                Hovered = new TransitionData(Hovered.ID),
-                Selected = new TransitionData(Selected.ID),
-                Clicked = new TransitionData(Clicked.ID),
-                Disabled = new TransitionData(Disabled.ID),
+                Normal = new TransitionData(Normal?.ID ?? Resource.NULL_RESOURCE_ID),
+                Hovered = new TransitionData(Hovered?.ID ?? Resource.NULL_RESOURCE_ID),
+                Selected = new TransitionData(Selected?.ID ?? Resource.NULL_RESOURCE_ID),
+                Clicked = new TransitionData(Clicked?.ID ?? Resource.NULL_RESOURCE_ID),
+                Disabled = new TransitionData(Disabled?.ID ?? Resource.NULL_RESOURCE_ID),
             };
         }
 
@@ -169,11 +169,11 @@ namespace Steel
             return new SpriteChangeTransition
             {
                 TransitionDuration = info.TransitionDuration,
-                Normal = new Sprite(info.Normal.Value),
-                Hovered = new Sprite(info.Hovered.Value),
-                Selected = new Sprite(info.Selected.Value),
-                Clicked = new Sprite(info.Clicked.Value),
-                Disabled = new Sprite(info.Disabled.Value),
+                Normal = info.Normal.Value == Resource.NULL_RESOURCE_ID ? null : new Sprite(info.Normal.Value),
+                Hovered = info.Hovered.Value == Resource.NULL_RESOURCE_ID ? null : new Sprite(info.Hovered.Value),
+                Selected = info.Selected.Value == Resource.NULL_RESOURCE_ID ? null : new Sprite(info.Selected.Value),
+                Clicked = info.Clicked.Value == Resource.NULL_RESOURCE_ID ? null : new Sprite(info.Clicked.Value),
+                Disabled = info.Disabled.Value == Resource.NULL_RESOURCE_ID ? null : new Sprite(info.Disabled.Value),
             };
         }
     }
@@ -282,11 +282,11 @@ namespace Steel
             {
                 TransitionType = TransitionType.Animation,
                 TransitionDuration = TransitionDuration,
-                Normal = new TransitionData(Normal.ID),
-                Hovered = new TransitionData(Hovered.ID),
-                Selected = new TransitionData(Selected.ID),
-                Clicked = new TransitionData(Clicked.ID),
-                Disabled = new TransitionData(Disabled.ID),
+                Normal = new TransitionData(Normal?.ID ?? Resource.NULL_RESOURCE_ID),
+                Hovered = new TransitionData(Hovered?.ID ?? Resource.NULL_RESOURCE_ID),
+                Selected = new TransitionData(Selected?.ID ?? Resource.NULL_RESOURCE_ID),
+                Clicked = new TransitionData(Clicked?.ID ?? Resource.NULL_RESOURCE_ID),
+                Disabled = new TransitionData(Disabled?.ID ?? Resource.NULL_RESOURCE_ID),
             };
         }
 
@@ -295,11 +295,11 @@ namespace Steel
             return new AnimationTransition
             {
                 TransitionDuration = info.TransitionDuration,
-                Normal = new Animation(info.Normal.Value),
-                Hovered = new Animation(info.Hovered.Value),
-                Selected = new Animation(info.Selected.Value),
-                Clicked = new Animation(info.Clicked.Value),
-                Disabled = new Animation(info.Disabled.Value),
+                Normal = info.Normal.Value == Resource.NULL_RESOURCE_ID ? null : new Animation(info.Normal.Value),
+                Hovered = info.Hovered.Value == Resource.NULL_RESOURCE_ID ? null : new Animation(info.Hovered.Value),
+                Selected = info.Selected.Value == Resource.NULL_RESOURCE_ID ? null : new Animation(info.Selected.Value),
+                Clicked = info.Clicked.Value == Resource.NULL_RESOURCE_ID ? null : new Animation(info.Clicked.Value),
+                Disabled = info.Disabled.Value == Resource.NULL_RESOURCE_ID ? null : new Animation(info.Disabled.Value),
             };
         }
     }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Math/Math.h"
+#include "Steel/Math/Math.h"
 
 namespace TransitionTypes
 {

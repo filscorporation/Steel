@@ -1,5 +1,4 @@
 #include "UIInteractable.h"
-
 #include "UIElements/UIImage.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Time.h"
@@ -75,14 +74,14 @@ bool UIInteractable::UpdateTransition()
     return isInTransition;
 }
 
-void UIInteractable::SetTransitionsInfo(TransitionsInfo info)
+void UIInteractable::SetTransitionsInfo(const TransitionsInfo& info)
 {
     currentTransitionsInfo = info;
 
     RestoreTransition();
 }
 
-TransitionsInfo UIInteractable::GetTransitionsInfo() const
+const TransitionsInfo& UIInteractable::GetTransitionsInfo() const
 {
     return currentTransitionsInfo;
 }

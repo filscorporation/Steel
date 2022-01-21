@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../Serialization/Serializable.h"
+#include "Steel/Serialization/Serializable.h"
+#include "Steel/UI/TransitionInfo.h"
 
 #include <glm/glm.hpp>
 #include <sstream>
@@ -40,6 +41,19 @@ namespace StringUtils
     {
         std::stringstream ss;
         ss << "(" << value.r << ", " << value.g << ", " << value.b << ", " << value.a << ")";
+        return ss.str();
+    }
+
+    template<>
+    std::string ToString(const TransitionsInfo& value)
+    {
+        std::stringstream ss;
+        ss << "(" << (int)value.TransitionType << ", " << value.TransitionDuration << ", "
+            << value.Normal.Value << ", "
+            << value.Hovered.Value << ", "
+            << value.Selected.Value << ", "
+            << value.Clicked.Value << ", "
+            << value.Disabled.Value << ")";
         return ss.str();
     }
 
@@ -112,6 +126,23 @@ namespace StringUtils
         glm::vec4 result;
         char c;
         ss >> c >> result.r >> c >> result.g >> c >> result.b >> c >> result.a;
+        return result;
+    }
+
+    template<>
+    TransitionsInfo FromString(const std::string& line)
+    {
+        std::stringstream ss(line);
+        TransitionsInfo result {};
+        char c;
+        int typeAsInt;
+        ss >> c >> typeAsInt >> c >> result.TransitionDuration >> c
+            >> result.Normal.Value >> c
+            >> result.Hovered.Value >> c
+            >> result.Selected.Value >> c
+            >> result.Clicked.Value >> c
+            >> result.Disabled.Value >> c;
+        result.TransitionType = (TransitionTypes::TransitionType)typeAsInt;
         return result;
     }
 };

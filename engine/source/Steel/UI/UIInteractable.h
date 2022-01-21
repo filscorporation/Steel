@@ -14,8 +14,8 @@ class UIInteractable : public UIComponent
 public:
     explicit UIInteractable(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
 
-    void SetTransitionsInfo(TransitionsInfo info);
-    TransitionsInfo GetTransitionsInfo() const;
+    void SetTransitionsInfo(const TransitionsInfo& info);
+    const TransitionsInfo& GetTransitionsInfo() const;
 
     void SetTargetImage(EntityID targetID);
     EntityID GetTargetImage() const;

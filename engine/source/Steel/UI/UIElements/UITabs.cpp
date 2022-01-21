@@ -7,7 +7,7 @@
 void UITabs::RegisterType()
 {
     REGISTER_TYPE(UITabs);
-    // TODO
+    // TODO: tabs attribute
 }
 
 bool UITabs::Validate(EntitiesRegistry* entitiesRegistry)
