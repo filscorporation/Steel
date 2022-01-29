@@ -8,7 +8,7 @@
 
 class UIImage : public UIComponent
 {
-    COMPONENT(UIImage)
+    DEFINE_COMPONENT(UIImage)
 
 public:
     explicit UIImage(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

@@ -17,6 +17,21 @@ class TypeInfoRegisterer : TypeInfoRegistererBase
 public:
     void RegisteredType(EntitiesRegistry* entitiesRegistry) override
     {
+        // Skip simple types
+    }
+
+    const TypeInfo* GetTypeInfo() override
+    {
+        return T::GetTypeInfo();
+    }
+};
+
+template<class T>
+class ComponentTypeRegisterer : TypeInfoRegistererBase
+{
+public:
+    void RegisteredType(EntitiesRegistry* entitiesRegistry) override
+    {
         entitiesRegistry->RegisteredType<T>();
     }
 
@@ -36,6 +51,15 @@ public:
             return;
 
         storage[TYPE_ID(T)] = (TypeInfoRegistererBase*)new TypeInfoRegisterer<T>();
+    }
+
+    template<class T>
+    static void RegisterComponentInStorage()
+    {
+        if (storage.find(TYPE_ID(T)) != storage.end())
+            return;
+
+        storage[TYPE_ID(T)] = (TypeInfoRegistererBase*)new ComponentTypeRegisterer<T>();
     }
 
     static void Clear();

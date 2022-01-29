@@ -33,7 +33,7 @@ public:
         node[name] = Get(object);
     }
 
-    void Deserialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override
+    void Deserialize(Serializable* object, const std::string& name, const YAML::Node& node, SerializationContext& context) override
     {
         Set(object, node[name].as<U>());
     }

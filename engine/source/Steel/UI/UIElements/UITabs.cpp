@@ -6,8 +6,10 @@
 
 void UITabs::RegisterType()
 {
-    REGISTER_TYPE(UITabs);
-    // TODO: tabs attribute
+    REGISTER_COMPONENT(UITabs);
+    REGISTER_LIST_ATTRIBUTE(UITabs, "tabs", GetTabsList, SetTabsList, UITabInfo, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UITabs, "activeTab", GetActiveTab, SetActiveTab, int, AttributeFlags::Public);
+    REGISTER_ID_ATTRIBUTE(UITabs, "content", GetContent, SetContent, AttributeFlags::Public);
 }
 
 bool UITabs::Validate(EntitiesRegistry* entitiesRegistry)
@@ -20,23 +22,51 @@ void UITabs::SetDefault(EntitiesRegistry* entitiesRegistry)
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
     _tabOpenedSprite = layer->UIResources.DefaultTabOpenedSprite;
     _tabClosedSprite = layer->UIResources.DefaultTabClosedSprite;
-}
-
-void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
-{
-    auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
-    buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();
-    buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetHeight();
-
-    content = layer->CreateUIElement("Tabs content", Owner);
-    auto& contentRT = entitiesRegistry->GetComponent<RectTransformation>(content);
-    contentRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-    contentRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-    contentRT.SetOffsetMax(glm::vec2(0.0f, buttonHeight));
 
     auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
     // Set default size
     rt.SetSize(glm::vec2(buttonWidth * 4, buttonWidth * 8));
+}
+
+void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
+{
+    initialized = true;
+    auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
+
+    // TODO: remove when tab sprites will get serialized
+    _tabOpenedSprite = layer->UIResources.DefaultTabOpenedSprite;
+    _tabClosedSprite = layer->UIResources.DefaultTabClosedSprite;
+
+    buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();
+    buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetHeight();
+
+
+    if (content == NULL_ENTITY)
+    {
+        content = layer->CreateUIElement("Tabs content", Owner);
+        auto& contentRT = entitiesRegistry->GetComponent<RectTransformation>(content);
+        contentRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+        contentRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        contentRT.SetOffsetMax(glm::vec2(0.0f, buttonHeight));
+    }
+
+    for (auto tab : _tabs)
+    {
+        auto& button = entitiesRegistry->GetComponent<UIButton>(tab.ButtonID);
+        EntityID thisEntityID = Owner;
+        button.Callback = [thisEntityID](EntityID entityID)
+        {
+            auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+            if (registry->HasComponent<UITabs>(thisEntityID))
+                registry->GetComponent<UITabs>(thisEntityID).SetActiveTabByButtonID(entityID);
+        };
+    }
+
+    if (_activeTabBackup != -1)
+    {
+        SetActiveTab(_activeTabBackup);
+        _activeTabBackup = -1;
+    }
 }
 
 void UITabs::SetTabsSprites(Sprite* tabOpenedSprite, Sprite* tabClosedSprite)
@@ -49,9 +79,9 @@ void UITabs::SetTabsSprites(Sprite* tabOpenedSprite, Sprite* tabClosedSprite)
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    for (int i = 0; i < tabs.size(); ++i)
+    for (int i = 0; i < _tabs.size(); ++i)
     {
-        auto& currentButton = entitiesRegistry->GetComponent<UIButton>(tabs[i].ButtonID);
+        auto& currentButton = entitiesRegistry->GetComponent<UIButton>(_tabs[i].ButtonID);
         auto& currentButtonSprite = entitiesRegistry->GetComponent<UIImage>(currentButton.GetTargetImage());
         if (activeTab == i)
             currentButtonSprite.SetImage(_tabOpenedSprite);
@@ -62,18 +92,18 @@ void UITabs::SetTabsSprites(Sprite* tabOpenedSprite, Sprite* tabClosedSprite)
 
 EntityID UITabs::GetTab(int index)
 {
-    if (index < 0 || index >= tabs.size())
+    if (index < 0 || index >= _tabs.size())
     {
         Log::LogError("Tab index outside of range");
         return NULL_ENTITY;
     }
 
-    return tabs[index].ContentID;
+    return _tabs[index].ContentID;
 }
 
 int UITabs::GetTabsCount()
 {
-    return (int)tabs.size();
+    return (int)_tabs.size();
 }
 
 EntityID UITabs::AddTab(const std::string& name)
@@ -86,7 +116,7 @@ EntityID UITabs::AddTab(const std::string& name)
 
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    int index = (int)tabs.size();
+    int index = (int)_tabs.size();
 
     EntityID newContentEntity = layer->CreateUIElement(name + " tab", content);
     auto& tabRT = entitiesRegistry->GetComponent<RectTransformation>(newContentEntity);
@@ -114,7 +144,7 @@ EntityID UITabs::AddTab(const std::string& name)
     auto& text = entitiesRegistry->GetComponent<UIText>(textEntity);
     text.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-    tabs.emplace_back(buttonEntity, newContentEntity);
+    _tabs.emplace_back(buttonEntity, newContentEntity);
 
     entitiesRegistry->EntitySetActive(newContentEntity, false, true);
     if (activeTab == -1)
@@ -125,26 +155,26 @@ EntityID UITabs::AddTab(const std::string& name)
 
 bool UITabs::RemoveTab(int index)
 {
-    if (index < 0 || index >= tabs.size())
+    if (index < 0 || index >= _tabs.size())
     {
         Log::LogError("Tab index outside of range");
         return false;
     }
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    entitiesRegistry->DeleteEntity(tabs[index].ContentID);
-    entitiesRegistry->DeleteEntity(tabs[index].ButtonID);
+    entitiesRegistry->DeleteEntity(_tabs[index].ContentID);
+    entitiesRegistry->DeleteEntity(_tabs[index].ButtonID);
 
-    tabs.erase(tabs.begin() + index);
-    for (int i = index; i < tabs.size(); ++i)
+    _tabs.erase(_tabs.begin() + index);
+    for (int i = index; i < _tabs.size(); ++i)
     {
-        SetButtonRect(entitiesRegistry->GetComponent<RectTransformation>(tabs[i].ButtonID), i);
+        SetButtonRect(entitiesRegistry->GetComponent<RectTransformation>(_tabs[i].ButtonID), i);
     }
 
     if (activeTab == index)
     {
         activeTab = -1;
-        if (!tabs.empty())
+        if (!_tabs.empty())
             SetActiveTab(0);
     }
     else if (activeTab > index)
@@ -163,15 +193,23 @@ void UITabs::SetActiveTab(int index)
     if (index == activeTab)
         return;
 
+    if (!initialized)
+    {
+        // For cases when active tab is set before tabs
+        _activeTabBackup = index;
+        return;
+    }
+    _activeTabBackup = -1;
+
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     EntityID contentToDeactivate = NULL_ENTITY;
 
     if (activeTab != -1)
     {
-        contentToDeactivate = tabs[activeTab].ContentID;
+        contentToDeactivate = _tabs[activeTab].ContentID;
         if (entitiesRegistry->EntityExists(contentToDeactivate))
         {
-            auto& lastButton = entitiesRegistry->GetComponent<UIButton>(tabs[activeTab].ButtonID);
+            auto& lastButton = entitiesRegistry->GetComponent<UIButton>(_tabs[activeTab].ButtonID);
             auto& lastButtonSprite = entitiesRegistry->GetComponent<UIImage>(lastButton.GetTargetImage());
             lastButtonSprite.SetImage(_tabClosedSprite);
             lastButton.StopTransition();
@@ -179,13 +217,13 @@ void UITabs::SetActiveTab(int index)
     }
 
     activeTab = index;
-    if (entitiesRegistry->EntityExists(tabs[activeTab].ContentID))
+    if (entitiesRegistry->EntityExists(_tabs[activeTab].ContentID))
     {
-        auto& currentButton = entitiesRegistry->GetComponent<UIButton>(tabs[activeTab].ButtonID);
+        auto& currentButton = entitiesRegistry->GetComponent<UIButton>(_tabs[activeTab].ButtonID);
         auto& currentButtonSprite = entitiesRegistry->GetComponent<UIImage>(currentButton.GetTargetImage());
         currentButtonSprite.SetImage(_tabOpenedSprite);
         currentButton.StopTransition();
-        entitiesRegistry->EntitySetActive(tabs[activeTab].ContentID, true, true);
+        entitiesRegistry->EntitySetActive(_tabs[activeTab].ContentID, true, true);
     }
 
     if (entitiesRegistry->EntityExists(contentToDeactivate))
@@ -194,9 +232,9 @@ void UITabs::SetActiveTab(int index)
 
 void UITabs::SetActiveTabByButtonID(EntityID buttonID)
 {
-    for (int i = 0; i < tabs.size(); ++i)
+    for (int i = 0; i < _tabs.size(); ++i)
     {
-        if (tabs[i].ButtonID == buttonID)
+        if (_tabs[i].ButtonID == buttonID)
         {
             SetActiveTab(i);
             return;
@@ -204,11 +242,50 @@ void UITabs::SetActiveTabByButtonID(EntityID buttonID)
     }
 }
 
-void UITabs::SetButtonRect(RectTransformation& buttonRT, int index)
+void UITabs::SetButtonRect(RectTransformation& buttonRT, int index) const
 {
     buttonRT.SetAnchorMin(glm::vec2(0.0f, 1.0f));
     buttonRT.SetAnchorMax(glm::vec2(0.0f, 1.0f));
     buttonRT.SetPivot(glm::vec2(0.0f, 1.0f));
     buttonRT.SetAnchoredPosition(glm::vec2(index * buttonWidth, 0.0f));
     buttonRT.SetSize(glm::vec2(buttonWidth, buttonHeight));
+}
+
+const std::vector<UITabInfo>& UITabs::GetTabsList() const
+{
+    return _tabs;
+}
+
+void UITabs::SetTabsList(const std::vector<UITabInfo>& tabs)
+{
+    if (!_tabs.empty())
+    {
+        ClearTabs();
+    }
+
+    _tabs = tabs;
+}
+
+void UITabs::ClearTabs()
+{
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    for (auto tab : _tabs)
+    {
+        entitiesRegistry->DeleteEntity(tab.ContentID);
+        entitiesRegistry->DeleteEntity(tab.ButtonID);
+    }
+
+    _tabs.clear();
+
+    activeTab = -1;
+}
+
+EntityID UITabs::GetContent() const
+{
+    return content;
+}
+
+void UITabs::SetContent(EntityID contentEntityID)
+{
+    content = contentEntityID;
 }

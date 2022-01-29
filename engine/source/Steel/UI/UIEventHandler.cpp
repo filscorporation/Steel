@@ -5,7 +5,7 @@
 
 void UIEventHandler::RegisterType()
 {
-    REGISTER_TYPE(UIEventHandler);
+    REGISTER_COMPONENT(UIEventHandler);
 }
 
 void UIEventHandler::OnCreated(EntitiesRegistry* entitiesRegistry)

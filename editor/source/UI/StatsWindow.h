@@ -5,7 +5,7 @@
 
 class StatsWindow : public UIComponent
 {
-    COMPONENT(StatsWindow)
+    DEFINE_COMPONENT(StatsWindow)
 
 public:
     explicit StatsWindow(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

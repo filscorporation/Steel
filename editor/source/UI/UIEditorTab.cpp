@@ -5,7 +5,7 @@
 
 void UIEditorTab::RegisterType()
 {
-    REGISTER_TYPE(UIEditorTab);
+    REGISTER_COMPONENT(UIEditorTab);
 }
 
 void UIEditorTab::OnCreated(EntitiesRegistry* entitiesRegistry)

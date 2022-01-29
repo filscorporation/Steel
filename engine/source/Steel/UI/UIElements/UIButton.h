@@ -13,7 +13,7 @@ typedef std::function<void(EntityID)> ButtonCallback;
 
 class UIButton : public UIInteractable
 {
-    COMPONENT(UIButton)
+    DEFINE_COMPONENT(UIButton)
 
 public:
     explicit UIButton(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { };

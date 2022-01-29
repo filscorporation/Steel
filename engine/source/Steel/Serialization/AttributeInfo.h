@@ -47,7 +47,7 @@ public:
         _accessor->Serialize(object, _name, node, context);
     }
 
-    void Deserialize(Serializable* object, YAML::Node& node, SerializationContext& context)
+    void Deserialize(Serializable* object, const YAML::Node& node, SerializationContext& context)
     {
         _accessor->Deserialize(object, _name, node, context);
     }

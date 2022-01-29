@@ -9,7 +9,7 @@
 
 void BoxCollider::RegisterType()
 {
-    REGISTER_TYPE(BoxCollider);
+    REGISTER_COMPONENT(BoxCollider);
     REGISTER_ATTRIBUTE(BoxCollider, "size", GetSize, SetSize, glm::vec2, AttributeFlags::Public);
 }
 

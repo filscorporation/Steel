@@ -5,7 +5,7 @@
 
 class AudioSource : public Component
 {
-    COMPONENT(AudioSource)
+    DEFINE_COMPONENT(AudioSource)
 
 public:
     explicit AudioSource(EntityID ownerEntityID) : Component(ownerEntityID) { };

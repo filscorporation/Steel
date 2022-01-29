@@ -5,7 +5,7 @@
 
 void AudioListener::RegisterType()
 {
-    REGISTER_TYPE(AudioListener);
+    REGISTER_COMPONENT(AudioListener);
     REGISTER_ATTRIBUTE(AudioListener, "listenerVolume", GetVolume, SetVolume, float, AttributeFlags::Public);
 }
 

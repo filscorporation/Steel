@@ -11,7 +11,7 @@
 
 void UIInputField::RegisterType()
 {
-    REGISTER_TYPE(UIInputField);
+    REGISTER_COMPONENT(UIInputField);
     REGISTER_ID_ATTRIBUTE(UIInputField, "targetText", GetTargetText, SetTargetText, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIInputField, "cursorWidth", GetCursorWidth, SetCursorWidth, uint32_t, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIInputField, "cursorColor", GetCursorColor, SetCursorColor, glm::vec4, AttributeFlags::Public);

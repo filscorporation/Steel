@@ -12,7 +12,7 @@ void ILayoutElement::SetGroupID(EntityID groupID)
 
 void UILayoutElement::RegisterType()
 {
-    REGISTER_TYPE(UILayoutElement);
+    REGISTER_COMPONENT(UILayoutElement);
     REGISTER_ID_ATTRIBUTE(UILayoutElement, "groupID", GetGroupID, SetGroupID, AttributeFlags::Public);
 }
 

@@ -2,7 +2,7 @@
 
 void NameComponent::RegisterType()
 {
-    REGISTER_TYPE(NameComponent);
+    REGISTER_COMPONENT(NameComponent);
     REGISTER_ATTRIBUTE(NameComponent, "name", GetName, SetName, std::string, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(NameComponent, "tag", GetTag, SetTag, std::string, AttributeFlags::Public);
 }

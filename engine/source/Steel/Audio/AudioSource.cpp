@@ -6,7 +6,7 @@
 
 void AudioSource::RegisterType()
 {
-    REGISTER_TYPE(AudioSource);
+    REGISTER_COMPONENT(AudioSource);
     REGISTER_ATTRIBUTE(AudioSource, "sourceVolume", GetVolume, SetVolume, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(AudioSource, "isLoop", GetIsLoop, SetIsLoop, bool, AttributeFlags::Public);
 }

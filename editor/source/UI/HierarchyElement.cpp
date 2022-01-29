@@ -5,7 +5,7 @@
 
 void HierarchyElement::RegisterType()
 {
-    REGISTER_TYPE(HierarchyElement);
+    REGISTER_COMPONENT(HierarchyElement);
 }
 
 void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry, UILayer* layer,

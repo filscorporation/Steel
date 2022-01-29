@@ -6,7 +6,7 @@
 
 class CircleCollider : public Component
 {
-    COMPONENT(CircleCollider)
+    DEFINE_COMPONENT(CircleCollider)
 
     struct CircleColliderInfo;
 

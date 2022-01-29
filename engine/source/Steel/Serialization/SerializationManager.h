@@ -20,8 +20,11 @@ public:
     static Scene* DeserializeScene(const std::string& filePath);
     static Scene* CopyScene(Scene* sceneFrom);
 
-    static void RegisterAttribute(ComponentTypeID classTypeID, const AttributeInfo& attributeInfo);
-    static std::vector<AttributeInfo>& GetAttributes(ComponentTypeID classTypeID);
+    static void Serialize(ComponentTypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context);
+    static void Deserialize(ComponentTypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context);
+
+    static void RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo);
+    static std::vector<AttributeInfo>& GetAttributes(ComponentTypeID typeID);
     template<class T>
     static std::vector<AttributeInfo>& GetAttributes() { return GetAttributes(TYPE_ID(T)); }
 

@@ -6,7 +6,7 @@
 
 void UIImage::RegisterType()
 {
-    REGISTER_TYPE(UIImage);
+    REGISTER_COMPONENT(UIImage);
     REGISTER_RESOURCE_ATTRIBUTE(UIImage, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public);
     REGISTER_RESOURCE_ATTRIBUTE(UIImage, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIImage, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public);

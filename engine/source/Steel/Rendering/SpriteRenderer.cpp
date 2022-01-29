@@ -3,7 +3,7 @@
 
 void SpriteRenderer::RegisterType()
 {
-    REGISTER_TYPE(SpriteRenderer);
+    REGISTER_COMPONENT(SpriteRenderer);
     REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public);
     REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
 }

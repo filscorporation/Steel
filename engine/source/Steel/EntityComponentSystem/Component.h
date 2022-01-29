@@ -6,18 +6,6 @@
 #include "EntitiesRegistry.h"
 #include "Steel/Serialization/Serializable.h"
 
-#define REGISTER_TYPE(typeName) TypeInfoStorage::RegisterTypeInStorage<typeName>()
-
-#define COMPONENT(typeName)                                 \
-public:                                                     \
-    static const TypeInfo* GetTypeInfo()                    \
-    {                                                       \
-        static const TypeInfo typeInfoStatic(#typeName);    \
-        return &typeInfoStatic;                             \
-    }                                                       \
-                                                            \
-    static void RegisterType();
-
 class Component : public Serializable
 {
 public:

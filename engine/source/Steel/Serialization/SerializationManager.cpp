@@ -81,14 +81,14 @@ Scene* SerializationManager::CopyScene(Scene* sceneFrom)
     return scene;
 }
 
-void SerializationManager::RegisterAttribute(ComponentTypeID classTypeID, const AttributeInfo& attributeInfo)
+void SerializationManager::RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo)
 {
-    _attributesInfo[classTypeID].emplace_back(attributeInfo);
+    _attributesInfo[typeID].emplace_back(attributeInfo);
 }
 
-std::vector<AttributeInfo>& SerializationManager::GetAttributes(ComponentTypeID classTypeID)
+std::vector<AttributeInfo>& SerializationManager::GetAttributes(ComponentTypeID typeID)
 {
-    return _attributesInfo[classTypeID];
+    return _attributesInfo[typeID];
 }
 
 bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
@@ -127,14 +127,7 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
             auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.first);
 
             YAML::Node componentNode;
-
-            if (_attributesInfo.find(typeInfo->ID) != _attributesInfo.end())
-            {
-                for (auto attribute : _attributesInfo[typeInfo->ID])
-                {
-                    attribute.Serialize(object, componentNode, context);
-                }
-            }
+            Serialize(typeInfo->ID, object, componentNode, context);
 
             componentsNode[typeInfo->TypeName] = componentNode;
         }
@@ -201,13 +194,7 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
                         continue;
                     }
 
-                    if (_attributesInfo.find(typeID) != _attributesInfo.end())
-                    {
-                        for (auto attribute : _attributesInfo[typeID])
-                        {
-                            attribute.Deserialize(object, componentNode.second, context);
-                        }
-                    }
+                    Deserialize(typeID, object, componentNode.second, context);
                 }
             }
         }
@@ -285,6 +272,7 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
                     continue;
                 }
 
+                // TODO: may be move to method like serialize and deserialize
                 if (_attributesInfo.find(typeInfo->ID) != _attributesInfo.end())
                 {
                     for (auto attribute : _attributesInfo[typeInfo->ID])
@@ -297,4 +285,26 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
     }
 
     return true;
+}
+
+void SerializationManager::Serialize(ComponentTypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context)
+{
+    if (_attributesInfo.find(typeID) != _attributesInfo.end())
+    {
+        for (auto attribute : _attributesInfo[typeID])
+        {
+            attribute.Serialize(object, node, context);
+        }
+    }
+}
+
+void SerializationManager::Deserialize(ComponentTypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context)
+{
+    if (_attributesInfo.find(typeID) != _attributesInfo.end())
+    {
+        for (auto attribute : _attributesInfo[typeID])
+        {
+            attribute.Deserialize(object, node, context);
+        }
+    }
 }

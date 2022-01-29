@@ -18,9 +18,6 @@
 #include <iostream>
 #endif
 
-#define TYPE_ID(m_type) m_type::GetTypeInfo()->ID
-#define TYPE_NAME(m_type) m_type::GetTypeInfo()->TypeName
-
 class TypeInfo;
 
 class EntitiesRegistry

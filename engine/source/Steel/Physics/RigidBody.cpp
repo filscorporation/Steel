@@ -10,7 +10,7 @@
 
 void RigidBody::RegisterType()
 {
-    REGISTER_TYPE(RigidBody);
+    REGISTER_COMPONENT(RigidBody);
     REGISTER_ENUM_ATTRIBUTE(RigidBody, "type", GetType, SetType, RigidBodyTypes::RigidBodyType, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(RigidBody, "mass", GetMass, SetMass, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(RigidBody, "gravityScale", GetGravityScale, SetGravityScale, float, AttributeFlags::Public);

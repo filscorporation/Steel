@@ -9,7 +9,7 @@
 
 void UIClipping::RegisterType()
 {
-    REGISTER_TYPE(UIClipping);
+    REGISTER_COMPONENT(UIClipping);
 }
 
 bool UIClipping::Validate(EntitiesRegistry* entitiesRegistry)

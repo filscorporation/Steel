@@ -2,14 +2,15 @@
 
 #include "UILayoutElement.h"
 #include "LayoutGroupTypes.h"
-#include "../UIComponent.h"
-#include "../UIEventHandler.h"
-#include "../RectTransformation.h"
-#include "../../EntityComponentSystem/EntitiesRegistry.h"
+#include "UILayoutElementInfo.h"
+#include "Steel/EntityComponentSystem/EntitiesRegistry.h"
+#include "Steel/UI/UIComponent.h"
+#include "Steel/UI/UIEventHandler.h"
+#include "Steel/UI/RectTransformation.h"
 
 class UILayoutGroup : public UIComponent, public ILayoutElement
 {
-    COMPONENT(UILayoutGroup)
+    DEFINE_COMPONENT(UILayoutGroup)
 
 public:
     explicit UILayoutGroup(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
@@ -29,6 +30,9 @@ public:
     bool LayoutGroupDirty = false;
 
 private:
-    std::vector<EntityID> elements;
+    const std::vector<UILayoutElementInfo>& GetElementsList() const;
+    void SetElementsList(const std::vector<UILayoutElementInfo>& elements);
+
+    std::vector<UILayoutElementInfo> _elements;
     LayoutGroupTypes::LayoutGroupType _type = LayoutGroupTypes::Horizontal;
 };

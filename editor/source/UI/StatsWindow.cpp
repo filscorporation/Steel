@@ -5,7 +5,7 @@
 
 void StatsWindow::RegisterType()
 {
-    REGISTER_TYPE(StatsWindow);
+    REGISTER_COMPONENT(StatsWindow);
 }
 
 void StatsWindow::UpdateInfo()

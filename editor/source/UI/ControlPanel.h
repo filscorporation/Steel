@@ -8,7 +8,7 @@
 
 class ControlPanel : public UIComponent
 {
-    COMPONENT(ControlPanel)
+    DEFINE_COMPONENT(ControlPanel)
 
 public:
     explicit ControlPanel(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

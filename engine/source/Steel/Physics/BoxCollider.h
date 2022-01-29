@@ -6,7 +6,7 @@
 
 class BoxCollider : public Component
 {
-    COMPONENT(BoxCollider)
+    DEFINE_COMPONENT(BoxCollider)
 
     struct BoxColliderInfo;
 

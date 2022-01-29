@@ -34,7 +34,7 @@ public:
         node[name] = context.GetResourceID(Get(object));
     }
 
-    void Deserialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override
+    void Deserialize(Serializable* object, const std::string& name, const YAML::Node& node, SerializationContext& context) override
     {
         Set(object, static_cast<U>(context.GetResource(_resourceType, node[name].as<ResourceID>())));
     }

@@ -2,7 +2,7 @@
 
 void IDComponent::RegisterType()
 {
-    REGISTER_TYPE(IDComponent);
+    REGISTER_COMPONENT(IDComponent);
     REGISTER_ATTRIBUTE(IDComponent, "uuid", GetUUID, SetUUID, UUID, AttributeFlags::Public);
 }
 

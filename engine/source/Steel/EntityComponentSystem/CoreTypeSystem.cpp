@@ -28,6 +28,9 @@ void CoreTypeSystem::Init()
     UIText::RegisterType();
     RectTransformation::RegisterType();
     UIEventHandler::RegisterType();
+
+    UITabInfo::RegisterType();
+    UILayoutElementInfo::RegisterType();
 }
 
 void CoreTypeSystem::Terminate()

@@ -7,7 +7,7 @@
 
 class Animator : public Component
 {
-    COMPONENT(Animator)
+    DEFINE_COMPONENT(Animator)
 
 public:
     explicit Animator(EntityID ownerEntityID) : Component(ownerEntityID) { }

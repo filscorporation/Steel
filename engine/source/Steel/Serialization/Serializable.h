@@ -4,6 +4,7 @@
 #include "AttributeAccessor.h"
 #include "IDAttributeAccessor.h"
 #include "EnumAttributeAccessor.h"
+#include "ListAttributeAccessor.h"
 #include "ResourceAttributeAccessor.h"
 #include "SerializationManager.h"
 #include "Steel/EntityComponentSystem/TypeInfoStorage.h"
@@ -60,4 +61,16 @@ SerializationManager::RegisterAttribute                                         
         new ResourceAttributeAccessor<className, type>(&className::getter, &className::setter, resourceType),   \
         flags                                                                                                   \
     )                                                                                                           \
+)
+
+#define REGISTER_LIST_ATTRIBUTE(className, name, getter, setter, type, flags)                                       \
+SerializationManager::RegisterAttribute                                                                             \
+(                                                                                                                   \
+    TYPE_ID(className),                                                                                             \
+    AttributeInfo                                                                                                   \
+    (                                                                                                               \
+        name,                                                                                                       \
+        new ListAttributeAccessor<className, type>(&className::getter, &className::setter),                         \
+        flags                                                                                                       \
+    )                                                                                                               \
 )

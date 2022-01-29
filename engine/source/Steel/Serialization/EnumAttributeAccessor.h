@@ -33,7 +33,7 @@ public:
         node[name] = static_cast<int>(Get(object));
     }
 
-    void Deserialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override
+    void Deserialize(Serializable* object, const std::string& name, const YAML::Node& node, SerializationContext& context) override
     {
         Set(object, static_cast<U>(node[name].as<int>()));
     }

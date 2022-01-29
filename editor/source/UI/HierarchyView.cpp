@@ -9,7 +9,7 @@
 
 void HierarchyView::RegisterType()
 {
-    REGISTER_TYPE(HierarchyView);
+    REGISTER_COMPONENT(HierarchyView);
 }
 
 void HierarchyView::Init(EntitiesRegistry* entitiesRegistry)

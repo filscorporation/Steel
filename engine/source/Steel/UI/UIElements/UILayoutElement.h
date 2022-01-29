@@ -24,7 +24,7 @@ protected:
 
 class UILayoutElement : public UIComponent, public ILayoutElement
 {
-    COMPONENT(UILayoutElement)
+    DEFINE_COMPONENT(UILayoutElement)
 
 public:
     explicit UILayoutElement(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

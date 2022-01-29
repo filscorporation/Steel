@@ -1,6 +1,6 @@
 #include "UILayoutGroup.h"
-#include "../../Core/Application.h"
-#include "../../Core/Log.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
 
 #define GET_ELEMENT(m_id) \
 (entitiesRegistry->HasComponent<UILayoutGroup>(m_id) \
@@ -11,10 +11,10 @@
 
 void UILayoutGroup::RegisterType()
 {
-    REGISTER_TYPE(UILayoutGroup);
+    REGISTER_COMPONENT(UILayoutGroup);
     REGISTER_ID_ATTRIBUTE(UILayoutGroup, "groupID", GetGroupID, SetGroupID, AttributeFlags::Public);
     REGISTER_ENUM_ATTRIBUTE(UILayoutGroup, "type", GetType, SetType, LayoutGroupTypes::LayoutGroupType, AttributeFlags::Public);
-    // TODO: elements attribute
+    REGISTER_LIST_ATTRIBUTE(UILayoutGroup, "elements", GetElementsList, SetElementsList, UILayoutElementInfo, AttributeFlags::Public);
 }
 
 bool UILayoutGroup::Validate(EntitiesRegistry* entitiesRegistry)
@@ -41,7 +41,7 @@ void UILayoutGroup::Rebuild(UILayer* layer, RectTransformation& transformation)
 
     LayoutGroupDirty = false;
 
-    if (elements.empty())
+    if (_elements.empty())
         return;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
@@ -55,15 +55,15 @@ void UILayoutGroup::Rebuild(UILayer* layer, RectTransformation& transformation)
     std::vector<ElementRebuildInfo> elementsInfo;
     std::vector<float> elementSize;
 
-    for (int i = 0; i < elements.size(); ++i)
+    for (int i = 0; i < _elements.size(); ++i)
     {
-        if (!entitiesRegistry->EntityExists(elements[i]))
+        if (!entitiesRegistry->EntityExists(_elements[i].ElementID))
         {
             Log::LogWarning("Layout group contains deleted element");
             return;
         }
 
-        elementsInfo.emplace_back(GET_ELEMENT(elements[i]).GetInfo(), i);
+        elementsInfo.emplace_back(GET_ELEMENT(_elements[i].ElementID).GetInfo(), i);
     }
 
     struct
@@ -109,9 +109,9 @@ void UILayoutGroup::Rebuild(UILayer* layer, RectTransformation& transformation)
     }
 
     float offset = 0;
-    for (int i = 0; i < elements.size(); ++i)
+    for (int i = 0; i < _elements.size(); ++i)
     {
-        auto& elementRT = entitiesRegistry->GetComponent<RectTransformation>(elements[i]);
+        auto& elementRT = entitiesRegistry->GetComponent<RectTransformation>(_elements[i].ElementID);
         elementRT.SetPivot(glm::vec2(0.0f, 0.0f));
         elementRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         elementRT.SetAnchorMax(glm::vec2(0.0f, 0.0f));
@@ -130,25 +130,25 @@ LayoutElementInfo UILayoutGroup::GetInfo()
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     LayoutElementInfo info { };
 
-    for (EntityID elementID : elements)
+    for (UILayoutElementInfo& elementInfo : _elements)
     {
-        if (!entitiesRegistry->EntityExists(elementID))
+        if (!entitiesRegistry->EntityExists(elementInfo.ElementID))
             continue;
 
-        LayoutElementInfo elementInfo = GET_ELEMENT(elementID).GetInfo();
+        LayoutElementInfo layoutElementInfo = GET_ELEMENT(elementInfo.ElementID).GetInfo();
         if (_type == LayoutGroupTypes::Horizontal)
         {
-            info.MinWidth += elementInfo.MinWidth;
-            info.MinHeight = std::max(info.MinHeight, elementInfo.MinHeight);
-            info.PreferredWidth += elementInfo.PreferredWidth;
-            info.PreferredHeight = std::max(info.PreferredHeight, elementInfo.PreferredHeight);
+            info.MinWidth += layoutElementInfo.MinWidth;
+            info.MinHeight = std::max(info.MinHeight, layoutElementInfo.MinHeight);
+            info.PreferredWidth += layoutElementInfo.PreferredWidth;
+            info.PreferredHeight = std::max(info.PreferredHeight, layoutElementInfo.PreferredHeight);
         }
         else
         {
-            info.MinWidth = std::max(info.MinWidth, elementInfo.MinWidth);
-            info.MinHeight += elementInfo.MinHeight;
-            info.PreferredWidth = std::max(info.PreferredWidth, elementInfo.PreferredWidth);
-            info.PreferredHeight += elementInfo.PreferredHeight;
+            info.MinWidth = std::max(info.MinWidth, layoutElementInfo.MinWidth);
+            info.MinHeight += layoutElementInfo.MinHeight;
+            info.PreferredWidth = std::max(info.PreferredWidth, layoutElementInfo.PreferredWidth);
+            info.PreferredHeight += layoutElementInfo.PreferredHeight;
         }
     }
 
@@ -180,7 +180,7 @@ EntityID UILayoutGroup::AddElement(EntityID elementID)
         Log::LogError("Changing layout element {0} group ID", elementID);
     element.SetGroupID(Owner);
 
-    elements.emplace_back(elementID);
+    _elements.emplace_back(elementID);
 
     return elementID;
 }
@@ -193,4 +193,14 @@ void UILayoutGroup::SetType(LayoutGroupTypes::LayoutGroupType type)
 LayoutGroupTypes::LayoutGroupType UILayoutGroup::GetType() const
 {
     return _type;
+}
+
+const std::vector<UILayoutElementInfo>& UILayoutGroup::GetElementsList() const
+{
+    return _elements;
+}
+
+void UILayoutGroup::SetElementsList(const std::vector<UILayoutElementInfo>& elements)
+{
+    _elements = elements;
 }

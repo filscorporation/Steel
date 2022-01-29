@@ -9,7 +9,7 @@
 
 void UIText::RegisterType()
 {
-    REGISTER_TYPE(UIText);
+    REGISTER_COMPONENT(UIText);
     REGISTER_RESOURCE_ATTRIBUTE(UIText, "font", GetFont, SetFont, Font*, ResourceTypes::Font, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIText, "text", GetText, SetText, std::string, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIText, "textSize", GetTextSize, SetTextSize, uint32_t, AttributeFlags::Public);

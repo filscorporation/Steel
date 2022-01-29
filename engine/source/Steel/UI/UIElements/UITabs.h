@@ -1,24 +1,13 @@
 #pragma once
 
-#include "../UIComponent.h"
-#include "../RectTransformation.h"
-#include "../../EntityComponentSystem/EntitiesRegistry.h"
-
-struct UITabInfo
-{
-    UITabInfo(EntityID buttonID, EntityID contentID)
-    {
-        ButtonID = buttonID;
-        ContentID = contentID;
-    }
-
-    EntityID ButtonID;
-    EntityID ContentID;
-};
+#include "UITabInfo.h"
+#include "Steel/UI/UIComponent.h"
+#include "Steel/UI/RectTransformation.h"
+#include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 
 class UITabs : public UIComponent
 {
-    COMPONENT(UITabs)
+    DEFINE_COMPONENT(UITabs)
 
 public:
     explicit UITabs(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
@@ -37,15 +26,24 @@ public:
     void SetActiveTab(int index);
 
 private:
-    std::vector<UITabInfo> tabs;
+    void SetActiveTabByButtonID(EntityID buttonID);
+    void SetButtonRect(RectTransformation& buttonRT, int index) const;
+
+    const std::vector<UITabInfo>& GetTabsList() const;
+    void SetTabsList(const std::vector<UITabInfo>& tabs);
+    void ClearTabs();
+
+    EntityID GetContent() const;
+    void SetContent(EntityID contentEntityID);
+
+    bool initialized = false;
+    std::vector<UITabInfo> _tabs;
     EntityID content = NULL_ENTITY;
     int activeTab = -1;
+    int _activeTabBackup = -1;
 
     uint32_t buttonHeight = 0;
     uint32_t buttonWidth = 0;
     Sprite* _tabOpenedSprite = nullptr;
     Sprite* _tabClosedSprite = nullptr;
-
-    void SetActiveTabByButtonID(EntityID buttonID);
-    void SetButtonRect(RectTransformation& buttonRT, int index);
 };

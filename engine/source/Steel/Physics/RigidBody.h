@@ -19,7 +19,7 @@ namespace RigidBodyTypes
 
 class RigidBody : public Component
 {
-    COMPONENT(RigidBody)
+    DEFINE_COMPONENT(RigidBody)
 
     struct RigidBodyInfo;
 
@@ -78,7 +78,6 @@ private:
     void SetAutoFixture();
     bool AssertInitialized();
 
-    bool initialized = false;
     RigidBodyInfo* info = nullptr;
     bool inGetTransformation = false;
     float _mass = 1.0f;

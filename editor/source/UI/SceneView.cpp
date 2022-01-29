@@ -6,7 +6,7 @@
 
 void SceneView::RegisterType()
 {
-    REGISTER_TYPE(SceneView);
+    REGISTER_COMPONENT(SceneView);
 }
 
 void SceneView::OnEnabled(EntitiesRegistry* entitiesRegistry)

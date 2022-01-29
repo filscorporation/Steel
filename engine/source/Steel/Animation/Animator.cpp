@@ -7,8 +7,7 @@
 
 void Animator::RegisterType()
 {
-    REGISTER_TYPE(Animator);
-    // TODO
+    REGISTER_COMPONENT(Animator);
 }
 
 void Animator::Init()

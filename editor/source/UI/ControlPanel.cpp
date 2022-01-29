@@ -6,7 +6,7 @@
 
 void ControlPanel::RegisterType()
 {
-    REGISTER_TYPE(ControlPanel);
+    REGISTER_COMPONENT(ControlPanel);
 }
 
 void ControlPanel::Init()

@@ -4,7 +4,7 @@
 
 void Camera::RegisterType()
 {
-    REGISTER_TYPE(Camera);
+    REGISTER_COMPONENT(Camera);
     REGISTER_ATTRIBUTE(Camera, "renderMask", GetRenderMask, SetRenderMask, RenderMask, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(Camera, "width", GetWidth, SetWidth, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(Camera, "height", GetHeight, SetHeight, float, AttributeFlags::Public);

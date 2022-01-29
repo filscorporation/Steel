@@ -29,7 +29,7 @@
 
 void ScriptComponent::RegisterType()
 {
-    REGISTER_TYPE(ScriptComponent);
+    REGISTER_COMPONENT(ScriptComponent);
     // TODO
 }
 

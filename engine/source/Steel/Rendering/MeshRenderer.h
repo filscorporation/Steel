@@ -8,7 +8,7 @@
 
 class MeshRenderer : public Component
 {
-    COMPONENT(MeshRenderer)
+    DEFINE_COMPONENT(MeshRenderer)
 
 public:
     explicit MeshRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }

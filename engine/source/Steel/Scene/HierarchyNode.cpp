@@ -7,7 +7,7 @@ bool lock = false;
 
 void HierarchyNode::RegisterType()
 {
-    REGISTER_TYPE(HierarchyNode);
+    REGISTER_COMPONENT(HierarchyNode);
     REGISTER_ATTRIBUTE(HierarchyNode, "childrenCount", GetChildrenCount, SetChildrenCount, uint32_t, AttributeFlags::Public);
     REGISTER_ID_ATTRIBUTE(HierarchyNode, "firstChildNode", GetFirstChildNode, SetFirstChildNode, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(HierarchyNode, "hierarchyDepth", GetHierarchyDepth, SetHierarchyDepth, uint32_t, AttributeFlags::Public);

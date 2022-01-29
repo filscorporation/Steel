@@ -10,7 +10,7 @@
 
 void AppView::RegisterType()
 {
-    REGISTER_TYPE(AppView);
+    REGISTER_COMPONENT(AppView);
 }
 
 void AppView::OnEnabled(EntitiesRegistry* entitiesRegistry)

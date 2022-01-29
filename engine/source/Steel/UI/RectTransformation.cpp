@@ -8,7 +8,7 @@
 
 void RectTransformation::RegisterType()
 {
-    REGISTER_TYPE(RectTransformation);
+    REGISTER_COMPONENT(RectTransformation);
     REGISTER_ATTRIBUTE(RectTransformation, "anchorMin", GetAnchorMin, SetAnchorMin, glm::vec2, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(RectTransformation, "anchorMax", GetAnchorMax, SetAnchorMax, glm::vec2, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(RectTransformation, "anchoredPosition", GetAnchoredPosition, SetAnchoredPosition, glm::vec2, AttributeFlags::Public);

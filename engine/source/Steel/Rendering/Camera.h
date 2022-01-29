@@ -21,7 +21,7 @@ namespace CameraResizeModes
 
 class Camera : public Component
 {
-    COMPONENT(Camera)
+    DEFINE_COMPONENT(Camera)
 
 public:
     explicit Camera(EntityID ownerEntityID) : Component(ownerEntityID) { }

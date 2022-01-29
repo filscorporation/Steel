@@ -5,7 +5,7 @@
 
 class NameComponent : public Component
 {
-    COMPONENT(NameComponent)
+    DEFINE_COMPONENT(NameComponent)
 
 public:
     explicit NameComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }

@@ -12,7 +12,7 @@
 
 class Transformation : public Component
 {
-    COMPONENT(Transformation)
+    DEFINE_COMPONENT(Transformation)
 
 public:
     explicit Transformation(EntityID ownerEntityID) : Component(ownerEntityID) { };

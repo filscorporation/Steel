@@ -8,7 +8,7 @@
 
 void CircleCollider::RegisterType()
 {
-    REGISTER_TYPE(CircleCollider);
+    REGISTER_COMPONENT(CircleCollider);
     REGISTER_ATTRIBUTE(CircleCollider, "radius", GetRadius, SetRadius, float, AttributeFlags::Public);
 }
 

@@ -5,7 +5,7 @@
 
 class AppView : public UIComponent
 {
-    COMPONENT(AppView)
+    DEFINE_COMPONENT(AppView)
 
 public:
     explicit AppView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
