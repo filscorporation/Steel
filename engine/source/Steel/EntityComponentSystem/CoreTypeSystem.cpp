@@ -22,7 +22,6 @@ void CoreTypeSystem::Init()
     UIClipping::RegisterType();
     UIImage::RegisterType();
     UIInputField::RegisterType();
-    UILayoutElement::RegisterType();
     UILayoutGroup::RegisterType();
     UITabs::RegisterType();
     UIText::RegisterType();

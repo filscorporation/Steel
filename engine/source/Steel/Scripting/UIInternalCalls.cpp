@@ -571,11 +571,11 @@ bool UIInternalCalls::UITabs_RemoveTab(EntityID entityID, int index)
     return component.RemoveTab(index);
 }
 
-EntityID UIInternalCalls::UILayoutGroup_AddElement(EntityID entityID, LayoutElementInfo info)
+EntityID UIInternalCalls::UILayoutGroup_AddElement(EntityID entityID, float minWidth, float minHeight, float prefWidth, float prefHeight)
 {
     GET_COMPONENT_OR_RETURN(UILayoutGroup, NULL_ENTITY)
 
-    return component.AddElement(info);
+    return component.AddElement(minWidth, minHeight, prefWidth, prefHeight);
 }
 
 EntityID UIInternalCalls::UILayoutGroup_AddElement2(EntityID entityID, EntityID elementID)

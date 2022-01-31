@@ -21,12 +21,13 @@ public:
 
     void FromString(Serializable* object, const std::string& line, SerializationContext& context) override
     {
-        //Set(object, StringUtils::FromString<U>(line)); // TODO
+        // Not supported
     }
 
     std::string ToString(Serializable* object, SerializationContext& context) const override
     {
-        return "";//StringUtils::ToString(Get(object)); // TODO
+        // Not supported
+        return "";
     }
 
     void Serialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override
@@ -55,7 +56,16 @@ public:
 
     void Copy(Serializable* objectFrom, Serializable* objectTo, SerializationContext& contextFrom, SerializationContext& contextTo) override
     {
-        Set(objectTo, Get(objectFrom)); // TODO
+        auto listFrom = Get(objectFrom);
+        std::vector<U> listTo;
+        listTo.resize(listFrom.size());
+        for (int i = 0; i < listTo.size(); ++i)
+        {
+            auto elementFrom = static_cast<Serializable*>(&(listFrom[i]));
+            auto elementTo = static_cast<Serializable*>(&(listTo[i]));
+            SerializationManager::Copy(TYPE_ID(U), elementFrom, elementTo, contextFrom, contextTo);
+        }
+        Set(objectTo, listTo);
     }
 
 private:

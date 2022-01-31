@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Steel
 {
@@ -9,33 +8,6 @@ namespace Steel
     public class UILayoutGroup : UIComponent
     {
         /// <summary>
-        /// Layout element info
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        public struct ElementInfo
-        {
-            /// <summary>
-            /// Min width element should have
-            /// </summary>
-            public float MinWidth;
-            
-            /// <summary>
-            /// Min height element should have
-            /// </summary>
-            public float MinHeight;
-            
-            /// <summary>
-            /// Preferred width so more will be extra
-            /// </summary>
-            public float PreferredWidth;
-            
-            /// <summary>
-            /// Preferred height so more will be extra
-            /// </summary>
-            public float PreferredHeight;
-        }
-
-        /// <summary>
         /// Type of layout group
         /// </summary>
         public enum LayoutType
@@ -43,21 +15,24 @@ namespace Steel
             Horizontal,
             Vertical,
         }
-        
+
         /// <summary>
         /// Add new layout element
         /// </summary>
-        /// <param name="info">Data to initialize new element</param>
+        /// <param name="minWidth">Min width element should have</param>
+        /// <param name="minHeight">Min height element should have</param>
+        /// <param name="prefWidth">Preferred width so more will be extra</param>
+        /// <param name="prefHeight">Preferred height so more will be extra</param>
         /// <returns>Element entity</returns>
-        public Entity AddElement(ElementInfo info)
+        public Entity AddElement(float minWidth, float minHeight, float prefWidth, float prefHeight)
         {
-            return new Entity(AddElement_Internal(Entity.EntityID, info));
+            return new Entity(AddElement_Internal(Entity.EntityID, minWidth, minHeight, prefWidth, prefHeight));
         }
         
         /// <summary>
         /// Add new layout element
         /// </summary>
-        /// <param name="element">Element entity (with <see cref="UILayoutGroup"/> component attached, or element component will be added)</param>
+        /// <param name="element">Element entity (empty UI element or with <see cref="UILayoutGroup"/> component attached)</param>
         /// <returns>Element entity</returns>
         public Entity AddElement(Entity element)
         {
@@ -65,7 +40,7 @@ namespace Steel
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint AddElement_Internal(uint entityID, ElementInfo info);
+        private static extern uint AddElement_Internal(uint entityID, float minWidth, float minHeight, float prefWidth, float prefHeight);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint AddElement_Internal2(uint entityID, uint elementID);

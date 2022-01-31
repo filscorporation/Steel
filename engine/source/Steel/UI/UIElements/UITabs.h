@@ -16,7 +16,10 @@ public:
     void SetDefault(EntitiesRegistry* entitiesRegistry) override;
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
 
-    void SetTabsSprites(Sprite* tabOpenedSprite, Sprite* tabClosedSprite);
+    void SetOpenTabSprite(Sprite* tabOpenedSprite);
+    Sprite* GetOpenTabSprite() const;
+    void SetCloseTabSprite(Sprite* tabClosedSprite);
+    Sprite* GetCloseTabSprite() const;
 
     EntityID GetTab(int index);
     int GetTabsCount();

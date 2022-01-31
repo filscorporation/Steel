@@ -1,6 +1,5 @@
 #pragma once
 
-#include "UILayoutElement.h"
 #include "LayoutGroupTypes.h"
 #include "UILayoutElementInfo.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
@@ -8,7 +7,7 @@
 #include "Steel/UI/UIEventHandler.h"
 #include "Steel/UI/RectTransformation.h"
 
-class UILayoutGroup : public UIComponent, public ILayoutElement
+class UILayoutGroup : public UIComponent
 {
     DEFINE_COMPONENT(UILayoutGroup)
 
@@ -20,18 +19,16 @@ public:
 
     void Rebuild(UILayer* layer, RectTransformation& transformation);
 
-    LayoutElementInfo GetInfo() override;
-
     void SetType(LayoutGroupTypes::LayoutGroupType type);
     LayoutGroupTypes::LayoutGroupType GetType() const;
-    EntityID AddElement(LayoutElementInfo info);
+    EntityID AddElement(float minWidth, float minHeight, float prefWidth, float prefHeight);
     EntityID AddElement(EntityID elementID);
-
-    bool LayoutGroupDirty = false;
 
 private:
     const std::vector<UILayoutElementInfo>& GetElementsList() const;
     void SetElementsList(const std::vector<UILayoutElementInfo>& elements);
+
+    UILayoutElementInfo GetInfo();
 
     std::vector<UILayoutElementInfo> _elements;
     LayoutGroupTypes::LayoutGroupType _type = LayoutGroupTypes::Horizontal;

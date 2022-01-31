@@ -57,10 +57,8 @@ void UIEditorTab::SetIsFocused(bool value)
             return;
         }
         auto& tabs = entitiesRegistry->GetComponent<UITabs>(TabsEntityID);
-        tabs.SetTabsSprites(
-                isFocused ? layer->UIResources.DefaultTabFocusedSprite : layer->UIResources.DefaultTabOpenedSprite,
-                layer->UIResources.DefaultTabClosedSprite
-            );
+        tabs.SetOpenTabSprite(isFocused ? layer->UIResources.DefaultTabFocusedSprite : layer->UIResources.DefaultTabOpenedSprite);
+        tabs.SetCloseTabSprite(layer->UIResources.DefaultTabClosedSprite);
     }
 }
 

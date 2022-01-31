@@ -19,7 +19,6 @@
 #include "Steel/UI/UIElements/UIClipping.h"
 #include "Steel/UI/UIElements/UIImage.h"
 #include "Steel/UI/UIElements/UIInputField.h"
-#include "Steel/UI/UIElements/UILayoutElement.h"
 #include "Steel/UI/UIElements/UILayoutGroup.h"
 #include "Steel/UI/UIElements/UITabs.h"
 #include "Steel/UI/UIElements/UIText.h"

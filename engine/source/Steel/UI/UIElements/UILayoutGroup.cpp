@@ -2,17 +2,9 @@
 #include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
 
-#define GET_ELEMENT(m_id) \
-(entitiesRegistry->HasComponent<UILayoutGroup>(m_id) \
-    ? (ILayoutElement&)entitiesRegistry->GetComponent<UILayoutGroup>(m_id) \
-    : entitiesRegistry->HasComponent<UILayoutElement>(m_id) \
-    ? (ILayoutElement&)entitiesRegistry->GetComponent<UILayoutElement>(m_id) \
-    : (ILayoutElement&)entitiesRegistry->AddComponent<UILayoutElement>(m_id))
-
 void UILayoutGroup::RegisterType()
 {
     REGISTER_COMPONENT(UILayoutGroup);
-    REGISTER_ID_ATTRIBUTE(UILayoutGroup, "groupID", GetGroupID, SetGroupID, AttributeFlags::Public);
     REGISTER_ENUM_ATTRIBUTE(UILayoutGroup, "type", GetType, SetType, LayoutGroupTypes::LayoutGroupType, AttributeFlags::Public);
     REGISTER_LIST_ATTRIBUTE(UILayoutGroup, "elements", GetElementsList, SetElementsList, UILayoutElementInfo, AttributeFlags::Public);
 }
@@ -24,22 +16,13 @@ bool UILayoutGroup::Validate(EntitiesRegistry* entitiesRegistry)
 
 void UILayoutGroup::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    if (entitiesRegistry->HasComponent<UILayoutElement>(Owner))
-    {
-        Log::LogWarning("UILayoutElement component will be replaced with UILayoutGroup");
-        entitiesRegistry->RemoveComponent<UILayoutElement>(Owner);
-    }
     entitiesRegistry->AddComponent<UIEventHandler>(Owner);
-
-    // TODO: bind event handler to layout elements resizing
 }
 
 void UILayoutGroup::Rebuild(UILayer* layer, RectTransformation& transformation)
 {
-    if (!transformation.DidSizeChange() && !LayoutGroupDirty)
+    if (!transformation.DidSizeChange())
         return;
-
-    LayoutGroupDirty = false;
 
     if (_elements.empty())
         return;
@@ -48,8 +31,8 @@ void UILayoutGroup::Rebuild(UILayer* layer, RectTransformation& transformation)
 
     struct ElementRebuildInfo
     {
-        ElementRebuildInfo(LayoutElementInfo _info, int _index) { Info = _info; Index = _index; }
-        LayoutElementInfo Info { };
+        ElementRebuildInfo(UILayoutElementInfo _info, int _index) { Info = _info; Index = _index; }
+        UILayoutElementInfo Info;
         int Index;
     };
     std::vector<ElementRebuildInfo> elementsInfo;
@@ -63,7 +46,12 @@ void UILayoutGroup::Rebuild(UILayer* layer, RectTransformation& transformation)
             return;
         }
 
-        elementsInfo.emplace_back(GET_ELEMENT(_elements[i].ElementID).GetInfo(), i);
+        bool isGroup = entitiesRegistry->HasComponent<UILayoutGroup>(_elements[i].ElementID);
+        UILayoutElementInfo updatedElementInfo = isGroup
+             ? entitiesRegistry->GetComponent<UILayoutGroup>(_elements[i].ElementID).GetInfo()
+             : _elements[i];
+
+        elementsInfo.emplace_back(updatedElementInfo, i);
     }
 
     struct
@@ -125,62 +113,71 @@ void UILayoutGroup::Rebuild(UILayer* layer, RectTransformation& transformation)
     }
 }
 
-LayoutElementInfo UILayoutGroup::GetInfo()
+UILayoutElementInfo UILayoutGroup::GetInfo()
 {
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    LayoutElementInfo info { };
+    UILayoutElementInfo updatedInfo { };
 
     for (UILayoutElementInfo& elementInfo : _elements)
     {
-        if (!entitiesRegistry->EntityExists(elementInfo.ElementID))
-            continue;
+        bool isGroup = entitiesRegistry->EntityExists(elementInfo.ElementID)
+                && entitiesRegistry->HasComponent<UILayoutGroup>(elementInfo.ElementID);
+        UILayoutElementInfo updatedElementInfo = isGroup
+                ? entitiesRegistry->GetComponent<UILayoutGroup>(elementInfo.ElementID).GetInfo()
+                : elementInfo;
 
-        LayoutElementInfo layoutElementInfo = GET_ELEMENT(elementInfo.ElementID).GetInfo();
         if (_type == LayoutGroupTypes::Horizontal)
         {
-            info.MinWidth += layoutElementInfo.MinWidth;
-            info.MinHeight = std::max(info.MinHeight, layoutElementInfo.MinHeight);
-            info.PreferredWidth += layoutElementInfo.PreferredWidth;
-            info.PreferredHeight = std::max(info.PreferredHeight, layoutElementInfo.PreferredHeight);
+            updatedInfo.MinWidth += updatedElementInfo.MinWidth;
+            updatedInfo.MinHeight = std::max(updatedInfo.MinHeight, updatedElementInfo.MinHeight);
+            updatedInfo.PreferredWidth += updatedElementInfo.PreferredWidth;
+            updatedInfo.PreferredHeight = std::max(updatedInfo.PreferredHeight, updatedElementInfo.PreferredHeight);
         }
         else
         {
-            info.MinWidth = std::max(info.MinWidth, layoutElementInfo.MinWidth);
-            info.MinHeight += layoutElementInfo.MinHeight;
-            info.PreferredWidth = std::max(info.PreferredWidth, layoutElementInfo.PreferredWidth);
-            info.PreferredHeight += layoutElementInfo.PreferredHeight;
+            updatedInfo.MinWidth = std::max(updatedInfo.MinWidth, updatedElementInfo.MinWidth);
+            updatedInfo.MinHeight += updatedElementInfo.MinHeight;
+            updatedInfo.PreferredWidth = std::max(updatedInfo.PreferredWidth, updatedElementInfo.PreferredWidth);
+            updatedInfo.PreferredHeight += updatedElementInfo.PreferredHeight;
         }
     }
 
-    return info;
+    return updatedInfo;
 }
 
-EntityID UILayoutGroup::AddElement(LayoutElementInfo info)
+EntityID UILayoutGroup::AddElement(float minWidth, float minHeight, float prefWidth, float prefHeight)
 {
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
-    info.PreferredHeight = std::max(info.PreferredHeight, info.MinHeight);
-    info.PreferredWidth = std::max(info.PreferredWidth, info.MinWidth);
+    EntityID elementID = layer->CreateUIElement("Layout element", Owner);
 
-    EntityID elementEntity = layer->CreateUIElement("Layout element", Owner);
-    AddElement(elementEntity);
-    auto& element = entitiesRegistry->GetComponent<UILayoutElement>(elementEntity);
-    element.Info = info;
+    UILayoutElementInfo info;
+    info.ElementID = elementID;
+    info.MinWidth = minWidth;
+    info.MinHeight = minHeight;
+    info.PreferredWidth = std::max(prefWidth, minWidth);
+    info.PreferredHeight = std::max(prefHeight, minHeight);
 
-    return elementEntity;
+    _elements.push_back(info);
+
+    return elementID;
 }
 
 EntityID UILayoutGroup::AddElement(EntityID elementID)
 {
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    auto& element = GET_ELEMENT(elementID);
+    for (auto element : _elements)
+    {
+        if (element.ElementID == elementID)
+        {
+            Log::LogWarning("Element {0} is already in group", elementID);
+            return elementID;
+        }
+    }
 
-    if (element.GetGroupID() != NULL_ENTITY)
-        Log::LogError("Changing layout element {0} group ID", elementID);
-    element.SetGroupID(Owner);
+    UILayoutElementInfo info;
+    info.ElementID = elementID;
 
-    _elements.emplace_back(elementID);
+    _elements.push_back(info);
 
     return elementID;
 }

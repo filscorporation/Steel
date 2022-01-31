@@ -10,6 +10,8 @@ void UITabs::RegisterType()
     REGISTER_LIST_ATTRIBUTE(UITabs, "tabs", GetTabsList, SetTabsList, UITabInfo, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UITabs, "activeTab", GetActiveTab, SetActiveTab, int, AttributeFlags::Public);
     REGISTER_ID_ATTRIBUTE(UITabs, "content", GetContent, SetContent, AttributeFlags::Public);
+    REGISTER_RESOURCE_ATTRIBUTE(UITabs, "openTabSprite", GetOpenTabSprite, SetOpenTabSprite, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
+    REGISTER_RESOURCE_ATTRIBUTE(UITabs, "closeTabSprite", GetCloseTabSprite, SetCloseTabSprite, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
 }
 
 bool UITabs::Validate(EntitiesRegistry* entitiesRegistry)
@@ -32,10 +34,6 @@ void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
     initialized = true;
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
-
-    // TODO: remove when tab sprites will get serialized
-    _tabOpenedSprite = layer->UIResources.DefaultTabOpenedSprite;
-    _tabClosedSprite = layer->UIResources.DefaultTabClosedSprite;
 
     buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();
     buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetHeight();
@@ -69,25 +67,56 @@ void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
     }
 }
 
-void UITabs::SetTabsSprites(Sprite* tabOpenedSprite, Sprite* tabClosedSprite)
+void UITabs::SetOpenTabSprite(Sprite* tabOpenedSprite)
 {
-    // TODO: make serializable
     _tabOpenedSprite = tabOpenedSprite;
-    _tabClosedSprite = tabClosedSprite;
     buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();
     buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetHeight();
 
-    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-
-    for (int i = 0; i < _tabs.size(); ++i)
+    if (initialized)
     {
-        auto& currentButton = entitiesRegistry->GetComponent<UIButton>(_tabs[i].ButtonID);
-        auto& currentButtonSprite = entitiesRegistry->GetComponent<UIImage>(currentButton.GetTargetImage());
-        if (activeTab == i)
-            currentButtonSprite.SetImage(_tabOpenedSprite);
-        else
-            currentButtonSprite.SetImage(_tabClosedSprite);
+        auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+        for (int i = 0; i < _tabs.size(); ++i)
+        {
+            auto& currentButton = entitiesRegistry->GetComponent<UIButton>(_tabs[i].ButtonID);
+            auto& currentButtonSprite = entitiesRegistry->GetComponent<UIImage>(currentButton.GetTargetImage());
+            if (activeTab == i)
+                currentButtonSprite.SetImage(_tabOpenedSprite);
+            else
+                currentButtonSprite.SetImage(_tabClosedSprite);
+        }
     }
+}
+
+Sprite* UITabs::GetOpenTabSprite() const
+{
+    return _tabOpenedSprite;
+}
+
+void UITabs::SetCloseTabSprite(Sprite* tabClosedSprite)
+{
+    _tabClosedSprite = tabClosedSprite;
+
+    if (initialized)
+    {
+        auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+        for (int i = 0; i < _tabs.size(); ++i)
+        {
+            auto& currentButton = entitiesRegistry->GetComponent<UIButton>(_tabs[i].ButtonID);
+            auto& currentButtonSprite = entitiesRegistry->GetComponent<UIImage>(currentButton.GetTargetImage());
+            if (activeTab == i)
+                currentButtonSprite.SetImage(_tabOpenedSprite);
+            else
+                currentButtonSprite.SetImage(_tabClosedSprite);
+        }
+    }
+}
+
+Sprite* UITabs::GetCloseTabSprite() const
+{
+    return _tabClosedSprite;
 }
 
 EntityID UITabs::GetTab(int index)

@@ -38,32 +38,15 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
     layout1rt.SetOffsetMax(glm::vec2(0.0f, STYLE_BUTTON_H * 1.8f));
     auto& layout1 = entitiesRegistry->GetComponent<UILayoutGroup>(layout1Entity);
     layout1.AddElement(layout2Entity);
-    LayoutElementInfo info {};
-    info.MinWidth = 200;
-    info.PreferredWidth = 300;
-    info.MinHeight = 400;
-    info.PreferredHeight = 1000;
-    EntityID l1child1Entity = layout1.AddElement(info);
+    EntityID l1child1Entity = layout1.AddElement(200, 400, 300, 1000);
 
     auto& layout2 = entitiesRegistry->GetComponent<UILayoutGroup>(layout2Entity);
-    info.MinWidth = 400;
-    info.PreferredWidth = 600;
-    info.MinHeight = 200;
-    info.PreferredHeight = 400;
-    EntityID l2child1Entity = layout2.AddElement(info);
+    EntityID l2child1Entity = layout2.AddElement(400, 200, 600, 400);
     layout2.AddElement(layout3Entity);
 
     auto& layout3 = entitiesRegistry->GetComponent<UILayoutGroup>(layout3Entity);
-    info.MinWidth = 200;
-    info.PreferredWidth = 300;
-    info.MinHeight = 300;
-    info.PreferredHeight = 800;
-    EntityID l3child1Entity = layout3.AddElement(info);
-    info.MinWidth = 800;
-    info.PreferredWidth = 2000;
-    info.MinHeight = 600;
-    info.PreferredHeight = 1000;
-    EntityID l3child2Entity = layout3.AddElement(info);
+    EntityID l3child1Entity = layout3.AddElement(200, 300, 300, 800);
+    EntityID l3child2Entity = layout3.AddElement(800, 600, 2000, 1000);
 
     // Init layout elements
 

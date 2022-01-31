@@ -272,14 +272,7 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
                     continue;
                 }
 
-                // TODO: may be move to method like serialize and deserialize
-                if (_attributesInfo.find(typeInfo->ID) != _attributesInfo.end())
-                {
-                    for (auto attribute : _attributesInfo[typeInfo->ID])
-                    {
-                        attribute.Copy(objectFrom, objectTo, contextFrom, contextTo);
-                    }
-                }
+                Copy(typeInfo->ID, objectFrom, objectTo, contextFrom, contextTo);
             }
         }
     }
@@ -305,6 +298,18 @@ void SerializationManager::Deserialize(ComponentTypeID typeID, Serializable* obj
         for (auto attribute : _attributesInfo[typeID])
         {
             attribute.Deserialize(object, node, context);
+        }
+    }
+}
+
+void SerializationManager::Copy(ComponentTypeID typeID, Serializable* objectFrom, Serializable* objectTo,
+                                SerializationContext& contextFrom, SerializationContext& contextTo)
+{
+    if (_attributesInfo.find(typeID) != _attributesInfo.end())
+    {
+        for (auto attribute : _attributesInfo[typeID])
+        {
+            attribute.Copy(objectFrom, objectTo, contextFrom, contextTo);
         }
     }
 }

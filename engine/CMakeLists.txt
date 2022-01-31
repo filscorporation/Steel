@@ -88,9 +88,9 @@ set(SOURCE_FILES
         source/Steel/Scripting/InternalStructures/MaterialPropertyBlockInternal.cpp source/Steel/UI/UIElements/UIClipping.cpp source/Steel/UI/UIElements/UIClipping.h
         source/Steel/UI/UIElements/UICheckBox.cpp source/Steel/UI/UIElements/UICheckBox.h
         source/Steel/UI/UIElements/UITabs.cpp source/Steel/UI/UIElements/UITabs.h source/Steel/UI/UIElements/UILayoutGroup.cpp
-        source/Steel/UI/UIElements/UILayoutGroup.h source/Steel/UI/UIElements/UILayoutElement.h source/Steel/UI/UIElements/LayoutGroupTypes.h
+        source/Steel/UI/UIElements/UILayoutGroup.h source/Steel/UI/UIElements/LayoutGroupTypes.h
         source/Steel/Scene/SceneManager.cpp source/Steel/Scene/SceneManager.h source/Steel/Rendering/Framebuffer.cpp source/Steel/Rendering/Framebuffer.h
-        source/Steel/Rendering/MaterialSystem/Texture.cpp source/Steel/Rendering/MaterialSystem/Texture.h source/Steel/UI/UIElements/UILayoutElement.cpp
+        source/Steel/Rendering/MaterialSystem/Texture.cpp source/Steel/Rendering/MaterialSystem/Texture.h
         source/Steel/Rendering/SceneRenderer.cpp source/Steel/Rendering/SceneRenderer.h source/Steel/Serialization/SerializationManager.cpp
         source/Steel/Serialization/SerializationManager.h source/Steel/Serialization/Serializable.h source/Steel/Serialization/AttributeInfo.h
         source/Steel/Serialization/AttributeAccessorBase.h source/Steel/Common/StringUtils.h source/Steel/Serialization/SerializationConvert.h

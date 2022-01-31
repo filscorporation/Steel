@@ -105,7 +105,7 @@ namespace UIInternalCalls
     bool UITabs_RemoveTab(EntityID entityID, int index);
 
     // UI layout group
-    EntityID UILayoutGroup_AddElement(EntityID entityID, LayoutElementInfo info);
+    EntityID UILayoutGroup_AddElement(EntityID entityID, float minWidth, float minHeight, float prefWidth, float prefHeight);
     EntityID UILayoutGroup_AddElement2(EntityID entityID, EntityID elementID);
 
     // UI

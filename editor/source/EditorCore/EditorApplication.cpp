@@ -143,6 +143,10 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
     {
         case EditorStates::Stopped:
             sceneManager->EndTestEditedScene();
+            SwitchContext(AppContext);
+            // In case edited scene missed screen resize (this can get extended in future for other events)
+            Screen::SetScreenSizeDirty();
+            SwitchContext(EditorContext);
             break;
         case EditorStates::Playing:
             if (state == EditorStates::Stopped)
