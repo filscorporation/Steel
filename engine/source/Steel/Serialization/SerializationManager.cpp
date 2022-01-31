@@ -98,9 +98,9 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
     context.ResourcesSource = Application::Context()->Resources;
 
     node["name"] = scene->_name;
-    node["mainCamera"] = scene->_mainCameraEntity;
+    node["mainCamera"] = context.GetUUID(scene->_mainCameraEntity);
     node["childrenCount"] = scene->GetChildrenCount();
-    node["firstChildNode"] = scene->GetFirstChildNode();
+    node["firstChildNode"] = context.GetUUID(scene->GetFirstChildNode());
 
     auto entitiesNode = node["entities"];
 
@@ -119,11 +119,11 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
         entityNode["state"] = (uint32_t)scene->entitiesRegistry->EntityGetState(entityID);
         YAML::Node componentsNode = entityNode["components"];
 
-        std::vector<std::pair<ComponentTypeID, void*>> rawData;
+        std::vector<std::pair<ComponentTypeID, RawComponentData>> rawData;
         scene->entitiesRegistry->GetAllComponentsForEntity(entityID, rawData);
         for (auto dataPair : rawData)
         {
-            auto object = static_cast<Serializable*>(dataPair.second);
+            auto object = static_cast<Serializable*>(dataPair.second.Data);
             auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.first);
 
             YAML::Node componentNode;
@@ -143,11 +143,6 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
     SerializationContext context;
     context.SerializedScene = scene;
     context.ResourcesSource = Application::Context()->Resources;
-
-    scene->_name = node["name"].as<std::string>();
-    scene->_mainCameraEntity = node["mainCamera"].as<EntityID>();
-    scene->SetChildrenCount(node["childrenCount"].as<uint32_t>());
-    scene->SetFirstChildNode(node["firstChildNode"].as<EntityID>());
 
     auto entitiesNode = node["entities"];
     Log::LogInfo("Entities count loaded: {0}", entitiesNode.size());
@@ -187,7 +182,7 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
                     auto typeName = componentNode.first.as<std::string>();
                     auto typeID = Math::StringHash(typeName.c_str());
 
-                    auto object = static_cast<Serializable*>(scene->entitiesRegistry->RestoreComponent(typeID, entity));
+                    auto object = static_cast<Serializable*>(scene->entitiesRegistry->RestoreComponent(typeID, entity).Data);
                     if (!object)
                     {
                         Log::LogError("Object of type {0} was not restored properly", typeName);
@@ -199,6 +194,12 @@ bool SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
             }
         }
     }
+
+    // Setting these properties after UUIDs loaded
+    scene->_name = node["name"].as<std::string>();
+    scene->_mainCameraEntity = context.GetEntityID(node["mainCamera"].as<UUID>());
+    scene->SetChildrenCount(node["childrenCount"].as<uint32_t>());
+    scene->SetFirstChildNode(context.GetEntityID(node["firstChildNode"].as<UUID>()));
 
     return true;
 }
@@ -212,11 +213,6 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
     SerializationContext contextTo;
     contextTo.SerializedScene = sceneTo;
     contextTo.ResourcesSource = Application::Context()->Resources;
-
-    sceneTo->_name = sceneFrom->_name;
-    sceneTo->_mainCameraEntity = sceneFrom->_mainCameraEntity;
-    sceneTo->SetChildrenCount(sceneFrom->GetChildrenCount());
-    sceneTo->SetFirstChildNode(sceneFrom->GetFirstChildNode());
 
     auto activeIterator = sceneFrom->entitiesRegistry->GetComponentIterator<IDComponent>();
     auto inactiveIterator = sceneFrom->entitiesRegistry->GetComponentIterator<IDComponent>(false);
@@ -258,14 +254,14 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
                 continue;
             }
 
-            std::vector<std::pair<ComponentTypeID, void*>> rawData;
+            std::vector<std::pair<ComponentTypeID, RawComponentData>> rawData;
             sceneFrom->entitiesRegistry->GetAllComponentsForEntity(entityFrom, rawData);
             for (auto dataPair : rawData)
             {
-                auto objectFrom = static_cast<Serializable*>(dataPair.second);
+                auto objectFrom = static_cast<Serializable*>(dataPair.second.Data);
                 auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.first);
 
-                auto objectTo = static_cast<Serializable*>(sceneTo->entitiesRegistry->RestoreComponent(typeInfo->ID, entityTo));
+                auto objectTo = static_cast<Serializable*>(sceneTo->entitiesRegistry->RestoreComponent(typeInfo->ID, entityTo).Data);
                 if (!objectTo)
                 {
                     Log::LogError("Object of type {0} was not restored properly", typeInfo->TypeName);
@@ -276,6 +272,12 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
             }
         }
     }
+
+    // Setting these properties after UUIDs loaded
+    sceneTo->_name = sceneFrom->_name;
+    sceneTo->_mainCameraEntity = contextTo.GetEntityID(contextFrom.GetUUID(sceneFrom->_mainCameraEntity));
+    sceneTo->SetChildrenCount(sceneFrom->GetChildrenCount());
+    sceneTo->SetFirstChildNode(contextTo.GetEntityID(contextFrom.GetUUID(sceneFrom->GetFirstChildNode())));
 
     return true;
 }

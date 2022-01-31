@@ -2,7 +2,6 @@
 #include "Steel/Core/Time.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Rendering/SpriteRenderer.h"
-#include "Steel/Scene/SceneHelper.h"
 #include "Steel/UI/UIElements/UIImage.h"
 
 void Animator::RegisterType()
@@ -90,14 +89,13 @@ void Animator::AddAndPlay(Animation* animation)
 
 void ApplyFrame(EntityID entityID, Keyframe keyframe)
 {
-    Log::LogInfo("Apply frame {0}", keyframe.Time);
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
 
     if (entitiesRegistry->HasComponent<SpriteRenderer>(entityID))
     {
         auto& sr = entitiesRegistry->GetComponent<SpriteRenderer>(entityID);
         if (sr.GetImage() == nullptr && keyframe.SpriteID != NULL_RESOURCE
-        || sr.GetImage() != nullptr && sr.GetImage()->ID != keyframe.SpriteID)
+            || sr.GetImage() != nullptr && sr.GetImage()->ID != keyframe.SpriteID)
         {
             if (keyframe.SpriteID == NULL_RESOURCE)
                 sr.SetImage(nullptr);
@@ -111,7 +109,7 @@ void ApplyFrame(EntityID entityID, Keyframe keyframe)
     {
         auto& iui = entitiesRegistry->GetComponent<UIImage>(entityID);
         if (iui.GetImage() == nullptr && keyframe.SpriteID != NULL_RESOURCE
-        || iui.GetImage() != nullptr && iui.GetImage()->ID != keyframe.SpriteID)
+            || iui.GetImage() != nullptr && iui.GetImage()->ID != keyframe.SpriteID)
         {
             if (keyframe.SpriteID == NULL_RESOURCE)
                 iui.SetImage(nullptr);

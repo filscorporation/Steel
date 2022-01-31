@@ -7,7 +7,7 @@ class TypeInfoRegistererBase
 public:
     virtual ~TypeInfoRegistererBase() = default;;
 
-    virtual void RegisteredType(EntitiesRegistry* entitiesRegistry) = 0;
+    virtual void RegisterType(EntitiesRegistry* entitiesRegistry) = 0;
     virtual const TypeInfo* GetTypeInfo() = 0;
 };
 
@@ -15,7 +15,7 @@ template<class T>
 class TypeInfoRegisterer : TypeInfoRegistererBase
 {
 public:
-    void RegisteredType(EntitiesRegistry* entitiesRegistry) override
+    void RegisterType(EntitiesRegistry* entitiesRegistry) override
     {
         // Skip simple types
     }
@@ -30,7 +30,7 @@ template<class T>
 class ComponentTypeRegisterer : TypeInfoRegistererBase
 {
 public:
-    void RegisteredType(EntitiesRegistry* entitiesRegistry) override
+    void RegisterType(EntitiesRegistry* entitiesRegistry) override
     {
         entitiesRegistry->RegisteredType<T>();
     }

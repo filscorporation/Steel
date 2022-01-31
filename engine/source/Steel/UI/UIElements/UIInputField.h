@@ -80,6 +80,7 @@ private:
     void TryKeepSelection();
     void RemoveSelectedText(UIText& uiText);
 
+    bool initialized = false;
     EntityID _targetText = NULL_ENTITY;
     bool wasEdited = false;
     uint32_t cursorPosition = -1;

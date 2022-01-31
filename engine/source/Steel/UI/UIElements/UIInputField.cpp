@@ -36,6 +36,7 @@ void UIInputField::SetDefault(EntitiesRegistry* entitiesRegistry)
 
 void UIInputField::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
+    initialized = true;
     auto& eventHandler = entitiesRegistry->AddComponent<UIEventHandler>(Owner);
     eventHandler.EventCallback = UIInputField::HandleEvent;
     eventHandler.EventsMask = UIEventTypes::TextInput | UIEventTypes::KeyInput |
@@ -192,6 +193,9 @@ void UIInputField::SetIsMultiline(bool isMultiline)
 
     multiline = isMultiline;
 
+    if (!initialized)
+        return;
+
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))
         return;
@@ -212,6 +216,9 @@ void UIInputField::SetTextType(TextTypes::TextType type)
         return;
 
     textType = type;
+
+    if (!initialized)
+        return;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (_targetText == NULL_ENTITY || !entitiesRegistry->EntityExists(_targetText))

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "EntitiesRegistry.h"
 #include "ComponentsPoolWrapper.h"
 
 // Allows access to certain component type without using components types hashmap

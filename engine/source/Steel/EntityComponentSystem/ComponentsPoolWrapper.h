@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SparseDataSet.h"
+#include "RawComponentData.h"
 
 class EntitiesRegistry;
 
@@ -33,14 +34,12 @@ public:
     virtual EntityID GetOwnerByIndex(int index, bool isActive) = 0;
 
     // Serialization methods
-    virtual void* GetRawByID(EntityID id) = 0;
-    virtual void* AddRawByID(EntityID id, EntityID entityID, bool active) = 0;
+    virtual RawComponentData GetRawByID(EntityID id) = 0;
+    virtual RawComponentData AddRawByID(EntityID id, EntityID entityID, bool active) = 0;
     virtual void OnCreateAll() = 0;
 
 protected:
     EntitiesRegistry* _entitiesRegistry = nullptr;
-
-    friend class EntitiesRegistry;
 };
 
 // Wrapper around ComponentsPool
@@ -181,28 +180,28 @@ public:
         return isActive ? Storage[index].Owner : InactiveStorage[index].Owner;
     }
 
-    void* GetRawByID(EntityID id) override
+    RawComponentData GetRawByID(EntityID id) override
     {
         if (Storage.Has(id))
-            return &(Storage.Get(id));
+            return RawComponentData(&(Storage.Get(id)), TYPE_ID(T));
         if (InactiveStorage.Has(id))
-            return &(InactiveStorage.Get(id));
-        return nullptr;
+            return RawComponentData(&(InactiveStorage.Get(id)), TYPE_ID(T));
+        return RawComponentData {};
     }
 
-    void* AddRawByID(EntityID id, EntityID entityID, bool active) override
+    RawComponentData AddRawByID(EntityID id, EntityID entityID, bool active) override
     {
         if (active)
         {
             if (Storage.Has(id))
-                return nullptr;
-            return &(Storage.Add(id, entityID));
+                return RawComponentData {};
+            return RawComponentData(&(Storage.Add(id, entityID)), TYPE_ID(T));
         }
         else
         {
             if (InactiveStorage.Has(id))
-                return nullptr;
-            return &(InactiveStorage.Add(id, entityID));
+                return RawComponentData {};
+            return RawComponentData(&(InactiveStorage.Add(id, entityID)), TYPE_ID(T));
         }
     }
 

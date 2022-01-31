@@ -16,7 +16,7 @@ void TypeInfoStorage::InitializeTypesFromStorage(EntitiesRegistry* entitiesRegis
 {
     for (auto typePair : storage)
     {
-        typePair.second->RegisteredType(entitiesRegistry);
+        typePair.second->RegisterType(entitiesRegistry);
     }
 }
 

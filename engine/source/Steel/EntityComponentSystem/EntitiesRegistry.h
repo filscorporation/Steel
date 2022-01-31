@@ -7,6 +7,7 @@
 #include "EntitiesIterator.h"
 #include "SparseDataSet.h"
 #include "TypeInfo.h"
+#include "RawComponentData.h"
 #include "Steel/Core/Log.h"
 
 #include <vector>
@@ -80,7 +81,7 @@ public:
         return id < entityIDs.size() && Entity::EntityIDGetVersion(entityIDs[id]) == Entity::EntityIDGetVersion(entityID);
     }
 
-    void GetAllComponentsForEntity(EntityID entityID, std::vector<std::pair<ComponentTypeID, void*>>& componentsData)
+    void GetAllComponentsForEntity(EntityID entityID, std::vector<std::pair<ComponentTypeID, RawComponentData>>& componentsData)
     {
         auto id = Entity::EntityIDGetID(entityID);
         for (auto pool : componentsMap)
@@ -400,14 +401,14 @@ public:
         return true;
     }
 
-    void* RestoreComponent(ComponentTypeID typeID, EntityID entityID)
+    RawComponentData RestoreComponent(ComponentTypeID typeID, EntityID entityID)
     {
         EntityID id = Entity::EntityIDGetID(entityID);
         if (!EntityExists(entityID))
-            return nullptr;
+            return RawComponentData {};
 
         if (componentsMap.find(typeID) == componentsMap.end())
-            return nullptr;
+            return RawComponentData {};
 
         return componentsMap[typeID]->AddRawByID(id, entityID, EntityGetState(entityID) & EntityStates::IsActive);
     }
