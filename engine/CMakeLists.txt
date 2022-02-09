@@ -111,7 +111,8 @@ set(SOURCE_FILES
         source/Steel/EntityComponentSystem/ComponentIterator.h source/Steel/EntityComponentSystem/ComponentAccessor.h source/Steel/EntityComponentSystem/Entity.cpp
         source/Steel/EntityComponentSystem/EntitiesIterator.h source/Steel/Serialization/ListAttributeAccessor.h source/Steel/UI/UIElements/UITabInfo.h
         source/Steel/UI/UIElements/UITabInfo.cpp source/Steel/UI/UIElements/UILayoutElementInfo.cpp source/Steel/UI/UIElements/UILayoutElementInfo.h
-        source/Steel/EntityComponentSystem/RawComponentData.h)
+        source/Steel/EntityComponentSystem/RawComponentData.h source/Steel/Serialization/ScriptsListAttributeAccessor.h
+        source/Steel/EntityComponentSystem/Types.h source/Steel/Scripting/ScriptAttributeAccessor.h source/Steel/Scripting/ScriptAttributeAccessorBase.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

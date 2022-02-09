@@ -2,6 +2,7 @@
 
 #include "AttributeAccessorBase.h"
 #include "Steel/Common/FlagType.h"
+#include "Steel/Core/Log.h"
 #include "SerializationContext.h"
 
 #include <cstdint>
@@ -31,16 +32,6 @@ public:
 
     std::string Name() const { return _name; }
     AttributeFlags::AttributeFlag Flags() const { return _flags; }
-
-    std::string ToString(Serializable* object, SerializationContext& context) const
-    {
-        return _accessor->ToString(object, context);
-    }
-
-    void FromString(Serializable* object, const std::string& line, SerializationContext& context)
-    {
-        _accessor->FromString(object, line, context);
-    }
 
     void Serialize(Serializable* object, YAML::Node& node, SerializationContext& context)
     {

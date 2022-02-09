@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SerializationContext.h"
-#include "Steel/Common/StringUtils.h"
 #include "Steel/EntityComponentSystem/Entity.h"
 #include "SerializationManager.h"
 
@@ -19,15 +18,9 @@ public:
 
     }
 
-    void FromString(Serializable* object, const std::string& line, SerializationContext& context) override
+    Types::Type GetType() const override
     {
-        // Not supported
-    }
-
-    std::string ToString(Serializable* object, SerializationContext& context) const override
-    {
-        // Not supported
-        return "";
+        return Types::List; // TODO: list of what type?
     }
 
     void Serialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override

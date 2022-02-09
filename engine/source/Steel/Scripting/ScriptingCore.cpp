@@ -3,6 +3,7 @@
 #include "ScriptingCallsRegister.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Application.h"
+#include "ScriptAttributeAccessor.h"
 
 #define NAMESPACE_NAME "Steel"
 
@@ -14,6 +15,7 @@ std::unordered_map<SimpleAPITypes::SimpleAPIType, MonoClass*> ScriptingCore::cac
 std::unordered_map<MonoClass*, ScriptTypeInfo*> ScriptingCore::scriptsInfo;
 std::unordered_map<ScriptEventTypes::ScriptEventType, MonoMethodDesc*> ScriptingCore::eventMethodsDescriptions;
 MonoClass* ScriptingCore::baseScriptClass = nullptr;
+MonoClass* ScriptingCore::serializableAttributeClass = nullptr;
 
 void ScriptingCore::Init(MonoImage* image)
 {
@@ -31,12 +33,18 @@ void ScriptingCore::Terminate()
     for (auto desc : eventMethodsDescriptions)
         mono_method_desc_free(desc.second);
     for (auto info : scriptsInfo)
+    {
+        for (auto& fieldInfo : info.second->Attributes)
+            delete fieldInfo.Accessor;
+
         delete info.second;
+    }
 }
 
 void ScriptingCore::LoadEventMethodsDescriptions(MonoImage* image)
 {
     baseScriptClass = mono_class_from_name(image, NAMESPACE_NAME, "ScriptComponent");
+    serializableAttributeClass = mono_class_from_name(image, NAMESPACE_NAME, "SerializeFieldAttribute");
 
     eventMethodsDescriptions[ScriptEventTypes::OnUpdate] = mono_method_desc_new("*:OnUpdate ()", true);
     eventMethodsDescriptions[ScriptEventTypes::OnCreate] = mono_method_desc_new("*:OnCreate ()", true);
@@ -443,6 +451,27 @@ ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
 
     auto mask = (ScriptEventTypes::ScriptEventType)0;
 
+    auto typeInfo = new ScriptTypeInfo();
+    scriptsInfo[monoClass] = typeInfo;
+
+    typeInfo->TypeName = mono_class_get_name(monoClass);
+    typeInfo->TypeNamespace = mono_class_get_namespace(monoClass);
+
+    void* iter = nullptr;
+    MonoClassField* monoField;
+    while ((monoField = mono_class_get_fields(monoClass, &iter)) != nullptr)
+    {
+        if (!CanSerializeField(monoClass, monoField))
+            continue;
+
+        ScriptAttributeInfo fieldInfo;
+        fieldInfo.FieldName = mono_field_get_name(monoField);
+        MonoType* type = mono_field_get_type(monoField);
+        fieldInfo.Accessor = CreateFieldAccessor(monoField, type);
+
+        typeInfo->Attributes.emplace_back(fieldInfo);
+    }
+
     MonoClass* parentClass = mono_class_get_parent(monoClass);
     if (parentClass != nullptr && parentClass != baseScriptClass)
         mask = mask | ScriptParseRecursive(parentClass)->Mask;
@@ -453,12 +482,72 @@ ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
         if (method != nullptr)
             mask = mask | desc.first;
     }
-
-    auto typeInfo = new ScriptTypeInfo();
     typeInfo->Mask = mask;
-    scriptsInfo[monoClass] = typeInfo;
 
     return typeInfo;
+}
+
+bool ScriptingCore::CanSerializeField(MonoClass* monoClass, MonoClassField* monoClassField)
+{
+    auto attributes = mono_custom_attrs_from_field(monoClass, monoClassField);
+    bool result = attributes != nullptr && mono_custom_attrs_has_attr(attributes, serializableAttributeClass);
+    mono_custom_attrs_free(attributes);
+    return result;
+}
+
+ScriptAttributeAccessorBase* ScriptingCore::CreateFieldAccessor(MonoClassField* monoClassField, MonoType* monoType)
+{
+    // TODO: finish missing types
+    auto monoTypeEnum = mono_type_get_type(monoType);
+    switch (monoTypeEnum)
+    {
+        case MONO_TYPE_BOOLEAN:
+            return new ScriptAttributeAccessor<bool>(monoClassField, Types::Bool);
+        case MONO_TYPE_CHAR:
+            return new ScriptAttributeAccessor<char>(monoClassField, Types::Char);
+        case MONO_TYPE_I1:
+            return nullptr; // int8_t
+        case MONO_TYPE_I2:
+            return nullptr; // int16_t
+        case MONO_TYPE_I4:
+            return new ScriptAttributeAccessor<int>(monoClassField, Types::Int);
+        case MONO_TYPE_I8:
+            return new ScriptAttributeAccessor<long>(monoClassField, Types::Long);
+        case MONO_TYPE_U1:
+            return nullptr; // uint8_t
+        case MONO_TYPE_U2:
+            return nullptr; // uint16_t
+        case MONO_TYPE_U4:
+            return new ScriptAttributeAccessor<uint32_t>(monoClassField, Types::UInt32);
+        case MONO_TYPE_U8:
+            return new ScriptAttributeAccessor<uint64_t>(monoClassField, Types::UInt64);
+        case MONO_TYPE_R4:
+            return new ScriptAttributeAccessor<float>(monoClassField, Types::Float);
+        case MONO_TYPE_R8:
+            return new ScriptAttributeAccessor<double>(monoClassField, Types::Double);
+        case MONO_TYPE_VALUETYPE:
+            {
+                Log::LogWarning("Value types serialization is not supported yet");
+                //MonoClass* monoClass = mono_class_from_mono_type(monoType);
+
+                return nullptr;
+            }
+        case MONO_TYPE_STRING:
+            return new ScriptAttributeAccessor<std::string>(monoClassField, Types::String); // TODO: handle MonoString*
+        case MONO_TYPE_ARRAY:
+        case MONO_TYPE_SZARRAY:
+            Log::LogWarning("Array types serialization is not supported yet");
+            return nullptr;
+        case MONO_TYPE_GENERICINST:
+            Log::LogWarning("Generic types serialization is not supported yet");
+            return nullptr;
+        case MONO_TYPE_OBJECT:
+            Log::LogWarning("Objects serialization is not supported yet");
+            return nullptr;
+        default:
+            Log::LogWarning("Unknown field type");
+            return nullptr;
+    }
 }
 
 MonoMethod* ScriptingCore::GetMethod(MonoImage* image, const char* methodName)

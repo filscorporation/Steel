@@ -2,6 +2,8 @@
 
 #include "Steel/Common/FlagType.h"
 
+#include <string>
+#include <vector>
 #include <cstdint>
 
 namespace ScriptEventTypes
@@ -35,10 +37,26 @@ namespace ScriptEventTypes
     FLAG_TYPE(ScriptEventType)
 }
 
-struct ScriptTypeInfo
+using ScriptPointer = intptr_t;
+
+class ScriptAttributeAccessorBase;
+
+struct ScriptAttributeInfo
 {
-    ScriptEventTypes::ScriptEventType Mask;
-    // Here will be placed some info about fields for serialization
+    std::string FieldName;
+    ScriptAttributeAccessorBase* Accessor;
 };
 
-using ScriptPointer = intptr_t;
+struct ScriptTypeInfo
+{
+    std::string TypeName;
+    std::string TypeNamespace;
+    ScriptEventTypes::ScriptEventType Mask;
+    std::vector<ScriptAttributeInfo> Attributes;
+};
+
+struct ScriptData
+{
+    ScriptPointer Pointer;
+    ScriptTypeInfo* TypeInfo;
+};

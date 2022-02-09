@@ -6,6 +6,7 @@
 #include "EnumAttributeAccessor.h"
 #include "ListAttributeAccessor.h"
 #include "ResourceAttributeAccessor.h"
+#include "ScriptsListAttributeAccessor.h"
 #include "SerializationManager.h"
 #include "Steel/EntityComponentSystem/TypeInfoStorage.h"
 #include "Steel/EntityComponentSystem/TypeInfo.h"
@@ -71,6 +72,18 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                               \
         name,                                                                                                       \
         new ListAttributeAccessor<className, type>(&className::getter, &className::setter),                         \
+        flags                                                                                                       \
+    )                                                                                                               \
+)
+
+#define REGISTER_SCRIPTS_ATTRIBUTE(className, name, getter, setter, flags)                                          \
+SerializationManager::RegisterAttribute                                                                             \
+(                                                                                                                   \
+    TYPE_ID(className),                                                                                             \
+    AttributeInfo                                                                                                   \
+    (                                                                                                               \
+        name,                                                                                                       \
+        new ScriptsListAttributeAccessor<className>(&className::getter, &className::setter),                            \
         flags                                                                                                       \
     )                                                                                                               \
 )

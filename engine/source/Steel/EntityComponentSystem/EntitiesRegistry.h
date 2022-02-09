@@ -81,14 +81,14 @@ public:
         return id < entityIDs.size() && Entity::EntityIDGetVersion(entityIDs[id]) == Entity::EntityIDGetVersion(entityID);
     }
 
-    void GetAllComponentsForEntity(EntityID entityID, std::vector<std::pair<ComponentTypeID, RawComponentData>>& componentsData)
+    void GetAllComponentsForEntity(EntityID entityID, std::vector<RawComponentData>& componentsData)
     {
         auto id = Entity::EntityIDGetID(entityID);
         for (auto pool : componentsMap)
         {
             if (pool.second->HasByID(id))
             {
-                componentsData.emplace_back(pool.first, pool.second->GetRawByID(id));
+                componentsData.emplace_back(pool.second->GetRawByID(id));
             }
         }
     }

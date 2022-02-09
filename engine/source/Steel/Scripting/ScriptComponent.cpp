@@ -1,9 +1,9 @@
-#include <cstdint>
-
 #include "ScriptComponent.h"
 #include "ScriptingCore.h"
 #include "Steel/Core/Application.h"
 #include "Steel/UI/UIEventHandler.h"
+
+#include <cstdint>
 
 #define CALL_IF_MASK(m_method) \
 { \
@@ -30,7 +30,7 @@
 void ScriptComponent::RegisterType()
 {
     REGISTER_COMPONENT(ScriptComponent);
-    // TODO
+    REGISTER_SCRIPTS_ATTRIBUTE(ScriptComponent, "scripts", GetScriptsData, SetScriptsData, AttributeFlags::Public);
 }
 
 void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)
@@ -110,6 +110,20 @@ void ScriptComponent::RemoveScript(ScriptTypeInfo* typeInfo)
     ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
     for (auto script : Scripts)
         ScriptsMask = ScriptsMask | typeInfo->Mask;
+
+    // TODO: remove component when no scripts left?
+}
+
+const std::vector<ScriptData>& ScriptComponent::GetScriptsData() const
+{
+    return Scripts;
+}
+
+void ScriptComponent::SetScriptsData(const std::vector<ScriptData>& scripts)
+{
+    Log::LogInfo("Set script data: {0}", scripts.size());
+    // TODO
+    Scripts = scripts;
 }
 
 ScriptPointer ScriptComponent::GetScriptPointer(ScriptTypeInfo* typeInfo)

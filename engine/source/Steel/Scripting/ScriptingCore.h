@@ -1,16 +1,16 @@
 #pragma once
 
-#include <mono/jit/jit.h>
-#include <mono/metadata/mono-config.h>
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/debug-helpers.h>
-#include <unordered_map>
-
 #include "ScriptingCommon.h"
 #include "SimpleAPITypes.h"
 #include "Steel/EntityComponentSystem/Component.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 #include "Steel/UI/CallbackType.h"
+
+#include <mono/jit/jit.h>
+#include <mono/metadata/mono-config.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+#include <unordered_map>
 
 struct EngineCallsMethods
 {
@@ -90,6 +90,10 @@ public:
     static void ScriptComponentPointersFromMonoClass(MonoClass* monoClass, std::vector<ScriptPointer>& result);
     static MonoClass* TypeToMonoClass(void* type);
     static ScriptTypeInfo* ScriptParseRecursive(MonoClass* monoClass);
+    static bool CanSerializeField(MonoClass* monoClass, MonoClassField* monoClassField);
+    static ScriptAttributeAccessorBase* CreateFieldAccessor(MonoClassField* monoClassField, MonoType* monoType);
+    template<typename T> static T GetScriptingFieldValue(ScriptPointer scriptPointer, MonoClassField* monoClassField);
+    template<typename T> static void SetScriptingFieldValue(ScriptPointer scriptPointer, MonoClassField* monoClassField, T value);
 
     static MonoMethod* GetMethod(MonoImage* image, const char* methodName);
     static void CallEventMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method);
@@ -125,6 +129,7 @@ private:
     static std::unordered_map<MonoClass*, ScriptTypeInfo*> scriptsInfo;
     static std::unordered_map<ScriptEventTypes::ScriptEventType, MonoMethodDesc*> eventMethodsDescriptions;
     static MonoClass* baseScriptClass;
+    static MonoClass* serializableAttributeClass;
 };
 
 template<typename T>
@@ -150,6 +155,36 @@ void ScriptingCore::FromMonoSimpleTypeArray(MonoArray* inArray, std::vector<T>& 
     {
         outArray.push_back(mono_array_get(inArray, T, i));
     }
+}
+
+template<typename T>
+T ScriptingCore::GetScriptingFieldValue(ScriptPointer scriptPointer, MonoClassField* monoClassField)
+{
+    MonoObject* monoObject = mono_gchandle_get_target(scriptPointer);
+    if (monoObject == nullptr)
+    {
+        Log::LogError("Can't get mono object from pointer: {0}", scriptPointer);
+        T temp;
+        return temp;
+    }
+
+    T value;
+    mono_field_get_value(monoObject, monoClassField, &value);
+
+    return value;
+}
+
+template<typename T>
+void ScriptingCore::SetScriptingFieldValue(ScriptPointer scriptPointer, MonoClassField* monoClassField, T value)
+{
+    MonoObject* monoObject = mono_gchandle_get_target(scriptPointer);
+    if (monoObject == nullptr)
+    {
+        Log::LogError("Can't get mono object from pointer: {0}", scriptPointer);
+        return;
+    }
+
+    mono_field_set_value(monoObject, monoClassField, &value);
 }
 
 #define CACHE_SIMPLE_TYPE(m_type) cachedSimpleAPITypes[SimpleAPITypes::m_type] = mono_class_from_name(image, "Steel", #m_type)

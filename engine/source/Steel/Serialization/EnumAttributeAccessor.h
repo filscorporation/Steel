@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SerializationContext.h"
-#include "Steel/Common/StringUtils.h"
 #include "Steel/EntityComponentSystem/Entity.h"
 
 // Attribute accessor for enum fields
@@ -18,14 +17,9 @@ public:
 
     }
 
-    void FromString(Serializable* object, const std::string& line, SerializationContext& context) override
+    Types::Type GetType() const override
     {
-        Set(object, static_cast<U>(StringUtils::FromString<int>(line)));
-    }
-
-    std::string ToString(Serializable* object, SerializationContext& context) const override
-    {
-        return StringUtils::ToString(static_cast<int>(Get(object)));
+        return Types::Enum;
     }
 
     void Serialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override

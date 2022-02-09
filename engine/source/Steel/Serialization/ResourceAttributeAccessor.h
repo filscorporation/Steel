@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SerializationContext.h"
-#include "Steel/Common/StringUtils.h"
 #include "Steel/EntityComponentSystem/Entity.h"
 #include "Steel/Resources/ResourceID.h"
 
@@ -19,14 +18,9 @@ public:
         _resourceType = resourceType;
     }
 
-    void FromString(Serializable* object, const std::string& line, SerializationContext& context) override
+    Types::Type GetType() const override
     {
-        Set(object, static_cast<U>(context.GetResource(_resourceType, StringUtils::FromString<ResourceID>(line))));
-    }
-
-    std::string ToString(Serializable* object, SerializationContext& context) const override
-    {
-        return StringUtils::ToString(context.GetResourceID(Get(object)));
+        return Types::ResourceID;
     }
 
     void Serialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override

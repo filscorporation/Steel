@@ -119,12 +119,12 @@ bool SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
         entityNode["state"] = (uint32_t)scene->entitiesRegistry->EntityGetState(entityID);
         YAML::Node componentsNode = entityNode["components"];
 
-        std::vector<std::pair<ComponentTypeID, RawComponentData>> rawData;
+        std::vector<RawComponentData> rawData;
         scene->entitiesRegistry->GetAllComponentsForEntity(entityID, rawData);
         for (auto dataPair : rawData)
         {
-            auto object = static_cast<Serializable*>(dataPair.second.Data);
-            auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.first);
+            auto object = static_cast<Serializable*>(dataPair.Data);
+            auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.TypeID);
 
             YAML::Node componentNode;
             Serialize(typeInfo->ID, object, componentNode, context);
@@ -254,12 +254,12 @@ bool SerializationManager::CopySceneInner(Scene* sceneFrom, Scene* sceneTo)
                 continue;
             }
 
-            std::vector<std::pair<ComponentTypeID, RawComponentData>> rawData;
+            std::vector<RawComponentData> rawData;
             sceneFrom->entitiesRegistry->GetAllComponentsForEntity(entityFrom, rawData);
             for (auto dataPair : rawData)
             {
-                auto objectFrom = static_cast<Serializable*>(dataPair.second.Data);
-                auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.first);
+                auto objectFrom = static_cast<Serializable*>(dataPair.Data);
+                auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.TypeID);
 
                 auto objectTo = static_cast<Serializable*>(sceneTo->entitiesRegistry->RestoreComponent(typeInfo->ID, entityTo).Data);
                 if (!objectTo)

@@ -25,6 +25,9 @@ public:
     ScriptPointer GetScriptPointer(ScriptTypeInfo* typeInfo);
     void RemoveScript(ScriptTypeInfo* typeInfo);
 
+    const std::vector<ScriptData>& GetScriptsData() const;
+    void SetScriptsData(const std::vector<ScriptData>& scripts);
+
     void OnUpdate();
     void OnCreate();
     void OnDestroy();
@@ -51,11 +54,6 @@ public:
     void OnMouseJustPressedUI();
     void OnMouseJustReleasedUI();
 
-    struct ScriptData
-    {
-        ScriptPointer Pointer;
-        ScriptTypeInfo* TypeInfo;
-    };
     std::vector<ScriptData> Scripts;
     ScriptEventTypes::ScriptEventType ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
 };

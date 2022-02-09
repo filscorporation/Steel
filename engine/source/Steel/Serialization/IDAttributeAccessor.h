@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SerializationContext.h"
-#include "Steel/Common/StringUtils.h"
 #include "Steel/EntityComponentSystem/Entity.h"
 
 // Attribute accessor for EntityID <-> UUID linked fields
@@ -18,14 +17,9 @@ public:
 
     }
 
-    void FromString(Serializable* object, const std::string& line, SerializationContext& context) override
+    Types::Type GetType() const override
     {
-        Set(object, context.GetEntityID(StringUtils::FromString<UUID>(line)));
-    }
-
-    std::string ToString(Serializable* object, SerializationContext& context) const override
-    {
-        return StringUtils::ToString(context.GetUUID(Get(object)));
+        return Types::EntityID;
     }
 
     void Serialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override

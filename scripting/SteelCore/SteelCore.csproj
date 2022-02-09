@@ -56,6 +56,7 @@
         <Compile Include="Core\MouseCodes.cs" />
         <Compile Include="Core\Resource.cs" />
         <Compile Include="Core\Time.cs" />
+        <Compile Include="Entity\SerializeField.cs" />
         <Compile Include="Math\Math.cs" />
         <Compile Include="Math\Random.cs" />
         <Compile Include="Math\Vector2.cs" />
