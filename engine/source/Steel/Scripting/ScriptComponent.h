@@ -20,9 +20,9 @@ public:
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
-    void AddScript(ScriptPointer scriptPointer, ScriptTypeInfo* typeInfo);
+    void AddScript(ScriptPointer* scriptPointer, ScriptTypeInfo* typeInfo);
     bool HasScriptType(ScriptTypeInfo* typeInfo);
-    ScriptPointer GetScriptPointer(ScriptTypeInfo* typeInfo);
+    ScriptPointer* GetScriptPointer(ScriptTypeInfo* typeInfo);
     void RemoveScript(ScriptTypeInfo* typeInfo);
 
     const std::vector<ScriptData>& GetScriptsData() const;
@@ -56,4 +56,8 @@ public:
 
     std::vector<ScriptData> Scripts;
     ScriptEventTypes::ScriptEventType ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
+
+private:
+    void TryCallEventMethod(ScriptEventTypes::ScriptEventType eventType, void** params);
+    void TryCallCollisionMethod(ScriptEventTypes::ScriptEventType eventType, Collision collision);
 };

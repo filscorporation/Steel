@@ -1,31 +1,10 @@
 #include "ScriptComponent.h"
 #include "ScriptingCore.h"
+#include "ScriptMethodPointer.h"
 #include "Steel/Core/Application.h"
 #include "Steel/UI/UIEventHandler.h"
 
 #include <cstdint>
-
-#define CALL_IF_MASK(m_method) \
-{ \
-    if (!(ScriptsMask & ScriptEventTypes::m_method)) \
-        return; \
-    for (auto script : Scripts) \
-    { \
-        if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
-            ScriptingCore::CallMethod(script.Pointer, ScriptingCore::EngineCalls.call##m_method); \
-    } \
-}
-
-#define CALL_IF_MASK_PARAM(m_method, m_param) \
-{ \
-    if (!(ScriptsMask & ScriptEventTypes::m_method)) \
-        return; \
-    for (auto script : Scripts) \
-    { \
-        if (script.TypeInfo->Mask & ScriptEventTypes::m_method) \
-            ScriptingCore::CallMethod(script.Pointer, ScriptingCore::EngineCalls.call##m_method, m_param); \
-    } \
-}
 
 void ScriptComponent::RegisterType()
 {
@@ -51,7 +30,9 @@ void ScriptComponent::OnRemoved(EntitiesRegistry* entitiesRegistry)
     OnDestroy();
 
     for (auto script : Scripts)
-        ScriptingCore::FreeScriptHandle(script.Pointer);
+    {
+        delete script.Pointer;
+    }
 }
 
 void ScriptComponent::OnEnabled(EntitiesRegistry* entitiesRegistry)
@@ -75,7 +56,7 @@ bool ScriptComponent::HasScriptType(ScriptTypeInfo* typeInfo)
     return false;
 }
 
-void ScriptComponent::AddScript(ScriptPointer scriptPointer, ScriptTypeInfo* typeInfo)
+void ScriptComponent::AddScript(ScriptPointer* scriptPointer, ScriptTypeInfo* typeInfo)
 {
     // TODO: rework with scripts being added and removed in edit mode in mind (should store only type, no handle)
     ScriptData data { scriptPointer, typeInfo };
@@ -83,7 +64,13 @@ void ScriptComponent::AddScript(ScriptPointer scriptPointer, ScriptTypeInfo* typ
     ScriptsMask = ScriptsMask | typeInfo->Mask;
 
     if (typeInfo->Mask & ScriptEventTypes::OnCreate)
-        ScriptingCore::CallMethod(scriptPointer, ScriptingCore::EngineCalls.callOnCreate);
+    {
+        ScriptingCore::CallMethod(
+                typeInfo->EventMethods[ScriptEventTypes::OnCreate]->Method,
+                scriptPointer->GetMonoObject(),
+                nullptr
+        );
+    }
 }
 
 void ScriptComponent::RemoveScript(ScriptTypeInfo* typeInfo)
@@ -96,8 +83,14 @@ void ScriptComponent::RemoveScript(ScriptTypeInfo* typeInfo)
         {
             found = true;
             if (Scripts[i].TypeInfo->Mask & ScriptEventTypes::OnDestroy)
-                ScriptingCore::CallMethod(Scripts[i].Pointer, ScriptingCore::EngineCalls.callOnDestroy);
-            ScriptingCore::FreeScriptHandle(Scripts[i].Pointer);
+            {
+                ScriptingCore::CallMethod(
+                        Scripts[i].TypeInfo->EventMethods[ScriptEventTypes::OnDestroy]->Method,
+                        Scripts[i].Pointer->GetMonoObject(),
+                        nullptr
+                );
+            }
+            delete Scripts[i].Pointer; // This will free gc handle
             break;
         }
     }
@@ -126,7 +119,7 @@ void ScriptComponent::SetScriptsData(const std::vector<ScriptData>& scripts)
     Scripts = scripts;
 }
 
-ScriptPointer ScriptComponent::GetScriptPointer(ScriptTypeInfo* typeInfo)
+ScriptPointer* ScriptComponent::GetScriptPointer(ScriptTypeInfo* typeInfo)
 {
     for (auto script : Scripts)
     {
@@ -134,7 +127,7 @@ ScriptPointer ScriptComponent::GetScriptPointer(ScriptTypeInfo* typeInfo)
             return script.Pointer;
     }
 
-    return 0;
+    return nullptr;
 }
 
 void ScriptComponent::OnCreate()
@@ -142,7 +135,7 @@ void ScriptComponent::OnCreate()
     if (!Application::Instance->IsRunning())
         return;
 
-    CALL_IF_MASK(OnCreate)
+    TryCallEventMethod(ScriptEventTypes::OnCreate, nullptr);
 }
 
 void ScriptComponent::OnDestroy()
@@ -150,22 +143,22 @@ void ScriptComponent::OnDestroy()
     if (!Application::Instance->IsRunning())
         return;
 
-    CALL_IF_MASK(OnDestroy)
+    TryCallEventMethod(ScriptEventTypes::OnDestroy, nullptr);
 }
 
 void ScriptComponent::OnUpdate()
 {
-    CALL_IF_MASK(OnUpdate)
+    TryCallEventMethod(ScriptEventTypes::OnUpdate, nullptr);
 }
 
 void ScriptComponent::OnLateUpdate()
 {
-    CALL_IF_MASK(OnLateUpdate)
+    TryCallEventMethod(ScriptEventTypes::OnLateUpdate, nullptr);
 }
 
 void ScriptComponent::OnFixedUpdate()
 {
-    CALL_IF_MASK(OnFixedUpdate)
+    TryCallEventMethod(ScriptEventTypes::OnFixedUpdate, nullptr);
 }
 
 void ScriptComponent::OnEnabled()
@@ -173,7 +166,7 @@ void ScriptComponent::OnEnabled()
     if (!Application::Instance->IsRunning())
         return;
 
-    CALL_IF_MASK(OnEnabled)
+    TryCallEventMethod(ScriptEventTypes::OnEnabled, nullptr);
 }
 
 void ScriptComponent::OnDisabled()
@@ -181,80 +174,109 @@ void ScriptComponent::OnDisabled()
     if (!Application::Instance->IsRunning())
         return;
 
-    CALL_IF_MASK(OnDisabled)
+    TryCallEventMethod(ScriptEventTypes::OnDisabled, nullptr);
 }
 
 void ScriptComponent::OnCollisionEnter(Collision collision)
 {
-    CALL_IF_MASK_PARAM(OnCollisionEnter, collision.OtherEntity)
+    TryCallCollisionMethod(ScriptEventTypes::OnCollisionEnter, collision);
 }
 
 void ScriptComponent::OnCollisionStay(Collision collision)
 {
-    CALL_IF_MASK_PARAM(OnCollisionStay, collision.OtherEntity)
+    TryCallCollisionMethod(ScriptEventTypes::OnCollisionStay, collision);
 }
 
 void ScriptComponent::OnCollisionExit(Collision collision)
 {
-    CALL_IF_MASK_PARAM(OnCollisionExit, collision.OtherEntity)
+    TryCallCollisionMethod(ScriptEventTypes::OnCollisionExit, collision);
 }
 
 void ScriptComponent::OnMouseOver()
 {
-    CALL_IF_MASK(OnMouseOver)
+    TryCallEventMethod(ScriptEventTypes::OnMouseOver, nullptr);
 }
 
 void ScriptComponent::OnMouseEnter()
 {
-    CALL_IF_MASK(OnMouseEnter)
+    TryCallEventMethod(ScriptEventTypes::OnMouseEnter, nullptr);
 }
 
 void ScriptComponent::OnMouseExit()
 {
-    CALL_IF_MASK(OnMouseExit)
+    TryCallEventMethod(ScriptEventTypes::OnMouseExit, nullptr);
 }
 
 void ScriptComponent::OnMousePressed()
 {
-    CALL_IF_MASK(OnMousePressed)
+    TryCallEventMethod(ScriptEventTypes::OnMousePressed, nullptr);
 }
 
 void ScriptComponent::OnMouseJustPressed()
 {
-    CALL_IF_MASK(OnMouseJustPressed)
+    TryCallEventMethod(ScriptEventTypes::OnMouseJustPressed, nullptr);
 }
 
 void ScriptComponent::OnMouseJustReleased()
 {
-    CALL_IF_MASK(OnMouseJustReleased)
+    TryCallEventMethod(ScriptEventTypes::OnMouseJustReleased, nullptr);
 }
 
 void ScriptComponent::OnMouseOverUI()
 {
-    CALL_IF_MASK(OnMouseOverUI)
+    TryCallEventMethod(ScriptEventTypes::OnMouseOverUI, nullptr);
 }
 
 void ScriptComponent::OnMouseEnterUI()
 {
-    CALL_IF_MASK(OnMouseEnterUI)
+    TryCallEventMethod(ScriptEventTypes::OnMouseEnterUI, nullptr);
 }
 
 void ScriptComponent::OnMouseExitUI()
 {
-    CALL_IF_MASK(OnMouseExitUI)
+    TryCallEventMethod(ScriptEventTypes::OnMouseExitUI, nullptr);
 }
 
 void ScriptComponent::OnMousePressedUI()
 {
-    CALL_IF_MASK(OnMousePressedUI)
+    TryCallEventMethod(ScriptEventTypes::OnMousePressedUI, nullptr);
 }
 
 void ScriptComponent::OnMouseJustPressedUI()
 {
-    CALL_IF_MASK(OnMouseJustPressedUI)
+    TryCallEventMethod(ScriptEventTypes::OnMouseJustPressedUI, nullptr);
 }
 
 void ScriptComponent::OnMouseJustReleasedUI()
 {
-    CALL_IF_MASK(OnMouseJustReleasedUI)
+    TryCallEventMethod(ScriptEventTypes::OnMouseJustReleasedUI, nullptr);
+}
+
+void ScriptComponent::TryCallEventMethod(ScriptEventTypes::ScriptEventType eventType, void** params)
+{
+    if (!(ScriptsMask & eventType))
+        return;
+
+    for (auto script : Scripts)
+    {
+        if (script.TypeInfo->Mask & eventType)
+            ScriptingCore::CallMethod(
+                    script.TypeInfo->EventMethods[eventType]->Method,
+                    script.Pointer->GetMonoObject(),
+                    params
+            );
+    }
+}
+
+void ScriptComponent::TryCallCollisionMethod(ScriptEventTypes::ScriptEventType eventType, Collision collision)
+{
+    void* ctorParams[1];
+    ctorParams[0] = &collision.OtherEntity;
+    ScriptPointer* collisionObject = ScriptingCore::CreateAPIStruct(APIStructs::Collision, ctorParams);
+
+    void* params[1];
+    params[0] = collisionObject->GetMonoObject();
+    TryCallEventMethod(eventType, params);
+
+    delete collisionObject;
 }

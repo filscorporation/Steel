@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Steel
 {
@@ -16,7 +16,7 @@ namespace Steel
         /// <summary>
         /// Entity this component is attached. Component is always attached to some entity
         /// </summary>
-        public Entity Entity { get; set; }
+        public Entity Entity { get; internal set; }
         
         /// <summary>
         /// Gets transformation components attached to entity (will be null for UI elements)
@@ -50,23 +50,8 @@ namespace Steel
         /// <returns>Requested components enumeration</returns>
         public static IEnumerable<T> FindAllOfType<T>() where T : Component, new()
         {
-            if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
-            {
-                foreach (IntPtr scriptPointer in FindAllScriptsOfType_Internal(typeof(T)))
-                {
-                    if (scriptPointer == IntPtr.Zero)
-                        yield return null;
-                    yield return (T)GCHandle.FromIntPtr(scriptPointer).Target;
-                }
-                yield break;
-            }
-
-            foreach (uint componentEntityID in FindAllOfType_Internal(typeof(T)))
-            {
-                T component = new T();
-                component.Entity = new Entity(componentEntityID);
-                yield return component;
-            }
+            FindAllOfType_Internal(typeof(T), out Component[] result);
+            return result.Select(component => component as T);
         }
 
         /// <summary>
@@ -97,9 +82,6 @@ namespace Steel
         }
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern uint[] FindAllOfType_Internal(Type type);
-        
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern IntPtr[] FindAllScriptsOfType_Internal(Type type);
+        private static extern void FindAllOfType_Internal(Type type, out Component[] result);
     }
 }

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <cstdint>
 
 namespace ScriptEventTypes
@@ -37,8 +38,6 @@ namespace ScriptEventTypes
     FLAG_TYPE(ScriptEventType)
 }
 
-using ScriptPointer = intptr_t;
-
 class ScriptAttributeAccessorBase;
 
 struct ScriptAttributeInfo
@@ -47,16 +46,21 @@ struct ScriptAttributeInfo
     ScriptAttributeAccessorBase* Accessor;
 };
 
+struct ScriptMethodPointer;
+
 struct ScriptTypeInfo
 {
     std::string TypeName;
     std::string TypeNamespace;
     ScriptEventTypes::ScriptEventType Mask;
     std::vector<ScriptAttributeInfo> Attributes;
+    std::unordered_map<ScriptEventTypes::ScriptEventType, ScriptMethodPointer*> EventMethods;
 };
+
+class ScriptPointer;
 
 struct ScriptData
 {
-    ScriptPointer Pointer;
+    ScriptPointer* Pointer;
     ScriptTypeInfo* TypeInfo;
 };

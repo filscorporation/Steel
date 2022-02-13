@@ -83,12 +83,9 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.Entity::CreateNewEntity_Internal3", (void*)EntityInternalCalls::Entity_CreateNewEntity3);
     mono_add_internal_call("Steel.Entity::DestroyEntity_Internal", (void*)EntityInternalCalls::Entity_DestroyEntity);
     mono_add_internal_call("Steel.Entity::AddComponent_Internal", (void*)EntityInternalCalls::Entity_AddComponent);
-    mono_add_internal_call("Steel.Entity::AddScriptComponent_Internal", (void*)EntityInternalCalls::Entity_AddScriptComponent);
     mono_add_internal_call("Steel.Entity::HasComponent_Internal", (void *) EntityInternalCalls::Entity_HasComponent);
-    mono_add_internal_call("Steel.Entity::HasScriptComponent_Internal", (void*)EntityInternalCalls::Entity_HasScriptComponent);
-    mono_add_internal_call("Steel.Entity::GetScriptComponent_Internal", (void*)EntityInternalCalls::Entity_GetScriptComponent);
+    mono_add_internal_call("Steel.Entity::GetComponent_Internal", (void *) EntityInternalCalls::Entity_GetComponent);
     mono_add_internal_call("Steel.Entity::RemoveComponent_Internal", (void*)EntityInternalCalls::Entity_RemoveComponent);
-    mono_add_internal_call("Steel.Entity::RemoveScriptComponent_Internal", (void*)EntityInternalCalls::Entity_RemoveScriptComponent);
     mono_add_internal_call("Steel.Entity::GetUUID_Internal", (void*)EntityInternalCalls::Entity_GetUUID);
     mono_add_internal_call("Steel.Entity::GetName_Internal", (void*)EntityInternalCalls::Entity_GetName);
     mono_add_internal_call("Steel.Entity::SetName_Internal", (void*)EntityInternalCalls::Entity_SetName);
@@ -101,7 +98,6 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.Entity::IsDestroyed_Internal", (void*)EntityInternalCalls::Entity_IsDestroyed);
 
     mono_add_internal_call("Steel.Component::FindAllOfType_Internal", (void*)EntityInternalCalls::Component_FindAllOfType);
-    mono_add_internal_call("Steel.Component::FindAllScriptsOfType_Internal", (void*)EntityInternalCalls::Component_FindAllScriptsOfType);
 
     mono_add_internal_call("Steel.Transformation::GetPosition_Internal", (void*)ComponentsInternalCalls::Transformation_GetPosition);
     mono_add_internal_call("Steel.Transformation::SetPosition_Internal", (void*)ComponentsInternalCalls::Transformation_SetPosition);

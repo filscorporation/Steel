@@ -10,7 +10,6 @@ namespace Steel
         /// <summary>
         /// Camera in the scene, that is set as main
         /// </summary>
-        // TODO: not optimal
         public static Camera Main
         {
             get

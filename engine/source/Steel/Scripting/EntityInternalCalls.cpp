@@ -27,26 +27,26 @@ bool EntityInternalCalls::Entity_DestroyEntity(EntityID id)
     return true;
 }
 
-bool EntityInternalCalls::Entity_AddComponent(EntityID id, void* type)
+MonoObject* EntityInternalCalls::Entity_AddComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
         Log::LogError("Error getting entity by ID {0}", id);
-        return false;
+        return nullptr;
     }
 
     return ScriptingCore::AddComponentFromType(id, type);
 }
 
-bool EntityInternalCalls::Entity_AddScriptComponent(EntityID id, void* type, ScriptPointer scriptPointer)
+MonoObject* EntityInternalCalls::Entity_GetComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
     {
         Log::LogError("Error getting entity by ID {0}", id);
-        return false;
+        return nullptr;
     }
 
-    return ScriptingCore::AddScriptComponentFromType(id, type, scriptPointer);
+    return ScriptingCore::GetComponentFromType(id, type);
 }
 
 bool EntityInternalCalls::Entity_HasComponent(EntityID id, void* type)
@@ -60,29 +60,6 @@ bool EntityInternalCalls::Entity_HasComponent(EntityID id, void* type)
     return ScriptingCore::HasComponentFromType(id, type);
 }
 
-bool EntityInternalCalls::Entity_HasScriptComponent(EntityID id, void* type)
-{
-    if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
-    {
-        Log::LogError("Error getting entity by ID {0}", id);
-        return false;
-    }
-
-    return ScriptingCore::HasScriptComponentFromType(id, type);
-}
-
-ScriptPointer EntityInternalCalls::Entity_GetScriptComponent(EntityID id, void* type)
-{
-    if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
-    {
-        Log::LogError("Error getting entity by ID {0}", id);
-        return false;
-    }
-
-    bool success = false;
-    return ScriptingCore::GetScriptComponentFromType(id, type, success);
-}
-
 bool EntityInternalCalls::Entity_RemoveComponent(EntityID id, void* type)
 {
     if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
@@ -92,17 +69,6 @@ bool EntityInternalCalls::Entity_RemoveComponent(EntityID id, void* type)
     }
 
     return ScriptingCore::RemoveComponentFromType(id, type);
-}
-
-bool EntityInternalCalls::Entity_RemoveScriptComponent(EntityID id, void* type)
-{
-    if (!Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(id))
-    {
-        Log::LogError("Error getting entity by ID {0}", id);
-        return false;
-    }
-
-    return ScriptingCore::RemoveScriptComponentFromType(id, type);
 }
 
 bool EntityInternalCalls::Entity_GetIsActive(EntityID entityID)
@@ -149,20 +115,7 @@ void EntityInternalCalls::Entity_SetName(EntityID id, MonoString* name)
     AddComponentS<NameComponent>(id).SetName(ScriptingCore::ToString(name));
 }
 
-MonoArray* EntityInternalCalls::Component_FindAllOfType(void* type)
+void EntityInternalCalls::Component_FindAllOfType(void* type, MonoObject** result)
 {
-    std::vector<EntityID> result;
-    if (!ScriptingCore::ComponentOwnersFromType(type, result))
-        return nullptr;
-
-    return ScriptingCore::ToMonoUInt32Array(result);
-}
-
-MonoArray* EntityInternalCalls::Component_FindAllScriptsOfType(void* type)
-{
-    std::vector<ScriptPointer> result;
-    if (!ScriptingCore::ScriptComponentPointersFromType(type, result))
-        return nullptr;
-
-    return ScriptingCore::ToMonoIntPtrArray(result);
+    ScriptingCore::ComponentOwnersFromType(type, result);
 }

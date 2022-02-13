@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Steel
 {
@@ -90,38 +89,14 @@ namespace Steel
         public void Destroy() => DestroyEntity_Internal(EntityID);
         
         /// <summary>
-        /// Attaches new components to the entity and returns it
+        /// Attach new components to the entity and return it
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
         /// <returns>Attached component or already existing one</returns>
         /// <remarks>Components should be unique for the entity</remarks>
         public T AddComponent<T>() where T : Component, new()
         {
-            T component;
-            if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
-            {
-                component = new T();
-                IntPtr scriptPointer = GCHandle.ToIntPtr(GCHandle.Alloc(component));
-                component.Entity = this;
-                
-                if (!AddScriptComponent_Internal(EntityID, typeof(T), scriptPointer))
-                {
-                    GCHandle.FromIntPtr(scriptPointer).Free();
-                    
-                    // TODO: can be done in one call
-                    return (T)GCHandle.FromIntPtr(GetScriptComponent_Internal(EntityID, typeof(T))).Target;
-                }
-
-                return component;
-            }
-            
-            if (!AddComponent_Internal(EntityID, typeof(T)))
-                return null;
-
-            component = new T();
-            component.Entity = this;
-            
-            return component;
+            return AddComponent_Internal(EntityID, typeof(T)) as T;
         }
 
         /// <summary>
@@ -131,9 +106,7 @@ namespace Steel
         /// <returns>True if there is component of requested type attached</returns>
         public bool HasComponent<T>() where T : Component, new()
         {
-            return typeof(T).IsSubclassOf(typeof(ScriptComponent))
-                ? HasScriptComponent_Internal(EntityID, typeof(T))
-                : HasComponent_Internal(EntityID, typeof(T));
+            return HasComponent_Internal(EntityID, typeof(T));
         }
         
         /// <summary>
@@ -143,21 +116,7 @@ namespace Steel
         /// <returns>Component or null if there is no component of requested type attached</returns>
         public T GetComponent<T>() where T : Component, new()
         {
-            if (typeof(T).IsSubclassOf(typeof(ScriptComponent)))
-            {
-                IntPtr scriptPointer = GetScriptComponent_Internal(EntityID, typeof(T));
-                if (scriptPointer == IntPtr.Zero)
-                    return null;
-                return (T)GCHandle.FromIntPtr(scriptPointer).Target;
-            }
-
-            if (!HasComponent_Internal(EntityID, typeof(T)))
-                return null;
-            
-            T component = new T();
-            component.Entity = this;
-            
-            return component;
+            return GetComponent_Internal(EntityID, typeof(T)) as T;
         }
         
         /// <summary>
@@ -168,20 +127,12 @@ namespace Steel
         /// <remarks>You should not remove <see cref="Transformation"/> and <see cref="RectTransformation"/> components</remarks>
         public bool RemoveComponent<T>() where T : Component
         {
-            return typeof(T).IsSubclassOf(typeof(ScriptComponent))
-                ? RemoveScriptComponent_Internal(EntityID, typeof(T))
-                : RemoveComponent_Internal(EntityID, typeof(T));
+            return RemoveComponent_Internal(EntityID, typeof(T));
         }
 
         internal static T GetInternalComponentByEntityID<T>(uint entityID) where T : Component, new()
         {
-            if (!HasComponent_Internal(entityID, typeof(T)))
-                return null;
-            
-            T component = new T();
-            component.Entity = new Entity(entityID);
-
-            return component;
+            return GetComponent_Internal(entityID, typeof(T)) as T;
         }
 
         /// <summary>
@@ -284,25 +235,16 @@ namespace Steel
         private static extern bool DestroyEntity_Internal(uint entityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool AddComponent_Internal(uint entityID, Type type);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool AddScriptComponent_Internal(uint entityID, Type type, IntPtr scriptPtr);
+        private static extern Component AddComponent_Internal(uint entityID, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool HasComponent_Internal(uint entityID, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool HasScriptComponent_Internal(uint entityID, Type type);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern IntPtr GetScriptComponent_Internal(uint entityID, Type type);
+        private static extern Component GetComponent_Internal(uint entityID, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool RemoveComponent_Internal(uint entityID, Type type);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool RemoveScriptComponent_Internal(uint entityID, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ulong GetUUID_Internal(uint entityID);

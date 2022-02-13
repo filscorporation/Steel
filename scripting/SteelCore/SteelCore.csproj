@@ -71,7 +71,6 @@
         <Compile Include="Physics\RigidBodyType.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Entity\Component.cs" />
-        <Compile Include="Entity\ComponentEngineCalls.cs" />
         <Compile Include="Entity\Entity.cs" />
         <Compile Include="Entity\ScriptComponent.cs" />
         <Compile Include="Rendering\Camera.cs" />

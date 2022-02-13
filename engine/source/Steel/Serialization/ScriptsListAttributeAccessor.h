@@ -52,7 +52,7 @@ public:
             auto typeName = scriptNode[0].as<std::string>();
             // TODO: finish
             ScriptTypeInfo* typeInfo = nullptr; // ScriptingCore::GetTypeInfoByName(typeName)
-            ScriptPointer scriptPointer = 0; // ScriptingCore::CreateInstanceOfType(typeName)
+            ScriptPointer* scriptPointer = nullptr; // ScriptingCore::CreateInstanceOfType(typeName)
 
             scriptData.TypeInfo = typeInfo;
             scriptData.Pointer = scriptPointer;

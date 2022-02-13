@@ -67,8 +67,6 @@ MonoImage* LoadAssembly(const char* fileName)
 
 void ScriptingSystem::Init()
 {
-    Log::LogDebug("Scripting system init");
-
     mono_config_parse(nullptr);
 #ifdef DISTRIBUTE_BUILD
     mono_set_dirs(DISTRIBUTE_MONO_LIB_PATH, DISTRIBUTE_MONO_ETC_PATH);
@@ -134,7 +132,7 @@ void ScriptingSystem::CallEntryPoint()
 void ScriptingSystem::UpdateCoroutines()
 {
     if (ScriptingSystem::IsInitialized())
-        ScriptingCore::CallMethod(ScriptingCore::CoroutinesManagerCalls.callUpdate);
+        ScriptingCore::CallMethod(ScriptingCore::CoroutinesManagerCalls.callUpdate, nullptr, nullptr);
 }
 
 bool ScriptingSystem::IsInitialized()
