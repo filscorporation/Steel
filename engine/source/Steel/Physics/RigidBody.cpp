@@ -443,7 +443,7 @@ void RigidBody::GetPhysicsTransformation()
 
 void RigidBody::UpdatePhysicsTransformation()
 {
-    if (inGetTransformation || info == nullptr)
+    if (inGetTransformation || info == nullptr || _type == RigidBodyTypes::None)
         return;
 
     // TODO: maybe synchronise with global positions calculation at the end of frame

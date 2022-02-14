@@ -171,17 +171,17 @@ MonoObject* ScriptingCore::AddComponentFromType(EntityID entityID, void* type)
         auto& scriptComponent = entitiesRegistry->AddComponent<ScriptComponent>(entityID);
         if (scriptComponent.HasScriptType(typeInfo))
             // We can support multiple script instances of the same type later if needed, for now return existing
-            return scriptComponent.GetScriptPointer(typeInfo)->GetMonoObject();
+            return scriptComponent.GetScriptHandler(typeInfo)->GetMonoObject();
 
-        ScriptPointer* pointer = CreateManagedInstance(monoClass, nullptr, 0);
-        if (pointer == nullptr)
+        ScriptObjectHandler* handler = CreateManagedInstance(monoClass, nullptr, 0);
+        if (handler == nullptr)
             return nullptr;
 
-        SetEntityOwner(pointer->GetMonoObject(), entityID);
+        SetEntityOwner(handler->GetMonoObject(), entityID);
 
-        scriptComponent.AddScript(pointer, typeInfo);
+        scriptComponent.AddScript(handler, typeInfo);
 
-        return pointer->GetMonoObject();
+        return handler->GetMonoObject();
     }
 
     Log::LogError("Type is not internal or subclass of ScriptComponent");
@@ -253,7 +253,7 @@ MonoObject* ScriptingCore::GetComponentFromType(EntityID entityID, void* type)
 
         auto& scriptComponent = entitiesRegistry->GetComponent<ScriptComponent>(entityID);
         if (scriptComponent.HasScriptType(typeInfo))
-            return scriptComponent.GetScriptPointer(typeInfo)->GetMonoObject();
+            return scriptComponent.GetScriptHandler(typeInfo)->GetMonoObject();
         else
             return nullptr;
     }
@@ -361,7 +361,7 @@ void ScriptingCore::ComponentOwnersFromType(void* type, MonoObject** result)
         {
             if (script.HasScriptType(typeInfo))
             {
-                mono_array_set(resultArray, MonoObject*, i, script.GetScriptPointer(typeInfo)->GetMonoObject());
+                mono_array_set(resultArray, MonoObject*, i, script.GetScriptHandler(typeInfo)->GetMonoObject());
                 i++;
             }
         }
@@ -407,14 +407,14 @@ bool ScriptingCore::IsSubclassOfScriptComponent(MonoClass* monoClass)
     return false;
 }
 
-ScriptPointer* ScriptingCore::CreateManagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount)
+ScriptObjectHandler* ScriptingCore::CreateManagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount)
 {
     MonoObject* monoObject = CreateUnmanagedInstance(monoClass, constructorParams, paramsCount);
 
     if (monoObject == nullptr)
         return nullptr;
 
-    return new ScriptPointer(monoObject);
+    return new ScriptObjectHandler(monoObject);
 }
 
 MonoObject* ScriptingCore::CreateUnmanagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount)
@@ -437,10 +437,9 @@ MonoObject* ScriptingCore::CreateUnmanagedInstance(MonoClass* monoClass, void** 
     return monoObject;
 }
 
-ScriptPointer* ScriptingCore::CreateAPIStruct(APIStructs::APIStruct structType, void** constructorParams)
+MonoObject* ScriptingCore::CreateAPIStruct(APIStructs::APIStruct structType, void** constructorParams)
 {
     MonoObject* monoObject = mono_object_new(mono_domain_get(), cachedAPIStructs[structType].first);
-    auto pointer = new ScriptPointer(monoObject);
 
     if (constructorParams != nullptr)
     {
@@ -453,7 +452,7 @@ ScriptPointer* ScriptingCore::CreateAPIStruct(APIStructs::APIStruct structType, 
         mono_runtime_object_init(monoObject);
     }
 
-    return pointer;
+    return monoObject;
 }
 
 ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
@@ -509,11 +508,8 @@ ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
 
 void ScriptingCore::SetEntityOwner(MonoObject* monoObject, EntityID entityID)
 {
-    MonoObject* entityObject = mono_object_new(mono_domain_get(), entityClass);
-
-    void* constructorParams[1];
-    constructorParams[0] = &entityID;
-    if (!CallMethod(entityConstructorMethod, entityObject, constructorParams))
+    MonoObject* entityObject = CreateEntityObject(entityID);
+    if (entityObject == nullptr)
         return;
 
     MonoObject* exception = nullptr;
@@ -526,6 +522,18 @@ void ScriptingCore::SetEntityOwner(MonoObject* monoObject, EntityID entityID)
         Log::LogError("Error creating entity");
         mono_print_unhandled_exception(exception);
     }
+}
+
+MonoObject* ScriptingCore::CreateEntityObject(EntityID entityID)
+{
+    MonoObject* entityObject = mono_object_new(mono_domain_get(), entityClass);
+
+    void* constructorParams[1];
+    constructorParams[0] = &entityID;
+    if (!CallMethod(entityConstructorMethod, entityObject, constructorParams))
+        return nullptr;
+
+    return entityObject;
 }
 
 bool ScriptingCore::CanSerializeField(MonoClass* monoClass, MonoClassField* monoClassField)

@@ -57,10 +57,10 @@ struct ScriptTypeInfo
     std::unordered_map<ScriptEventTypes::ScriptEventType, ScriptMethodPointer*> EventMethods;
 };
 
-class ScriptPointer;
+class ScriptObjectHandler;
 
 struct ScriptData
 {
-    ScriptPointer* Pointer;
+    ScriptObjectHandler* ScriptHandler;
     ScriptTypeInfo* TypeInfo;
 };

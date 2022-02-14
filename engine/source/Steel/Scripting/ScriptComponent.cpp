@@ -31,7 +31,7 @@ void ScriptComponent::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
     for (auto script : Scripts)
     {
-        delete script.Pointer;
+        delete script.ScriptHandler;
     }
 }
 
@@ -56,10 +56,10 @@ bool ScriptComponent::HasScriptType(ScriptTypeInfo* typeInfo)
     return false;
 }
 
-void ScriptComponent::AddScript(ScriptPointer* scriptPointer, ScriptTypeInfo* typeInfo)
+void ScriptComponent::AddScript(ScriptObjectHandler* scriptHandler, ScriptTypeInfo* typeInfo)
 {
     // TODO: rework with scripts being added and removed in edit mode in mind (should store only type, no handle)
-    ScriptData data { scriptPointer, typeInfo };
+    ScriptData data { scriptHandler, typeInfo };
     Scripts.emplace_back(data);
     ScriptsMask = ScriptsMask | typeInfo->Mask;
 
@@ -67,7 +67,7 @@ void ScriptComponent::AddScript(ScriptPointer* scriptPointer, ScriptTypeInfo* ty
     {
         ScriptingCore::CallMethod(
                 typeInfo->EventMethods[ScriptEventTypes::OnCreate]->Method,
-                scriptPointer->GetMonoObject(),
+                scriptHandler->GetMonoObject(),
                 nullptr
         );
     }
@@ -86,11 +86,11 @@ void ScriptComponent::RemoveScript(ScriptTypeInfo* typeInfo)
             {
                 ScriptingCore::CallMethod(
                         Scripts[i].TypeInfo->EventMethods[ScriptEventTypes::OnDestroy]->Method,
-                        Scripts[i].Pointer->GetMonoObject(),
+                        Scripts[i].ScriptHandler->GetMonoObject(),
                         nullptr
                 );
             }
-            delete Scripts[i].Pointer; // This will free gc handle
+            delete Scripts[i].ScriptHandler; // This will free gc handle
             break;
         }
     }
@@ -119,12 +119,12 @@ void ScriptComponent::SetScriptsData(const std::vector<ScriptData>& scripts)
     Scripts = scripts;
 }
 
-ScriptPointer* ScriptComponent::GetScriptPointer(ScriptTypeInfo* typeInfo)
+ScriptObjectHandler* ScriptComponent::GetScriptHandler(ScriptTypeInfo* typeInfo)
 {
     for (auto script : Scripts)
     {
         if (script.TypeInfo == typeInfo)
-            return script.Pointer;
+            return script.ScriptHandler;
     }
 
     return nullptr;
@@ -262,7 +262,7 @@ void ScriptComponent::TryCallEventMethod(ScriptEventTypes::ScriptEventType event
         if (script.TypeInfo->Mask & eventType)
             ScriptingCore::CallMethod(
                     script.TypeInfo->EventMethods[eventType]->Method,
-                    script.Pointer->GetMonoObject(),
+                    script.ScriptHandler->GetMonoObject(),
                     params
             );
     }
@@ -271,12 +271,11 @@ void ScriptComponent::TryCallEventMethod(ScriptEventTypes::ScriptEventType event
 void ScriptComponent::TryCallCollisionMethod(ScriptEventTypes::ScriptEventType eventType, Collision collision)
 {
     void* ctorParams[1];
-    ctorParams[0] = &collision.OtherEntity;
-    ScriptPointer* collisionObject = ScriptingCore::CreateAPIStruct(APIStructs::Collision, ctorParams);
+    MonoObject* entityObject = ScriptingCore::CreateEntityObject(collision.OtherEntity);
+    ctorParams[0] = entityObject;
+    MonoObject* collisionObject = ScriptingCore::CreateAPIStruct(APIStructs::Collision, ctorParams);
 
     void* params[1];
-    params[0] = collisionObject->GetMonoObject();
+    params[0] = collisionObject;
     TryCallEventMethod(eventType, params);
-
-    delete collisionObject;
 }

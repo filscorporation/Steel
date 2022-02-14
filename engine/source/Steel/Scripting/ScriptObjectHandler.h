@@ -2,11 +2,11 @@
 
 #include <mono/jit/jit.h>
 
-class ScriptPointer
+class ScriptObjectHandler
 {
 public:
-    explicit ScriptPointer(MonoObject* monoObject);
-    ~ScriptPointer();
+    explicit ScriptObjectHandler(MonoObject* monoObject);
+    ~ScriptObjectHandler();
 
     MonoObject* GetMonoObject() const;
 

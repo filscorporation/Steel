@@ -1,11 +1,11 @@
-#include "ScriptPointer.h"
+#include "ScriptObjectHandler.h"
 
-ScriptPointer::ScriptPointer(MonoObject* monoObject)
+ScriptObjectHandler::ScriptObjectHandler(MonoObject* monoObject)
 {
     _gcHandle = mono_gchandle_new(monoObject, false);
 }
 
-ScriptPointer::~ScriptPointer()
+ScriptObjectHandler::~ScriptObjectHandler()
 {
     if (_gcHandle != 0)
     {
@@ -14,7 +14,7 @@ ScriptPointer::~ScriptPointer()
     }
 }
 
-MonoObject* ScriptPointer::GetMonoObject() const
+MonoObject* ScriptObjectHandler::GetMonoObject() const
 {
     return mono_gchandle_get_target(_gcHandle);
 }

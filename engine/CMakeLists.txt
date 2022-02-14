@@ -113,7 +113,7 @@ set(SOURCE_FILES
         source/Steel/UI/UIElements/UITabInfo.cpp source/Steel/UI/UIElements/UILayoutElementInfo.cpp source/Steel/UI/UIElements/UILayoutElementInfo.h
         source/Steel/EntityComponentSystem/RawComponentData.h source/Steel/Serialization/ScriptsListAttributeAccessor.h
         source/Steel/EntityComponentSystem/Types.h source/Steel/Scripting/ScriptAttributeAccessor.h source/Steel/Scripting/ScriptAttributeAccessorBase.h
-        source/Steel/Scripting/ScriptPointer.h source/Steel/Scripting/ScriptPointer.cpp source/Steel/Scripting/ScriptMethodPointer.h
+        source/Steel/Scripting/ScriptObjectHandler.h source/Steel/Scripting/ScriptObjectHandler.cpp source/Steel/Scripting/ScriptMethodPointer.h
         source/Steel/Scripting/APIStructs.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")

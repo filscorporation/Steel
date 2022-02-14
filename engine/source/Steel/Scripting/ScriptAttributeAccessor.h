@@ -19,30 +19,30 @@ public:
         return _type;
     }
 
-    void Serialize(ScriptPointer* pointer, const std::string& name, YAML::Node& node, SerializationContext& context) override
+    void Serialize(ScriptObjectHandler* scriptHandler, const std::string& name, YAML::Node& node, SerializationContext& context) override
     {
-        node[name] = Get(pointer);
+        node[name] = Get(scriptHandler);
     }
 
-    void Deserialize(ScriptPointer* pointer, const std::string& name, const YAML::Node& node, SerializationContext& context) override
+    void Deserialize(ScriptObjectHandler* scriptHandler, const std::string& name, const YAML::Node& node, SerializationContext& context) override
     {
-        Set(pointer, node[name].as<U>());
+        Set(scriptHandler, node[name].as<U>());
     }
 
-    void Copy(ScriptPointer* pointerFrom, ScriptPointer* pointerTo, SerializationContext& contextFrom, SerializationContext& contextTo) override
+    void Copy(ScriptObjectHandler* scriptHandlerFrom, ScriptObjectHandler* scriptHandlerTo, SerializationContext& contextFrom, SerializationContext& contextTo) override
     {
-        Set(pointerTo, Get(pointerFrom));
+        Set(scriptHandlerTo, Get(scriptHandlerFrom));
     }
 
 private:
-    U Get(ScriptPointer* pointer) const
+    U Get(ScriptObjectHandler* scriptHandler) const
     {
-        return ScriptingCore::GetScriptingFieldValue<U>(pointer, _monoClassField);
+        return ScriptingCore::GetScriptingFieldValue<U>(scriptHandler, _monoClassField);
     }
 
-    void Set(ScriptPointer* pointer, const U& value) const
+    void Set(ScriptObjectHandler* scriptHandler, const U& value) const
     {
-        ScriptingCore::SetScriptingFieldValue<U>(pointer, _monoClassField, value);
+        ScriptingCore::SetScriptingFieldValue<U>(scriptHandler, _monoClassField, value);
     }
 
     MonoClassField* _monoClassField;

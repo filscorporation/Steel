@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ScriptingCommon.h"
-#include "ScriptPointer.h"
+#include "ScriptObjectHandler.h"
 #include "SimpleAPITypes.h"
 #include "Steel/EntityComponentSystem/Component.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
@@ -47,15 +47,16 @@ public:
 
     static MonoClass* TypeToMonoClass(void* type);
     static bool IsSubclassOfScriptComponent(MonoClass* monoClass);
-    static ScriptPointer* CreateManagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount);
+    static ScriptObjectHandler* CreateManagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount);
     static MonoObject* CreateUnmanagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount);
-    static ScriptPointer* CreateAPIStruct(APIStructs::APIStruct structType, void** constructorParams);
+    static MonoObject* CreateAPIStruct(APIStructs::APIStruct structType, void** constructorParams);
     static ScriptTypeInfo* ScriptParseRecursive(MonoClass* monoClass);
     static void SetEntityOwner(MonoObject* monoObject, EntityID entityID);
+    static MonoObject* CreateEntityObject(EntityID entityID);
     static bool CanSerializeField(MonoClass* monoClass, MonoClassField* monoClassField);
     static ScriptAttributeAccessorBase* CreateFieldAccessor(MonoClassField* monoClassField, MonoType* monoType);
-    template<typename T> static T GetScriptingFieldValue(ScriptPointer* scriptPointer, MonoClassField* monoClassField);
-    template<typename T> static void SetScriptingFieldValue(ScriptPointer* scriptPointer, MonoClassField* monoClassField, T value);
+    template<typename T> static T GetScriptingFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField);
+    template<typename T> static void SetScriptingFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value);
 
     static bool CallMethod(MonoMethod* method, MonoObject* monoObject, void** params);
     static void CallEventMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method);
@@ -123,12 +124,12 @@ void ScriptingCore::FromMonoSimpleTypeArray(MonoArray* inArray, std::vector<T>& 
 }
 
 template<typename T>
-T ScriptingCore::GetScriptingFieldValue(ScriptPointer* scriptPointer, MonoClassField* monoClassField)
+T ScriptingCore::GetScriptingFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField)
 {
-    MonoObject* monoObject = scriptPointer->GetMonoObject();
+    MonoObject* monoObject = scriptHandler->GetMonoObject();
     if (monoObject == nullptr)
     {
-        Log::LogError("Can't get mono object from pointer");
+        Log::LogError("Can't get mono object from handler");
         T temp;
         return temp;
     }
@@ -140,12 +141,12 @@ T ScriptingCore::GetScriptingFieldValue(ScriptPointer* scriptPointer, MonoClassF
 }
 
 template<typename T>
-void ScriptingCore::SetScriptingFieldValue(ScriptPointer* scriptPointer, MonoClassField* monoClassField, T value)
+void ScriptingCore::SetScriptingFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value)
 {
-    MonoObject* monoObject = scriptPointer->GetMonoObject();
+    MonoObject* monoObject = scriptHandler->GetMonoObject();
     if (monoObject == nullptr)
     {
-        Log::LogError("Can't get mono object from pointer");
+        Log::LogError("Can't get mono object from handler");
         return;
     }
 

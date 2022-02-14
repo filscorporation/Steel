@@ -34,7 +34,7 @@ public:
             scriptNode["type"] = scriptData.TypeInfo->TypeNamespace + "." + scriptData.TypeInfo->TypeName;
             for (auto field : scriptData.TypeInfo->Attributes)
             {
-                field.Accessor->Serialize(scriptData.Pointer, field.FieldName, scriptNode, context);
+                field.Accessor->Serialize(scriptData.ScriptHandler, field.FieldName, scriptNode, context);
             }
 
             node.push_back(scriptNode);
@@ -52,14 +52,14 @@ public:
             auto typeName = scriptNode[0].as<std::string>();
             // TODO: finish
             ScriptTypeInfo* typeInfo = nullptr; // ScriptingCore::GetTypeInfoByName(typeName)
-            ScriptPointer* scriptPointer = nullptr; // ScriptingCore::CreateInstanceOfType(typeName)
+            ScriptObjectHandler* handler = nullptr; // ScriptingCore::CreateInstanceOfType(typeName)
 
             scriptData.TypeInfo = typeInfo;
-            scriptData.Pointer = scriptPointer;
+            scriptData.ScriptHandler = handler;
 
             for (auto field : scriptData.TypeInfo->Attributes)
             {
-                field.Accessor->Deserialize(scriptData.Pointer, field.FieldName, scriptNode, context);
+                field.Accessor->Deserialize(scriptData.ScriptHandler, field.FieldName, scriptNode, context);
             }
         }
         Set(object, list);

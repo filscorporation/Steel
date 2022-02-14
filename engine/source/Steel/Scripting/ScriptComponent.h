@@ -20,9 +20,9 @@ public:
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
     void OnDisabled(EntitiesRegistry* entitiesRegistry) override;
 
-    void AddScript(ScriptPointer* scriptPointer, ScriptTypeInfo* typeInfo);
+    void AddScript(ScriptObjectHandler* scriptHandler, ScriptTypeInfo* typeInfo);
     bool HasScriptType(ScriptTypeInfo* typeInfo);
-    ScriptPointer* GetScriptPointer(ScriptTypeInfo* typeInfo);
+    ScriptObjectHandler* GetScriptHandler(ScriptTypeInfo* typeInfo);
     void RemoveScript(ScriptTypeInfo* typeInfo);
 
     const std::vector<ScriptData>& GetScriptsData() const;

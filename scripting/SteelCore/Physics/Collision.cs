@@ -3,7 +3,7 @@
     /// <summary>
     /// Information about collision
     /// </summary>
-    public struct Collision
+    public class Collision
     {
         internal Collision(Entity otherEntity)
         {
