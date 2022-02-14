@@ -52,6 +52,11 @@ Shader::Shader(const char* vertexCode, const char* fragmentCode)
     glDeleteShader(fragment);
 }
 
+Shader::~Shader()
+{
+    glDeleteProgram(this->Program);
+}
+
 Shader* Shader::FromFilePaths(const char* vertexPath, const char* fragmentPath)
 {
     std::string vertexCode;

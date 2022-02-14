@@ -12,6 +12,7 @@ class Shader : public Resource
 {
 public:
     Shader(const char* vertexCode, const char* fragmentCode);
+    virtual ~Shader();
 
     static Shader* FromFilePaths(const char* vertexPath, const char* fragmentPath);
     void Use() const;
