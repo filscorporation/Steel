@@ -37,12 +37,12 @@ public:
 private:
     U Get(ScriptObjectHandler* scriptHandler) const
     {
-        return ScriptingCore::GetScriptingFieldValue<U>(scriptHandler, _monoClassField);
+        return ScriptingCore::GetScriptFieldValue<U>(scriptHandler, _monoClassField);
     }
 
     void Set(ScriptObjectHandler* scriptHandler, const U& value) const
     {
-        ScriptingCore::SetScriptingFieldValue<U>(scriptHandler, _monoClassField, value);
+        ScriptingCore::SetScriptFieldValue<U>(scriptHandler, _monoClassField, value);
     }
 
     MonoClassField* _monoClassField;

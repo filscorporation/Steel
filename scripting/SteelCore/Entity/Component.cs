@@ -14,7 +14,7 @@ namespace Steel
         internal Component() { }
         
         /// <summary>
-        /// Entity this component is attached. Component is always attached to some entity
+        /// Entity this component is attached to. Component is always attached to some entity
         /// </summary>
         public Entity Entity { get; internal set; }
         

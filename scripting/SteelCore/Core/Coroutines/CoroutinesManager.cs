@@ -10,9 +10,12 @@ namespace Steel
     internal static class CoroutinesManager
     {
         private static readonly Dictionary<uint, LinkedList<Coroutine>> coroutines = new Dictionary<uint, LinkedList<Coroutine>>();
+        private static bool isInUpdate = false;
 
         private static void Update()
         {
+            isInUpdate = true;
+            
             float deltaTime = Time.DeltaTime;
             LinkedList<uint> toRemove = new LinkedList<uint>();
 
@@ -42,6 +45,8 @@ namespace Steel
             {
                 coroutines.Remove(entityID);
             }
+            
+            isInUpdate = false;
         }
 
         private static bool Process(Coroutine coroutine, float deltaTime)
@@ -70,6 +75,12 @@ namespace Steel
 
         internal static Coroutine AddCoroutine(uint owner, IEnumerator enumerator)
         {
+            if (isInUpdate)
+            {
+                Log.LogError("Add coroutine in coroutine update is not supported yet");
+                return null;
+            }
+            
             enumerator.MoveNext();
             Coroutine coroutine = new Coroutine(owner, enumerator);
             if (!coroutines.ContainsKey(owner))
@@ -83,6 +94,12 @@ namespace Steel
         {
             if (coroutine.IsDestroyed || !coroutines.ContainsKey(coroutine.Owner))
                 return;
+            
+            if (isInUpdate)
+            {
+                Log.LogError("Stop coroutine in coroutine update is not supported yet");
+                return;
+            }
 
             coroutine.IsDestroyed = true;
             coroutines[coroutine.Owner].Remove(coroutine.Node);
@@ -94,6 +111,12 @@ namespace Steel
         {
             if (!coroutines.ContainsKey(ownerID))
                 return;
+            
+            if (isInUpdate)
+            {
+                Log.LogError("Stop all coroutines in coroutine update is not supported yet");
+                return;
+            }
 
             foreach (Coroutine coroutine in coroutines[ownerID])
                 coroutine.IsDestroyed = true;

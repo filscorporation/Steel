@@ -281,13 +281,9 @@ bool ScriptingCore::RemoveComponentFromType(EntityID entityID, void* type)
         // Custom script types
         ScriptTypeInfo* typeInfo;
         if (scriptsInfo.find(monoClass) == scriptsInfo.end())
-        {
             return false;
-        }
         else
-        {
             typeInfo = scriptsInfo[monoClass];
-        }
 
         if (!entitiesRegistry->HasComponent<ScriptComponent>(entityID))
             return false;
@@ -308,7 +304,7 @@ bool ScriptingCore::RemoveComponentFromType(EntityID entityID, void* type)
     return false;
 }
 
-void ScriptingCore::ComponentOwnersFromType(void* type, MonoObject** result)
+void ScriptingCore::GetComponentsListFromType(void* type, MonoObject** result)
 {
     // TODO: refactor returns
     MonoClass* monoClass = TypeToMonoClass(type);
@@ -519,7 +515,7 @@ void ScriptingCore::SetEntityOwner(MonoObject* monoObject, EntityID entityID)
 
     if (exception != nullptr)
     {
-        Log::LogError("Error creating entity");
+        Log::LogError("Error setting owner entity field");
         mono_print_unhandled_exception(exception);
     }
 }
@@ -615,7 +611,7 @@ bool ScriptingCore::CallMethod(MonoMethod* method, MonoObject* monoObject, void*
     return true;
 }
 
-void ScriptingCore::CallEventMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method)
+void ScriptingCore::CallCallbackMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method)
 {
     void* params[2];
     params[0] = &ownerEntityID;

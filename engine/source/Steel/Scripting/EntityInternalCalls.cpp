@@ -117,5 +117,5 @@ void EntityInternalCalls::Entity_SetName(EntityID id, MonoString* name)
 
 void EntityInternalCalls::Component_FindAllOfType(void* type, MonoObject** result)
 {
-    ScriptingCore::ComponentOwnersFromType(type, result);
+    ScriptingCore::GetComponentsListFromType(type, result);
 }

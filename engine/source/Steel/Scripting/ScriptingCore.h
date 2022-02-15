@@ -43,7 +43,7 @@ public:
     static bool HasComponentFromType(EntityID entityID, void* type);
     static MonoObject* GetComponentFromType(EntityID entityID, void* type);
     static bool RemoveComponentFromType(EntityID entityID, void* type);
-    static void ComponentOwnersFromType(void* type, MonoObject** result);
+    static void GetComponentsListFromType(void* type, MonoObject** result);
 
     static MonoClass* TypeToMonoClass(void* type);
     static bool IsSubclassOfScriptComponent(MonoClass* monoClass);
@@ -55,11 +55,11 @@ public:
     static MonoObject* CreateEntityObject(EntityID entityID);
     static bool CanSerializeField(MonoClass* monoClass, MonoClassField* monoClassField);
     static ScriptAttributeAccessorBase* CreateFieldAccessor(MonoClassField* monoClassField, MonoType* monoType);
-    template<typename T> static T GetScriptingFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField);
-    template<typename T> static void SetScriptingFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value);
+    template<typename T> static T GetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField);
+    template<typename T> static void SetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value);
 
     static bool CallMethod(MonoMethod* method, MonoObject* monoObject, void** params);
-    static void CallEventMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method);
+    static void CallCallbackMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method);
     static void FindAndCallEntryPoint(MonoImage* image);
 
     static const char* ToString(MonoString* monoString);
@@ -124,7 +124,7 @@ void ScriptingCore::FromMonoSimpleTypeArray(MonoArray* inArray, std::vector<T>& 
 }
 
 template<typename T>
-T ScriptingCore::GetScriptingFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField)
+T ScriptingCore::GetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField)
 {
     MonoObject* monoObject = scriptHandler->GetMonoObject();
     if (monoObject == nullptr)
@@ -141,7 +141,7 @@ T ScriptingCore::GetScriptingFieldValue(ScriptObjectHandler* scriptHandler, Mono
 }
 
 template<typename T>
-void ScriptingCore::SetScriptingFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value)
+void ScriptingCore::SetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value)
 {
     MonoObject* monoObject = scriptHandler->GetMonoObject();
     if (monoObject == nullptr)
