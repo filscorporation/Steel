@@ -114,7 +114,8 @@ set(SOURCE_FILES
         source/Steel/EntityComponentSystem/RawComponentData.h source/Steel/Serialization/ScriptsListAttributeAccessor.h
         source/Steel/EntityComponentSystem/Types.h source/Steel/Scripting/ScriptAttributeAccessor.h source/Steel/Scripting/ScriptAttributeAccessorBase.h
         source/Steel/Scripting/ScriptObjectHandler.h source/Steel/Scripting/ScriptObjectHandler.cpp source/Steel/Scripting/ScriptMethodPointer.h
-        source/Steel/Scripting/APIStructs.h source/Steel/Scripting/ScriptingDomain.h)
+        source/Steel/Scripting/APIStructs.h source/Steel/Scripting/ScriptingDomain.h source/Steel/Scripting/ScriptSerializationHelper.cpp
+        source/Steel/Scripting/ScriptSerializationHelper.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

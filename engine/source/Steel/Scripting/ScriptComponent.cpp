@@ -23,6 +23,7 @@ void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)
     for (auto script : Scripts)
     {
         ScriptingCore::SetEntityOwner(script.ScriptHandler->GetMonoObject(), Owner);
+        TryCallEventMethod(ScriptEventTypes::OnCreate, nullptr);
     }
 }
 
@@ -108,9 +109,7 @@ void ScriptComponent::RemoveScript(ScriptTypeInfo* typeInfo)
 
     ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
     for (auto script : Scripts)
-        ScriptsMask = ScriptsMask | typeInfo->Mask;
-
-    // TODO: remove component when no scripts left?
+        ScriptsMask = ScriptsMask | script.TypeInfo->Mask;
 }
 
 const std::vector<ScriptData>& ScriptComponent::GetScriptsData() const
@@ -123,6 +122,10 @@ void ScriptComponent::SetScriptsData(const std::vector<ScriptData>& scripts)
     Log::LogInfo("Set script data: {0}", scripts.size());
     // TODO
     Scripts = scripts;
+
+    ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
+    for (auto script : Scripts)
+        ScriptsMask = ScriptsMask | script.TypeInfo->Mask;
 }
 
 ScriptObjectHandler* ScriptComponent::GetScriptHandler(ScriptTypeInfo* typeInfo)
