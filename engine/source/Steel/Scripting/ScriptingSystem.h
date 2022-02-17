@@ -2,13 +2,15 @@
 
 #include "ScriptComponent.h"
 
-struct CachedData;
-
 class ScriptingSystem
 {
 public:
     static void Init();
     static void Terminate();
+
+    static void CreateDomain();
+    static void UnloadDomain();
+    static bool DomainLoaded();
 
     static void CallEntryPoint(); // TODO: temp solution for entry point before scene serialization
     static void UpdateCoroutines();

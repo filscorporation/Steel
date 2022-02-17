@@ -10,6 +10,7 @@ public:
     Scene* CreateNewScene(const std::string& sceneName);
     virtual Scene* GetActiveScene();
     void SetActiveScene(Scene* scene);
+    void DeleteActiveScene();
     Scene* GetScene(const std::string& sceneName);
 
 protected:

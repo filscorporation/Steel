@@ -55,8 +55,8 @@ void UIInputField::OnRemoved(EntitiesRegistry* entitiesRegistry)
     ibSelection.Clear();
 
     StopTransition();
-    ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::InputFieldChangeValue, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
-    ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::InputFieldEndEdit, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
+    ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::InputFieldChangeValue, ScriptingCore::GetDeregisterCallbacksMethod());
+    ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::InputFieldEndEdit, ScriptingCore::GetDeregisterCallbacksMethod());
 }
 
 void UIInputField::OnEnabled(EntitiesRegistry* entitiesRegistry)
@@ -605,7 +605,7 @@ void UIInputField::Disselect(UIText& uiText)
             SubmitCallback(Owner, uiText.GetText());
         if (ScriptingSystem::IsInitialized())
             ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::InputFieldEndEdit,
-                                              ScriptingCore::EventManagerCalls.callInvokeCallbacks);
+                                              ScriptingCore::GetInvokeCallbacksMethod());
     }
     IsSelected = false;
     isFirstSelection = false;
@@ -658,7 +658,7 @@ int UIInputField::SetText(UIText& uiText, std::string& text)
 
     if (ScriptingSystem::IsInitialized())
         ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::InputFieldChangeValue,
-                                          ScriptingCore::EventManagerCalls.callInvokeCallbacks);
+                                          ScriptingCore::GetInvokeCallbacksMethod());
 
     return diff;
 }

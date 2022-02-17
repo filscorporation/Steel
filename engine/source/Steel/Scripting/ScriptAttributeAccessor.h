@@ -29,11 +29,6 @@ public:
         Set(scriptHandler, node[name].as<U>());
     }
 
-    void Copy(ScriptObjectHandler* scriptHandlerFrom, ScriptObjectHandler* scriptHandlerTo, SerializationContext& contextFrom, SerializationContext& contextTo) override
-    {
-        Set(scriptHandlerTo, Get(scriptHandlerFrom));
-    }
-
 private:
     U Get(ScriptObjectHandler* scriptHandler) const
     {

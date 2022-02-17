@@ -18,6 +18,12 @@ void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)
     {
         entitiesRegistry->GetComponent<UIEventHandler>(Owner).EnableNotifyScripts();
     }
+
+    // Setting entity owners for all attached scripts (they were deserialized)
+    for (auto script : Scripts)
+    {
+        ScriptingCore::SetEntityOwner(script.ScriptHandler->GetMonoObject(), Owner);
+    }
 }
 
 void ScriptComponent::OnRemoved(EntitiesRegistry* entitiesRegistry)

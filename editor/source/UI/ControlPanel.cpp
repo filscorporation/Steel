@@ -1,8 +1,7 @@
 #include "ControlPanel.h"
+#include "HierarchyView.h"
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
-#include "../EditorCore/EditorSceneManager.h"
-#include "HierarchyView.h"
 
 void ControlPanel::RegisterType()
 {
@@ -57,12 +56,7 @@ void ControlPanel::LoadScene()
 {
     auto editor = (EditorApplication*)Application::Instance;
 
-    editor->SwitchContext(editor->AppContext);
-
-    auto newScene = SerializationManager::DeserializeScene("test_scene.scene");
-
-    if (newScene)
-        ((EditorSceneManager*)editor->AppContext->Scenes)->LoadSceneToEdit(newScene);
+    editor->LoadSceneToEdit("test_scene.scene");
 
     editor->SwitchContext(editor->EditorContext);
 

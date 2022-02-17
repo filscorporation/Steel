@@ -3,7 +3,6 @@
 #include "EditorApplication.h"
 #include "EditorScene.h"
 #include "EditorBuilder.h"
-#include "EditorSceneManager.h"
 #include "EditorSceneRenderer.h"
 #include "EditorTypeSystem.h"
 
@@ -33,11 +32,9 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->Resources->LoadResources();
     AppContext->Resources->LoadDefaultResources();
 
-    AppContext->Scenes = new EditorSceneManager();
+    AppContext->Scenes = new SceneManager();
     AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene("New scene"));
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
-
-    ((EditorSceneManager*)AppContext->Scenes)->EditActiveScene();
 
     // Editor
     EditorContext = new ApplicationContext();
@@ -137,25 +134,14 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
     if (state == newState)
         return;
 
-    auto sceneManager = (EditorSceneManager*)AppContext->Scenes;
-
     switch (newState)
     {
         case EditorStates::Stopped:
-            sceneManager->EndTestEditedScene();
-            SwitchContext(AppContext);
-            // In case edited scene missed screen resize (this can get extended in future for other events)
-            Screen::SetScreenSizeDirty();
-            SwitchContext(EditorContext);
+            EnterEditMode();
             break;
         case EditorStates::Playing:
             if (state == EditorStates::Stopped)
-            {
-                SwitchContext(AppContext);
-                sceneManager->StartTestEditedScene();
-                ScriptingSystem::CallEntryPoint();
-                SwitchContext(EditorContext);
-            }
+                EnterPlayMode();
             break;
         case EditorStates::Paused:
             if (state == EditorStates::Stopped)
@@ -168,6 +154,75 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
     }
 
     state = newState;
+}
+
+void EditorApplication::EnterPlayMode()
+{
+    SwitchContext(AppContext);
+
+    // Cache and terminate edited scene
+    SerializationManager::BackupScene(AppContext->Scenes->GetActiveScene());
+    AppContext->Scenes->DeleteActiveScene();
+    ScriptingSystem::UnloadDomain();
+
+    // Initialize scene again from cached data
+    ScriptingSystem::CreateDomain();
+    auto scene = new Scene("");
+    SerializationManager::RestoreScene(scene);
+    AppContext->Scenes->SetActiveScene(scene);
+
+    scene->Init();
+    ScriptingSystem::CallEntryPoint();
+
+    SwitchContext(EditorContext);
+}
+
+void EditorApplication::EnterEditMode()
+{
+    SwitchContext(AppContext);
+
+    // Terminate played scene
+    AppContext->Scenes->DeleteActiveScene();
+    ScriptingSystem::UnloadDomain();
+
+    // Initialize scene from cached data
+    ScriptingSystem::CreateDomain();
+    auto scene = new Scene("");
+    SerializationManager::RestoreScene(scene);
+    AppContext->Scenes->SetActiveScene(scene);
+
+    scene->InitForEdit();
+
+    SwitchContext(EditorContext);
+}
+
+void EditorApplication::LoadSceneToEdit(const std::string& filePath)
+{
+    if (GetState() != EditorStates::Stopped)
+    {
+        Log::LogError("Can't load scene in play mode");
+        return;
+    }
+
+    SwitchContext(AppContext);
+
+    // Terminate previously edited scene
+    AppContext->Scenes->DeleteActiveScene();
+    ScriptingSystem::UnloadDomain();
+
+    // Initialize new scene
+    ScriptingSystem::CreateDomain();
+    auto scene = SerializationManager::DeserializeScene(filePath);
+    if (scene == nullptr)
+    {
+        SwitchContext(EditorContext);
+        return;
+    }
+    AppContext->Scenes->SetActiveScene(scene);
+
+    scene->InitForEdit();
+
+    SwitchContext(EditorContext);
 }
 
 ApplicationContext* EditorApplication::GetAppContext()

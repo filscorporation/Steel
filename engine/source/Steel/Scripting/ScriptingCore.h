@@ -1,12 +1,13 @@
 #pragma once
 
 #include "ScriptingCommon.h"
+#include "ScriptingDomain.h"
 #include "ScriptObjectHandler.h"
 #include "SimpleAPITypes.h"
+#include "APIStructs.h"
 #include "Steel/EntityComponentSystem/Component.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 #include "Steel/UI/CallbackType.h"
-#include "APIStructs.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
@@ -14,22 +15,18 @@
 #include <mono/metadata/debug-helpers.h>
 #include <unordered_map>
 
-struct EventManagerMethods
-{
-    MonoMethod* callInvokeCallbacks;
-    MonoMethod* callDeregisterCallbacks;
-};
-
-struct CoroutinesManagerMethods
-{
-    MonoMethod* callUpdate;
-};
-
 class ScriptingCore
 {
 public:
-    static void Init(MonoImage* image);
+    static bool Init(const char* monoLibPath, const char* monoEtcPath);
     static void Terminate();
+
+    static bool CreateDomain(const char* apiDllPath, const char* scriptsDllPath);
+    static void UnloadDomain();
+    static bool DomainLoaded();
+
+    static MonoImage* LoadAssemblyImage(const char* filePath);
+
     static void LoadSpecialTypes(MonoImage* image);
     static void LoadEventMethodsDescriptions(MonoImage* image);
     static void LoadEventManagerMethods(MonoImage* image);
@@ -46,6 +43,7 @@ public:
     static void GetComponentsListFromType(void* type, MonoObject** result);
 
     static MonoClass* TypeToMonoClass(void* type);
+    static MonoClass* GetMonoClassByFullName(const std::string& classNamespace, const std::string& className);
     static bool IsSubclassOfScriptComponent(MonoClass* monoClass);
     static ScriptObjectHandler* CreateManagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount);
     static MonoObject* CreateUnmanagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount);
@@ -60,7 +58,7 @@ public:
 
     static bool CallMethod(MonoMethod* method, MonoObject* monoObject, void** params);
     static void CallCallbackMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method);
-    static void FindAndCallEntryPoint(MonoImage* image);
+    static void FindAndCallEntryPoint();
 
     static const char* ToString(MonoString* monoString);
 
@@ -81,27 +79,18 @@ public:
     static void FromMonoObjectArray(MonoArray* inArray, std::vector<MonoObject*>& outArray);
     template<typename T> static void FromMonoSimpleTypeArray(MonoArray* inArray, std::vector<T>& outArray, SimpleAPITypes::SimpleAPIType type);
 
-    static EventManagerMethods EventManagerCalls;
-    static CoroutinesManagerMethods CoroutinesManagerCalls;
+    static MonoMethod* GetInvokeCallbacksMethod();
+    static MonoMethod* GetDeregisterCallbacksMethod();
+    static MonoMethod* GetCoroutinesUpdateMethod();
 
 private:
-    static std::unordered_map<MonoClass*, const TypeInfo*> cachedAPITypes;
-    static std::unordered_map<SimpleAPITypes::SimpleAPIType, MonoClass*> cachedSimpleAPITypes;
-    static std::unordered_map<APIStructs::APIStruct, std::pair<MonoClass*, MonoMethod*>> cachedAPIStructs;
-    static std::unordered_map<MonoClass*, ScriptTypeInfo*> scriptsInfo;
-    static std::unordered_map<ScriptEventTypes::ScriptEventType, MonoMethodDesc*> eventMethodsDescriptions;
-    static MonoClass* baseScriptClass;
-    static MonoClass* serializableAttributeClass;
-    static MonoClass* componentClass;
-    static MonoClass* entityClass;
-    static MonoMethod* entityConstructorMethod;
-    static MonoProperty* componentEntityProperty;
+    static ScriptingDomain* Domain;
 };
 
 template<typename T>
 MonoArray* ScriptingCore::ToMonoSimpleTypeArray(const std::vector<T>& inArray, SimpleAPITypes::SimpleAPIType type)
 {
-    MonoArray* outArray = mono_array_new(mono_domain_get(), cachedSimpleAPITypes[type], inArray.size());
+    MonoArray* outArray = mono_array_new(mono_domain_get(), Domain->CachedSimpleAPITypes[type], inArray.size());
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
@@ -153,4 +142,4 @@ void ScriptingCore::SetScriptFieldValue(ScriptObjectHandler* scriptHandler, Mono
     mono_field_set_value(monoObject, monoClassField, &value);
 }
 
-#define CACHE_SIMPLE_TYPE(m_type) cachedSimpleAPITypes[SimpleAPITypes::m_type] = mono_class_from_name(image, "Steel", #m_type)
+#define CACHE_SIMPLE_TYPE(m_type) Domain->CachedSimpleAPITypes[SimpleAPITypes::m_type] = mono_class_from_name(image, "Steel", #m_type)

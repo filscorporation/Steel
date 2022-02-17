@@ -47,20 +47,6 @@ public:
         Set(object, list);
     }
 
-    void Copy(Serializable* objectFrom, Serializable* objectTo, SerializationContext& contextFrom, SerializationContext& contextTo) override
-    {
-        auto listFrom = Get(objectFrom);
-        std::vector<U> listTo;
-        listTo.resize(listFrom.size());
-        for (int i = 0; i < listTo.size(); ++i)
-        {
-            auto elementFrom = static_cast<Serializable*>(&(listFrom[i]));
-            auto elementTo = static_cast<Serializable*>(&(listTo[i]));
-            SerializationManager::Copy(TYPE_ID(U), elementFrom, elementTo, contextFrom, contextTo);
-        }
-        Set(objectTo, listTo);
-    }
-
 private:
     std::vector<U> Get(Serializable* object) const
     {

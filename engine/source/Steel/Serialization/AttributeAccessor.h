@@ -32,11 +32,6 @@ public:
         Set(object, node[name].as<U>());
     }
 
-    void Copy(Serializable* objectFrom, Serializable* objectTo, SerializationContext& contextFrom, SerializationContext& contextTo) override
-    {
-        Set(objectTo, Get(objectFrom));
-    }
-
 private:
     U Get(Serializable* object) const
     {

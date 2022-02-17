@@ -159,9 +159,6 @@ void ResourcesManager::AddResource(Resource* resource)
 
     resource->ID = resource->Path.empty() ? Random::NextULong() : Math::StringHash(resource->Path.c_str());
 
-    if (resource->Type == ResourceTypes::Animation)
-        Log::LogInfo("Animation ID {0}", resource->ID);
-
     if (resources[(int)resource->Type].find(resource->ID) != resources[(int)resource->Type].end())
     {
         Log::LogWarning("Replacing existing resource {0} ({1})", resource->ID, ResourceTypeToString(resource->Type));

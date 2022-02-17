@@ -32,11 +32,6 @@ public:
         Set(object, context.GetEntityID(node[name].as<UUID>()));
     }
 
-    void Copy(Serializable *objectFrom, Serializable *objectTo, SerializationContext &contextFrom, SerializationContext &contextTo) override
-    {
-        Set(objectTo, contextTo.GetEntityID(contextFrom.GetUUID(Get(objectFrom))));
-    }
-
 private:
     EntityID Get(Serializable* object) const
     {

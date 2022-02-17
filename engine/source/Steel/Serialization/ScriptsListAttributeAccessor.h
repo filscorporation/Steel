@@ -5,6 +5,7 @@
 #include "Steel/EntityComponentSystem/Entity.h"
 #include "Steel/Scripting/ScriptAttributeAccessorBase.h"
 #include "Steel/Scripting/ScriptingCommon.h"
+//#include "Steel/Scripting/ScriptingCore.h"
 
 template <typename T>
 class ScriptsListAttributeAccessor : public AttributeAccessorBase
@@ -50,9 +51,25 @@ public:
             // TODO: hide work with type info in ScriptComponent
             ScriptData scriptData {};
             auto typeName = scriptNode[0].as<std::string>();
-            // TODO: finish
-            ScriptTypeInfo* typeInfo = nullptr; // ScriptingCore::GetTypeInfoByName(typeName)
-            ScriptObjectHandler* handler = nullptr; // ScriptingCore::CreateInstanceOfType(typeName)
+            std::string classNamespace = typeName.substr(typeName.find_last_of('.') + 1);
+            std::string className = typeName.substr(typeName.find_last_of('.') + 1);
+
+            //MonoClass* monoClass = ScriptingCore::GetMonoClassByFullName(classNamespace, className);
+            //if (monoClass == nullptr)
+            //{
+            //    Log::LogError("Couldn't find mono class {0}", typeName);
+            //    continue;
+            //}
+
+            ScriptTypeInfo* typeInfo = nullptr;//ScriptingCore::ScriptParseRecursive(monoClass);
+            ScriptObjectHandler* handler = nullptr;//ScriptingCore::CreateManagedInstance(monoClass, nullptr, 0);
+            if (handler == nullptr)
+            {
+                Log::LogError("Couldn't create instance of class {0}", typeName);
+                continue;
+            }
+
+            // Entity owner for created instance is set later in deserialization process - in ScriptComponent::OnCreate()
 
             scriptData.TypeInfo = typeInfo;
             scriptData.ScriptHandler = handler;
@@ -63,11 +80,6 @@ public:
             }
         }
         Set(object, list);
-    }
-
-    void Copy(Serializable* objectFrom, Serializable* objectTo, SerializationContext& contextFrom, SerializationContext& contextTo) override
-    {
-        // TODO
     }
 
 private:

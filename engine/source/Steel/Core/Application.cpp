@@ -56,6 +56,7 @@ void Application::InitSystems(int width, int height, glm::vec3 color, bool fulls
     CoreTypeSystem::Init();
     SerializationManager::Init();
     ScriptingSystem::Init();
+    ScriptingSystem::CreateDomain();
     Renderer::Init();
     AudioCore::Init();
 }
@@ -155,6 +156,7 @@ void Application::Terminate()
     AudioCore::Terminate();
     Renderer::Terminate();
     Screen::Terminate();
+    ScriptingSystem::UnloadDomain();
     ScriptingSystem::Terminate();
     SerializationManager::Terminate();
     CoreTypeSystem::Terminate();

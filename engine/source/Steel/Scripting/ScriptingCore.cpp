@@ -9,38 +9,79 @@
 #include <mono/metadata/attrdefs.h>
 
 #define NAMESPACE_NAME "Steel"
+#define ROOT_DOMAIN_NAME "SteelRootDomain"
+#define DOMAIN_NAME "SteelDomain"
 
-EventManagerMethods ScriptingCore::EventManagerCalls;
-CoroutinesManagerMethods ScriptingCore::CoroutinesManagerCalls;
-std::unordered_map<MonoClass*, const TypeInfo*> ScriptingCore::cachedAPITypes;
-std::unordered_map<SimpleAPITypes::SimpleAPIType, MonoClass*> ScriptingCore::cachedSimpleAPITypes;
-std::unordered_map<APIStructs::APIStruct, std::pair<MonoClass*, MonoMethod*>> ScriptingCore::cachedAPIStructs;
-std::unordered_map<MonoClass*, ScriptTypeInfo*> ScriptingCore::scriptsInfo;
-std::unordered_map<ScriptEventTypes::ScriptEventType, MonoMethodDesc*> ScriptingCore::eventMethodsDescriptions;
-MonoClass* ScriptingCore::baseScriptClass = nullptr;
-MonoClass* ScriptingCore::serializableAttributeClass = nullptr;
-MonoClass* ScriptingCore::componentClass = nullptr;
-MonoClass* ScriptingCore::entityClass = nullptr;
-MonoMethod* ScriptingCore::entityConstructorMethod = nullptr;
-MonoProperty* ScriptingCore::componentEntityProperty = nullptr;
+ScriptingDomain* ScriptingCore::Domain = nullptr;
 
-void ScriptingCore::Init(MonoImage* image)
+bool ScriptingCore::Init(const char* monoLibPath, const char* monoEtcPath)
 {
-    LoadSpecialTypes(image);
-    LoadEventMethodsDescriptions(image);
-    LoadEventManagerMethods(image);
-    LoadCoroutinesManagerMethods(image);
-    RegisterInternalCalls();
-    CacheAPITypes(image);
-    CacheSimpleAPITypes(image);
-    CacheAPIStructs(image);
+    mono_config_parse(nullptr);
+    mono_set_dirs(monoLibPath, monoEtcPath);
+    setenv("MONO_THREADS_SUSPEND", "preemptive", 1);
+
+    MonoDomain* domain = mono_jit_init(ROOT_DOMAIN_NAME);
+
+    return domain != nullptr;
 }
 
 void ScriptingCore::Terminate()
 {
-    for (auto desc : eventMethodsDescriptions)
+    MonoDomain* domain = mono_get_root_domain();
+    if (domain != nullptr)
+        mono_jit_cleanup(domain);
+}
+
+inline bool FileExists(const char* fileName)
+{
+    if (FILE *file = fopen(fileName, "r"))
+    {
+        fclose(file);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool ScriptingCore::CreateDomain(const char* apiDllPath, const char* scriptsDllPath)
+{
+    Domain = new ScriptingDomain();
+
+    Domain->Domain = mono_domain_create_appdomain(const_cast<char*>(DOMAIN_NAME), nullptr);
+    mono_domain_set(Domain->Domain, true);
+
+    Domain->CoreAssemblyImage = LoadAssemblyImage(apiDllPath);
+    if (Domain->CoreAssemblyImage == nullptr)
+        return false;
+
+    Domain->CustomAssemblyImage = LoadAssemblyImage(scriptsDllPath);
+    if (Domain->CustomAssemblyImage == nullptr)
+    {
+        Log::LogWarning("Could not find custom assembly at: {0}", scriptsDllPath);
+        return false;
+    }
+
+    LoadSpecialTypes(Domain->CoreAssemblyImage);
+    LoadEventMethodsDescriptions(Domain->CoreAssemblyImage);
+    LoadEventManagerMethods(Domain->CoreAssemblyImage);
+    LoadCoroutinesManagerMethods(Domain->CoreAssemblyImage);
+    RegisterInternalCalls();
+    CacheAPITypes(Domain->CoreAssemblyImage);
+    CacheSimpleAPITypes(Domain->CoreAssemblyImage);
+    CacheAPIStructs(Domain->CoreAssemblyImage);
+
+    Log::LogDebug("Domain created");
+
+    return true;
+}
+
+void ScriptingCore::UnloadDomain()
+{
+    for (auto desc : Domain->EventMethodsDescriptions)
         mono_method_desc_free(desc.second);
-    for (auto info : scriptsInfo)
+    for (auto info : Domain->ScriptsInfo)
     {
         for (auto& fieldInfo : info.second->Attributes)
             delete fieldInfo.Accessor;
@@ -49,59 +90,107 @@ void ScriptingCore::Terminate()
 
         delete info.second;
     }
+
+    if (Domain->Domain == mono_domain_get())
+        mono_domain_set(mono_get_root_domain(), true);
+
+    mono_domain_finalize(Domain->Domain, 2000);
+
+    MonoObject* exception = nullptr;
+    mono_domain_try_unload(Domain->Domain, &exception);
+
+    if (exception != nullptr)
+    {
+        Log::LogError("Error unloading domain");
+        mono_print_unhandled_exception(exception);
+    }
+
+    delete Domain;
+    Domain = nullptr;
+
+    Log::LogDebug("Domain unloaded");
+}
+
+bool ScriptingCore::DomainLoaded()
+{
+    return Domain != nullptr;
+}
+
+MonoImage* ScriptingCore::LoadAssemblyImage(const char* filePath)
+{
+    if (!FileExists(filePath))
+    {
+        Log::LogError("Error loading assembly, file does not exist: {0}", filePath);
+        return nullptr;
+    }
+
+    MonoAssembly* assembly = mono_domain_assembly_open(Domain->Domain, filePath);
+    if (assembly == nullptr)
+    {
+        Log::LogError("Error loading assembly {0}", filePath);
+        return nullptr;
+    }
+    MonoImage* assemblyImage = mono_assembly_get_image(assembly);
+    if (assemblyImage == nullptr)
+    {
+        Log::LogError("Error creating image for assembly {0}", filePath);
+        return nullptr;
+    }
+
+    return assemblyImage;
 }
 
 void ScriptingCore::LoadSpecialTypes(MonoImage* image)
 {
-    baseScriptClass = mono_class_from_name(image, NAMESPACE_NAME, "ScriptComponent");
-    serializableAttributeClass = mono_class_from_name(image, NAMESPACE_NAME, "SerializeFieldAttribute");
+    Domain->BaseScriptClass = mono_class_from_name(image, NAMESPACE_NAME, "ScriptComponent");
+    Domain->SerializableAttributeClass = mono_class_from_name(image, NAMESPACE_NAME, "SerializeFieldAttribute");
 
-    componentClass = mono_class_from_name(image, NAMESPACE_NAME, "Component");
-    entityClass = mono_class_from_name(image, NAMESPACE_NAME, "Entity");
-    entityConstructorMethod = mono_class_get_method_from_name_flags(entityClass, ".ctor", 1, MONO_METHOD_ATTR_ASSEM);
+    Domain->ComponentClass = mono_class_from_name(image, NAMESPACE_NAME, "Component");
+    Domain->EntityClass = mono_class_from_name(image, NAMESPACE_NAME, "Entity");
+    Domain->EntityConstructorMethod = mono_class_get_method_from_name_flags(Domain->EntityClass, ".ctor", 1, MONO_METHOD_ATTR_ASSEM);
 
-    componentEntityProperty = mono_class_get_property_from_name(componentClass, "Entity");
+    Domain->ComponentEntityProperty = mono_class_get_property_from_name(Domain->ComponentClass, "Entity");
 }
 
 void ScriptingCore::LoadEventMethodsDescriptions(MonoImage* image)
 {
-    eventMethodsDescriptions[ScriptEventTypes::OnUpdate] = mono_method_desc_new("*:OnUpdate ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnCreate] = mono_method_desc_new("*:OnCreate ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnDestroy] = mono_method_desc_new("*:OnDestroy ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnFixedUpdate] = mono_method_desc_new("*:OnFixedUpdate ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnLateUpdate] = mono_method_desc_new("*:OnLateUpdate ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnEnabled] = mono_method_desc_new("*:OnEnabled ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnDisabled] = mono_method_desc_new("*:OnDisabled ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnCollisionEnter] = mono_method_desc_new("*:OnCollisionEnter (Steel.Collision)", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnCollisionStay] = mono_method_desc_new("*:OnCollisionStay (Steel.Collision)", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnCollisionExit] = mono_method_desc_new("*:OnCollisionExit (Steel.Collision)", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseOver] = mono_method_desc_new("*:OnMouseOver ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseEnter] = mono_method_desc_new("*:OnMouseEnter ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseExit] = mono_method_desc_new("*:OnMouseExit ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMousePressed] = mono_method_desc_new("*:OnMousePressed ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseJustPressed] = mono_method_desc_new("*:OnMouseJustPressed ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseJustReleased] = mono_method_desc_new("*:OnMouseJustReleased ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseOverUI] = mono_method_desc_new("*:OnMouseOverUI ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseEnterUI] = mono_method_desc_new("*:OnMouseEnterUI ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseExitUI] = mono_method_desc_new("*:OnMouseExitUI ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMousePressedUI] = mono_method_desc_new("*:OnMousePressedUI ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseJustPressedUI] = mono_method_desc_new("*:OnMouseJustPressedUI ()", true);
-    eventMethodsDescriptions[ScriptEventTypes::OnMouseJustReleasedUI] = mono_method_desc_new("*:OnMouseJustReleasedUI ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnUpdate] = mono_method_desc_new("*:OnUpdate ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnCreate] = mono_method_desc_new("*:OnCreate ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnDestroy] = mono_method_desc_new("*:OnDestroy ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnFixedUpdate] = mono_method_desc_new("*:OnFixedUpdate ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnLateUpdate] = mono_method_desc_new("*:OnLateUpdate ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnEnabled] = mono_method_desc_new("*:OnEnabled ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnDisabled] = mono_method_desc_new("*:OnDisabled ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnCollisionEnter] = mono_method_desc_new("*:OnCollisionEnter (Steel.Collision)", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnCollisionStay] = mono_method_desc_new("*:OnCollisionStay (Steel.Collision)", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnCollisionExit] = mono_method_desc_new("*:OnCollisionExit (Steel.Collision)", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseOver] = mono_method_desc_new("*:OnMouseOver ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseEnter] = mono_method_desc_new("*:OnMouseEnter ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseExit] = mono_method_desc_new("*:OnMouseExit ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMousePressed] = mono_method_desc_new("*:OnMousePressed ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseJustPressed] = mono_method_desc_new("*:OnMouseJustPressed ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseJustReleased] = mono_method_desc_new("*:OnMouseJustReleased ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseOverUI] = mono_method_desc_new("*:OnMouseOverUI ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseEnterUI] = mono_method_desc_new("*:OnMouseEnterUI ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseExitUI] = mono_method_desc_new("*:OnMouseExitUI ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMousePressedUI] = mono_method_desc_new("*:OnMousePressedUI ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseJustPressedUI] = mono_method_desc_new("*:OnMouseJustPressedUI ()", true);
+    Domain->EventMethodsDescriptions[ScriptEventTypes::OnMouseJustReleasedUI] = mono_method_desc_new("*:OnMouseJustReleasedUI ()", true);
 }
 
 void ScriptingCore::LoadEventManagerMethods(MonoImage* image)
 {
     MonoClass* klass = mono_class_from_name(image, NAMESPACE_NAME, "EventManager");
 
-    EventManagerCalls.callInvokeCallbacks = mono_class_get_method_from_name(klass, "InvokeCallbacks", 2);
-    EventManagerCalls.callDeregisterCallbacks = mono_class_get_method_from_name(klass, "DeregisterCallbacks", 2);
+    Domain->InvokeCallbacksMethod = mono_class_get_method_from_name(klass, "InvokeCallbacks", 2);
+    Domain->DeregisterCallbacksMethod = mono_class_get_method_from_name(klass, "DeregisterCallbacks", 2);
 }
 
 void ScriptingCore::LoadCoroutinesManagerMethods(MonoImage* image)
 {
     MonoClass* klass = mono_class_from_name(image, NAMESPACE_NAME, "CoroutinesManager");
 
-    CoroutinesManagerCalls.callUpdate = mono_class_get_method_from_name(klass, "Update", 0);
+    Domain->CoroutinesUpdateMethod = mono_class_get_method_from_name(klass, "Update", 0);
 }
 
 void ScriptingCore::RegisterInternalCalls()
@@ -123,7 +212,7 @@ void ScriptingCore::CacheAPITypes(MonoImage* image)
             continue;
         }
 
-        cachedAPITypes[klass] = typeInfo;
+        Domain->CachedAPITypes[klass] = typeInfo;
     }
 }
 
@@ -142,7 +231,7 @@ void ScriptingCore::CacheAPIStructs(MonoImage* image)
     // Collision
     MonoClass* monoClass = mono_class_from_name(image, "Steel", "Collision");
     auto pair = std::pair(monoClass, mono_class_get_method_from_name(monoClass, ".ctor", 1));
-    cachedAPIStructs[APIStructs::Collision] = pair;
+    Domain->CachedAPIStructs[APIStructs::Collision] = pair;
 }
 
 MonoObject* ScriptingCore::AddComponentFromType(EntityID entityID, void* type)
@@ -152,10 +241,10 @@ MonoObject* ScriptingCore::AddComponentFromType(EntityID entityID, void* type)
         return nullptr;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (cachedAPITypes.find(monoClass) != cachedAPITypes.end())
+    if (Domain->CachedAPITypes.find(monoClass) != Domain->CachedAPITypes.end())
     {
         // Built in types
-        if (!entitiesRegistry->AddComponent(entityID, cachedAPITypes[monoClass]->ID))
+        if (!entitiesRegistry->AddComponent(entityID, Domain->CachedAPITypes[monoClass]->ID))
             return nullptr;
 
         MonoObject* monoObject = CreateUnmanagedInstance(monoClass, nullptr, 0);
@@ -196,20 +285,20 @@ bool ScriptingCore::HasComponentFromType(EntityID entityID, void* type)
         return false;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (cachedAPITypes.find(monoClass) != cachedAPITypes.end())
+    if (Domain->CachedAPITypes.find(monoClass) != Domain->CachedAPITypes.end())
     {
         // Built in types
-        return entitiesRegistry->HasComponent(entityID, cachedAPITypes[monoClass]->ID);
+        return entitiesRegistry->HasComponent(entityID, Domain->CachedAPITypes[monoClass]->ID);
     }
 
     if (IsSubclassOfScriptComponent(monoClass))
     {
         // Custom script types
         ScriptTypeInfo* typeInfo;
-        if (scriptsInfo.find(monoClass) == scriptsInfo.end())
+        if (Domain->ScriptsInfo.find(monoClass) == Domain->ScriptsInfo.end())
             return false;
         else
-            typeInfo = scriptsInfo[monoClass];
+            typeInfo = Domain->ScriptsInfo[monoClass];
 
         if (!entitiesRegistry->HasComponent<ScriptComponent>(entityID))
             return false;
@@ -231,10 +320,10 @@ MonoObject* ScriptingCore::GetComponentFromType(EntityID entityID, void* type)
         return nullptr;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (cachedAPITypes.find(monoClass) != cachedAPITypes.end())
+    if (Domain->CachedAPITypes.find(monoClass) != Domain->CachedAPITypes.end())
     {
         // Built in types
-        if (!entitiesRegistry->HasComponent(entityID, cachedAPITypes[monoClass]->ID))
+        if (!entitiesRegistry->HasComponent(entityID, Domain->CachedAPITypes[monoClass]->ID))
             return nullptr;
 
         MonoObject* monoObject = CreateUnmanagedInstance(monoClass, nullptr, 0);
@@ -270,20 +359,20 @@ bool ScriptingCore::RemoveComponentFromType(EntityID entityID, void* type)
         return false;
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (cachedAPITypes.find(monoClass) != cachedAPITypes.end())
+    if (Domain->CachedAPITypes.find(monoClass) != Domain->CachedAPITypes.end())
     {
         // Built in types
-        return entitiesRegistry->RemoveComponent(entityID, cachedAPITypes[monoClass]->ID);
+        return entitiesRegistry->RemoveComponent(entityID, Domain->CachedAPITypes[monoClass]->ID);
     }
 
     if (IsSubclassOfScriptComponent(monoClass))
     {
         // Custom script types
         ScriptTypeInfo* typeInfo;
-        if (scriptsInfo.find(monoClass) == scriptsInfo.end())
+        if (Domain->ScriptsInfo.find(monoClass) == Domain->ScriptsInfo.end())
             return false;
         else
-            typeInfo = scriptsInfo[monoClass];
+            typeInfo = Domain->ScriptsInfo[monoClass];
 
         if (!entitiesRegistry->HasComponent<ScriptComponent>(entityID))
             return false;
@@ -310,16 +399,16 @@ void ScriptingCore::GetComponentsListFromType(void* type, MonoObject** result)
     MonoClass* monoClass = TypeToMonoClass(type);
     if (monoClass == nullptr)
     {
-        *result = (MonoObject*)mono_array_new(mono_domain_get(), mono_get_object_class(), 0);
+        *result = (MonoObject*)mono_array_new(Domain->Domain, mono_get_object_class(), 0);
         return;
     }
 
     EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (cachedAPITypes.find(monoClass) != cachedAPITypes.end())
+    if (Domain->CachedAPITypes.find(monoClass) != Domain->CachedAPITypes.end())
     {
         // Built in types
-        auto entitiesIterator = entitiesRegistry->GetEntitiesIterator(cachedAPITypes[monoClass]->ID, true);
-        MonoArray* resultArray = mono_array_new(mono_domain_get(), mono_get_object_class(), entitiesIterator.Size());
+        auto entitiesIterator = entitiesRegistry->GetEntitiesIterator(Domain->CachedAPITypes[monoClass]->ID, true);
+        MonoArray* resultArray = mono_array_new(Domain->Domain, mono_get_object_class(), entitiesIterator.Size());
 
         for (int i = 0; i < entitiesIterator.Size(); ++i)
         {
@@ -336,12 +425,12 @@ void ScriptingCore::GetComponentsListFromType(void* type, MonoObject** result)
     {
         // Custom script types
         ScriptTypeInfo* typeInfo;
-        if (scriptsInfo.find(monoClass) == scriptsInfo.end())
+        if (Domain->ScriptsInfo.find(monoClass) == Domain->ScriptsInfo.end())
         {
-            *result = (MonoObject*)mono_array_new(mono_domain_get(), mono_get_object_class(), 0);
+            *result = (MonoObject*)mono_array_new(Domain->Domain, mono_get_object_class(), 0);
             return;
         }
-        typeInfo = scriptsInfo[monoClass];
+        typeInfo = Domain->ScriptsInfo[monoClass];
 
         auto iterator = entitiesRegistry->GetComponentIterator<ScriptComponent>();
 
@@ -351,7 +440,7 @@ void ScriptingCore::GetComponentsListFromType(void* type, MonoObject** result)
             if (script.HasScriptType(typeInfo))
                 count++;
         }
-        MonoArray* resultArray = mono_array_new(mono_domain_get(), mono_get_object_class(), count);
+        MonoArray* resultArray = mono_array_new(Domain->Domain, mono_get_object_class(), count);
         int i = 0;
         for (auto& script : iterator)
         {
@@ -368,7 +457,7 @@ void ScriptingCore::GetComponentsListFromType(void* type, MonoObject** result)
 
     Log::LogError("Type is not internal or subclass of ScriptComponent");
 
-    *result = (MonoObject*)mono_array_new(mono_domain_get(), mono_get_object_class(), 0);
+    *result = (MonoObject*)mono_array_new(Domain->Domain, mono_get_object_class(), 0);
 }
 
 MonoClass* ScriptingCore::TypeToMonoClass(void* type)
@@ -390,14 +479,19 @@ MonoClass* ScriptingCore::TypeToMonoClass(void* type)
     return monoClass;
 }
 
+MonoClass* ScriptingCore::GetMonoClassByFullName(const std::string& classNamespace, const std::string& className)
+{
+    return mono_class_from_name(Domain->CustomAssemblyImage, classNamespace.c_str(), className.c_str());
+}
+
 bool ScriptingCore::IsSubclassOfScriptComponent(MonoClass* monoClass)
 {
-    if (scriptsInfo.find(monoClass) != scriptsInfo.end())
+    if (Domain->ScriptsInfo.find(monoClass) != Domain->ScriptsInfo.end())
         return true;
 
     MonoClass* parentClass = mono_class_get_parent(monoClass);
     while (parentClass != nullptr)
-        if (parentClass == baseScriptClass)
+        if (parentClass == Domain->BaseScriptClass)
             return true;
 
     return false;
@@ -415,7 +509,7 @@ ScriptObjectHandler* ScriptingCore::CreateManagedInstance(MonoClass* monoClass, 
 
 MonoObject* ScriptingCore::CreateUnmanagedInstance(MonoClass* monoClass, void** constructorParams, int paramsCount)
 {
-    MonoObject* monoObject = mono_object_new(mono_domain_get(), monoClass);
+    MonoObject* monoObject = mono_object_new(Domain->Domain, monoClass);
 
     if (constructorParams != nullptr)
     {
@@ -435,11 +529,11 @@ MonoObject* ScriptingCore::CreateUnmanagedInstance(MonoClass* monoClass, void** 
 
 MonoObject* ScriptingCore::CreateAPIStruct(APIStructs::APIStruct structType, void** constructorParams)
 {
-    MonoObject* monoObject = mono_object_new(mono_domain_get(), cachedAPIStructs[structType].first);
+    MonoObject* monoObject = mono_object_new(Domain->Domain, Domain->CachedAPIStructs[structType].first);
 
     if (constructorParams != nullptr)
     {
-        if (!CallMethod(cachedAPIStructs[structType].second, monoObject, constructorParams))
+        if (!CallMethod(Domain->CachedAPIStructs[structType].second, monoObject, constructorParams))
             return nullptr;
     }
     else
@@ -453,13 +547,13 @@ MonoObject* ScriptingCore::CreateAPIStruct(APIStructs::APIStruct structType, voi
 
 ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
 {
-    if (scriptsInfo.find(monoClass) != scriptsInfo.end())
-        return scriptsInfo[monoClass];
+    if (Domain->ScriptsInfo.find(monoClass) != Domain->ScriptsInfo.end())
+        return Domain->ScriptsInfo[monoClass];
 
     auto mask = (ScriptEventTypes::ScriptEventType)0;
 
     auto typeInfo = new ScriptTypeInfo();
-    scriptsInfo[monoClass] = typeInfo;
+    Domain->ScriptsInfo[monoClass] = typeInfo;
 
     typeInfo->TypeName = mono_class_get_name(monoClass);
     typeInfo->TypeNamespace = mono_class_get_namespace(monoClass);
@@ -480,7 +574,7 @@ ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
     }
 
     MonoClass* parentClass = mono_class_get_parent(monoClass);
-    if (parentClass != nullptr && parentClass != baseScriptClass)
+    if (parentClass != nullptr && parentClass != Domain->BaseScriptClass)
     {
         ScriptTypeInfo* parentTypeInfo = ScriptParseRecursive(parentClass);
         for (auto pair : parentTypeInfo->EventMethods)
@@ -490,7 +584,7 @@ ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
         mask = mask | parentTypeInfo->Mask;
     }
 
-    for (auto desc : eventMethodsDescriptions)
+    for (auto desc : Domain->EventMethodsDescriptions)
     {
         MonoMethod* method = mono_method_desc_search_in_class(desc.second, monoClass);
         if (method != nullptr)
@@ -511,7 +605,7 @@ void ScriptingCore::SetEntityOwner(MonoObject* monoObject, EntityID entityID)
     MonoObject* exception = nullptr;
     void* propertyParams[1];
     propertyParams[0] = entityObject;
-    mono_property_set_value(componentEntityProperty, monoObject, propertyParams, &exception);
+    mono_property_set_value(Domain->ComponentEntityProperty, monoObject, propertyParams, &exception);
 
     if (exception != nullptr)
     {
@@ -522,11 +616,11 @@ void ScriptingCore::SetEntityOwner(MonoObject* monoObject, EntityID entityID)
 
 MonoObject* ScriptingCore::CreateEntityObject(EntityID entityID)
 {
-    MonoObject* entityObject = mono_object_new(mono_domain_get(), entityClass);
+    MonoObject* entityObject = mono_object_new(Domain->Domain, Domain->EntityClass);
 
     void* constructorParams[1];
     constructorParams[0] = &entityID;
-    if (!CallMethod(entityConstructorMethod, entityObject, constructorParams))
+    if (!CallMethod(Domain->EntityConstructorMethod, entityObject, constructorParams))
         return nullptr;
 
     return entityObject;
@@ -535,7 +629,7 @@ MonoObject* ScriptingCore::CreateEntityObject(EntityID entityID)
 bool ScriptingCore::CanSerializeField(MonoClass* monoClass, MonoClassField* monoClassField)
 {
     auto attributes = mono_custom_attrs_from_field(monoClass, monoClassField);
-    bool result = attributes != nullptr && mono_custom_attrs_has_attr(attributes, serializableAttributeClass);
+    bool result = attributes != nullptr && mono_custom_attrs_has_attr(attributes, Domain->SerializableAttributeClass);
     mono_custom_attrs_free(attributes);
     return result;
 }
@@ -619,11 +713,17 @@ void ScriptingCore::CallCallbackMethod(EntityID ownerEntityID, CallbackTypes::Ca
     CallMethod(method, nullptr, params);
 }
 
-void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
+void ScriptingCore::FindAndCallEntryPoint()
 {
+    if (Domain->CustomAssemblyImage == nullptr)
+    {
+        Log::LogWarning("Custom assembly is null");
+        return;
+    }
+
     Log::LogDebug("FindAndCallEntryPoint");
 
-    MonoClass* klass = mono_class_from_name(image, "SteelCustom", "GameManager");
+    MonoClass* klass = mono_class_from_name(Domain->CustomAssemblyImage, "SteelCustom", "GameManager");
     if (klass == nullptr)
     {
         Log::LogError("GameManager class for entry point not found");
@@ -637,13 +737,9 @@ void ScriptingCore::FindAndCallEntryPoint(MonoImage* image)
         return;
     }
 
-    MonoObject* exception = nullptr;
-    mono_runtime_invoke(entryPointMethod, nullptr, nullptr, &exception);
-
-    if (exception != nullptr)
+    if (!CallMethod(entryPointMethod, nullptr, nullptr))
     {
         Log::LogError("Error calling entry point");
-        mono_print_unhandled_exception(exception);
     }
 }
 
@@ -655,7 +751,7 @@ const char* ScriptingCore::ToString(MonoString* monoString)
 
 MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t>& inArray)
 {
-    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_uint32_class(), inArray.size());
+    MonoArray* outArray = mono_array_new(Domain->Domain, mono_get_uint32_class(), inArray.size());
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
@@ -667,7 +763,7 @@ MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t>& inArray
 
 MonoArray* ScriptingCore::ToMonoUInt64Array(const std::vector<uint64_t>& inArray)
 {
-    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_uint64_class(), inArray.size());
+    MonoArray* outArray = mono_array_new(Domain->Domain, mono_get_uint64_class(), inArray.size());
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
@@ -679,7 +775,7 @@ MonoArray* ScriptingCore::ToMonoUInt64Array(const std::vector<uint64_t>& inArray
 
 MonoArray* ScriptingCore::ToMonoIntPtrArray(const std::vector<intptr_t>& inArray)
 {
-    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_intptr_class(), inArray.size());
+    MonoArray* outArray = mono_array_new(Domain->Domain, mono_get_intptr_class(), inArray.size());
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
@@ -691,11 +787,11 @@ MonoArray* ScriptingCore::ToMonoIntPtrArray(const std::vector<intptr_t>& inArray
 
 MonoArray* ScriptingCore::ToMonoStringArray(const std::vector<std::string>& inArray)
 {
-    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_string_class(), inArray.size());
+    MonoArray* outArray = mono_array_new(Domain->Domain, mono_get_string_class(), inArray.size());
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
-        mono_array_set(outArray, MonoString*, i, mono_string_new(mono_domain_get(), inArray[i].c_str()));
+        mono_array_set(outArray, MonoString*, i, mono_string_new(Domain->Domain, inArray[i].c_str()));
     }
 
     return outArray;
@@ -703,7 +799,7 @@ MonoArray* ScriptingCore::ToMonoStringArray(const std::vector<std::string>& inAr
 
 MonoArray* ScriptingCore::ToMonoFloatArray(const std::vector<float>& inArray)
 {
-    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_single_class(), inArray.size());
+    MonoArray* outArray = mono_array_new(Domain->Domain, mono_get_single_class(), inArray.size());
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
@@ -715,7 +811,7 @@ MonoArray* ScriptingCore::ToMonoFloatArray(const std::vector<float>& inArray)
 
 MonoArray* ScriptingCore::ToMonoIntArray(const std::vector<int>& inArray)
 {
-    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_int32_class(), inArray.size());
+    MonoArray* outArray = mono_array_new(Domain->Domain, mono_get_int32_class(), inArray.size());
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
@@ -727,7 +823,7 @@ MonoArray* ScriptingCore::ToMonoIntArray(const std::vector<int>& inArray)
 
 MonoArray* ScriptingCore::ToMonoObjectArray(const std::vector<MonoObject*>& inArray)
 {
-    MonoArray* outArray = mono_array_new(mono_domain_get(), mono_get_object_class(), inArray.size());
+    MonoArray* outArray = mono_array_new(Domain->Domain, mono_get_object_class(), inArray.size());
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
@@ -801,4 +897,19 @@ void ScriptingCore::FromMonoObjectArray(MonoArray* inArray, std::vector<MonoObje
     {
         outArray.emplace_back(mono_array_get(inArray, MonoObject*, i));
     }
+}
+
+MonoMethod* ScriptingCore::GetInvokeCallbacksMethod()
+{
+    return Domain->InvokeCallbacksMethod;
+}
+
+MonoMethod* ScriptingCore::GetDeregisterCallbacksMethod()
+{
+    return Domain->DeregisterCallbacksMethod;
+}
+
+MonoMethod* ScriptingCore::GetCoroutinesUpdateMethod()
+{
+    return Domain->CoroutinesUpdateMethod;
 }

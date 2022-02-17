@@ -24,6 +24,10 @@ public:
 
     EditorStates::EditorState GetState() const;
     void SetState(EditorStates::EditorState newState);
+    void EnterPlayMode();
+    void EnterEditMode();
+    void LoadSceneToEdit(const std::string& filePath);
+
     ApplicationContext* GetAppContext();
     Framebuffer* ApplicationFramebuffer = nullptr;
     Framebuffer* OpenedSceneFramebuffer = nullptr;

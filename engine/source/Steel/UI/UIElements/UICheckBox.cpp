@@ -35,7 +35,7 @@ void UICheckBox::OnCreated(EntitiesRegistry* entitiesRegistry)
 void UICheckBox::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
     StopTransition();
-    ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::CheckBoxChangeValue, ScriptingCore::EventManagerCalls.callDeregisterCallbacks);
+    ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::CheckBoxChangeValue, ScriptingCore::GetDeregisterCallbacksMethod());
 }
 
 bool UICheckBox::GetValue() const
@@ -57,7 +57,7 @@ void UICheckBox::SetValue(bool value)
     if (Callback != nullptr)
         Callback(Owner);
     if (ScriptingSystem::IsInitialized())
-        ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::CheckBoxChangeValue, ScriptingCore::EventManagerCalls.callInvokeCallbacks);
+        ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::CheckBoxChangeValue, ScriptingCore::GetInvokeCallbacksMethod());
 }
 
 void UICheckBox::HandleEvent(EntityID handler, UIEventTypes::UIEventType eventType, UIEvent& uiEvent)

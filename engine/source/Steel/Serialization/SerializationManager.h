@@ -18,11 +18,11 @@ public:
 
     static void SerializeScene(Scene* scene, const std::string& filePath);
     static Scene* DeserializeScene(const std::string& filePath);
-    static Scene* CopyScene(Scene* sceneFrom);
+    static void BackupScene(Scene* scene);
+    static void RestoreScene(Scene* scene);
 
     static void Serialize(ComponentTypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context);
     static void Deserialize(ComponentTypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context);
-    static void Copy(ComponentTypeID typeID, Serializable* objectFrom, Serializable* objectTo, SerializationContext& contextFrom, SerializationContext& contextTo);
 
     static void RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo);
     static std::vector<AttributeInfo>& GetAttributes(ComponentTypeID typeID);
@@ -30,9 +30,10 @@ public:
     static std::vector<AttributeInfo>& GetAttributes() { return GetAttributes(TYPE_ID(T)); }
 
 private:
-    static bool SerializeScene(Scene* scene, YAML::Node& node);
-    static bool DeserializeScene(Scene* scene, YAML::Node& node);
-    static bool CopySceneInner(Scene* sceneFrom, Scene* sceneTo);
+    static void SerializeScene(Scene* scene, YAML::Node& node);
+    static void DeserializeScene(Scene* scene, YAML::Node& node);
 
     static std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> _attributesInfo;
+
+    static YAML::Node* _sceneBackup;
 };

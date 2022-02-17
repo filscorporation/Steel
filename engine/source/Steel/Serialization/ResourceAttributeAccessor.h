@@ -33,11 +33,6 @@ public:
         Set(object, static_cast<U>(context.GetResource(_resourceType, node[name].as<ResourceID>())));
     }
 
-    void Copy(Serializable *objectFrom, Serializable *objectTo, SerializationContext &contextFrom, SerializationContext &contextTo) override
-    {
-        Set(objectTo, static_cast<U>(contextTo.GetResource(_resourceType, contextFrom.GetResourceID(Get(objectFrom)))));
-    }
-
 private:
     U Get(Serializable* object) const
     {

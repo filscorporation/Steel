@@ -23,6 +23,12 @@ void SceneManager::SetActiveScene(Scene* scene)
     activeScene = scene;
 }
 
+void SceneManager::DeleteActiveScene()
+{
+    delete activeScene;
+    activeScene = nullptr;
+}
+
 Scene* SceneManager::GetScene(const std::string& sceneName)
 {
     // TODO: not implemented

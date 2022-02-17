@@ -1,8 +1,6 @@
-#include <fstream>
-
 #include "ScriptingSystem.h"
 #include "ScriptingCore.h"
-#include "../Core/Log.h"
+#include "Steel/Core/Log.h"
 
 // TODO: temp solution for development, later should link to Steel bins folder
 #if defined(_WIN32) || defined(_WIN64)
@@ -22,85 +20,25 @@
 #define DEBUG_SCRIPTS_DLL_PATH "../../../scripting/SteelCustom/bin/Debug/SteelCustom.dll"
 #endif
 
-MonoDomain* domain;
-MonoImage* coreAssemblyImage;
-MonoImage* customAssemblyImage;
-
 bool ScriptingSystem::isInitialized = false;
-
-inline bool FileExists(const char* fileName)
-{
-    if (FILE *file = fopen(fileName, "r"))
-    {
-        fclose(file);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-MonoImage* LoadAssembly(const char* fileName)
-{
-    if (!FileExists(fileName))
-    {
-        Log::LogError("Error loading assembly, file does not exist: {0}", fileName);
-        return nullptr;
-    }
-
-    MonoAssembly* assembly = mono_domain_assembly_open(domain, fileName);
-    if (assembly == nullptr)
-    {
-        Log::LogError("Error loading assembly {0}", fileName);
-        return nullptr;
-    }
-    MonoImage* assemblyImage = mono_assembly_get_image(assembly);
-    if (assemblyImage == nullptr)
-    {
-        Log::LogError("Error creating image for assembly {0}", fileName);
-        return nullptr;
-    }
-
-    return assemblyImage;
-}
 
 void ScriptingSystem::Init()
 {
-    mono_config_parse(nullptr);
-#ifdef DISTRIBUTE_BUILD
-    mono_set_dirs(DISTRIBUTE_MONO_LIB_PATH, DISTRIBUTE_MONO_ETC_PATH);
-#else
-    mono_set_dirs(DEBUG_MONO_LIB_PATH, DEBUG_MONO_ETC_PATH);
-#endif
-    domain = mono_jit_init("SteelDomain");
-
-#ifdef DISTRIBUTE_BUILD
-    coreAssemblyImage = LoadAssembly(DISTRIBUTE_API_DLL_PATH);
-#else
-    coreAssemblyImage = LoadAssembly(DEBUG_API_DLL_PATH);
-#endif
-    if (coreAssemblyImage == nullptr)
+    if (isInitialized)
     {
+        Log::LogWarning("Scripting system is already initialized");
         return;
     }
 
 #ifdef DISTRIBUTE_BUILD
-    customAssemblyImage = LoadAssembly(DISTRIBUTE_SCRIPTS_DLL_PATH);
+    isInitialized = ScriptingCore::Init(DISTRIBUTE_MONO_LIB_PATH, DISTRIBUTE_MONO_ETC_PATH,
+                                        DISTRIBUTE_API_DLL_PATH, DISTRIBUTE_SCRIPTS_DLL_PATH);
 #else
-    customAssemblyImage = LoadAssembly(DEBUG_SCRIPTS_DLL_PATH);
+    isInitialized = ScriptingCore::Init(DEBUG_MONO_LIB_PATH, DEBUG_MONO_ETC_PATH);
 #endif
-    if (customAssemblyImage == nullptr)
-    {
-        Log::LogWarning("Could not find custom assembly at: " DEBUG_SCRIPTS_DLL_PATH);
-        return;
-    }
 
-    ScriptingCore::Init(coreAssemblyImage);
-
-    isInitialized = true;
-
-    Log::LogDebug("Scripting system initialized");
+    if (isInitialized)
+        Log::LogDebug("Scripting system initialized");
 }
 
 void ScriptingSystem::Terminate()
@@ -109,7 +47,22 @@ void ScriptingSystem::Terminate()
         return;
 
     ScriptingCore::Terminate();
-    mono_jit_cleanup(domain);
+    isInitialized = false;
+}
+
+void ScriptingSystem::CreateDomain()
+{
+    ScriptingCore::CreateDomain(DEBUG_API_DLL_PATH, DEBUG_SCRIPTS_DLL_PATH);
+}
+
+void ScriptingSystem::UnloadDomain()
+{
+    ScriptingCore::UnloadDomain();
+}
+
+bool ScriptingSystem::DomainLoaded()
+{
+    return ScriptingCore::DomainLoaded();
 }
 
 void ScriptingSystem::CallEntryPoint()
@@ -120,22 +73,16 @@ void ScriptingSystem::CallEntryPoint()
         return;
     }
 
-    if (customAssemblyImage == nullptr)
-    {
-        Log::LogWarning("Custom assembly is null");
-        return;
-    }
-
-    ScriptingCore::FindAndCallEntryPoint(customAssemblyImage);
+    ScriptingCore::FindAndCallEntryPoint();
 }
 
 void ScriptingSystem::UpdateCoroutines()
 {
-    if (ScriptingSystem::IsInitialized())
-        ScriptingCore::CallMethod(ScriptingCore::CoroutinesManagerCalls.callUpdate, nullptr, nullptr);
+    if (isInitialized)
+        ScriptingCore::CallMethod(ScriptingCore::GetCoroutinesUpdateMethod(), nullptr, nullptr);
 }
 
 bool ScriptingSystem::IsInitialized()
 {
-    return isInitialized;
+    return isInitialized && DomainLoaded();
 }
