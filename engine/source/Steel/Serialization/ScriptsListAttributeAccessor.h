@@ -73,13 +73,13 @@ public:
 private:
     const std::vector<ScriptData>& Get(Serializable* object) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         return (castedObject->*_getFunction)();
     }
 
     void Set(Serializable* object, const std::vector<ScriptData>& value) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         (castedObject->*_setFunction)(value);
     }
 

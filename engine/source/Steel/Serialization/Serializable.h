@@ -13,7 +13,8 @@
 
 class Serializable
 {
-
+public:
+    virtual ~Serializable() = default;
 };
 
 #define REGISTER_ATTRIBUTE(className, name, getter, setter, type, flags)                                        \

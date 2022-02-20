@@ -128,7 +128,7 @@ void SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
 
         std::vector<RawComponentData> rawData;
         scene->entitiesRegistry->GetAllComponentsForEntity(entityID, rawData);
-        for (auto dataPair : rawData)
+        for (auto& dataPair : rawData)
         {
             auto object = static_cast<Serializable*>(dataPair.Data);
             auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.TypeID);
@@ -156,7 +156,7 @@ void SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
         // Pre pass to fill UUID to EntityID map (for link attributes)
         for (auto entityNode : entitiesNode)
         {
-            auto uuid = entityNode["uuid"].as<UUID>();
+            auto uuid = entityNode["uuid"].as<UUID_TYPE>();
             if (uuid != NULL_UUID)
             {
                 auto entity = scene->entitiesRegistry->CreateNewEntity();
@@ -167,7 +167,7 @@ void SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
         // Main pass
         for (auto entityNode : entitiesNode)
         {
-            auto uuid = entityNode["uuid"].as<UUID>();
+            auto uuid = entityNode["uuid"].as<UUID_TYPE>();
             auto entity = scene->GetEntityByUUID(uuid);
             if (entity == NULL_ENTITY)
                 entity = scene->entitiesRegistry->CreateNewEntity();
@@ -202,9 +202,9 @@ void SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
 
     // Setting these properties after UUIDs loaded
     scene->_name = node["name"].as<std::string>();
-    scene->_mainCameraEntity = context.GetEntityID(node["mainCamera"].as<UUID>());
+    scene->_mainCameraEntity = context.GetEntityID(node["mainCamera"].as<UUID_TYPE>());
     scene->SetChildrenCount(node["childrenCount"].as<uint32_t>());
-    scene->SetFirstChildNode(context.GetEntityID(node["firstChildNode"].as<UUID>()));
+    scene->SetFirstChildNode(context.GetEntityID(node["firstChildNode"].as<UUID_TYPE>()));
 }
 
 void SerializationManager::Serialize(ComponentTypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context)

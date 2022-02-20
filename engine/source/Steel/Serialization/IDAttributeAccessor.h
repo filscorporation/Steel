@@ -29,19 +29,19 @@ public:
 
     void Deserialize(Serializable* object, const std::string& name, const YAML::Node& node, SerializationContext& context) override
     {
-        Set(object, context.GetEntityID(node[name].as<UUID>()));
+        Set(object, context.GetEntityID(node[name].as<UUID_TYPE>()));
     }
 
 private:
     EntityID Get(Serializable* object) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         return (castedObject->*_getFunction)();
     }
 
     void Set(Serializable* object, const EntityID& value) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         (castedObject->*_setFunction)(value);
     }
 

@@ -34,8 +34,8 @@ public:
     void DestroyEntity(EntityID entityID);
     void CleanDestroyedEntities();
 
-    EntityID GetEntityByUUID(UUID uuid);
-    void SetEntityByUUID(UUID uuid, EntityID entityID);
+    EntityID GetEntityByUUID(UUID_TYPE uuid);
+    void SetEntityByUUID(UUID_TYPE uuid, EntityID entityID);
 
     void Refresh();
     void Update();
@@ -57,7 +57,7 @@ private:
     std::string _name;
     bool systemsInitialized = false;
 
-    std::unordered_map<UUID, EntityID> entitiesByUUID;
+    std::unordered_map<UUID_TYPE, EntityID> entitiesByUUID;
     std::list<EntityID> entitiesToDelete;
     EntityID _mainCameraEntity = NULL_ENTITY;
 

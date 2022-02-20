@@ -11,9 +11,9 @@ class IDComponent : public Component
 public:
     explicit IDComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
 
-    UUID GetUUID() const;
-    void SetUUID(UUID uuid);
+    UUID_TYPE GetUUID() const;
+    void SetUUID(UUID_TYPE uuid);
 
 private:
-    UUID _uuid = 0;
+    UUID_TYPE _uuid = 0;
 };

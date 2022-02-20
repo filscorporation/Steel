@@ -4,4 +4,4 @@
 
 #define NULL_UUID 0
 
-using UUID = uint64_t;
+using UUID_TYPE = uint64_t;

@@ -29,7 +29,7 @@ public:
         for (int i = 0; i < list.size(); ++i)
         {
             YAML::Node elementNode;
-            auto element = static_cast<Serializable*>(&(list[i]));
+            auto element = dynamic_cast<Serializable*>(&(list[i]));
             SerializationManager::Serialize(TYPE_ID(U), element, elementNode, context);
             node[name].push_back(elementNode);
         }
@@ -41,7 +41,7 @@ public:
         list.resize(node[name].size());
         for (int i = 0; i < node[name].size(); ++i)
         {
-            auto element = static_cast<Serializable*>(&(list[i]));
+            auto element = dynamic_cast<Serializable*>(&(list[i]));
             SerializationManager::Deserialize(TYPE_ID(U), element, node[name][i], context);
         }
         Set(object, list);
@@ -50,13 +50,13 @@ public:
 private:
     std::vector<U> Get(Serializable* object) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         return (castedObject->*_getFunction)();
     }
 
     void Set(Serializable* object, const std::vector<U>& value) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         (castedObject->*_setFunction)(value);
     }
 

@@ -42,7 +42,7 @@ void ResourcesManager::LoadResources()
 
     for (std::filesystem::recursive_directory_iterator i(RESOURCES_PATH), end; i != end; ++i)
         if (!is_directory(i->path()))
-            TryLoadResource(i->path().filename());
+            TryLoadResource(i->path().filename().u8string());
 }
 
 void ResourcesManager::TryLoadResource(const std::string& path)

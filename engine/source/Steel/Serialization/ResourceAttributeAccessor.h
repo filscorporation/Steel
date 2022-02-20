@@ -30,19 +30,19 @@ public:
 
     void Deserialize(Serializable* object, const std::string& name, const YAML::Node& node, SerializationContext& context) override
     {
-        Set(object, static_cast<U>(context.GetResource(_resourceType, node[name].as<ResourceID>())));
+        Set(object, dynamic_cast<U>(context.GetResource(_resourceType, node[name].as<ResourceID>())));
     }
 
 private:
     U Get(Serializable* object) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         return (castedObject->*_getFunction)();
     }
 
     void Set(Serializable* object, const U& value) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         (castedObject->*_setFunction)(value);
     }
 

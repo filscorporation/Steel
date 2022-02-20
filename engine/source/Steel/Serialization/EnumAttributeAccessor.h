@@ -35,13 +35,13 @@ public:
 private:
     U Get(Serializable* object) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         return (castedObject->*_getFunction)();
     }
 
     void Set(Serializable* object, const U& value) const
     {
-        T* castedObject = static_cast<T*>(object);
+        T* castedObject = dynamic_cast<T*>(object);
         (castedObject->*_setFunction)(value);
     }
 

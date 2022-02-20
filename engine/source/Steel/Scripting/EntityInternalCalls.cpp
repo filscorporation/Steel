@@ -94,7 +94,7 @@ bool EntityInternalCalls::Entity_IsDestroyed(EntityID entityID)
     return !Application::Instance->GetCurrentScene()->GetEntitiesRegistry()->EntityExists(entityID);
 }
 
-UUID EntityInternalCalls::Entity_GetUUID(EntityID id)
+UUID_TYPE EntityInternalCalls::Entity_GetUUID(EntityID id)
 {
     if (!HasComponentS<IDComponent>(id))
         return NULL_UUID;

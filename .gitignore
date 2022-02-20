@@ -1,5 +1,6 @@
 # Directories
 .idea/
+.vs/
 cmake-build-debug/
 cmake-build-release/
 scripting/SteelCore/obj

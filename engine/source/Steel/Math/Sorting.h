@@ -37,7 +37,7 @@ public:
         resultValues.resize(sortingValues.size());
 
         bool swap = false;
-        for (long exp = 1; m / exp > 0; exp *= 10)
+        for (uint64_t exp = 1; m / exp > 0; exp *= 10)
         {
             if (swap)
                 CountSort(resultKeys, resultValues, sortingKeys, sortingValues, exp);

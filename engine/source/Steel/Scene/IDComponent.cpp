@@ -3,15 +3,15 @@
 void IDComponent::RegisterType()
 {
     REGISTER_COMPONENT(IDComponent);
-    REGISTER_ATTRIBUTE(IDComponent, "uuid", GetUUID, SetUUID, UUID, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(IDComponent, "uuid", GetUUID, SetUUID, UUID_TYPE, AttributeFlags::Public);
 }
 
-UUID IDComponent::GetUUID() const
+UUID_TYPE IDComponent::GetUUID() const
 {
     return _uuid;
 }
 
-void IDComponent::SetUUID(UUID uuid)
+void IDComponent::SetUUID(UUID_TYPE uuid)
 {
     _uuid = uuid;
 }
