@@ -3,7 +3,7 @@
 #include "SerializationContext.h"
 #include "AttributeAccessorBase.h"
 #include "Steel/EntityComponentSystem/Entity.h"
-#include "Steel/Scripting/ScriptAttributeAccessorBase.h"
+#include "Steel/Scripting/Accessors/ScriptAttributeAccessorBase.h"
 #include "Steel/Scripting/ScriptingCommon.h"
 #include "Steel/Scripting/ScriptSerializationHelper.h"
 
@@ -55,16 +55,15 @@ public:
             std::string className = typeName.substr(typeName.find_last_of('.') + 1);
 
             if (!ScriptSerializationHelper::RestoreScriptInstance(classNamespace, className, scriptData))
-            {
-                Log::LogError("Couldn't create instance of class {0}", typeName);
                 continue;
-            }
-            // Entity owner for created instance is set later in deserialization process - in ScriptComponent::OnCreate()
+
+            // Entity owner for created instance is set later in deserialization process - in ScriptComponent::SetScriptsData()
 
             auto& dataNode = scriptNode["data"];
             for (auto field : scriptData.TypeInfo->Attributes)
             {
-                field.Accessor->Deserialize(scriptData.ScriptHandler, field.FieldName, dataNode, context);
+                if (dataNode[field.FieldName])
+                    field.Accessor->Deserialize(scriptData.ScriptHandler, field.FieldName, dataNode, context);
             }
             list.push_back(scriptData);
         }

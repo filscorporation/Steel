@@ -112,10 +112,10 @@ set(SOURCE_FILES
         source/Steel/EntityComponentSystem/EntitiesIterator.h source/Steel/Serialization/ListAttributeAccessor.h source/Steel/UI/UIElements/UITabInfo.h
         source/Steel/UI/UIElements/UITabInfo.cpp source/Steel/UI/UIElements/UILayoutElementInfo.cpp source/Steel/UI/UIElements/UILayoutElementInfo.h
         source/Steel/EntityComponentSystem/RawComponentData.h source/Steel/Serialization/ScriptsListAttributeAccessor.h
-        source/Steel/EntityComponentSystem/Types.h source/Steel/Scripting/ScriptAttributeAccessor.h source/Steel/Scripting/ScriptAttributeAccessorBase.h
+        source/Steel/EntityComponentSystem/Types.h source/Steel/Scripting/Accessors/ScriptAttributeAccessor.h source/Steel/Scripting/Accessors/ScriptAttributeAccessorBase.h
         source/Steel/Scripting/ScriptObjectHandler.h source/Steel/Scripting/ScriptObjectHandler.cpp source/Steel/Scripting/ScriptMethodPointer.h
         source/Steel/Scripting/APIStructs.h source/Steel/Scripting/ScriptingDomain.h source/Steel/Scripting/ScriptSerializationHelper.cpp
-        source/Steel/Scripting/ScriptSerializationHelper.h)
+        source/Steel/Scripting/ScriptSerializationHelper.h source/Steel/Scripting/Accessors/ScriptStringAttributeAccessor.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ScriptAttributeAccessorBase.h"
-#include "ScriptingCore.h"
+#include "Steel/Scripting/ScriptingCore.h"
 
 // Template script attribute accessor for simple types
 template <typename U>

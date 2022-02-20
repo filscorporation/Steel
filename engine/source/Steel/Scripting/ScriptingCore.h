@@ -40,7 +40,9 @@ public:
     static bool HasComponentFromType(EntityID entityID, void* type);
     static MonoObject* GetComponentFromType(EntityID entityID, void* type);
     static bool RemoveComponentFromType(EntityID entityID, void* type);
-    static void GetComponentsListFromType(void* type, MonoObject** result);
+    static void GetComponentsListFromType(void* type, bool includeInactive, MonoObject** result);
+    static MonoArray* GetBuiltInComponentsList(MonoClass* monoClass, bool includeInactive);
+    static MonoArray* GetCustomComponentsList(MonoClass* monoClass, bool includeInactive);
 
     static MonoClass* TypeToMonoClass(void* type);
     static MonoClass* GetMonoClassByFullName(const std::string& classNamespace, const std::string& className);
@@ -54,13 +56,16 @@ public:
     static bool CanSerializeField(MonoClass* monoClass, MonoClassField* monoClassField);
     static ScriptAttributeAccessorBase* CreateFieldAccessor(MonoClassField* monoClassField, MonoType* monoType);
     template<typename T> static T GetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField);
+    template<typename T> static T GetScriptPtrFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField);
     template<typename T> static void SetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value);
+    template<typename T> static void SetScriptPtrFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value);
 
     static bool CallMethod(MonoMethod* method, MonoObject* monoObject, void** params);
     static void CallCallbackMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method);
     static void FindAndCallEntryPoint();
 
     static const char* ToString(MonoString* monoString);
+    static MonoString* FromString(const char* normalString);
 
     static MonoArray* ToMonoUInt32Array(const std::vector<uint32_t>& inArray);
     static MonoArray* ToMonoUInt64Array(const std::vector<uint64_t>& inArray);
@@ -130,6 +135,22 @@ T ScriptingCore::GetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoCla
 }
 
 template<typename T>
+T ScriptingCore::GetScriptPtrFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField)
+{
+    MonoObject* monoObject = scriptHandler->GetMonoObject();
+    if (monoObject == nullptr)
+    {
+        Log::LogError("Can't get mono object from handler");
+        return nullptr;
+    }
+
+    T value = nullptr;
+    mono_field_get_value(monoObject, monoClassField, &value);
+
+    return value;
+}
+
+template<typename T>
 void ScriptingCore::SetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value)
 {
     MonoObject* monoObject = scriptHandler->GetMonoObject();
@@ -140,6 +161,19 @@ void ScriptingCore::SetScriptFieldValue(ScriptObjectHandler* scriptHandler, Mono
     }
 
     mono_field_set_value(monoObject, monoClassField, &value);
+}
+
+template<typename T>
+void ScriptingCore::SetScriptPtrFieldValue(ScriptObjectHandler* scriptHandler, MonoClassField* monoClassField, T value)
+{
+    MonoObject* monoObject = scriptHandler->GetMonoObject();
+    if (monoObject == nullptr)
+    {
+        Log::LogError("Can't get mono object from handler");
+        return;
+    }
+
+    mono_field_set_value(monoObject, monoClassField, value);
 }
 
 #define CACHE_SIMPLE_TYPE(m_type) Domain->CachedSimpleAPITypes[SimpleAPITypes::m_type] = mono_class_from_name(image, "Steel", #m_type)

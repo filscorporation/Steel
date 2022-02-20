@@ -86,7 +86,7 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
 
     context->Scenes = new SceneManager();
     context->Scenes->SetActiveScene(context->Scenes->CreateNewScene("New scene"));
-    context->Scenes->GetActiveScene()->Init();
+    context->Scenes->GetActiveScene()->Init(true);
 
     return context;
 }

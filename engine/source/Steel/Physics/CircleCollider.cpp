@@ -51,13 +51,11 @@ void CircleCollider::SetSizeAutomatically()
     else
         size = glm::vec2(_radius, _radius);
 
-    if (std::abs(size.x) > SHAPE_EPS && std::abs(size.y) > SHAPE_EPS)
-    {
-        info->CircleShape->m_p = b2Vec2(0.0f, 0.0f);
-        if (autoSize)
-            _radius = (size.x > size.y ? size.x : size.y) * 0.5f;
-        info->CircleShape->m_radius = _radius;
-    }
+    size = glm::vec2(std::abs(size.x), std::abs(size.y));
+    info->CircleShape->m_p = b2Vec2(0.0f, 0.0f);
+    if (autoSize)
+        _radius = (size.x > size.y ? size.x : size.y) * 0.5f;
+    info->CircleShape->m_radius = _radius;
 }
 
 float CircleCollider::GetRadius() const
@@ -67,14 +65,16 @@ float CircleCollider::GetRadius() const
 
 void CircleCollider::SetRadius(float radius)
 {
-    if (std::abs(radius) > SHAPE_EPS)
-    {
-        _radius = radius;
-        autoSize = false;
+    _radius = std::abs(radius);
+    autoSize = false;
 
-        if (PhysicsCore::Initialized())
-            info->CircleShape->m_radius = _radius;
-    }
+    if (PhysicsCore::Initialized())
+        info->CircleShape->m_radius = _radius;
+}
+
+bool CircleCollider::IsSizeValid() const
+{
+    return std::abs(_radius) > SHAPE_EPS;
 }
 
 void CircleCollider::PrepareColliderInfo()

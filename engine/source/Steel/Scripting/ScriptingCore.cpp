@@ -1,10 +1,11 @@
 #include "ScriptingCore.h"
 #include "ScriptComponent.h"
 #include "ScriptingCallsRegister.h"
-#include "ScriptAttributeAccessor.h"
+#include "Steel/Scripting/Accessors/ScriptAttributeAccessor.h"
 #include "ScriptMethodPointer.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Application.h"
+#include "Steel/Scripting/Accessors/ScriptStringAttributeAccessor.h"
 
 #include <mono/metadata/attrdefs.h>
 
@@ -393,71 +394,103 @@ bool ScriptingCore::RemoveComponentFromType(EntityID entityID, void* type)
     return false;
 }
 
-void ScriptingCore::GetComponentsListFromType(void* type, MonoObject** result)
+void ScriptingCore::GetComponentsListFromType(void* type, bool includeInactive, MonoObject** result)
 {
-    // TODO: refactor returns
+    *result = nullptr;
+
     MonoClass* monoClass = TypeToMonoClass(type);
-    if (monoClass == nullptr)
+    if (monoClass != nullptr)
     {
-        *result = (MonoObject*)mono_array_new(Domain->Domain, mono_get_object_class(), 0);
-        return;
+        if (Domain->CachedAPITypes.find(monoClass) != Domain->CachedAPITypes.end())
+        {
+            // Built in types
+            *result = (MonoObject*)GetBuiltInComponentsList(monoClass, includeInactive);
+        }
+        else if (IsSubclassOfScriptComponent(monoClass))
+        {
+            // Custom script types
+            *result = (MonoObject*)GetCustomComponentsList(monoClass, includeInactive);
+        }
+        else
+            Log::LogError("Type is not internal or subclass of ScriptComponent");
     }
 
-    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    if (Domain->CachedAPITypes.find(monoClass) != Domain->CachedAPITypes.end())
-    {
-        // Built in types
-        auto entitiesIterator = entitiesRegistry->GetEntitiesIterator(Domain->CachedAPITypes[monoClass]->ID, true);
-        MonoArray* resultArray = mono_array_new(Domain->Domain, mono_get_object_class(), entitiesIterator.Size());
+    if (*result == nullptr)
+        *result = (MonoObject*)mono_array_new(Domain->Domain, mono_get_object_class(), 0);
+}
 
-        for (int i = 0; i < entitiesIterator.Size(); ++i)
+MonoArray* ScriptingCore::GetBuiltInComponentsList(MonoClass* monoClass, bool includeInactive)
+{
+    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    std::vector<EntitiesIterator> iterators;
+    iterators.emplace_back(entitiesRegistry->GetEntitiesIterator(Domain->CachedAPITypes[monoClass]->ID, true));
+    if (includeInactive)
+        iterators.emplace_back(entitiesRegistry->GetEntitiesIterator(Domain->CachedAPITypes[monoClass]->ID, false));
+
+    int size = 0;
+    for (auto& iterator : iterators)
+        size += iterator.Size();
+
+    MonoArray* resultArray = mono_array_new(Domain->Domain, mono_get_object_class(), size);
+
+    for (auto& iterator : iterators)
+    {
+        for (int i = 0; i < iterator.Size(); ++i)
         {
             MonoObject* monoObject = CreateUnmanagedInstance(monoClass, nullptr, 0);
-            SetEntityOwner(monoObject, entitiesIterator[i]);
+            SetEntityOwner(monoObject, iterator[i]);
             mono_array_set(resultArray, MonoObject*, i, monoObject);
         }
-
-        *result = (MonoObject*)resultArray;
-        return;
     }
 
-    if (IsSubclassOfScriptComponent(monoClass))
-    {
-        // Custom script types
-        ScriptTypeInfo* typeInfo;
-        if (Domain->ScriptsInfo.find(monoClass) == Domain->ScriptsInfo.end())
-        {
-            *result = (MonoObject*)mono_array_new(Domain->Domain, mono_get_object_class(), 0);
-            return;
-        }
-        typeInfo = Domain->ScriptsInfo[monoClass];
+    return resultArray;
+}
 
-        auto iterator = entitiesRegistry->GetComponentIterator<ScriptComponent>();
+MonoArray* ScriptingCore::GetCustomComponentsList(MonoClass* monoClass, bool includeInactive)
+{
+    EntitiesRegistry* entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+
+    if (Domain->ScriptsInfo.find(monoClass) != Domain->ScriptsInfo.end())
+    {
+        ScriptTypeInfo* typeInfo = Domain->ScriptsInfo[monoClass];
+
+        std::vector<ComponentIterator<ScriptComponent>> iterators;
+        iterators.emplace_back(entitiesRegistry->GetComponentIterator<ScriptComponent>(true));
+        if (includeInactive)
+            iterators.emplace_back(entitiesRegistry->GetComponentIterator<ScriptComponent>(false));
 
         int count = 0;
-        for (auto& script : iterator)
+
+        for (auto& iterator : iterators)
         {
-            if (script.HasScriptType(typeInfo))
-                count++;
-        }
-        MonoArray* resultArray = mono_array_new(Domain->Domain, mono_get_object_class(), count);
-        int i = 0;
-        for (auto& script : iterator)
-        {
-            if (script.HasScriptType(typeInfo))
+            for (auto& script : iterator)
             {
-                mono_array_set(resultArray, MonoObject*, i, script.GetScriptHandler(typeInfo)->GetMonoObject());
-                i++;
+                if (script.HasScriptType(typeInfo))
+                    count++;
             }
         }
 
-        *result = (MonoObject*)resultArray;
-        return;
+        MonoArray* resultArray = mono_array_new(Domain->Domain, mono_get_object_class(), count);
+
+        int i = 0;
+
+        for (auto& iterator : iterators)
+        {
+            for (auto& script : iterator)
+            {
+                if (script.HasScriptType(typeInfo))
+                {
+                    mono_array_set(resultArray, MonoObject*, i, script.GetScriptHandler(typeInfo)->GetMonoObject());
+                    i++;
+                }
+            }
+        }
+
+        return resultArray;
     }
 
-    Log::LogError("Type is not internal or subclass of ScriptComponent");
-
-    *result = (MonoObject*)mono_array_new(Domain->Domain, mono_get_object_class(), 0);
+    return nullptr;
 }
 
 MonoClass* ScriptingCore::TypeToMonoClass(void* type)
@@ -645,16 +678,20 @@ ScriptAttributeAccessorBase* ScriptingCore::CreateFieldAccessor(MonoClassField* 
         case MONO_TYPE_CHAR:
             return new ScriptAttributeAccessor<char>(monoClassField, Types::Char);
         case MONO_TYPE_I1:
+            Log::LogWarning("Int8 serialization is not supported yet");
             return nullptr; // int8_t
         case MONO_TYPE_I2:
+            Log::LogWarning("Int16 serialization is not supported yet");
             return nullptr; // int16_t
         case MONO_TYPE_I4:
             return new ScriptAttributeAccessor<int>(monoClassField, Types::Int);
         case MONO_TYPE_I8:
             return new ScriptAttributeAccessor<long>(monoClassField, Types::Long);
         case MONO_TYPE_U1:
+            Log::LogWarning("UInt8 serialization is not supported yet");
             return nullptr; // uint8_t
         case MONO_TYPE_U2:
+            Log::LogWarning("UInt16 serialization is not supported yet");
             return nullptr; // uint16_t
         case MONO_TYPE_U4:
             return new ScriptAttributeAccessor<uint32_t>(monoClassField, Types::UInt32);
@@ -672,7 +709,7 @@ ScriptAttributeAccessorBase* ScriptingCore::CreateFieldAccessor(MonoClassField* 
                 return nullptr;
             }
         case MONO_TYPE_STRING:
-            return new ScriptAttributeAccessor<std::string>(monoClassField, Types::String); // TODO: handle MonoString*
+            return new ScriptStringAttributeAccessor(monoClassField, Types::String);
         case MONO_TYPE_ARRAY:
         case MONO_TYPE_SZARRAY:
             Log::LogWarning("Array types serialization is not supported yet");
@@ -737,16 +774,20 @@ void ScriptingCore::FindAndCallEntryPoint()
         return;
     }
 
-    if (!CallMethod(entryPointMethod, nullptr, nullptr))
-    {
-        Log::LogError("Error calling entry point");
-    }
+    CallMethod(entryPointMethod, nullptr, nullptr);
 }
 
 const char* ScriptingCore::ToString(MonoString* monoString)
 {
+    if (monoString == nullptr)
+        return "";
     const char* result = mono_string_to_utf8(monoString);
     return result ? result : "";
+}
+
+MonoString* ScriptingCore::FromString(const char* normalString)
+{
+    return mono_string_new(Domain->Domain, normalString);
 }
 
 MonoArray* ScriptingCore::ToMonoUInt32Array(const std::vector<uint32_t>& inArray)
@@ -791,7 +832,7 @@ MonoArray* ScriptingCore::ToMonoStringArray(const std::vector<std::string>& inAr
 
     for (uint32_t i = 0; i < inArray.size(); ++i)
     {
-        mono_array_set(outArray, MonoString*, i, mono_string_new(Domain->Domain, inArray[i].c_str()));
+        mono_array_set(outArray, MonoString*, i, FromString(inArray[i].c_str()));
     }
 
     return outArray;

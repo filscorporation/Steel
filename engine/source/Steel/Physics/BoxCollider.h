@@ -21,6 +21,8 @@ public:
     const glm::vec2& GetSize() const;
     void SetSize(const glm::vec2& size);
 
+    bool IsSizeValid() const;
+
 private:
     void PrepareColliderInfo();
     void ApplyPhysicsProperties();

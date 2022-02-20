@@ -39,19 +39,15 @@ Scene::~Scene()
     }
 }
 
-void Scene::Init()
+void Scene::Init(bool initSystems)
 {
-    Physics::CreatePhysicsScene(entitiesRegistry);
-    AudioCore::CreateAudioScene(entitiesRegistry);
-    systemsInitialized = true;
+    if (initSystems)
+    {
+        Physics::CreatePhysicsScene(entitiesRegistry);
+        AudioCore::CreateAudioScene(entitiesRegistry);
+        systemsInitialized = true;
+    }
 
-    // Call on create for all loaded with scene objects
-    entitiesRegistry->OnCreateAll();
-}
-
-void Scene::InitForEdit()
-{
-    // TODO: maybe init audio?
     // Call on create for all loaded with scene objects
     entitiesRegistry->OnCreateAll();
 }

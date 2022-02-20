@@ -14,12 +14,12 @@ void CoreInternalCalls::Application_Quit()
 
 MonoString* CoreInternalCalls::Application_RuntimePath()
 {
-    return mono_string_new(mono_domain_get(), Application::Instance->GetRuntimePath().c_str());
+    return ScriptingCore::FromString(Application::Instance->GetRuntimePath().c_str());
 }
 
 MonoString* CoreInternalCalls::Application_DataPath()
 {
-    return mono_string_new(mono_domain_get(), Application::Instance->GetDataPath().c_str());
+    return ScriptingCore::FromString(Application::Instance->GetDataPath().c_str());
 }
 
 void CoreInternalCalls::Input_GetMousePosition(glm::vec2* position)
@@ -247,7 +247,7 @@ MonoString* CoreInternalCalls::Animation_GetName(ResourceID animationID)
     if (animation == nullptr)
         return nullptr;
 
-    return mono_string_new(mono_domain_get(), animation->Name.c_str());
+    return ScriptingCore::FromString(animation->Name.c_str());
 }
 
 void CoreInternalCalls::Animation_SetName(ResourceID animationID, MonoString* name)

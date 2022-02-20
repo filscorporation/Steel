@@ -10,6 +10,7 @@ struct RigidBody::RigidBodyInfo
 {
     b2Body* Body;
     b2Fixture* Fixture;
+    bool IsFixtureValid = false;
 };
 
 struct BoxCollider::BoxColliderInfo

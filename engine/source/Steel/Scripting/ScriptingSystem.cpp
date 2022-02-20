@@ -31,8 +31,7 @@ void ScriptingSystem::Init()
     }
 
 #ifdef DISTRIBUTE_BUILD
-    isInitialized = ScriptingCore::Init(DISTRIBUTE_MONO_LIB_PATH, DISTRIBUTE_MONO_ETC_PATH,
-                                        DISTRIBUTE_API_DLL_PATH, DISTRIBUTE_SCRIPTS_DLL_PATH);
+    isInitialized = ScriptingCore::Init(DISTRIBUTE_MONO_LIB_PATH, DISTRIBUTE_MONO_ETC_PATH);
 #else
     isInitialized = ScriptingCore::Init(DEBUG_MONO_LIB_PATH, DEBUG_MONO_ETC_PATH);
 #endif
@@ -52,7 +51,11 @@ void ScriptingSystem::Terminate()
 
 void ScriptingSystem::CreateDomain()
 {
+#ifdef DISTRIBUTE_BUILD
+    ScriptingCore::CreateDomain(DISTRIBUTE_API_DLL_PATH, DISTRIBUTE_SCRIPTS_DLL_PATH);
+#else
     ScriptingCore::CreateDomain(DEBUG_API_DLL_PATH, DEBUG_SCRIPTS_DLL_PATH);
+#endif
 }
 
 void ScriptingSystem::UnloadDomain()
@@ -78,7 +81,7 @@ void ScriptingSystem::CallEntryPoint()
 
 void ScriptingSystem::UpdateCoroutines()
 {
-    if (isInitialized)
+    if (IsInitialized())
         ScriptingCore::CallMethod(ScriptingCore::GetCoroutinesUpdateMethod(), nullptr, nullptr);
 }
 

@@ -1,6 +1,10 @@
 #pragma once
 
-#include "ScriptingCommon.h"
+#include "Steel/Scripting/ScriptingCommon.h"
+#include "Steel/Serialization/SerializationContext.h"
+#include "Steel/EntityComponentSystem/Types.h"
+
+#include <yaml-cpp/yaml.h>
 
 // Base class to get/set data to script attributes (like AttributeAccessorBase, but for script objects)
 class ScriptAttributeAccessorBase

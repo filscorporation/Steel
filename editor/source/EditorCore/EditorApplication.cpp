@@ -137,11 +137,11 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
     switch (newState)
     {
         case EditorStates::Stopped:
-            EnterEditMode();
+            EnterEditMode(newState);
             break;
         case EditorStates::Playing:
             if (state == EditorStates::Stopped)
-                EnterPlayMode();
+                EnterPlayMode(newState);
             break;
         case EditorStates::Paused:
             if (state == EditorStates::Stopped)
@@ -156,7 +156,7 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
     state = newState;
 }
 
-void EditorApplication::EnterPlayMode()
+void EditorApplication::EnterPlayMode(EditorStates::EditorState newState)
 {
     SwitchContext(AppContext);
 
@@ -165,19 +165,22 @@ void EditorApplication::EnterPlayMode()
     AppContext->Scenes->DeleteActiveScene();
     ScriptingSystem::UnloadDomain();
 
+    // Change state
+    state = newState;
+
     // Initialize scene again from cached data
     ScriptingSystem::CreateDomain();
     auto scene = new Scene("");
     SerializationManager::RestoreScene(scene);
     AppContext->Scenes->SetActiveScene(scene);
 
-    scene->Init();
+    scene->Init(true);
     ScriptingSystem::CallEntryPoint();
 
     SwitchContext(EditorContext);
 }
 
-void EditorApplication::EnterEditMode()
+void EditorApplication::EnterEditMode(EditorStates::EditorState newState)
 {
     SwitchContext(AppContext);
 
@@ -185,13 +188,16 @@ void EditorApplication::EnterEditMode()
     AppContext->Scenes->DeleteActiveScene();
     ScriptingSystem::UnloadDomain();
 
+    // Change state
+    state = newState;
+
     // Initialize scene from cached data
     ScriptingSystem::CreateDomain();
     auto scene = new Scene("");
     SerializationManager::RestoreScene(scene);
     AppContext->Scenes->SetActiveScene(scene);
 
-    scene->InitForEdit();
+    scene->Init(false);
 
     SwitchContext(EditorContext);
 }
@@ -220,7 +226,7 @@ void EditorApplication::LoadSceneToEdit(const std::string& filePath)
     }
     AppContext->Scenes->SetActiveScene(scene);
 
-    scene->InitForEdit();
+    scene->Init(false);
 
     SwitchContext(EditorContext);
 }

@@ -69,7 +69,6 @@ void SerializationManager::BackupScene(Scene* scene)
 {
     if (_sceneBackup != nullptr)
     {
-        Log::LogWarning("Rewriting scene backup");
         delete _sceneBackup;
         _sceneBackup = nullptr;
     }

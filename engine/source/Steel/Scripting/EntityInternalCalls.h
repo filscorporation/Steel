@@ -27,5 +27,5 @@ namespace EntityInternalCalls
     MonoString* Entity_GetName(EntityID id);
     void Entity_SetName(EntityID id, MonoString* name);
 
-    void Component_FindAllOfType(void* type, MonoObject** result);
+    void Component_FindAllOfType(void* type, bool includeInactive, MonoObject** result);
 }

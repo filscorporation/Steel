@@ -47,10 +47,11 @@ namespace Steel
         /// Returns all active components in the scene of requested type
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
+        /// <param name="includeInactive">Should result include components from inactive entities</param>
         /// <returns>Requested components enumeration</returns>
-        public static IEnumerable<T> FindAllOfType<T>() where T : Component, new()
+        public static IEnumerable<T> FindAllOfType<T>(bool includeInactive = false) where T : Component, new()
         {
-            FindAllOfType_Internal(typeof(T), out Component[] result);
+            FindAllOfType_Internal(typeof(T), includeInactive, out Component[] result);
             return result.Select(component => component as T);
         }
 
@@ -82,6 +83,6 @@ namespace Steel
         }
         
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void FindAllOfType_Internal(Type type, out Component[] result);
+        private static extern void FindAllOfType_Internal(Type type, bool includeInactive, out Component[] result);
     }
 }

@@ -24,8 +24,8 @@ public:
 
     EditorStates::EditorState GetState() const;
     void SetState(EditorStates::EditorState newState);
-    void EnterPlayMode();
-    void EnterEditMode();
+    void EnterPlayMode(EditorStates::EditorState newState);
+    void EnterEditMode(EditorStates::EditorState newState);
     void LoadSceneToEdit(const std::string& filePath);
 
     ApplicationContext* GetAppContext();

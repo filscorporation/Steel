@@ -267,7 +267,7 @@ MonoString* UIInternalCalls::UIText_GetText(EntityID entityID)
 {
     GET_COMPONENT_OR_RETURN(UIText, nullptr)
 
-    return mono_string_new(mono_domain_get(), component.GetText().c_str());
+    return ScriptingCore::FromString(component.GetText().c_str());
 }
 
 void UIInternalCalls::UIText_SetText(EntityID entityID, MonoString* text)

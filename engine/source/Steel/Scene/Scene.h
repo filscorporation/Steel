@@ -19,8 +19,7 @@ public:
 
     explicit Scene(const std::string& name);
     ~Scene() override;
-    void Init();
-    void InitForEdit();
+    void Init(bool initSystems);
 
     void CreateMainCamera();
     EntityID GetMainCamera();

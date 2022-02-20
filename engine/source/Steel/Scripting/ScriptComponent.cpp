@@ -9,7 +9,7 @@
 void ScriptComponent::RegisterType()
 {
     REGISTER_COMPONENT(ScriptComponent);
-    REGISTER_SCRIPTS_ATTRIBUTE(ScriptComponent, "scripts", GetScriptsData, SetScriptsData, AttributeFlags::Public);
+    REGISTER_SCRIPTS_ATTRIBUTE(ScriptComponent, "", GetScriptsData, SetScriptsData, AttributeFlags::Public);
 }
 
 void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)
@@ -19,10 +19,11 @@ void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)
         entitiesRegistry->GetComponent<UIEventHandler>(Owner).EnableNotifyScripts();
     }
 
-    // Setting entity owners for all attached scripts (they were deserialized)
+    if (!Application::Instance->IsRunning())
+        return;
+
     for (auto script : Scripts)
     {
-        ScriptingCore::SetEntityOwner(script.ScriptHandler->GetMonoObject(), Owner);
         TryCallEventMethod(ScriptEventTypes::OnCreate, nullptr);
     }
 }
@@ -119,13 +120,16 @@ const std::vector<ScriptData>& ScriptComponent::GetScriptsData() const
 
 void ScriptComponent::SetScriptsData(const std::vector<ScriptData>& scripts)
 {
-    Log::LogInfo("Set script data: {0}", scripts.size());
-    // TODO
     Scripts = scripts;
 
     ScriptsMask = (ScriptEventTypes::ScriptEventType)0;
     for (auto script : Scripts)
         ScriptsMask = ScriptsMask | script.TypeInfo->Mask;
+
+    for (auto script : Scripts)
+    {
+        ScriptingCore::SetEntityOwner(script.ScriptHandler->GetMonoObject(), Owner);
+    }
 }
 
 ScriptObjectHandler* ScriptComponent::GetScriptHandler(ScriptTypeInfo* typeInfo)

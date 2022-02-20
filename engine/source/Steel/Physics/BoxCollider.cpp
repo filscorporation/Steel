@@ -53,11 +53,8 @@ void BoxCollider::SetSizeAutomatically()
     else
         size = _size;
 
-    if (std::abs(size.x) > SHAPE_EPS && std::abs(size.y) > SHAPE_EPS)
-    {
-        _size = size;
-        info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
-    }
+    _size = glm::vec2(std::abs(size.x), std::abs(size.y));
+    info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
 }
 
 const glm::vec2& BoxCollider::GetSize() const
@@ -67,14 +64,16 @@ const glm::vec2& BoxCollider::GetSize() const
 
 void BoxCollider::SetSize(const glm::vec2& size)
 {
-    if (std::abs(size.x) > SHAPE_EPS && std::abs(size.y) > SHAPE_EPS)
-    {
-        _size = size;
-        autoSize = false;
+    _size = glm::vec2(std::abs(size.x), std::abs(size.y));
+    autoSize = false;
 
-        if (PhysicsCore::Initialized())
-            info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
-    }
+    if (PhysicsCore::Initialized())
+        info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
+}
+
+bool BoxCollider::IsSizeValid() const
+{
+    return std::abs(_size.x) > SHAPE_EPS && std::abs(_size.y) > SHAPE_EPS;
 }
 
 void BoxCollider::PrepareColliderInfo()

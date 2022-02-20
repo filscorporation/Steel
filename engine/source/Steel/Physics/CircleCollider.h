@@ -21,6 +21,8 @@ public:
     float GetRadius() const;
     void SetRadius(float radius);
 
+    bool IsSizeValid() const;
+
 private:
     void PrepareColliderInfo();
     void ApplyPhysicsProperties();
