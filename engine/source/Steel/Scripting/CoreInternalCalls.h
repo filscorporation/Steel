@@ -27,7 +27,7 @@ namespace CoreInternalCalls
 
     // Resources Manager
     ResourceID ResourcesManager_LoadImage(MonoString* path);
-    EntityID ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll);
+    ResourceID ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll);
     ResourceID ResourcesManager_LoadAudioTrack(MonoString* path);
     ResourceID ResourcesManager_LoadShader(MonoString* vsPath, MonoString* fsPath);
     ResourceID ResourcesManager_CreateMaterial(ResourceID shaderID);
@@ -41,8 +41,8 @@ namespace CoreInternalCalls
     int Sprite_GetHeight(ResourceID spriteID);
     int Sprite_GetPixelsPerUnit(ResourceID spriteID);
     void Sprite_SetPixelsPerUnit(ResourceID spriteID, int pixelsPerUnit);
-    void Sprite_GetPivot(EntityID spriteID, glm::vec2* pivot);
-    void Sprite_SetPivot(EntityID spriteID, glm::vec2* pivot);
+    void Sprite_GetPivot(ResourceID spriteID, glm::vec2* pivot);
+    void Sprite_SetPivot(ResourceID spriteID, glm::vec2* pivot);
     ResourceID Animation_FromSpriteSheet(ResourceID spriteID, float length);
     ResourceID Animation_FromSprites(MonoArray* spritesIDs, float length);
     float Animation_GetLength(ResourceID animationID);
@@ -56,8 +56,8 @@ namespace CoreInternalCalls
     EntityID AsepriteData_CreateEntityFromAsepriteData(ResourceID resourceID);
     ResourceID Material_GetShader(ResourceID resourceID);
     void Material_SetShader(ResourceID resourceID, ResourceID shaderID);
-    void Material_GetProperties(EntityID resourceID, MaterialPropertyBlockInternal* properties);
-    void Material_SetProperties(EntityID resourceID, MaterialPropertyBlockInternal properties);
+    void Material_GetProperties(ResourceID resourceID, MaterialPropertyBlockInternal* properties);
+    void Material_SetProperties(ResourceID resourceID, MaterialPropertyBlockInternal properties);
 
     // Time
     float Time_GetDeltaTime();

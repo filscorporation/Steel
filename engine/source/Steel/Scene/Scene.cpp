@@ -94,7 +94,7 @@ EntityID Scene::CreateEntity()
     return CreateEntity("New entity", NULL_ENTITY);
 }
 
-EntityID Scene::CreateEntity(const char* name, EntityID parent)
+EntityID Scene::CreateEntity(const std::string& name, EntityID parent)
 {
     auto entity = CreateEmptyEntity();
     auto& nameComponent = entitiesRegistry->AddComponent<NameComponent>(entity);
@@ -108,7 +108,7 @@ EntityID Scene::CreateEntity(const char* name, EntityID parent)
 
 EntityID Scene::CreateEntity(AsepriteData& data)
 {
-    auto entity = CreateEntity(data.Name, NULL_ENTITY);
+    auto entity = CreateEntity(data.Name == nullptr ? "" : data.Name, NULL_ENTITY);
     auto& sr = entitiesRegistry->AddComponent<SpriteRenderer>(entity);
     if (!data.Sprites.empty())
         sr.SetImage(data.Sprites[0]);

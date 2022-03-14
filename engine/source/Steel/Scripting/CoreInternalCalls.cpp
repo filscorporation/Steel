@@ -72,7 +72,7 @@ ResourceID CoreInternalCalls::ResourcesManager_LoadImage(MonoString* path)
     return image == nullptr ? NULL_RESOURCE : image->ID;
 }
 
-EntityID CoreInternalCalls::ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll)
+ResourceID CoreInternalCalls::ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll)
 {
     auto data = Application::Instance->GetResourcesManager()->LoadAsepriteData(ScriptingCore::ToString(path), loopAll);
     return data == nullptr ? NULL_RESOURCE : data->ID;
@@ -166,7 +166,7 @@ void CoreInternalCalls::Sprite_SetPixelsPerUnit(ResourceID spriteID, int pixelsP
         image->PixelsPerUnit = pixelsPerUnit;
 }
 
-void CoreInternalCalls::Sprite_GetPivot(EntityID spriteID, glm::vec2* pivot)
+void CoreInternalCalls::Sprite_GetPivot(ResourceID spriteID, glm::vec2* pivot)
 {
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
@@ -176,7 +176,7 @@ void CoreInternalCalls::Sprite_GetPivot(EntityID spriteID, glm::vec2* pivot)
     }
 }
 
-void CoreInternalCalls::Sprite_SetPivot(EntityID spriteID, glm::vec2* pivot)
+void CoreInternalCalls::Sprite_SetPivot(ResourceID spriteID, glm::vec2* pivot)
 {
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
@@ -335,7 +335,7 @@ void CoreInternalCalls::Material_SetShader(ResourceID resourceID, ResourceID sha
     material->MainShader = Application::Instance->GetResourcesManager()->GetShader(shaderID);
 }
 
-void CoreInternalCalls::Material_GetProperties(EntityID resourceID, MaterialPropertyBlockInternal* properties)
+void CoreInternalCalls::Material_GetProperties(ResourceID resourceID, MaterialPropertyBlockInternal* properties)
 {
     auto material = Application::Instance->GetResourcesManager()->GetMaterial(resourceID);
     if (material == nullptr)
@@ -343,7 +343,7 @@ void CoreInternalCalls::Material_GetProperties(EntityID resourceID, MaterialProp
     properties->FromMaterialPropertyBlock(material->Properties);
 }
 
-void CoreInternalCalls::Material_SetProperties(EntityID resourceID, MaterialPropertyBlockInternal properties)
+void CoreInternalCalls::Material_SetProperties(ResourceID resourceID, MaterialPropertyBlockInternal properties)
 {
     auto material = Application::Instance->GetResourcesManager()->GetMaterial(resourceID);
     if (material == nullptr)

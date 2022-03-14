@@ -28,7 +28,7 @@ public:
     void SetName(const std::string& name);
 
     EntityID CreateEntity();
-    EntityID CreateEntity(const char* name, EntityID parent);
+    EntityID CreateEntity(const std::string& name, EntityID parent);
     EntityID CreateEntity(AsepriteData& data);
     EntityID CreateEmptyEntity();
     void DestroyEntity(EntityID entityID);

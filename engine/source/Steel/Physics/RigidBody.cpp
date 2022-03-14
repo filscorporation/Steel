@@ -434,27 +434,27 @@ void RigidBody::GetPhysicsTransformation()
     if (_type == RigidBodyTypes::Static || _type == RigidBodyTypes::None || info == nullptr)
         return;
 
-    inGetTransformation = true;
-    float z = GetComponentS<Transformation>(Owner).GetPosition().z;
+    auto& transformation = GetComponentS<Transformation>(Owner);
+    float z = transformation.GetPosition().z;
     auto position = info->Body->GetPosition();
     float rotation = info->Body->GetAngle();
-    GetComponentS<Transformation>(Owner).SetPosition(glm::vec3(position.x, position.y, z));
-    GetComponentS<Transformation>(Owner).SetRotation(glm::vec3(0, 0, rotation));
-    inGetTransformation = false;
+    transformation.SetPosition(glm::vec3(position.x, position.y, z));
+    transformation.SetRotation(glm::vec3(0, 0, rotation));
 }
 
 void RigidBody::UpdatePhysicsTransformation()
 {
-    if (inGetTransformation || info == nullptr || _type == RigidBodyTypes::None)
+    if (info == nullptr || _type == RigidBodyTypes::None)
         return;
 
     // TODO: maybe synchronise with global positions calculation at the end of frame
-    auto position = GetComponentS<Transformation>(Owner).GetPosition();
+    auto& transformation = GetComponentS<Transformation>(Owner);
+    auto position = transformation.GetPosition();
     b2Vec2 b2Position;
 
     b2Position.x = position.x;
     b2Position.y = position.y;
-    info->Body->SetTransform(b2Position, GetComponentS<Transformation>(Owner).GetRotation().z);
+    info->Body->SetTransform(b2Position, transformation.GetRotation().z);
 }
 
 bool RigidBody::AssertInitialized()

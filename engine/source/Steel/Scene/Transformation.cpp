@@ -78,7 +78,7 @@ const glm::vec3& Transformation::GetRotation()
     else
     {
         auto& parentTransformation = registry->GetComponent<Transformation>(node.GetParentNode());
-        // For rotation it should be enough to add parent's rotation to out local
+        // For rotation, it should be enough to add parent's rotation to out local
         _rotation = parentTransformation.GetRotation() + _localRotation;
     }
 
@@ -98,7 +98,7 @@ void Transformation::SetRotation(const glm::vec3& rotation)
     else
     {
         auto& parentTransform = registry->GetComponent<Transformation>(node.GetParentNode());
-        // For rotation it should be enough to subtract parent's rotation from target global
+        // For rotation, it should be enough to subtract parent's rotation from target global
         _localRotation = _rotation - parentTransform.GetRotation();
     }
 
@@ -116,7 +116,7 @@ const glm::vec3& Transformation::GetScale()
     else
     {
         auto& parentTransformation = registry->GetComponent<Transformation>(node.GetParentNode());
-        // For scale it should be enough to multiply parent's scale to out local
+        // For scale, it should be enough to multiply parent's scale to out local
         _scale = parentTransformation.GetScale() * _localScale;
     }
 

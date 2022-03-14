@@ -81,7 +81,8 @@
         /// </summary>
         public Vector3 Normalize()
         {
-            return this / Magnitude();
+            float magnitude = Magnitude();
+            return Math.Approximately(magnitude, 0.0f) ? Zero : this / magnitude;
         }
         
         public static Vector3 operator +(Vector3 a, Vector3 b) => new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);

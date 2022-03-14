@@ -60,7 +60,8 @@
         /// </summary>
         public Vector2 Normalize()
         {
-            return this / Magnitude();
+            float magnitude = Magnitude();
+            return Math.Approximately(magnitude, 0.0f) ? Zero : this / magnitude;
         }
         
         public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.X + b.X, a.Y + b.Y);

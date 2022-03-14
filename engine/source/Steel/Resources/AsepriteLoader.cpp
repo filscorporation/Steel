@@ -169,12 +169,19 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
 
     Fill(fullImageData, width, height, (unsigned char*)imageData, celWidth, celHeight, celX, celY);
     Texture* texture = Texture::CreateImageTexture(fullImageData, (uint32_t)width, (uint32_t)height);
-    texture->Path = dataPath + "@TEXTURE" + std::to_string(imageIndex);
+    // Workaround before resources UUIDs
+    if (imageIndex == 0)
+        texture->Path = dataPath;
+    else
+        texture->Path = dataPath + "@TEXTURE" + std::to_string(imageIndex);
     Application::Context()->Resources->AddResource(texture);
 
     auto image = new Sprite(texture);
     image->IsTransparent = IsImageTransparent(fullImageData, width, height);
-    image->Path = dataPath + "@IMAGE" + std::to_string(imageIndex);
+    if (imageIndex == 0)
+        image->Path = dataPath;
+    else
+        image->Path = dataPath + "@IMAGE" + std::to_string(imageIndex);
 
     Application::Context()->Resources->AddResource(image);
 
