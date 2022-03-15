@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Steel/EntityComponentSystem/Component.h"
+#include "TestType.h"
 
 class SerializedComponent : public Component
 {
-    COMPONENT(SerializedComponent)
+    DEFINE_COMPONENT(SerializedComponent)
 
 public:
     explicit SerializedComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
@@ -18,6 +19,7 @@ public:
     const glm::vec2& GetVec2Attribute() const;
     const glm::vec3& GetVec3Attribute() const;
     const glm::vec4& GetVec4Attribute() const;
+    const std::vector<TestType>& GetTestTypeListAttribute() const;
 
     void SetIntegerAttribute(int newValue);
     void SetFloatAttribute(float newValue);
@@ -27,6 +29,7 @@ public:
     void SetVec2Attribute(const glm::vec2& newValue);
     void SetVec3Attribute(const glm::vec3& newValue);
     void SetVec4Attribute(const glm::vec4& newValue);
+    void SetTestTypeListAttribute(const std::vector<TestType>& newValue);
 
     int IntegerAttribute = 0;
     float FloatAttribute = 0.0f;
@@ -36,4 +39,5 @@ public:
     glm::vec2 Vec2Attribute;
     glm::vec3 Vec3Attribute;
     glm::vec4 Vec4Attribute;
+    std::vector<TestType> TestTypeListAttribute;
 };

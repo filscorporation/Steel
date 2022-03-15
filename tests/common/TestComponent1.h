@@ -4,7 +4,7 @@
 
 class TestComponent1 : public Component
 {
-    COMPONENT(TestComponent1)
+    DEFINE_COMPONENT(TestComponent1)
 
 public:
     explicit TestComponent1(EntityID ownerEntityID) : Component(ownerEntityID) { }

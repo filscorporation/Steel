@@ -2,5 +2,5 @@
 
 void TestComponent2::RegisterType()
 {
-    REGISTER_TYPE(TestComponent2);
+    REGISTER_COMPONENT(TestComponent2);
 }

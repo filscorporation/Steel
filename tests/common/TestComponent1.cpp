@@ -2,7 +2,7 @@
 
 void TestComponent1::RegisterType()
 {
-    REGISTER_TYPE(TestComponent1);
+    REGISTER_COMPONENT(TestComponent1);
 }
 
 void TestComponent1::OnCreated(EntitiesRegistry *entitiesRegistry)

@@ -2,7 +2,7 @@
 
 void SerializedComponent::RegisterType()
 {
-    REGISTER_TYPE(SerializedComponent);
+    REGISTER_COMPONENT(SerializedComponent);
     REGISTER_ATTRIBUTE(SerializedComponent, "integerAttribute", GetIntegerAttribute, SetIntegerAttribute, int, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(SerializedComponent, "floatAttribute", GetFloatAttribute, SetFloatAttribute, float, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(SerializedComponent, "boolAttribute", GetBoolAttribute, SetBoolAttribute, bool, AttributeFlags::Public);
@@ -11,6 +11,7 @@ void SerializedComponent::RegisterType()
     REGISTER_ATTRIBUTE(SerializedComponent, "vec2Attribute", GetVec2Attribute, SetVec2Attribute, glm::vec2, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(SerializedComponent, "vec3Attribute", GetVec3Attribute, SetVec3Attribute, glm::vec3, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(SerializedComponent, "vec4Attribute", GetVec4Attribute, SetVec4Attribute, glm::vec4, AttributeFlags::Public);
+    REGISTER_LIST_ATTRIBUTE(SerializedComponent, "testTypeListAttribute", GetTestTypeListAttribute, SetTestTypeListAttribute, TestType, AttributeFlags::Public);
 }
 
 int SerializedComponent::GetIntegerAttribute() const
@@ -53,6 +54,11 @@ const glm::vec4& SerializedComponent::GetVec4Attribute() const
     return Vec4Attribute;
 }
 
+const std::vector<TestType>& SerializedComponent::GetTestTypeListAttribute() const
+{
+    return TestTypeListAttribute;
+}
+
 void SerializedComponent::SetIntegerAttribute(int newValue)
 {
     IntegerAttribute = newValue;
@@ -91,4 +97,9 @@ void SerializedComponent::SetVec3Attribute(const glm::vec3& newValue)
 void SerializedComponent::SetVec4Attribute(const glm::vec4& newValue)
 {
     Vec4Attribute = newValue;
+}
+
+void SerializedComponent::SetTestTypeListAttribute(const std::vector<TestType>& newValue)
+{
+    TestTypeListAttribute = newValue;
 }

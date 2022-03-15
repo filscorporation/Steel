@@ -21,6 +21,9 @@ public:
     static void BackupScene(Scene* scene);
     static void RestoreScene(Scene* scene);
 
+    static void SerializeScene(Scene* scene, YAML::Node& node);
+    static void DeserializeScene(Scene* scene, YAML::Node& node);
+
     static void Serialize(ComponentTypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context);
     static void Deserialize(ComponentTypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context);
 
@@ -30,9 +33,6 @@ public:
     static std::vector<AttributeInfo>& GetAttributes() { return GetAttributes(TYPE_ID(T)); }
 
 private:
-    static void SerializeScene(Scene* scene, YAML::Node& node);
-    static void DeserializeScene(Scene* scene, YAML::Node& node);
-
     static std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> _attributesInfo;
 
     static YAML::Node* _sceneBackup;
