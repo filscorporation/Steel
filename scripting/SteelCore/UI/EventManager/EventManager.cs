@@ -10,13 +10,15 @@ namespace Steel
         private static readonly ConcurrentDictionary<(uint, CallbackType), CallbackList> eventCallbacks
             = new ConcurrentDictionary<(uint, CallbackType), CallbackList>();
 
-        internal static void RegisterCallbacks(uint entityID, CallbackType callbackType, CallbackList callbackList)
+        internal static CallbackList TryAddCallbacks(uint entityID, CallbackType callbackType)
         {
-            if (!eventCallbacks.TryAdd((entityID, callbackType), callbackList))
-            {
-                Log.LogError("Trying to register multiple callback lists for one entity");
-                return;
-            }
+            if (eventCallbacks.TryGetValue((entityID, callbackType), out CallbackList callbackList))
+                return callbackList;
+
+            callbackList = new CallbackList();
+            eventCallbacks.TryAdd((entityID, callbackType), callbackList);
+
+            return callbackList;
         }
 
         internal static void DeregisterCallbacks(uint entityID, CallbackType callbackType)

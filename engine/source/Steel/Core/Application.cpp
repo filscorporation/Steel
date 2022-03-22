@@ -88,6 +88,8 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     context->Scenes->SetActiveScene(context->Scenes->CreateNewScene("New scene"));
     context->Scenes->GetActiveScene()->Init(true);
 
+    context->Scripting = true;
+
     return context;
 }
 
@@ -122,7 +124,8 @@ void Application::RunUpdate()
     if (!EntryPointCalled)
     {
         EntryPointCalled = true;
-        ScriptingSystem::CallEntryPoint();
+        if (CurrentContext->Scripting)
+            ScriptingSystem::CallEntryPoint();
     }
 
     Input::PollEvents();

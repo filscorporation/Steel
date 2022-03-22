@@ -13,6 +13,7 @@ class UIInteractable : public UIComponent
 {
 public:
     explicit UIInteractable(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
+    ~UIInteractable() override = default;
 
     void SetTransitionsInfo(const TransitionsInfo& info);
     const TransitionsInfo& GetTransitionsInfo() const;

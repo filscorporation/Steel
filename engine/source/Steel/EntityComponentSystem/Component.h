@@ -10,7 +10,7 @@ class Component : public Serializable
 {
 public:
     explicit Component(EntityID ownerEntityID);
-    virtual ~Component() = default;
+    ~Component() override = default;
 
     bool IsAlive() const;
 

@@ -4,14 +4,14 @@
 
 #include <glm/glm.hpp>
 
-class BoxCollider : public Component
+class BoxCollider : public Collider
 {
     DEFINE_COMPONENT(BoxCollider)
 
     struct BoxColliderInfo;
 
 public:
-    explicit BoxCollider(EntityID ownerEntityID) : Component(ownerEntityID) { };
+    explicit BoxCollider(EntityID ownerEntityID) : Collider(ownerEntityID) { };
 
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;
@@ -21,7 +21,7 @@ public:
     const glm::vec2& GetSize() const;
     void SetSize(const glm::vec2& size);
 
-    bool IsSizeValid() const;
+    bool IsSizeValid() const override;
 
 private:
     void PrepareColliderInfo();

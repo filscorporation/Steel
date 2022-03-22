@@ -36,6 +36,7 @@ struct ApplicationContext
 {
     ResourcesManager* Resources = nullptr;
     SceneManager* Scenes = nullptr;
+    bool Scripting = true; // We do not support multiple script domains, but indicate context that is using it
     ScreenParameters ScreenParams {};
     ApplicationStats Stats {};
     bool IgnoreEvents = false;

@@ -100,7 +100,7 @@ TEST(SerializationTest, ComponentSerialization)
 
     auto loadedScene = new Scene("");
     SerializationManager::DeserializeScene(loadedScene, sceneNode);
-    Application::Instance->GetSceneManager()->SetActiveScene(scene);
+    Application::Instance->GetSceneManager()->SetActiveScene(loadedScene);
     auto loadedRegistry = loadedScene->GetEntitiesRegistry();
 
     EntityID loadedEntityID = loadedScene->GetEntityByUUID(entityUUID);

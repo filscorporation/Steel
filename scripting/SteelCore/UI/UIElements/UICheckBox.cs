@@ -10,19 +10,7 @@ namespace Steel
         /// <summary>
         /// Callback to call when value is changed
         /// </summary>
-        public CallbackList OnValueChanged
-        {
-            get
-            {
-                if (onValueChanged == null)
-                {
-                    onValueChanged = new CallbackList();
-                    EventManager.RegisterCallbacks(Entity.EntityID, CallbackType.CheckBoxChangeValue, onValueChanged);
-                }
-                return onValueChanged;
-            }
-        }
-        private CallbackList onValueChanged;
+        public CallbackList OnValueChanged => EventManager.TryAddCallbacks(Entity.EntityID, CallbackType.CheckBoxChangeValue);
 
         /// <summary>
         /// Current value (on/off)

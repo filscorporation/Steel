@@ -4,7 +4,7 @@
 #include "BoxCollider.h"
 #include "CircleCollider.h"
 
-#define SHAPE_EPS 0.00001f
+#define SHAPE_EPS 0.001f
 
 struct RigidBody::RigidBodyInfo
 {

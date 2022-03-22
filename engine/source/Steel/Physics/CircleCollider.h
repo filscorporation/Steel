@@ -4,14 +4,14 @@
 
 #include <glm/glm.hpp>
 
-class CircleCollider : public Component
+class CircleCollider : public Collider
 {
     DEFINE_COMPONENT(CircleCollider)
 
     struct CircleColliderInfo;
 
 public:
-    explicit CircleCollider(EntityID ownerEntityID) : Component(ownerEntityID) { };
+    explicit CircleCollider(EntityID ownerEntityID) : Collider(ownerEntityID) { };
 
     void OnCreated(EntitiesRegistry* entitiesRegistry) override;
     void OnEnabled(EntitiesRegistry* entitiesRegistry) override;

@@ -17,6 +17,7 @@ void CircleCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
     if (PhysicsCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
     {
         PrepareColliderInfo();
+        OnSizeChanged();
     }
 }
 
@@ -25,6 +26,7 @@ void CircleCollider::OnEnabled(EntitiesRegistry* entitiesRegistry)
     if (PhysicsCore::Initialized() && info != nullptr)
     {
         ApplyPhysicsProperties();
+        OnSizeChanged();
     }
 }
 
@@ -37,6 +39,7 @@ void CircleCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
 void CircleCollider::SetSizeAutomatically()
 {
+    float oldRadius = _radius;
     glm::vec2 size;
     if (autoSize)
     {
@@ -56,6 +59,9 @@ void CircleCollider::SetSizeAutomatically()
     if (autoSize)
         _radius = (size.x > size.y ? size.x : size.y) * 0.5f;
     info->CircleShape->m_radius = _radius;
+
+    if (std::abs(oldRadius - _radius) > SHAPE_EPS)
+        OnSizeChanged();
 }
 
 float CircleCollider::GetRadius() const
@@ -69,7 +75,10 @@ void CircleCollider::SetRadius(float radius)
     autoSize = false;
 
     if (PhysicsCore::Initialized())
+    {
         info->CircleShape->m_radius = _radius;
+        OnSizeChanged();
+    }
 }
 
 bool CircleCollider::IsSizeValid() const

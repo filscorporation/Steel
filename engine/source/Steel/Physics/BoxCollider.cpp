@@ -18,6 +18,7 @@ void BoxCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
     if (PhysicsCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
     {
         PrepareColliderInfo();
+        OnSizeChanged();
     }
 }
 
@@ -26,6 +27,7 @@ void BoxCollider::OnEnabled(EntitiesRegistry* entitiesRegistry)
     if (PhysicsCore::Initialized() && info != nullptr)
     {
         ApplyPhysicsProperties();
+        OnSizeChanged();
     }
 }
 
@@ -38,6 +40,7 @@ void BoxCollider::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
 void BoxCollider::SetSizeAutomatically()
 {
+    glm::vec2 oldSize = _size;
     glm::vec2 size;
     if (autoSize)
     {
@@ -55,6 +58,9 @@ void BoxCollider::SetSizeAutomatically()
 
     _size = glm::vec2(std::abs(size.x), std::abs(size.y));
     info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
+
+    if (std::abs(oldSize.x - _size.x) > SHAPE_EPS || std::abs(oldSize.y - _size.y) > SHAPE_EPS)
+        OnSizeChanged();
 }
 
 const glm::vec2& BoxCollider::GetSize() const
@@ -68,7 +74,10 @@ void BoxCollider::SetSize(const glm::vec2& size)
     autoSize = false;
 
     if (PhysicsCore::Initialized())
+    {
         info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
+        OnSizeChanged();
+    }
 }
 
 bool BoxCollider::IsSizeValid() const

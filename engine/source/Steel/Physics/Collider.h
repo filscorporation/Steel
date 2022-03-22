@@ -4,7 +4,12 @@
 
 class Collider : public Component
 {
-    // TODO: not used
 public:
     explicit Collider(EntityID ownerEntityID) : Component(ownerEntityID) { }
+    ~Collider() override = default;
+
+protected:
+    void OnSizeChanged();
+
+    virtual bool IsSizeValid() const = 0;
 };

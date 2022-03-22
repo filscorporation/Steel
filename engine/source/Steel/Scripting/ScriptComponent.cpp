@@ -71,7 +71,7 @@ void ScriptComponent::AddScript(ScriptObjectHandler* scriptHandler, ScriptTypeIn
     Scripts.emplace_back(data);
     ScriptsMask = ScriptsMask | typeInfo->Mask;
 
-    if (typeInfo->Mask & ScriptEventTypes::OnCreate)
+    if (typeInfo->Mask & ScriptEventTypes::OnCreate && Application::Context()->Scripting)
     {
         ScriptingCore::CallMethod(
                 typeInfo->EventMethods[ScriptEventTypes::OnCreate]->Method,
@@ -90,7 +90,7 @@ void ScriptComponent::RemoveScript(ScriptTypeInfo* typeInfo)
         if (Scripts[i].TypeInfo == typeInfo)
         {
             found = true;
-            if (Scripts[i].TypeInfo->Mask & ScriptEventTypes::OnDestroy)
+            if (Scripts[i].TypeInfo->Mask & ScriptEventTypes::OnDestroy && Application::Context()->Scripting)
             {
                 ScriptingCore::CallMethod(
                         Scripts[i].TypeInfo->EventMethods[ScriptEventTypes::OnDestroy]->Method,
@@ -267,6 +267,9 @@ void ScriptComponent::OnMouseJustReleasedUI()
 
 void ScriptComponent::TryCallEventMethod(ScriptEventTypes::ScriptEventType eventType, void** params)
 {
+    if (!Application::Context()->Scripting)
+        return;
+
     if (!(ScriptsMask & eventType))
         return;
 

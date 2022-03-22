@@ -35,7 +35,8 @@ void UIButton::OnCreated(EntitiesRegistry* entitiesRegistry)
 void UIButton::OnRemoved(EntitiesRegistry* entitiesRegistry)
 {
     StopTransition();
-    ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::ButtonClick, ScriptingCore::GetDeregisterCallbacksMethod());
+    if (ScriptingSystem::IsInitialized() && Application::Context()->Scripting)
+        ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::ButtonClick, ScriptingCore::GetDeregisterCallbacksMethod());
 }
 
 void UIButton::OnEnabled(EntitiesRegistry* entitiesRegistry)
@@ -78,7 +79,7 @@ void UIButton::HandleEventInner(UIEventTypes::UIEventType eventType, UIEvent& ui
         EntityID ownerBackup = Owner;
         if (Callback != nullptr)
             Callback(ownerBackup);
-        if (ScriptingSystem::IsInitialized())
+        if (ScriptingSystem::IsInitialized() && Application::Context()->Scripting)
             ScriptingCore::CallCallbackMethod(ownerBackup, CallbackTypes::ButtonClick, ScriptingCore::GetInvokeCallbacksMethod());
     }
 }

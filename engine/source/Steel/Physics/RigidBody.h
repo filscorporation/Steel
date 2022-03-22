@@ -65,6 +65,7 @@ public:
 
     void GetPhysicsTransformation();
     void UpdatePhysicsTransformation();
+    void OnColliderUpdated();
 
     std::unordered_map<EntityID, Collision> ActiveContacts;
 

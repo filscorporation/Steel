@@ -10,19 +10,7 @@ namespace Steel
         /// <summary>
         /// Callback to call when button gets clicked by mouse buttons
         /// </summary>
-        public CallbackList OnClick
-        {
-            get
-            {
-                if (onClick == null)
-                {
-                    onClick = new CallbackList();
-                    EventManager.RegisterCallbacks(Entity.EntityID, CallbackType.ButtonClick, onClick);
-                }
-                return onClick;
-            }
-        }
-        private CallbackList onClick;
+        public CallbackList OnClick => EventManager.TryAddCallbacks(Entity.EntityID, CallbackType.ButtonClick);
 
         /// <summary>
         /// Image, affected by button transitions

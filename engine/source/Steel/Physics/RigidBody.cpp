@@ -167,26 +167,44 @@ void RigidBody::SetAutoFixture()
     if (HasComponentS<BoxCollider>(Owner))
     {
         auto& bc = GetComponentS<BoxCollider>(Owner);
-        bc.PrepareColliderInfo();
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = bc.info->BoxShape;
-        fixtureDef.density = 1;
-        fixtureDef.friction = _friction;
-        fixtureDef.restitution = _restitution;
-        info->Fixture = info->Body->CreateFixture(&fixtureDef);
+        if (info->Fixture != nullptr)
+        {
+            // Destroy old fixture to replace with new
+            info->Body->DestroyFixture(info->Fixture);
+            info->Fixture = nullptr;
+        }
         info->IsFixtureValid = bc.IsSizeValid();
+        if (info->IsFixtureValid)
+        {
+            bc.PrepareColliderInfo();
+            b2FixtureDef fixtureDef;
+            fixtureDef.shape = bc.info->BoxShape;
+            fixtureDef.density = 1;
+            fixtureDef.friction = _friction;
+            fixtureDef.restitution = _restitution;
+            info->Fixture = info->Body->CreateFixture(&fixtureDef);
+        }
     }
     if (HasComponentS<CircleCollider>(Owner))
     {
         auto& cc = GetComponentS<CircleCollider>(Owner);
-        cc.PrepareColliderInfo();
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = cc.info->CircleShape;
-        fixtureDef.density = 1;
-        fixtureDef.friction = _friction;
-        fixtureDef.restitution = _restitution;
-        info->Fixture = info->Body->CreateFixture(&fixtureDef);
+        if (info->Fixture != nullptr)
+        {
+            // Destroy old fixture to replace with new
+            info->Body->DestroyFixture(info->Fixture);
+            info->Fixture = nullptr;
+        }
         info->IsFixtureValid = cc.IsSizeValid();
+        if (info->IsFixtureValid)
+        {
+            cc.PrepareColliderInfo();
+            b2FixtureDef fixtureDef;
+            fixtureDef.shape = cc.info->CircleShape;
+            fixtureDef.density = 1;
+            fixtureDef.friction = _friction;
+            fixtureDef.restitution = _restitution;
+            info->Fixture = info->Body->CreateFixture(&fixtureDef);
+        }
     }
 
     SetMassInner();
@@ -231,7 +249,7 @@ glm::vec2 RigidBody::GetVelocity() const
         return glm::vec2(0.0f);
 
     auto& v = info->Body->GetLinearVelocity();
-    return glm::vec2(v.x, v.y);
+    return {v.x, v.y};
 }
 
 void RigidBody::SetVelocity(glm::vec2 velocity)
@@ -455,6 +473,14 @@ void RigidBody::UpdatePhysicsTransformation()
     b2Position.x = position.x;
     b2Position.y = position.y;
     info->Body->SetTransform(b2Position, transformation.GetRotation().z);
+}
+
+void RigidBody::OnColliderUpdated()
+{
+    if (!PhysicsCore::Initialized() || _type == RigidBodyTypes::None || info == nullptr)
+        return;
+
+    SetAutoFixture();
 }
 
 bool RigidBody::AssertInitialized()

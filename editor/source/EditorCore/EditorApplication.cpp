@@ -36,6 +36,8 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene("New scene"));
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
+    AppContext->Scripting = true;
+
     // Editor
     EditorContext = new ApplicationContext();
     CurrentContext = EditorContext;
@@ -56,6 +58,8 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext->Scenes = new SceneManager();
     auto editorScene = new EditorScene();
     EditorContext->Scenes->SetActiveScene(editorScene);
+
+    EditorContext->Scripting = false;
 
     ApplicationFramebuffer = new Framebuffer(AppContext->ScreenParams.ResolutionX, AppContext->ScreenParams.ResolutionY);
     OpenedSceneFramebuffer = new Framebuffer(100, 100);
