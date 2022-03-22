@@ -56,7 +56,6 @@ void Application::InitSystems(int width, int height, glm::vec3 color, bool fulls
     CoreTypeSystem::Init();
     SerializationManager::Init();
     ScriptingSystem::Init();
-    ScriptingSystem::CreateDomain();
     Renderer::Init();
     AudioCore::Init();
 }
@@ -88,6 +87,7 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     context->Scenes->SetActiveScene(context->Scenes->CreateNewScene("New scene"));
     context->Scenes->GetActiveScene()->Init(true);
 
+    ScriptingSystem::CreateDomain();
     context->Scripting = true;
 
     return context;
@@ -155,11 +155,11 @@ void Application::Terminate()
     delete AppContext->Scenes;
     delete AppContext->Resources;
     delete AppContext;
+    ScriptingSystem::UnloadDomain();
 
     AudioCore::Terminate();
     Renderer::Terminate();
     Screen::Terminate();
-    ScriptingSystem::UnloadDomain();
     ScriptingSystem::Terminate();
     SerializationManager::Terminate();
     CoreTypeSystem::Terminate();

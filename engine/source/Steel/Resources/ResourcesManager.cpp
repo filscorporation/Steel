@@ -190,8 +190,9 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
 {
     std::string path = engineResource ? std::string(ENGINE_RESOURCES_PATH) + filePath : filePath;
 
-    if (ResourceExists(ResourceTypes::Sprite, Math::StringHash(path.c_str())))
-        return GetSprite(Math::StringHash(path.c_str()));
+    uint64_t hash = Math::StringHash(path.c_str());
+    if (ResourceExists(ResourceTypes::Sprite, hash))
+        return GetSprite(hash);
 
     std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
     fullPathString += filePath;
@@ -255,8 +256,9 @@ Texture* ResourcesManager::GetTexture(ResourceID textureID)
 
 AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loopAll)
 {
-    if (ResourceExists(ResourceTypes::AsepriteData, Math::StringHash(filePath)))
-        return GetAsepriteData(Math::StringHash(filePath));
+    uint64_t hash = Math::StringHash(filePath);
+    if (ResourceExists(ResourceTypes::AsepriteData, hash))
+        return GetAsepriteData(hash);
 
     std::string fullPathString = RESOURCES_PATH;
     fullPathString += filePath;
@@ -300,8 +302,9 @@ AsepriteData* ResourcesManager::GetAsepriteData(ResourceID resourceID)
 
 AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
 {
-    if (ResourceExists(ResourceTypes::AudioTrack, Math::StringHash(filePath)))
-        return GetAudioTrack(Math::StringHash(filePath));
+    uint64_t hash = Math::StringHash(filePath);
+    if (ResourceExists(ResourceTypes::AudioTrack, hash))
+        return GetAudioTrack(hash);
 
     std::string fullPathString = RESOURCES_PATH;
     fullPathString += filePath;
@@ -349,8 +352,9 @@ Font* ResourcesManager::LoadFont(const char* fontPath, bool engineResource)
 {
     std::string path = engineResource ? std::string(ENGINE_RESOURCES_PATH) + fontPath : fontPath;
 
-    if (ResourceExists(ResourceTypes::Font, Math::StringHash(path.c_str())))
-        return GetFont(Math::StringHash(path.c_str()));
+    uint64_t hash = Math::StringHash(path.c_str());
+    if (ResourceExists(ResourceTypes::Font, hash))
+        return GetFont(hash);
 
     std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
     fullPathString += fontPath;
@@ -396,8 +400,9 @@ Shader* ResourcesManager::LoadShader(const char* fileVSPath, const char* fileFSP
 {
     std::string path = std::string(fileVSPath) + "@" + fileFSPath;
 
-    if (ResourceExists(ResourceTypes::Shader, Math::StringHash(path.c_str())))
-        return GetShader(Math::StringHash(path.c_str()));
+    uint64_t hash = Math::StringHash(path.c_str());
+    if (ResourceExists(ResourceTypes::Shader, hash))
+        return GetShader(hash);
 
     std::string fullVSPathString = RESOURCES_PATH;
     fullVSPathString += fileVSPath;

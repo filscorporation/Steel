@@ -36,6 +36,7 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene("New scene"));
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
+    ScriptingSystem::CreateDomain();
     AppContext->Scripting = true;
 
     // Editor
@@ -225,8 +226,8 @@ void EditorApplication::LoadSceneToEdit(const std::string& filePath)
     auto scene = SerializationManager::DeserializeScene(filePath);
     if (scene == nullptr)
     {
-        SwitchContext(EditorContext);
-        return;
+        // Create new empty scene if loading failed
+        scene = new Scene("");
     }
     AppContext->Scenes->SetActiveScene(scene);
 

@@ -70,7 +70,7 @@ bool ScriptingSystem::DomainLoaded()
 
 void ScriptingSystem::CallEntryPoint()
 {
-    if (!isInitialized)
+    if (!IsInitialized())
     {
         Log::LogWarning("Scripting system is not initialized");
         return;

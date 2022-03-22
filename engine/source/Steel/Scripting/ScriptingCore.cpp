@@ -71,12 +71,17 @@ bool ScriptingCore::CreateDomain(const char* apiDllPath, const char* scriptsDllP
 
     Domain->CoreAssemblyImage = LoadAssemblyImage(apiDllPath);
     if (Domain->CoreAssemblyImage == nullptr)
+    {
+        delete Domain;
+        Domain = nullptr;
         return false;
+    }
 
     Domain->CustomAssemblyImage = LoadAssemblyImage(scriptsDllPath);
     if (Domain->CustomAssemblyImage == nullptr)
     {
-        Log::LogWarning("Could not find custom assembly at: {0}", scriptsDllPath);
+        delete Domain;
+        Domain = nullptr;
         return false;
     }
 
@@ -96,6 +101,9 @@ bool ScriptingCore::CreateDomain(const char* apiDllPath, const char* scriptsDllP
 
 void ScriptingCore::UnloadDomain()
 {
+    if (Domain == nullptr)
+        return;
+
     for (auto desc : Domain->EventMethodsDescriptions)
         mono_method_desc_free(desc.second);
     for (auto info : Domain->ScriptsInfo)
@@ -694,20 +702,20 @@ ScriptAttributeAccessorBase* ScriptingCore::CreateFieldAccessor(MonoClassField* 
         case MONO_TYPE_CHAR:
             return new ScriptAttributeAccessor<char>(monoClassField, Types::Char);
         case MONO_TYPE_I1:
-            Log::LogWarning("Int8 serialization is not supported yet");
+            Log::LogWarning("Int8 serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
             return nullptr; // int8_t
         case MONO_TYPE_I2:
-            Log::LogWarning("Int16 serialization is not supported yet");
+            Log::LogWarning("Int16 serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
             return nullptr; // int16_t
         case MONO_TYPE_I4:
             return new ScriptAttributeAccessor<int>(monoClassField, Types::Int);
         case MONO_TYPE_I8:
             return new ScriptAttributeAccessor<long>(monoClassField, Types::Long);
         case MONO_TYPE_U1:
-            Log::LogWarning("UInt8 serialization is not supported yet");
+            Log::LogWarning("UInt8 serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
             return nullptr; // uint8_t
         case MONO_TYPE_U2:
-            Log::LogWarning("UInt16 serialization is not supported yet");
+            Log::LogWarning("UInt16 serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
             return nullptr; // uint16_t
         case MONO_TYPE_U4:
             return new ScriptAttributeAccessor<uint32_t>(monoClassField, Types::UInt32);
@@ -719,25 +727,32 @@ ScriptAttributeAccessorBase* ScriptingCore::CreateFieldAccessor(MonoClassField* 
             return new ScriptAttributeAccessor<double>(monoClassField, Types::Double);
         case MONO_TYPE_VALUETYPE:
             {
-                Log::LogWarning("Value types serialization is not supported yet");
+                Log::LogWarning("Value types serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
                 //MonoClass* monoClass = mono_class_from_mono_type(monoType);
 
                 return nullptr;
             }
+        case MONO_TYPE_CLASS:
+        {
+            Log::LogWarning("Class types serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
+            //MonoClass* monoClass = mono_class_from_mono_type(monoType);
+
+            return nullptr;
+        }
         case MONO_TYPE_STRING:
             return new ScriptStringAttributeAccessor(monoClassField, Types::String);
         case MONO_TYPE_ARRAY:
         case MONO_TYPE_SZARRAY:
-            Log::LogWarning("Array types serialization is not supported yet");
+            Log::LogWarning("Array types serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
             return nullptr;
         case MONO_TYPE_GENERICINST:
-            Log::LogWarning("Generic types serialization is not supported yet");
+            Log::LogWarning("Generic types serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
             return nullptr;
         case MONO_TYPE_OBJECT:
-            Log::LogWarning("Objects serialization is not supported yet");
+            Log::LogWarning("Objects serialization is not supported yet: {0}", mono_field_get_name(monoClassField));
             return nullptr;
         default:
-            Log::LogWarning("Unknown field type");
+            Log::LogWarning("Unknown field type {1}: {0}", mono_field_get_name(monoClassField), monoTypeEnum);
             return nullptr;
     }
 }
