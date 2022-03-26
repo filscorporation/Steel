@@ -109,6 +109,17 @@
         {
             return (float)System.Math.Cos(angle);
         }
+
+        /// <summary>
+        /// Distance in degrees between to angles (in -180 to 180 range)
+        /// </summary>
+        public static float DeltaAngle(float from, float to)
+        {
+            float delta = from - to;
+            while (delta < -180) delta += 360;
+            while (delta > 180) delta -= 360;
+            return delta;
+        }
         
         /// <summary>
         /// Returns parameter t that produces linear interpolant for a and b
@@ -148,6 +159,19 @@
         public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
         {
             return new Vector3(Lerp(a.X, b.X, t), Lerp(a.Y, b.Y, t), Lerp(a.Z, b.Z, t));
+        }
+        
+        /// <summary>
+        /// Linearly interpolates from angle a to angle b
+        /// </summary>
+        public static float LerpAngle(float a, float b, float t)
+        {
+            t = Clamp01(t);
+            
+            float cos = (1 - t) * Cos(a) + t * Cos(b);
+            float sin = (1 - t) * Sin(a) + t * Sin(b);
+            
+            return Atan2(sin, cos);
         }
 
         /// <summary>
@@ -196,6 +220,14 @@
         public static float Round(float a)
         {
             return (float)System.Math.Round(a);
+        }
+
+        /// <summary>
+        /// Returns 1 when value is positive or zero and -1 otherwise
+        /// </summary>
+        public static float Sign(float value)
+        {
+            return value >= 0 ? 1 : -1;
         }
 
         /// <summary>

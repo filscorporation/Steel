@@ -1,4 +1,6 @@
-﻿namespace Steel
+﻿using System;
+
+namespace Steel
 {
     /// <summary>
     /// Represents vector in 2D space
@@ -72,6 +74,22 @@
         
         public static bool operator ==(Vector2 a, Vector2 b) => Equals(a, b);
         public static bool operator !=(Vector2 a, Vector2 b) => !Equals(a, b);
+        
+        public float this[int key]
+        {
+            get
+            {
+                switch (key)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+        }
 
         public override bool Equals(object obj)
         {
@@ -101,6 +119,25 @@
         public override string ToString()
         {
             return $"({X}; {Y})";
+        }
+        
+        /// <summary>
+        /// Returns the angle in radians between the two vectors
+        /// </summary>
+        public static double Angle(Vector2 vector1, Vector2 vector2)
+        {
+            float sin = vector1.X * vector2.Y - vector2.X * vector1.Y;  
+            float cos = vector1.X * vector2.X + vector1.Y * vector2.Y;
+ 
+            return Math.Atan2(sin, cos);
+        }
+
+        /// <summary>
+        /// Distance between two vectors
+        /// </summary>
+        public static float Distance(Vector2 vector1, Vector2 vector2)
+        {
+            return (vector2 - vector1).Magnitude();
         }
     }
 }

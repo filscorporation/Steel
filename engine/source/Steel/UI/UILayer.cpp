@@ -19,6 +19,8 @@ UILayer::UILayer(Scene* scene)
 void UILayer::LoadDefaultResources()
 {
     auto resourcesManager = Application::Instance->GetResourcesManager();
+    PixelsPerUnit = resourcesManager->GetDefaultPixelsPerUnit();
+
     UIResources.DefaultFrameSprite = resourcesManager->LoadSprite("frame.png", true);
     UIResources.DefaultFrameSprite->SetAsSliced(6);
     UIResources.StraightFrameSprite = resourcesManager->LoadSprite("straight_frame.png", true);

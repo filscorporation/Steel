@@ -24,6 +24,7 @@ struct ApplicationSettings
     glm::vec3 ScreenColor = glm::vec3(0.2f, 0.3f, 0.3f);
     bool Fullscreen = false;
     bool DoubleBuffer = false;
+    int DefaultPixelsPerUnit = 32;
 };
 
 struct ApplicationStats

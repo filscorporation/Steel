@@ -239,6 +239,8 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
         return nullptr;
     }
 
+    image->PixelsPerUnit = defaultPixelsPerUnit;
+
     Log::LogDebug("Sprite loaded: {0}, {1}", fullPath, image->ID);
 
     return image;
@@ -258,7 +260,14 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
 {
     uint64_t hash = Math::StringHash(filePath);
     if (ResourceExists(ResourceTypes::AsepriteData, hash))
-        return GetAsepriteData(hash);
+    {
+        auto data = GetAsepriteData(hash);
+        if (loopAll)
+            for (auto animation : data->Animations)
+                animation->Loop = true;
+
+        return data;
+    }
 
     std::string fullPathString = RESOURCES_PATH;
     fullPathString += filePath;
@@ -289,6 +298,9 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
     }
 
     AddResource(data);
+
+    for (auto sprite : data->Sprites)
+        sprite->PixelsPerUnit = defaultPixelsPerUnit;
 
     Log::LogDebug("Aseprite file loaded: {0}, {1}", fullPath, data->ID);
 
@@ -424,6 +436,16 @@ Shader* ResourcesManager::LoadShader(const char* fileVSPath, const char* fileFSP
 Shader* ResourcesManager::GetShader(ResourceID shaderID)
 {
     return (Shader*)(GetResource(ResourceTypes::Shader, shaderID));
+}
+
+int ResourcesManager::GetDefaultPixelsPerUnit()
+{
+    return defaultPixelsPerUnit;
+}
+
+void ResourcesManager::SetDefaultPixelsPerUnit(int newValue)
+{
+    defaultPixelsPerUnit = newValue < 1 ? 1 : newValue;
 }
 
 Shader* ResourcesManager::DefaultSpriteShader()

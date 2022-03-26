@@ -49,6 +49,9 @@ public:
     Font* GetFont(ResourceID fontID);
     Shader* GetShader(ResourceID shaderID);
 
+    int GetDefaultPixelsPerUnit();
+    void SetDefaultPixelsPerUnit(int newValue);
+
     Font* DefaultFont();
 
     Shader* DefaultSpriteShader();
@@ -64,6 +67,8 @@ private:
     void TryLoadResource(const std::string& path);
 
     std::vector<std::unordered_map<ResourceID, Resource*>> resources;
+
+    int defaultPixelsPerUnit = 32;
 
     Font* defaultFont;
     Shader* defaultSpriteShader;

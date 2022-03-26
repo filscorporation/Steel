@@ -2,12 +2,11 @@
 #include <GLFW/glfw3.h>
 
 float Time::lastFrameTime = 0;
+float Time::lastFixedFrameTime = 0;
 float Time::deltaTime = 0.0f;
 uint64_t Time::frameCount = 0;
 
-float Time::fixedUpdateDeltaTime = 0.02f;
-float Time::fixedUpdateTimer = 0.0f;
-
+float Time::FixedDeltaTime = 0.02f;
 float Time::TimeScale = 1.0f;
 
 float Time::DeltaTime()
@@ -25,9 +24,9 @@ uint64_t Time::FrameCount()
     return frameCount;
 }
 
-float Time::FixedDeltaTime()
+float Time::GetFixedDeltaTime()
 {
-    return fixedUpdateDeltaTime * TimeScale;
+    return FixedDeltaTime * TimeScale;
 }
 
 void Time::Update()
@@ -38,13 +37,12 @@ void Time::Update()
     frameCount++;
 }
 
-bool Time::FixedUpdate()
+bool Time::TryFixedUpdate()
 {
-    fixedUpdateTimer += deltaTime;
-
-    if (fixedUpdateTimer >= fixedUpdateDeltaTime)
+    auto currentTime = (float)glfwGetTime();
+    if (currentTime - lastFixedFrameTime >= FixedDeltaTime)
     {
-        fixedUpdateTimer = 0.0f;
+        lastFixedFrameTime += FixedDeltaTime;
         return true;
     }
 

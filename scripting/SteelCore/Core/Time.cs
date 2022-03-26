@@ -13,7 +13,16 @@ namespace Steel
         public static float DeltaTime => GetDeltaTime_Internal();
 
         /// <summary>
-        /// Time multiplicator
+        /// Fixed delta time (used by physics)
+        /// </summary>
+        public static float FixedDeltaTime
+        {
+            get => GetFixedDeltaTime_Internal();
+            set => SetFixedDeltaTime_Internal(value);
+        }
+
+        /// <summary>
+        /// Time scale factor (does not affect UI)
         /// </summary>
         public static float TimeScale
         {
@@ -29,5 +38,11 @@ namespace Steel
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float SetTimeScale_Internal(float timeScale);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float GetFixedDeltaTime_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float SetFixedDeltaTime_Internal(float fixedDeltaTime);
     }
 }

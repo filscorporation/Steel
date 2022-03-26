@@ -61,6 +61,8 @@ namespace CoreInternalCalls
 
     // Time
     float Time_GetDeltaTime();
+    float Time_GetFixedDeltaTime();
+    void Time_SetFixedDeltaTime(float fixedDeltaTime);
     float Time_GetTimeScale();
     void Time_SetTimeScale(float timeScale);
 

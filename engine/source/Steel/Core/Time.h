@@ -6,20 +6,21 @@ class Time
 {
 public:
     static void Update();
-    static bool FixedUpdate();
+    static bool TryFixedUpdate();
 
     static float DeltaTime();
     static float UnscaledDeltaTime();
     static uint64_t FrameCount();
-    static float FixedDeltaTime();
+    static float GetFixedDeltaTime();
+
     // TODO: apply to sound
     static float TimeScale;
+    static float FixedDeltaTime;
 private:
 
     static float lastFrameTime;
+    static float lastFixedFrameTime;
     static float deltaTime;
     static uint64_t frameCount;
 
-    static float fixedUpdateDeltaTime;
-    static float fixedUpdateTimer;
 };

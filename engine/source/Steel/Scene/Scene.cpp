@@ -172,14 +172,14 @@ void Scene::Update()
     if (systemsInitialized)
         ScriptingSystem::UpdateCoroutines();
 
-    if (systemsInitialized && Time::FixedUpdate())
+    while (systemsInitialized && Time::TryFixedUpdate())
     {
         for (int i = 0; i < scriptsSize; ++i)
             if (scripts[i].IsAlive()) scripts[i].OnFixedUpdate();
 
         // Apply transformations to physics objects and then simulate
         Physics::UpdatePhysicsTransformations();
-        Physics::Simulate(Time::FixedDeltaTime());
+        Physics::Simulate(Time::GetFixedDeltaTime());
         Physics::GetPhysicsTransformations();
         Physics::SendEvents();
     }

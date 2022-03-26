@@ -358,6 +358,16 @@ float CoreInternalCalls::Time_GetDeltaTime()
     return Time::DeltaTime();
 }
 
+float CoreInternalCalls::Time_GetFixedDeltaTime()
+{
+    return Time::FixedDeltaTime;
+}
+
+void CoreInternalCalls::Time_SetFixedDeltaTime(float fixedDeltaTime)
+{
+    Time::FixedDeltaTime = std::max(fixedDeltaTime, 0.001f);
+}
+
 float CoreInternalCalls::Time_GetTimeScale()
 {
     return Time::TimeScale;

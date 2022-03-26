@@ -1,4 +1,6 @@
-﻿namespace Steel
+﻿using System;
+
+namespace Steel
 {
     /// <summary>
     /// Represents vector in 3D space
@@ -91,6 +93,24 @@
         public static Vector3 operator /(Vector3 a, float l) => new Vector3(a.X / l, a.Y / l, a.Z / l);
         public static Vector3 operator *(float l, Vector3 a) => new Vector3(a.X * l, a.Y * l, a.Z * l);
         
+        public float this[int key]
+        {
+            get
+            {
+                switch (key)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    case 2:
+                        return Z;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+        }
+        
         public static bool operator ==(Vector3 a, Vector3 b) => Equals(a, b);
         public static bool operator !=(Vector3 a, Vector3 b) => !Equals(a, b);
 
@@ -123,6 +143,42 @@
         public override string ToString()
         {
             return $"({X}; {Y}; {Z})";
+        }
+
+        /// <summary>
+        /// Angle in radians between the two vectors
+        /// </summary>
+        public static float Angle(Vector3 vector1, Vector3 vector2)
+        {
+            return Math.Acos(Dot(vector1, vector2) / (vector1.Magnitude() * vector2.Magnitude()));
+        }
+
+        /// <summary>
+        /// Cross product of two vectors
+        /// </summary>
+        public static Vector3 Cross(Vector3 vector1, Vector3 vector2)
+        {
+            return new Vector3(
+                vector1.Y * vector2.Z - vector2.Y * vector1.Z,
+                vector2.X * vector1.Z - vector1.X * vector2.Z,
+                vector1.X * vector2.Y - vector2.X * vector1.Y
+            );
+        }
+
+        /// <summary>
+        /// Distance between two vectors
+        /// </summary>
+        public static float Distance(Vector3 vector1, Vector3 vector2)
+        {
+            return (vector2 - vector1).Magnitude();
+        }
+
+        /// <summary>
+        /// Dot product of two vectors
+        /// </summary>
+        public static float Dot(Vector3 vector1, Vector3 vector2)
+        {
+            return vector1.X * vector2.Y + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
         }
     }
 }
