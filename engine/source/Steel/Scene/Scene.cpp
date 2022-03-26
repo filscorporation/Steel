@@ -132,9 +132,12 @@ EntityID Scene::CreateEmptyEntity()
     return entityID;
 }
 
-void Scene::DestroyEntity(EntityID entityID)
+void Scene::DestroyEntity(EntityID entityID, float delay)
 {
-    entitiesToDelete.push_back(entityID);
+    if (delay <= 0.0f)
+        entitiesToDelete.push_back(entityID);
+    else
+        delayedEntitiesToDelete.emplace_back(delay, entityID);
 }
 
 void Scene::Refresh()
@@ -286,6 +289,26 @@ void Scene::CleanDestroyedEntities()
             DestroyAndRemoveEntity(entity);
     }
     entitiesToDelete.clear();
+
+    for (auto& pair : delayedEntitiesToDelete)
+    {
+        std::get<0>(pair) -= Time::DeltaTime();
+        if (std::get<0>(pair) <= 0.0f && std::get<1>(pair) != NULL_ENTITY)
+        {
+            DestroyAndRemoveEntity(std::get<1>(pair));
+        }
+    }
+    delayedEntitiesToDelete.erase(
+            std::remove_if(
+                    delayedEntitiesToDelete.begin(),
+                    delayedEntitiesToDelete.end(),
+                    [](std::tuple<float, EntityID>& pair)
+                    {
+                        return std::get<0>(pair) <= 0.0f;
+                    }
+            ),
+          delayedEntitiesToDelete.end()
+    );
 
     entitiesRegistry->ClearRemoved();
 }

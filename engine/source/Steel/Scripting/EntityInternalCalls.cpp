@@ -21,9 +21,9 @@ EntityID EntityInternalCalls::Entity_CreateNewEntity3(MonoString* name, EntityID
     return Application::Instance->GetCurrentScene()->CreateEntity(ScriptingCore::ToString(name), parentEntityID);
 }
 
-bool EntityInternalCalls::Entity_DestroyEntity(EntityID id)
+bool EntityInternalCalls::Entity_DestroyEntity(EntityID id, float delay)
 {
-    Application::Instance->GetCurrentScene()->DestroyEntity(id);
+    Application::Instance->GetCurrentScene()->DestroyEntity(id, delay);
     return true;
 }
 

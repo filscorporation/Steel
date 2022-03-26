@@ -31,7 +31,7 @@ public:
     EntityID CreateEntity(const std::string& name, EntityID parent);
     EntityID CreateEntity(AsepriteData& data);
     EntityID CreateEmptyEntity();
-    void DestroyEntity(EntityID entityID);
+    void DestroyEntity(EntityID entityID, float delay = -1.0f);
     void CleanDestroyedEntities();
 
     EntityID GetEntityByUUID(UUID_TYPE uuid);
@@ -59,6 +59,7 @@ private:
 
     std::unordered_map<UUID_TYPE, EntityID> entitiesByUUID;
     std::list<EntityID> entitiesToDelete;
+    std::list<std::tuple<float, EntityID>> delayedEntitiesToDelete;
     EntityID _mainCameraEntity = NULL_ENTITY;
 
     void SortByHierarchy();

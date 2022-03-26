@@ -84,9 +84,9 @@ namespace Steel
         }
 
         /// <summary>
-        /// Requests to destroy entity in the end of the frame
+        /// Requests to destroy entity in the end of the frame or after delay
         /// </summary>
-        public void Destroy() => DestroyEntity_Internal(EntityID);
+        public void Destroy(float delay = -1f) => DestroyEntity_Internal(EntityID, delay);
         
         /// <summary>
         /// Attach new components to the entity and return it
@@ -232,7 +232,7 @@ namespace Steel
         private static extern void SetIsActiveSelf_Internal(uint entityID, bool isActiveSelf);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool DestroyEntity_Internal(uint entityID);
+        private static extern bool DestroyEntity_Internal(uint entityID, float delay);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Component AddComponent_Internal(uint entityID, Type type);

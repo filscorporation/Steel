@@ -11,7 +11,7 @@ namespace EntityInternalCalls
     EntityID Entity_CreateNewEntity();
     EntityID Entity_CreateNewEntity2(MonoString* name);
     EntityID Entity_CreateNewEntity3(MonoString* name, EntityID parentEntityID);
-    bool Entity_DestroyEntity(EntityID id);
+    bool Entity_DestroyEntity(EntityID id, float delay);
     MonoObject* Entity_AddComponent(EntityID id, void* type);
     MonoObject* Entity_GetComponent(EntityID id, void* type);
     bool Entity_HasComponent(EntityID id, void* type);
