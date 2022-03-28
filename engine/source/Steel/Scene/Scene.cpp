@@ -145,10 +145,12 @@ void Scene::Refresh()
     // Refresh hierarchy nodes
     auto nodes = entitiesRegistry->GetComponentIterator<HierarchyNode>();
     for (int i = nodes.Size() - 1; i >= 0; --i)
-        nodes[i].IsDirty = false;
+        if (nodes[i].IsAlive())
+            nodes[i].IsDirty = false;
     auto inactiveNodes = entitiesRegistry->GetComponentIterator<HierarchyNode>(false);
     for (int i = inactiveNodes.Size() - 1; i >= 0; --i)
-        inactiveNodes[i].IsDirty = false;
+        if (inactiveNodes[i].IsAlive())
+            inactiveNodes[i].IsDirty = false;
 }
 
 void Scene::Update()

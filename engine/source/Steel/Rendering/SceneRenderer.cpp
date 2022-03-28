@@ -19,6 +19,9 @@ void SceneRenderer::Draw(Scene* scene, Framebuffer* framebuffer)
     // Render scene cameras
     for (int i = 0; i < cameras.Size(); ++i)
     {
+        if (!cameras[i].IsAlive())
+            continue;
+
         RenderTask renderTask;
         renderTask.Source = new SceneDrawCallsSource(scene, cameras[i].GetRenderMask());
         renderTask.ViewProjection = cameras[i].GetViewProjection();

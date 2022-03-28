@@ -11,13 +11,15 @@ void EditorScene::AfterUpdate()
     auto controlPanels = entitiesRegistry->GetComponentIterator<ControlPanel>();
     for (int i = 0; i < controlPanels.Size(); ++i)
     {
-        controlPanels[i].Update(entitiesRegistry);
+        if (controlPanels[i].IsAlive())
+            controlPanels[i].Update(entitiesRegistry);
     }
 
     auto hierarchyViews = entitiesRegistry->GetComponentIterator<HierarchyView>();
     for (int i = 0; i < hierarchyViews.Size(); ++i)
     {
-        hierarchyViews[i].Update(entitiesRegistry);
+        if (hierarchyViews[i].IsAlive())
+            hierarchyViews[i].Update(entitiesRegistry);
     }
 }
 
@@ -28,7 +30,8 @@ void EditorScene::BeforeRebuildUI()
     auto statsWindows = entitiesRegistry->GetComponentIterator<StatsWindow>();
     for (int i = 0; i < statsWindows.Size(); ++i)
     {
-        statsWindows[i].UpdateInfo();
+        if (statsWindows[i].IsAlive())
+            statsWindows[i].UpdateInfo();
     }
 }
 
@@ -39,12 +42,14 @@ void EditorScene::AfterPrepareDraw()
     auto appViews = entitiesRegistry->GetComponentIterator<AppView>();
     for (int i = 0; i < appViews.Size(); ++i)
     {
-        appViews[i].Update(entitiesRegistry);
+        if (appViews[i].IsAlive())
+            appViews[i].Update(entitiesRegistry);
     }
 
     auto sceneViews = entitiesRegistry->GetComponentIterator<SceneView>();
     for (int i = 0; i < sceneViews.Size(); ++i)
     {
-        sceneViews[i].Update(entitiesRegistry);
+        if (sceneViews[i].IsAlive())
+            sceneViews[i].Update(entitiesRegistry);
     }
 }

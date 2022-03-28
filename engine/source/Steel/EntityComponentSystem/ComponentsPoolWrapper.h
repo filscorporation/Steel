@@ -31,6 +31,8 @@ public:
 
     // Non template iteration methods
     virtual int Size(bool isActive) = 0;
+    // Elements count excluding holes (shouldn't be used for iteration)
+    virtual int CondensedSize(bool isActive) = 0;
     virtual EntityID GetOwnerByIndex(int index, bool isActive) = 0;
 
     // Serialization methods
@@ -173,6 +175,11 @@ public:
     int Size(bool isActive) override
     {
         return isActive ? Storage.Size() : InactiveStorage.Size();
+    }
+
+    int CondensedSize(bool isActive) override
+    {
+        return isActive ? Storage.CondensedSize() : InactiveStorage.CondensedSize();
     }
 
     EntityID GetOwnerByIndex(int index, bool isActive) override

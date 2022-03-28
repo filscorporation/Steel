@@ -191,6 +191,7 @@ void SceneView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
     auto hierarchyViewIterator = entitiesRegistry->GetComponentIterator<HierarchyView>();
     for (int i = 0; i < hierarchyViewIterator.Size(); ++i)
     {
-        hierarchyViewIterator[i].FocusOnSelectedEntities(entitiesRegistry);
+        if (hierarchyViewIterator[i].IsAlive())
+            hierarchyViewIterator[i].FocusOnSelectedEntities(entitiesRegistry);
     }
 }

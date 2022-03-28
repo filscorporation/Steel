@@ -52,7 +52,8 @@ void UILayer::Update()
 
     auto uiInputFields = entitiesRegistry->GetComponentIterator<UIInputField>();
     for (int i = 0; i < uiInputFields.Size(); ++i)
-        uiInputFields[i].Update();
+        if (uiInputFields[i].IsAlive())
+            uiInputFields[i].Update();
 }
 
 void UILayer::Rebuild()
@@ -95,12 +96,14 @@ void UILayer::Rebuild()
     // Clipping requires element thickness to be calculated (for closing cap)
     auto uiClippings = entitiesRegistry->GetComponentIterator<UIClipping>();
     for (int i = 0; i < uiClippings.Size(); ++i)
-        uiClippings[i].Rebuild(this, rtAccessor.Get(uiClippings[i].Owner), _rebuildSortingOrder);
+        if (uiClippings[i].IsAlive())
+            uiClippings[i].Rebuild(this, rtAccessor.Get(uiClippings[i].Owner), _rebuildSortingOrder);
 
     // Input fields requires target text to be updated
     auto uiIFs = entitiesRegistry->GetComponentIterator<UIInputField>();
     for (int i = 0; i < uiIFs.Size(); ++i)
-        uiIFs[i].Rebuild(rtAccessor.Get(uiIFs[i].Owner));
+        if (uiIFs[i].IsAlive())
+            uiIFs[i].Rebuild(rtAccessor.Get(uiIFs[i].Owner));
 }
 
 void UILayer::Refresh()
@@ -110,10 +113,12 @@ void UILayer::Refresh()
     // Refresh rect transformation
     auto rectTransformations = entitiesRegistry->GetComponentIterator<RectTransformation>();
     for (int i = 0; i < rectTransformations.Size(); ++i)
-        rectTransformations[i].RefreshTransformation();
+        if (rectTransformations[i].IsAlive())
+            rectTransformations[i].RefreshTransformation();
     auto uiTexts = entitiesRegistry->GetComponentIterator<UIText>();
     for (int i = 0; i < uiTexts.Size(); ++i)
-        uiTexts[i].Refresh();
+        if (uiTexts[i].IsAlive())
+            uiTexts[i].Refresh();
     _currentHierarchyIndex = 0;
     _rebuildSortingOrder = false;
 }
@@ -131,8 +136,7 @@ void UILayer::PollEvent(UIEvent& uiEvent)
     } SOComparer;
     entitiesRegistry->SortComponents<UIEventHandler>(SOComparer);
 
-    int size = uiEventHandlers.Size();
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < uiEventHandlers.Size(); ++i)
         if (uiEventHandlers[i].IsAlive())
             uiEventHandlers[i].HandleEvent(rtAccessor, uiEvent);
 

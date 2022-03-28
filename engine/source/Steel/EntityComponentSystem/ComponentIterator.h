@@ -14,6 +14,8 @@ public:
         return _active ? _pool->Storage[index] : _pool->InactiveStorage[index];
     }
 
+    // ComponentIterator will return size including elements deleted after last condense was invoked,
+    // so it is important to check IsAlive() on every result to skip removed components
     int Size()
     {
         return _pool == nullptr ? 0 : (_active ? _pool->Storage.Size() : _pool->InactiveStorage.Size());

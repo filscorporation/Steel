@@ -454,17 +454,25 @@ MonoArray* ScriptingCore::GetBuiltInComponentsList(MonoClass* monoClass, bool in
 
     int size = 0;
     for (auto& iterator : iterators)
-        size += iterator.Size();
+        // Size of result components list will exclude removed elements
+        size += iterator.CondensedSize();
 
     MonoArray* resultArray = mono_array_new(Domain->Domain, mono_get_object_class(), size);
 
     for (auto& iterator : iterators)
     {
+        int realCount = 0;
+        // For iteration, we are using size including removed element, but skip them for final result
         for (int i = 0; i < iterator.Size(); ++i)
         {
+            if (iterator[i] == NULL_ENTITY)
+                // Skip null elements
+                continue;
+
             MonoObject* monoObject = CreateUnmanagedInstance(monoClass, nullptr, 0);
             SetEntityOwner(monoObject, iterator[i]);
-            mono_array_set(resultArray, MonoObject*, i, monoObject);
+            mono_array_set(resultArray, MonoObject*, realCount, monoObject);
+            realCount++;
         }
     }
 
@@ -490,7 +498,7 @@ MonoArray* ScriptingCore::GetCustomComponentsList(MonoClass* monoClass, bool inc
         {
             for (auto& script : iterator)
             {
-                if (script.HasScriptType(typeInfo))
+                if (script.IsAlive() && script.HasScriptType(typeInfo))
                     count++;
             }
         }
@@ -503,7 +511,7 @@ MonoArray* ScriptingCore::GetCustomComponentsList(MonoClass* monoClass, bool inc
         {
             for (auto& script : iterator)
             {
-                if (script.HasScriptType(typeInfo))
+                if (script.IsAlive() && script.HasScriptType(typeInfo))
                 {
                     mono_array_set(resultArray, MonoObject*, i, script.GetScriptHandler(typeInfo)->GetMonoObject());
                     i++;

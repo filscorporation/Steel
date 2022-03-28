@@ -14,20 +14,24 @@ void UIDrawCallsSource::CollectDrawCalls(RenderContext* renderContext)
     auto images = _scene->GetEntitiesRegistry()->GetComponentIterator<UIImage>();
     renderContext->List.Reserve(images.Size());
     for (int i = 0; i < images.Size(); ++i)
-        images[i].Draw(renderContext);
+        if (images[i].IsAlive())
+            images[i].Draw(renderContext);
 
     auto uiTexts = _scene->GetEntitiesRegistry()->GetComponentIterator<UIText>();
     renderContext->List.Reserve(uiTexts.Size());
     for (int i = 0; i < uiTexts.Size(); ++i)
-        uiTexts[i].Draw(renderContext);
+        if (uiTexts[i].IsAlive())
+            uiTexts[i].Draw(renderContext);
 
     auto uiClippings = _scene->GetEntitiesRegistry()->GetComponentIterator<UIClipping>();
     renderContext->List.Reserve(uiClippings.Size());
     for (int i = 0; i < uiClippings.Size(); ++i)
-        uiClippings[i].Draw(renderContext);
+        if (uiClippings[i].IsAlive())
+            uiClippings[i].Draw(renderContext);
 
     auto inputFields = _scene->GetEntitiesRegistry()->GetComponentIterator<UIInputField>();
     renderContext->List.Reserve(inputFields.Size());
     for (int i = 0; i < inputFields.Size(); ++i)
-        inputFields[i].Draw(renderContext);
+        if (inputFields[i].IsAlive())
+            inputFields[i].Draw(renderContext);
 }

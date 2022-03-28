@@ -119,6 +119,9 @@ void SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
     for (int i = 0; i < entitiesCount; ++i)
     {
         auto& uuidComponent = i < activeCount ? activeIterator[i] : inactiveIterator[i - activeCount];
+        if (!uuidComponent.IsAlive())
+            continue;
+
         EntityID entityID = uuidComponent.Owner;
 
         YAML::Node entityNode;

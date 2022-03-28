@@ -22,6 +22,12 @@ public:
         return size;
     }
 
+    // Elements count excluding holes (shouldn't be used for iteration)
+    int CondensedSize() const
+    {
+        return size - holes;
+    }
+
     T& Get(EntityID id)
     {
         return data[sparse[id]];
@@ -50,7 +56,7 @@ public:
     {
         dense[sparse[id]] = NULL_ENTITY;
         data[sparse[id]].Owner = NULL_ENTITY;
-        holes ++;
+        holes++;
     }
 
     void Condense()
