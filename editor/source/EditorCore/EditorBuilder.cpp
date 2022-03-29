@@ -2,6 +2,7 @@
 #include "../UI/AppView.h"
 #include "../UI/ControlPanel.h"
 #include "../UI/HierarchyView.h"
+#include "../UI/PropertiesView.h"
 #include "../UI/UIEditorTab.h"
 #include "../UI/SceneView.h"
 
@@ -50,23 +51,23 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
 
     // Init layout elements
 
-    // Components view
+    // Properties view
     {
-        EntityID componentsTabsEntity = uiLayer->CreateUITabs({"Components"}, "Components tabs", l1child1Entity);
-        auto& componentsTabsRT = entitiesRegistry->GetComponent<RectTransformation>(componentsTabsEntity);
-        componentsTabsRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-        componentsTabsRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        auto& componentsTabs = entitiesRegistry->GetComponent<UITabs>(componentsTabsEntity);
+        EntityID propertiesTabsEntity = uiLayer->CreateUITabs({"Properties"}, "Properties tabs", l1child1Entity);
+        auto& propertiesTabsRT = entitiesRegistry->GetComponent<RectTransformation>(propertiesTabsEntity);
+        propertiesTabsRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+        propertiesTabsRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto& propertiesTabs = entitiesRegistry->GetComponent<UITabs>(propertiesTabsEntity);
 
-        // Components view
-        entitiesRegistry->AddComponent<UIEditorTab>(componentsTabs.GetTab(0)).TabsEntityID = componentsTabsEntity;
-        entitiesRegistry->GetComponent<UIEventHandler>(componentsTabs.GetTab(0)).RectEntity = l1child1Entity;
-        EntityID componentsViewEntity = uiLayer->CreateUIElement("Components view", componentsTabs.GetTab(0));
-        auto& componentsViewRT = entitiesRegistry->GetComponent<RectTransformation>(componentsViewEntity);
-        componentsViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-        componentsViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        auto& componentsImage = entitiesRegistry->AddComponent<UIImage>(componentsViewEntity);
-        componentsImage.SetImage(uiLayer->UIResources.StraightFrameSprite);
+        // Properties view
+        entitiesRegistry->AddComponent<UIEditorTab>(propertiesTabs.GetTab(0)).TabsEntityID = propertiesTabsEntity;
+        entitiesRegistry->GetComponent<UIEventHandler>(propertiesTabs.GetTab(0)).RectEntity = l1child1Entity;
+        EntityID propertiesViewEntity = uiLayer->CreateUIElement("Properties view", propertiesTabs.GetTab(0));
+        auto& propertiesViewRT = entitiesRegistry->GetComponent<RectTransformation>(propertiesViewEntity);
+        propertiesViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+        propertiesViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto& propertiesView = entitiesRegistry->AddComponent<PropertiesView>(propertiesViewEntity);
+        propertiesView.Init(entitiesRegistry);
     }
 
     // Project view

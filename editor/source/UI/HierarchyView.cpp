@@ -248,9 +248,8 @@ void HierarchyView::ElementExpanded(EntityID elementID)
     }
 }
 
-void HierarchyView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
+void HierarchyView::GetSelectedEntities(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& selectedEntities)
 {
-    std::vector<EntityID> selectedEntities;
     for (auto& node : *lastNodes)
     {
         if (node.second.Flags & NodeFlags::Selected)
@@ -258,6 +257,12 @@ void HierarchyView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
             selectedEntities.push_back(node.first);
         }
     }
+}
+
+void HierarchyView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
+{
+    std::vector<EntityID> selectedEntities;
+    GetSelectedEntities(entitiesRegistry, selectedEntities);
 
     if (!selectedEntities.empty())
     {

@@ -3,6 +3,7 @@
 #include "../UI/ControlPanel.h"
 #include "../UI/HierarchyElement.h"
 #include "../UI/HierarchyView.h"
+#include "../UI/PropertiesView.h"
 #include "../UI/SceneView.h"
 #include "../UI/StatsWindow.h"
 #include "../UI/UIEditorTab.h"
@@ -15,6 +16,7 @@ void EditorTypeSystem::Init()
     ControlPanel::RegisterType();
     HierarchyElement::RegisterType();
     HierarchyView::RegisterType();
+    PropertiesView::RegisterType();
     SceneView::RegisterType();
     StatsWindow::RegisterType();
     UIEditorTab::RegisterType();

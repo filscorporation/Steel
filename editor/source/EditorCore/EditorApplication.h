@@ -43,5 +43,6 @@ private:
     friend class AppView;
     friend class ControlPanel;
     friend class HierarchyView;
+    friend class PropertiesView;
     friend class SceneView;
 };

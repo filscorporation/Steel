@@ -32,6 +32,7 @@ public:
 
     std::string Name() const { return _name; }
     AttributeFlags::AttributeFlag Flags() const { return _flags; }
+    Types::Type GetType() const { return _accessor->GetType(); }
 
     void Serialize(Serializable* object, YAML::Node& node, SerializationContext& context)
     {

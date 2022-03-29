@@ -35,7 +35,8 @@ public:
             YAML::Node dataNode;
             for (auto field : scriptData.TypeInfo->Attributes)
             {
-                field.Accessor->Serialize(scriptData.ScriptHandler, field.FieldName, dataNode, context);
+                if (field.Accessor != nullptr)
+                    field.Accessor->Serialize(scriptData.ScriptHandler, field.FieldName, dataNode, context);
             }
             scriptNode["data"] = dataNode;
 
@@ -62,7 +63,7 @@ public:
             auto& dataNode = scriptNode["data"];
             for (auto field : scriptData.TypeInfo->Attributes)
             {
-                if (dataNode[field.FieldName])
+                if (dataNode[field.FieldName] && field.Accessor != nullptr)
                     field.Accessor->Deserialize(scriptData.ScriptHandler, field.FieldName, dataNode, context);
             }
             list.push_back(scriptData);

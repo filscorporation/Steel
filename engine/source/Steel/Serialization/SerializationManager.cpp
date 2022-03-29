@@ -95,6 +95,9 @@ void SerializationManager::RegisterAttribute(ComponentTypeID typeID, const Attri
 
 std::vector<AttributeInfo>& SerializationManager::GetAttributes(ComponentTypeID typeID)
 {
+    if (_attributesInfo.find(typeID) == _attributesInfo.end())
+        Log::LogError("Get attributes for non existing type {0}", typeID);
+
     return _attributesInfo[typeID];
 }
 

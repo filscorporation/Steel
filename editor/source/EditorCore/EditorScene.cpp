@@ -2,6 +2,7 @@
 #include "../UI/AppView.h"
 #include "../UI/SceneView.h"
 #include "../UI/HierarchyView.h"
+#include "../UI/PropertiesView.h"
 #include "../UI/StatsWindow.h"
 
 void EditorScene::AfterUpdate()
@@ -20,6 +21,13 @@ void EditorScene::AfterUpdate()
     {
         if (hierarchyViews[i].IsAlive())
             hierarchyViews[i].Update(entitiesRegistry);
+    }
+
+    auto propertiesViews = entitiesRegistry->GetComponentIterator<PropertiesView>();
+    for (int i = 0; i < propertiesViews.Size(); ++i)
+    {
+        if (propertiesViews[i].IsAlive())
+            propertiesViews[i].Update(entitiesRegistry);
     }
 }
 

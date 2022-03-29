@@ -56,6 +56,7 @@ public:
     void ElementClicked(EntityID elementID);
     void ElementExpanded(EntityID elementID);
 
+    void GetSelectedEntities(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& selectedEntities);
     void FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry);
 
 private:
