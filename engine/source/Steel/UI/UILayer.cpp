@@ -22,14 +22,17 @@ void UILayer::LoadDefaultResources()
     PixelsPerUnit = resourcesManager->GetDefaultPixelsPerUnit();
 
     UIResources.DefaultFrameSprite = resourcesManager->LoadSprite("frame.png", true);
-    UIResources.DefaultFrameSprite->SetAsSliced(6);
+    if (UIResources.DefaultFrameSprite != nullptr)
+        UIResources.DefaultFrameSprite->SetAsSliced(6);
     UIResources.StraightFrameSprite = resourcesManager->LoadSprite("straight_frame.png", true);
-    UIResources.StraightFrameSprite->SetAsSliced(6);
+    if (UIResources.StraightFrameSprite != nullptr)
+        UIResources.StraightFrameSprite->SetAsSliced(6);
     UIResources.DefaultPixelSprite = resourcesManager->LoadSprite("pixel.png", true);
     UIResources.DefaultStylePixelSprite = resourcesManager->LoadSprite("style_pixel.png", true);
     UIResources.DefaultArrowSprite = resourcesManager->LoadSprite("arrow.png", true);
     UIResources.DefaultCheckBoxSprite = resourcesManager->LoadSprite("check_box.png", true);
-    UIResources.DefaultCheckBoxSprite->SetAsSliced(2);
+    if (UIResources.DefaultCheckBoxSprite != nullptr)
+        UIResources.DefaultCheckBoxSprite->SetAsSliced(2);
     UIResources.DefaultCheckMarkSprite = resourcesManager->LoadSprite("check_mark.png", true);
     UIResources.DefaultTabOpenedSprite = resourcesManager->LoadSprite("tab_opened.png", true);
     UIResources.DefaultTabClosedSprite = resourcesManager->LoadSprite("tab_closed.png", true);

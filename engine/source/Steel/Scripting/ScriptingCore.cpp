@@ -556,8 +556,11 @@ bool ScriptingCore::IsSubclassOfScriptComponent(MonoClass* monoClass)
 
     MonoClass* parentClass = mono_class_get_parent(monoClass);
     while (parentClass != nullptr)
+    {
         if (parentClass == Domain->BaseScriptClass)
             return true;
+        parentClass = mono_class_get_parent(parentClass);
+    }
 
     return false;
 }
@@ -653,8 +656,10 @@ ScriptTypeInfo* ScriptingCore::ScriptParseRecursive(MonoClass* monoClass)
     {
         MonoMethod* method = mono_method_desc_search_in_class(desc.second, monoClass);
         if (method != nullptr)
+        {
             mask = mask | desc.first;
-        typeInfo->EventMethods[desc.first] = new ScriptMethodPointer(method, false);
+            typeInfo->EventMethods[desc.first] = new ScriptMethodPointer(method, false);
+        }
     }
     typeInfo->Mask = mask;
 
