@@ -231,7 +231,7 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
         std::vector<uint32_t> durations(to - from + 1);
         for (uint32_t j = from; j <= to; ++j)
         {
-            sprites.push_back(inSprites[j]);
+            sprites.push_back(j >= 0 && j < inSprites.size() ? inSprites[j] : nullptr);
             durations[j - from] = inDurations[j];
         }
         auto animation = new Animation(sprites, durations);

@@ -69,6 +69,15 @@ void Animator::Restart()
     Play();
 }
 
+void Animator::AddAnimations(const std::vector<Animation*>& animations)
+{
+    for (auto& animation : animations)
+    {
+        if (std::find(Animations.begin(), Animations.end(), animation) == Animations.end())
+            Animations.push_back(animation);
+    }
+}
+
 void Animator::AddAndPlay(Animation* animation)
 {
     bool exists = false;

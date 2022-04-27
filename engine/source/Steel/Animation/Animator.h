@@ -18,6 +18,7 @@ public:
     void Stop();
     void Restart();
 
+    void AddAnimations(const std::vector<Animation*>& animations);
     void AddAndPlay(Animation* animation);
 
     void OnUpdate();

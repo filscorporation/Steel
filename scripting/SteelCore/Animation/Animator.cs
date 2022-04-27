@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Steel
 {
@@ -56,6 +58,14 @@ namespace Steel
         {
             Restart_Internal(Entity.EntityID);
         }
+        
+        /// <summary>
+        /// Add animations to animator to play them later by name
+        /// </summary>
+        public void AddAnimations(IEnumerable<Animation> animations)
+        {
+            AddAnimations_Internal(Entity.EntityID, animations.Select(s => s?.ID ?? Resource.NULL_RESOURCE_ID).ToArray());
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void PlayAnimation_Internal(uint entityID, ulong animationID);
@@ -74,5 +84,8 @@ namespace Steel
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Restart_Internal(uint entityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void AddAnimations_Internal(uint entityID, ulong[] animationIDs);
     }
 }

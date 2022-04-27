@@ -143,6 +143,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.Animator::Pause_Internal", (void*)ComponentsInternalCalls::Animator_Pause);
     mono_add_internal_call("Steel.Animator::Stop_Internal", (void*)ComponentsInternalCalls::Animator_Stop);
     mono_add_internal_call("Steel.Animator::Restart_Internal", (void*)ComponentsInternalCalls::Animator_Restart);
+    mono_add_internal_call("Steel.Animator::AddAnimations_Internal", (void*)ComponentsInternalCalls::Animator_AddAnimations);
 
     mono_add_internal_call("Steel.Camera::GetEntityWithMainCamera_Internal", (void *) ComponentsInternalCalls::Camera_GetEntityWithMainCamera);
     mono_add_internal_call("Steel.Camera::GetWidth_Internal", (void*)ComponentsInternalCalls::Camera_GetWidth);

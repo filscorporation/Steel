@@ -64,6 +64,7 @@ namespace ComponentsInternalCalls
     void Animator_Pause(EntityID entityID);
     void Animator_Stop(EntityID entityID);
     void Animator_Restart(EntityID entityID);
+    void Animator_AddAnimations(EntityID entityID, MonoArray* animationIDs);
 
     // Camera
     EntityID Camera_GetEntityWithMainCamera();

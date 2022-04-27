@@ -186,6 +186,17 @@ void ResourcesManager::UnloadResource(ResourceTypes::ResourceType type, Resource
     delete resource;
 }
 
+inline std::string GetNameFromPath(const std::string& path)
+{
+    size_t pos = path.find_last_of('/');
+    return path.substr(pos == std::string::npos ? 0 : pos, path.find_last_of('.'));
+}
+
+inline std::string GetExtentionFromPath(const std::string& path)
+{
+    return path.substr(path.find_last_of('.') + 1);
+}
+
 Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
 {
     std::string path = engineResource ? std::string(ENGINE_RESOURCES_PATH) + filePath : filePath;
@@ -206,7 +217,7 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
     }
 
     Sprite* image;
-    std::string extension = fullPath.substr(fullPath.find_last_of('.') + 1);
+    std::string extension = GetExtentionFromPath(fullPath);
     if (extension == "png")
     {
         image = PngLoader::LoadImage(fullPath.c_str(), path.c_str());
@@ -220,6 +231,8 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
     {
         AsepriteData data;
         data.Path = path;
+        data.Name = GetNameFromPath(filePath);
+        
         if (!AsepriteLoader::LoadAsepriteData(fullPath.c_str(), false, data))
             return nullptr;
 
@@ -274,6 +287,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
     std::string fullPath = fullPathString;
     auto data = new AsepriteData();
     data->Path = filePath;
+    data->Name = GetNameFromPath(filePath);
 
     std::ifstream infile(fullPath);
     if (!infile.good())

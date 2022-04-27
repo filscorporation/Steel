@@ -317,6 +317,23 @@ void ComponentsInternalCalls::Animator_Restart(EntityID entityID)
     component.Restart();
 }
 
+void ComponentsInternalCalls::Animator_AddAnimations(EntityID entityID, MonoArray* animationIDs)
+{
+    GET_COMPONENT_OR_RETURN(Animator, )
+
+    std::vector<ResourceID> ids;
+    ScriptingCore::FromMonoUInt64Array(animationIDs, ids);
+
+    std::vector<Animation*> animations;
+    animations.reserve(ids.size());
+    for (auto id : ids)
+    {
+        animations.push_back(Application::Instance->GetResourcesManager()->GetAnimation(id));
+    }
+
+    component.AddAnimations(animations);
+}
+
 EntityID ComponentsInternalCalls::Camera_GetEntityWithMainCamera()
 {
     return Application::Instance->GetCurrentScene()->GetMainCamera();

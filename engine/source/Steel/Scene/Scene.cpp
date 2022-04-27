@@ -108,15 +108,12 @@ EntityID Scene::CreateEntity(const std::string& name, EntityID parent)
 
 EntityID Scene::CreateEntity(AsepriteData& data)
 {
-    auto entity = CreateEntity(data.Name == nullptr ? "" : data.Name, NULL_ENTITY);
+    auto entity = CreateEntity(data.Name.empty() ? "Aseprite entity" : data.Name, NULL_ENTITY);
     auto& sr = entitiesRegistry->AddComponent<SpriteRenderer>(entity);
     if (!data.Sprites.empty())
         sr.SetImage(data.Sprites[0]);
     auto& an = entitiesRegistry->AddComponent<Animator>(entity);
-    for (auto& animation : data.Animations)
-    {
-        an.Animations.push_back(animation);
-    }
+    an.AddAnimations(data.Animations);
 
     return entity;
 }

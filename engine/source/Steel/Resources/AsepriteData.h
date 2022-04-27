@@ -8,7 +8,7 @@ class AsepriteData : public Resource
 public:
     AsepriteData();
 
-    const char* Name = nullptr;
+    std::string Name;
     std::vector<Sprite*> Sprites;
     std::vector<Animation*> Animations;
 };
