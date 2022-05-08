@@ -122,11 +122,7 @@ T ScriptingCore::GetScriptFieldValue(ScriptObjectHandler* scriptHandler, MonoCla
 {
     MonoObject* monoObject = scriptHandler->GetMonoObject();
     if (monoObject == nullptr)
-    {
         Log::LogError("Can't get mono object from handler");
-        T temp;
-        return temp;
-    }
 
     T value;
     mono_field_get_value(monoObject, monoClassField, &value);

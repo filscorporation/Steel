@@ -7,7 +7,6 @@
 #include "Steel/Math/Math.h"
 #include "Steel/Math/Sorting.h"
 
-#include <algorithm>
 #include <glm/gtc/type_ptr.hpp>
 
 #define VIEW_PROJECTION "view_projection"
@@ -63,16 +62,15 @@ void RenderList::ExecuteDrawCalls(RenderContext* renderContext)
             continue;
 
         // Setup material
-        drawCall.RenderMaterial->MainShader->Use();
-        drawCall.RenderMaterial->Properties.Apply(drawCall.RenderMaterial->MainShader);
-        drawCall.CustomProperties.Apply(drawCall.RenderMaterial->MainShader);
-
         if (!drawCall.RenderMaterial->MainShader->GlobalUniformsSet)
         {
             shadersUsed.push_back(drawCall.RenderMaterial->MainShader);
             drawCall.RenderMaterial->MainShader->GlobalUniformsSet = true;
             drawCall.RenderMaterial->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(renderContext->Task->ViewProjection));
         }
+        drawCall.RenderMaterial->MainShader->Use();
+        drawCall.RenderMaterial->Properties.Apply(drawCall.RenderMaterial->MainShader);
+        drawCall.CustomProperties.Apply(drawCall.RenderMaterial->MainShader);
 
         // Try batch
         int batchSize = 1;
