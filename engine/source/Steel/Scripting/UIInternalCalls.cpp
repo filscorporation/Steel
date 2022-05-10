@@ -193,16 +193,16 @@ void UIInternalCalls::UIImage_SetColor(EntityID entityID, glm::vec4 color)
 
 bool UIInternalCalls::UIImage_GetConsumeEvents(EntityID entityID)
 {
-    GET_COMPONENT_OR_RETURN(UIEventHandler, 0)
+    GET_COMPONENT_OR_RETURN(UIImage, 0)
 
-    return component.Type == EventHandlerTypes::Normal;
+    return component.GetConsumeEvents();
 }
 
 void UIInternalCalls::UIImage_SetConsumeEvents(EntityID entityID, bool consume)
 {
-    GET_COMPONENT_OR_RETURN(UIEventHandler, )
+    GET_COMPONENT_OR_RETURN(UIImage, )
 
-    component.Type = consume ? EventHandlerTypes::Normal : EventHandlerTypes::Transparent;
+    component.SetConsumeEvents(consume);
 }
 
 void UIInternalCalls::UIImage_GetCustomMaterialProperties(EntityID entityID, MaterialPropertyBlockInternal* properties)

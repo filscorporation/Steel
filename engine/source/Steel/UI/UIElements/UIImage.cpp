@@ -10,6 +10,7 @@ void UIImage::RegisterType()
     REGISTER_RESOURCE_ATTRIBUTE(UIImage, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public);
     REGISTER_RESOURCE_ATTRIBUTE(UIImage, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
     REGISTER_ATTRIBUTE(UIImage, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIImage, "consumeEvents", GetConsumeEvents, SetConsumeEvents, bool, AttributeFlags::Public);
 }
 
 bool UIImage::Validate(EntitiesRegistry* entitiesRegistry)
@@ -24,8 +25,12 @@ void UIImage::SetDefault(EntitiesRegistry* entitiesRegistry)
 
 void UIImage::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    entitiesRegistry->AddComponent<UIEventHandler>(Owner);
+    initialized = true;
+
     _clippingLevel = GetClippingLevelUpwards(entitiesRegistry, Owner);
+
+    entitiesRegistry->AddComponent<UIEventHandler>(Owner).Type =
+            _consumeEvents ? EventHandlerTypes::Normal : EventHandlerTypes::Transparent;
 }
 
 void UIImage::OnRemoved(EntitiesRegistry* entitiesRegistry)
@@ -121,6 +126,19 @@ void UIImage::SetImageTileIndex(uint32_t index)
 uint32_t UIImage::GetImageTileIndex() const
 {
     return currentImageTileIndex;
+}
+
+void UIImage::SetConsumeEvents(bool consume)
+{
+    if (initialized && HasComponentS<UIEventHandler>(Owner))
+        GetComponentS<UIEventHandler>(Owner).Type
+            = consume ? EventHandlerTypes::Normal : EventHandlerTypes::Transparent;
+    _consumeEvents = consume;
+}
+
+bool UIImage::GetConsumeEvents() const
+{
+    return _consumeEvents;
 }
 
 void UIImage::SetClippingLevel(short clippingLevel)

@@ -32,6 +32,8 @@ public:
     const glm::vec4& GetColor() const;
     void SetImageTileIndex(uint32_t index);
     uint32_t GetImageTileIndex() const;
+    void SetConsumeEvents(bool consume);
+    bool GetConsumeEvents() const;
     void SetClippingLevel(short clippingLevel);
 
     // Will flip UVs upside down by Y (used for framebuffer texture)
@@ -40,10 +42,12 @@ public:
 protected:
     void RebuildInner(RectTransformation& transformation);
 
+    bool initialized = false;
     Sprite* _image = nullptr;
     glm::vec4 _color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     Material* _material = nullptr;
     MaterialPropertyBlock _customProperties;
+    bool _consumeEvents = true;
     short _clippingLevel = 0;
 
     uint32_t currentImageTileIndex = 0;
