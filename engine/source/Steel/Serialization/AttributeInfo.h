@@ -24,22 +24,23 @@ namespace AttributeFlags
 class AttributeInfo
 {
 public:
-    AttributeInfo(const std::string& name, AttributeAccessorBase* accessor, AttributeFlags::AttributeFlag flags)
-        : _name(name), _accessor(accessor), _flags(flags)
+    AttributeInfo(const std::string& name, AttributeAccessorBase* accessor, AttributeFlags::AttributeFlag flags, const std::string& label)
+        : _name(name), _accessor(accessor), _flags(flags), _label(label)
     {
 
     }
 
     std::string Name() const { return _name; }
+    std::string Label() const { return _label; }
     AttributeFlags::AttributeFlag Flags() const { return _flags; }
     Types::Type GetType() const { return _accessor->GetType(); }
 
-    void Serialize(Serializable* object, YAML::Node& node, SerializationContext& context)
+    void Serialize(Serializable* object, YAML::Node& node, SerializationContext& context) const
     {
         _accessor->Serialize(object, _name, node, context);
     }
 
-    void Deserialize(Serializable* object, const YAML::Node& node, SerializationContext& context)
+    void Deserialize(Serializable* object, const YAML::Node& node, SerializationContext& context) const
     {
         if (node[_name])
             _accessor->Deserialize(object, _name, node, context);
@@ -47,6 +48,7 @@ public:
 
 private:
     std::string _name;
+    std::string _label;
     AttributeAccessorBase* _accessor = nullptr;
     AttributeFlags::AttributeFlag _flags;
 

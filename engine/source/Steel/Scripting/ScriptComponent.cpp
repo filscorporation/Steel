@@ -9,7 +9,7 @@
 void ScriptComponent::RegisterType()
 {
     REGISTER_COMPONENT(ScriptComponent);
-    REGISTER_SCRIPTS_ATTRIBUTE(ScriptComponent, "", GetScriptsData, SetScriptsData, AttributeFlags::Public);
+    REGISTER_SCRIPTS_ATTRIBUTE(ScriptComponent, "", GetScriptsData, SetScriptsData, AttributeFlags::Public, "");
 }
 
 void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)

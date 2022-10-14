@@ -1,22 +1,19 @@
 #include "PropertiesView.h"
 #include "HierarchyView.h"
 #include "../EditorCore/EditorApplication.h"
+#include "UIProperties/UIIntegerProperty.h"
+#include "UIProperties/UIFloatProperty.h"
 
 #include <Steel.h>
 #include <Steel/Common/StringUtils.h>
-
-#define ELEMENT_SIZE 16.0f
-#define Y_OFFSET 4.0f
-#define X_OFFSET 8.0f
-#define BIG_OFFSET 10.0f
 
 #define ADD_TO_STRING_ELEMENT(m_type) \
 { \
     EntityID elementEntity = CreateSimpleStringElement( \
             entitiesRegistry, \
             layer, \
-            StringUtils::ToString(componentNode[attribute.Name()].as<m_type>()), \
-            attribute.Name(), \
+            StringUtils::ToString(componentNodeWrapper->Node[attribute.Name()].as<m_type>()), \
+            attribute.Label(), \
             x, \
             y \
     ); \
@@ -57,12 +54,17 @@ void PropertiesView::Update(EntitiesRegistry* entitiesRegistry)
 
 void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& entities)
 {
-    ClearProperties(entitiesRegistry);
-
     if (entities.size() != 1)
         return;
 
     EntityID entityID = entities[0];
+
+    if (entityID != lastEntityID)
+    {
+        ClearProperties(entitiesRegistry);
+        isDirty = true;
+        lastEntityID = entityID;
+    }
 
     auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
     auto editor = (EditorApplication*)Application::Instance;
@@ -76,6 +78,54 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
 
     std::vector<RawComponentData> rawData;
     appScene->GetEntitiesRegistry()->GetAllComponentsForEntity(entityID, rawData);
+
+    // TODO: compare with previous
+    if (!isDirty)
+    {
+        // Apply data changed by properties
+        for (auto& componentNodeWrapper : componentsNodes)
+        {
+            if (componentNodeWrapper->IsDirty)
+            {
+                // TODO: if we set dirty here - this will rebuild UI stopping all the animations and editing
+                // TODO: if not - fields changing other fields will get updated in UI
+                // TODO: best solution if to rebuild UI partly
+                //isDirty = true;
+
+                // TODO: keep in mind that between PropertyView catches event and this place some fields can be modified,
+                // TODO: so applying data from node to object here can overwrite some external changes
+
+                auto typeInfo = TypeInfoStorage::GetTypeInfo(componentNodeWrapper->TypeID);
+                auto typeID = componentNodeWrapper->TypeID;
+
+                int rawComponentIndex = -1;
+                for (int i = 0; i < rawData.size(); i++)
+                {
+                    if (rawData[i].TypeID == typeID)
+                    {
+                        rawComponentIndex = i;
+                        break;
+                    }
+                }
+
+                if (rawComponentIndex == -1)
+                {
+                    Log::LogError("Component of type {0} was changed by view, but was not found in deserialized data", typeInfo->TypeName);
+                    continue;
+                }
+
+                auto object = static_cast<Serializable*>(rawData[rawComponentIndex].Data);
+                SerializationManager::Deserialize(typeID, object, componentNodeWrapper->Node, context);
+            }
+        }
+    }
+
+    if (!isDirty)
+        return;
+    isDirty = false;
+
+    ClearProperties(entitiesRegistry);
+
     for (auto& dataPair : rawData)
     {
         auto object = static_cast<Serializable*>(dataPair.Data);
@@ -84,8 +134,10 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
         // Can skip some types (leave now for test)
         //if (typeInfo->ID == HierarchyNode::GetTypeInfo()->ID) continue;
 
-        YAML::Node componentNode;
-        SerializationManager::Serialize(typeInfo->ID, object, componentNode, context);
+        auto componentNodeWrapper = new ComponentNodeWrapper();
+        componentNodeWrapper->TypeID = typeInfo->ID;
+        componentsNodes.push_back(componentNodeWrapper);
+        SerializationManager::Serialize(typeInfo->ID, object, componentNodeWrapper->Node, context);
 
         float x = X_OFFSET;
 
@@ -131,7 +183,21 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                     break;
                 }
                 case Types::Int:
-                    ADD_TO_STRING_ELEMENT(int)
+                {
+                    EntityID elementEntity = UIIntegerProperty::Create(
+                            entitiesRegistry,
+                            layer,
+                            componentNodeWrapper,
+                            typeInfo,
+                            attribute,
+                            x,
+                            y,
+                            Owner
+                    );
+
+                    uiElementsEntities.push_back(elementEntity);
+                    break;
+                }
                 case Types::Long:
                     ADD_TO_STRING_ELEMENT(long)
                 case Types::UInt32:
@@ -143,7 +209,21 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                 case Types::Bool:
                     ADD_TO_STRING_ELEMENT(bool)
                 case Types::Float:
-                    ADD_TO_STRING_ELEMENT(float)
+                {
+                    EntityID elementEntity = UIFloatProperty::Create(
+                            entitiesRegistry,
+                            layer,
+                            componentNodeWrapper,
+                            typeInfo,
+                            attribute,
+                            x,
+                            y,
+                            Owner
+                    );
+
+                    uiElementsEntities.push_back(elementEntity);
+                    break;
+                }
                 case Types::Double:
                     ADD_TO_STRING_ELEMENT(double)
                 case Types::Vector2:
@@ -155,12 +235,12 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                 case Types::String:
                 {
                     EntityID elementEntity = CreateSimpleStringElement(
-                        entitiesRegistry,
-                        layer,
-                        componentNode[attribute.Name()].as<std::string>(),
-                        attribute.Name(),
-                        x,
-                        y
+                            entitiesRegistry,
+                            layer,
+                            componentNodeWrapper->Node[attribute.Name()].as<std::string>(),
+                            attribute.Name(),
+                            x,
+                            y
                     );
 
                     uiElementsEntities.push_back(elementEntity);
@@ -171,7 +251,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                     EntityID elementEntity = CreateSimpleStringElement(
                             entitiesRegistry,
                             layer,
-                            "<enum value " + StringUtils::ToString(componentNode[attribute.Name()].as<int>()) + ">",
+                            "<enum value " + StringUtils::ToString(componentNodeWrapper->Node[attribute.Name()].as<int>()) + ">",
                             attribute.Name(),
                             x,
                             y
@@ -189,7 +269,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                     EntityID elementEntity = CreateSimpleStringElement(
                             entitiesRegistry,
                             layer,
-                            "<list of size " + StringUtils::ToString(componentNode[attribute.Name()].size()) + ">",
+                            "<list of size " + StringUtils::ToString(componentNodeWrapper->Node[attribute.Name()].size()) + ">",
                             attribute.Name(),
                             x,
                             y
@@ -226,6 +306,12 @@ void PropertiesView::ClearProperties(EntitiesRegistry* entitiesRegistry)
         entitiesRegistry->DeleteEntity(entityID);
     }
     uiElementsEntities.clear();
+
+    for (auto nodeWrapper : componentsNodes)
+    {
+        delete nodeWrapper;
+    }
+    componentsNodes.clear();
 }
 
 EntityID PropertiesView::CreateSimpleStringElement(

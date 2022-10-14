@@ -3,8 +3,8 @@
 void UITabInfo::RegisterType()
 {
     REGISTER_TYPE(UITabInfo);
-    REGISTER_ID_ATTRIBUTE(UITabInfo, "button", GetButtonID, SetButtonID, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(UITabInfo, "content", GetContentID, SetContentID, AttributeFlags::Public);
+    REGISTER_ID_ATTRIBUTE(UITabInfo, "button", GetButtonID, SetButtonID, AttributeFlags::Public, "Button");
+    REGISTER_ID_ATTRIBUTE(UITabInfo, "content", GetContentID, SetContentID, AttributeFlags::Public, "Content");
 }
 
 UITabInfo::UITabInfo(EntityID buttonID, EntityID contentID)

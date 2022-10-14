@@ -6,7 +6,7 @@
 void AudioListener::RegisterType()
 {
     REGISTER_COMPONENT(AudioListener);
-    REGISTER_ATTRIBUTE(AudioListener, "listenerVolume", GetVolume, SetVolume, float, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(AudioListener, "listenerVolume", GetVolume, SetVolume, float, AttributeFlags::Public, "Listener volume");
 }
 
 void AudioListener::OnCreated(EntitiesRegistry* entitiesRegistry)

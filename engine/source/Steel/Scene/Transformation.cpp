@@ -8,9 +8,9 @@
 void Transformation::RegisterType()
 {
     REGISTER_COMPONENT(Transformation);
-    REGISTER_ATTRIBUTE(Transformation, "localPosition", GetLocalPosition, SetLocalPosition, glm::vec3, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(Transformation, "localRotation", GetLocalRotation, SetLocalRotation, glm::vec3, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(Transformation, "localScale", GetLocalScale, SetLocalScale, glm::vec3, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(Transformation, "localPosition", GetLocalPosition, SetLocalPosition, glm::vec3, AttributeFlags::Public, "Position");
+    REGISTER_ATTRIBUTE(Transformation, "localRotation", GetLocalRotation, SetLocalRotation, glm::vec3, AttributeFlags::Public, "Rotation");
+    REGISTER_ATTRIBUTE(Transformation, "localScale", GetLocalScale, SetLocalScale, glm::vec3, AttributeFlags::Public, "Scale");
 }
 
 bool Transformation::Validate(EntitiesRegistry* entitiesRegistry)

@@ -282,9 +282,10 @@ EntityID UILayer::CreateUIInputField(const std::string& name, EntityID parent)
     auto& textRT = _scene->GetEntitiesRegistry()->GetComponent<RectTransformation>(textEntity);
     textRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
     textRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-    float offset = 6.0f;
-    textRT.SetOffsetMin(glm::vec2(offset, offset));
-    textRT.SetOffsetMax(glm::vec2(offset, offset));
+    float offsetX = 6.0f;
+    float offsetY = 1.0f;
+    textRT.SetOffsetMin(glm::vec2(offsetX, offsetY));
+    textRT.SetOffsetMax(glm::vec2(offsetX, offsetY));
     inputField.SetTargetText(textEntity);
 
     return entity;

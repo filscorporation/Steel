@@ -3,8 +3,8 @@
 void NameComponent::RegisterType()
 {
     REGISTER_COMPONENT(NameComponent);
-    REGISTER_ATTRIBUTE(NameComponent, "name", GetName, SetName, std::string, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(NameComponent, "tag", GetTag, SetTag, std::string, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(NameComponent, "name", GetName, SetName, std::string, AttributeFlags::Public, "Name");
+    REGISTER_ATTRIBUTE(NameComponent, "tag", GetTag, SetTag, std::string, AttributeFlags::Public, "Tag");
 }
 
 const std::string& NameComponent::GetName() const

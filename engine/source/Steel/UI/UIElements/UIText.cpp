@@ -10,14 +10,14 @@
 void UIText::RegisterType()
 {
     REGISTER_COMPONENT(UIText);
-    REGISTER_RESOURCE_ATTRIBUTE(UIText, "font", GetFont, SetFont, Font*, ResourceTypes::Font, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIText, "text", GetText, SetText, std::string, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIText, "textSize", GetTextSize, SetTextSize, uint32_t, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIText, "lineSpacing", GetLineSpacing, SetLineSpacing, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIText, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIText, "isAutoSize", GetIsTextAutoSize, SetIsTextAutoSize, bool, AttributeFlags::Public);
-    REGISTER_ENUM_ATTRIBUTE(UIText, "alignmentType", GetTextAlignment, SetTextAlignment, AlignmentTypes::AlignmentType, AttributeFlags::Public);
-    REGISTER_ENUM_ATTRIBUTE(UIText, "overflowMode", GetOverflowMode, SetOverflowMode, OverflowModes::OverflowMode, AttributeFlags::Public);
+    REGISTER_RESOURCE_ATTRIBUTE(UIText, "font", GetFont, SetFont, Font*, ResourceTypes::Font, AttributeFlags::Public, "Font");
+    REGISTER_ATTRIBUTE(UIText, "text", GetText, SetText, std::string, AttributeFlags::Public, "Text");
+    REGISTER_ATTRIBUTE(UIText, "textSize", GetTextSize, SetTextSize, uint32_t, AttributeFlags::Public, "Text size");
+    REGISTER_ATTRIBUTE(UIText, "lineSpacing", GetLineSpacing, SetLineSpacing, float, AttributeFlags::Public, "Line spacing");
+    REGISTER_ATTRIBUTE(UIText, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public, "Color");
+    REGISTER_ATTRIBUTE(UIText, "isAutoSize", GetIsTextAutoSize, SetIsTextAutoSize, bool, AttributeFlags::Public, "Is auto size");
+    REGISTER_ENUM_ATTRIBUTE(UIText, "alignmentType", GetTextAlignment, SetTextAlignment, AlignmentTypes::AlignmentType, AttributeFlags::Public, "Alignment type");
+    REGISTER_ENUM_ATTRIBUTE(UIText, "overflowMode", GetOverflowMode, SetOverflowMode, OverflowModes::OverflowMode, AttributeFlags::Public, "Overflow mode");
 }
 
 bool UIText::Validate(EntitiesRegistry* entitiesRegistry)

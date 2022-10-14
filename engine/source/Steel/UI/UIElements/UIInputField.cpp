@@ -12,16 +12,16 @@
 void UIInputField::RegisterType()
 {
     REGISTER_COMPONENT(UIInputField);
-    REGISTER_ID_ATTRIBUTE(UIInputField, "targetText", GetTargetText, SetTargetText, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIInputField, "cursorWidth", GetCursorWidth, SetCursorWidth, uint32_t, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIInputField, "cursorColor", GetCursorColor, SetCursorColor, glm::vec4, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIInputField, "cursorAutoColor", GetCursorAutoColor, SetCursorAutoColor, bool, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIInputField, "isMultiline", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public);
-    REGISTER_ENUM_ATTRIBUTE(UIInputField, "textType", GetTextType, SetTextType, TextTypes::TextType, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIInputField, "selectionColor", GetSelectionColor, SetSelectionColor, glm::vec4, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIInputField, "transitionInfo", GetTransitionsInfo, SetTransitionsInfo, TransitionsInfo, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(UIInputField, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIInputField, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public);
+    REGISTER_ID_ATTRIBUTE(UIInputField, "targetText", GetTargetText, SetTargetText, AttributeFlags::Public, "Target text");
+    REGISTER_ATTRIBUTE(UIInputField, "cursorWidth", GetCursorWidth, SetCursorWidth, uint32_t, AttributeFlags::Public, "Cursor width");
+    REGISTER_ATTRIBUTE(UIInputField, "cursorColor", GetCursorColor, SetCursorColor, glm::vec4, AttributeFlags::Public, "Cursor color");
+    REGISTER_ATTRIBUTE(UIInputField, "cursorAutoColor", GetCursorAutoColor, SetCursorAutoColor, bool, AttributeFlags::Public, "Cursor auto color");
+    REGISTER_ATTRIBUTE(UIInputField, "isMultiline", GetIsMultiline, SetIsMultiline, bool, AttributeFlags::Public, "Is multiline");
+    REGISTER_ENUM_ATTRIBUTE(UIInputField, "textType", GetTextType, SetTextType, TextTypes::TextType, AttributeFlags::Public, "Text type");
+    REGISTER_ATTRIBUTE(UIInputField, "selectionColor", GetSelectionColor, SetSelectionColor, glm::vec4, AttributeFlags::Public, "Selection color");
+    REGISTER_ATTRIBUTE(UIInputField, "transitionInfo", GetTransitionsInfo, SetTransitionsInfo, TransitionsInfo, AttributeFlags::Public, "Transition info");
+    REGISTER_ID_ATTRIBUTE(UIInputField, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public, "Target image");
+    REGISTER_ATTRIBUTE(UIInputField, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public, "Is interactable");
 }
 
 bool UIInputField::Validate(EntitiesRegistry* entitiesRegistry)
@@ -659,6 +659,8 @@ int UIInputField::SetText(UIText& uiText, std::string& text)
     uiText.SetText(text);
     wasEdited = true;
 
+    if (OnChangedCallback != nullptr) // TODO: it can be changed in other places there (where uiText.SetText(..) is called)
+        OnChangedCallback(Owner, text);
     if (ScriptingSystem::IsInitialized() && Application::Context()->Scripting)
         ScriptingCore::CallCallbackMethod(Owner, CallbackTypes::InputFieldChangeValue,
                                           ScriptingCore::GetInvokeCallbacksMethod());

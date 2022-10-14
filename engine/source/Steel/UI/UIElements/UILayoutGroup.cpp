@@ -5,8 +5,8 @@
 void UILayoutGroup::RegisterType()
 {
     REGISTER_COMPONENT(UILayoutGroup);
-    REGISTER_ENUM_ATTRIBUTE(UILayoutGroup, "type", GetType, SetType, LayoutGroupTypes::LayoutGroupType, AttributeFlags::Public);
-    REGISTER_LIST_ATTRIBUTE(UILayoutGroup, "elements", GetElementsList, SetElementsList, UILayoutElementInfo, AttributeFlags::Public);
+    REGISTER_ENUM_ATTRIBUTE(UILayoutGroup, "type", GetType, SetType, LayoutGroupTypes::LayoutGroupType, AttributeFlags::Public, "Type");
+    REGISTER_LIST_ATTRIBUTE(UILayoutGroup, "elements", GetElementsList, SetElementsList, UILayoutElementInfo, AttributeFlags::Public, "Elements");
 }
 
 bool UILayoutGroup::Validate(EntitiesRegistry* entitiesRegistry)

@@ -17,6 +17,7 @@ namespace TextTypes
     };
 }
 
+typedef std::function<void(EntityID, std::string)> InputFieldChangedCallback;
 typedef std::function<void(EntityID, std::string)> InputFieldSubmitCallback;
 
 class UIInputField : public UIInteractable
@@ -56,6 +57,7 @@ public:
     static bool IsFloat(const std::string& text, float& value);
     static int IsNotAlNum(char c);
 
+    InputFieldChangedCallback OnChangedCallback = nullptr;
     InputFieldSubmitCallback SubmitCallback = nullptr;
 
 private:

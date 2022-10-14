@@ -7,11 +7,11 @@
 void UITabs::RegisterType()
 {
     REGISTER_COMPONENT(UITabs);
-    REGISTER_LIST_ATTRIBUTE(UITabs, "tabs", GetTabsList, SetTabsList, UITabInfo, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UITabs, "activeTab", GetActiveTab, SetActiveTab, int, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(UITabs, "content", GetContent, SetContent, AttributeFlags::Public);
-    REGISTER_RESOURCE_ATTRIBUTE(UITabs, "openTabSprite", GetOpenTabSprite, SetOpenTabSprite, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
-    REGISTER_RESOURCE_ATTRIBUTE(UITabs, "closeTabSprite", GetCloseTabSprite, SetCloseTabSprite, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
+    REGISTER_LIST_ATTRIBUTE(UITabs, "tabs", GetTabsList, SetTabsList, UITabInfo, AttributeFlags::Public, "Tabs");
+    REGISTER_ATTRIBUTE(UITabs, "activeTab", GetActiveTab, SetActiveTab, int, AttributeFlags::Public, "Active tab");
+    REGISTER_ID_ATTRIBUTE(UITabs, "content", GetContent, SetContent, AttributeFlags::Public, "Content");
+    REGISTER_RESOURCE_ATTRIBUTE(UITabs, "openTabSprite", GetOpenTabSprite, SetOpenTabSprite, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public, "Opened tab sprite");
+    REGISTER_RESOURCE_ATTRIBUTE(UITabs, "closeTabSprite", GetCloseTabSprite, SetCloseTabSprite, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public, "Closed tab sprite");
 }
 
 bool UITabs::Validate(EntitiesRegistry* entitiesRegistry)

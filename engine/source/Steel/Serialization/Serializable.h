@@ -17,7 +17,7 @@ public:
     virtual ~Serializable() = default;
 };
 
-#define REGISTER_ATTRIBUTE(className, name, getter, setter, type, flags)                                        \
+#define REGISTER_ATTRIBUTE(className, name, getter, setter, type, flags, label)                                 \
 SerializationManager::RegisterAttribute                                                                         \
 (                                                                                                               \
     TYPE_ID(className),                                                                                         \
@@ -25,11 +25,12 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                           \
         name,                                                                                                   \
         new AttributeAccessor<className, type, AttributeTypedef<type>>(&className::getter, &className::setter), \
-        flags                                                                                                   \
+        flags,                                                                                                  \
+        label                                                                                                   \
     )                                                                                                           \
 )
 
-#define REGISTER_ENUM_ATTRIBUTE(className, name, getter, setter, type, flags)                                   \
+#define REGISTER_ENUM_ATTRIBUTE(className, name, getter, setter, type, flags, label)                            \
 SerializationManager::RegisterAttribute                                                                         \
 (                                                                                                               \
     TYPE_ID(className),                                                                                         \
@@ -37,11 +38,12 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                           \
         name,                                                                                                   \
         new EnumAttributeAccessor<className, type>(&className::getter, &className::setter),                     \
-        flags                                                                                                   \
+        flags,                                                                                                  \
+        label                                                                                                   \
     )                                                                                                           \
 )
 
-#define REGISTER_ID_ATTRIBUTE(className, name, getter, setter, flags)                                           \
+#define REGISTER_ID_ATTRIBUTE(className, name, getter, setter, flags, label)                                    \
 SerializationManager::RegisterAttribute                                                                         \
 (                                                                                                               \
     TYPE_ID(className),                                                                                         \
@@ -49,11 +51,12 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                           \
         name,                                                                                                   \
         new IDAttributeAccessor<className>(&className::getter, &className::setter),                             \
-        flags                                                                                                   \
+        flags,                                                                                                  \
+        label                                                                                                   \
     )                                                                                                           \
 )
 
-#define REGISTER_RESOURCE_ATTRIBUTE(className, name, getter, setter, type, resourceType, flags)                 \
+#define REGISTER_RESOURCE_ATTRIBUTE(className, name, getter, setter, type, resourceType, flags, label)          \
 SerializationManager::RegisterAttribute                                                                         \
 (                                                                                                               \
     TYPE_ID(className),                                                                                         \
@@ -61,11 +64,12 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                           \
         name,                                                                                                   \
         new ResourceAttributeAccessor<className, type>(&className::getter, &className::setter, resourceType),   \
-        flags                                                                                                   \
+        flags,                                                                                                  \
+        label                                                                                                   \
     )                                                                                                           \
 )
 
-#define REGISTER_LIST_ATTRIBUTE(className, name, getter, setter, type, flags)                                       \
+#define REGISTER_LIST_ATTRIBUTE(className, name, getter, setter, type, flags, label)                                \
 SerializationManager::RegisterAttribute                                                                             \
 (                                                                                                                   \
     TYPE_ID(className),                                                                                             \
@@ -73,18 +77,20 @@ SerializationManager::RegisterAttribute                                         
     (                                                                                                               \
         name,                                                                                                       \
         new ListAttributeAccessor<className, type>(&className::getter, &className::setter),                         \
-        flags                                                                                                       \
+        flags,                                                                                                  \
+        label                                                                                                   \
     )                                                                                                               \
 )
 
-#define REGISTER_SCRIPTS_ATTRIBUTE(className, name, getter, setter, flags)                                          \
+#define REGISTER_SCRIPTS_ATTRIBUTE(className, name, getter, setter, flags, label)                                   \
 SerializationManager::RegisterAttribute                                                                             \
 (                                                                                                                   \
     TYPE_ID(className),                                                                                             \
     AttributeInfo                                                                                                   \
     (                                                                                                               \
         name,                                                                                                       \
-        new ScriptsListAttributeAccessor<className>(&className::getter, &className::setter),                            \
-        flags                                                                                                       \
+        new ScriptsListAttributeAccessor<className>(&className::getter, &className::setter),                        \
+        flags,                                                                                                  \
+        label                                                                                                   \
     )                                                                                                               \
 )

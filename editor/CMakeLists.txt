@@ -16,7 +16,9 @@ set(SOURCE_FILES source/main.cpp source/EditorCore/EditorApplication.cpp source/
         source/UI/ControlPanel.cpp source/UI/ControlPanel.h
         source/UI/UIEditorTab.cpp source/UI/UIEditorTab.h source/UI/SceneView.cpp source/UI/SceneView.h
         source/EditorCore/EditorSceneRenderer.cpp source/EditorCore/EditorSceneRenderer.h source/EditorCore/EditorTypeSystem.cpp
-        source/EditorCore/EditorTypeSystem.h source/UI/PropertiesView.cpp source/UI/PropertiesView.h)
+        source/EditorCore/EditorTypeSystem.h source/UI/PropertiesView.cpp source/UI/PropertiesView.h
+        source/UI/UIProperties/UIIntegerProperty.cpp source/UI/UIProperties/UIIntegerProperty.h source/UI/UIProperties/UIFloatProperty.cpp
+        source/UI/UIProperties/UIFloatProperty.h source/UI/UIProperties/ComponentNodeWrapper.h)
 
 # steel
 include_directories(../engine/source)

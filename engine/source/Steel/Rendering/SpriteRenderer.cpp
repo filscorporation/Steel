@@ -4,8 +4,8 @@
 void SpriteRenderer::RegisterType()
 {
     REGISTER_COMPONENT(SpriteRenderer);
-    REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public);
-    REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
+    REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public, "Material");
+    REGISTER_RESOURCE_ATTRIBUTE(SpriteRenderer, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public, "Image");
 }
 
 void SpriteRenderer::SetDefault(EntitiesRegistry* entitiesRegistry)

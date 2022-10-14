@@ -9,14 +9,14 @@
 void RectTransformation::RegisterType()
 {
     REGISTER_COMPONENT(RectTransformation);
-    REGISTER_ATTRIBUTE(RectTransformation, "anchorMin", GetAnchorMin, SetAnchorMin, glm::vec2, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RectTransformation, "anchorMax", GetAnchorMax, SetAnchorMax, glm::vec2, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RectTransformation, "anchoredPosition", GetAnchoredPosition, SetAnchoredPosition, glm::vec2, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RectTransformation, "offsetMin", GetOffsetMin, SetOffsetMin, glm::vec2, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RectTransformation, "offsetMax", GetOffsetMax, SetOffsetMax, glm::vec2, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RectTransformation, "size", GetSize, SetSize, glm::vec2, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RectTransformation, "pivot", GetPivot, SetPivot, glm::vec2, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RectTransformation, "localRotation", GetLocalRotation, SetLocalRotation, glm::vec3, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(RectTransformation, "anchorMin", GetAnchorMin, SetAnchorMin, glm::vec2, AttributeFlags::Public, "Anchor min");
+    REGISTER_ATTRIBUTE(RectTransformation, "anchorMax", GetAnchorMax, SetAnchorMax, glm::vec2, AttributeFlags::Public, "Anchor max");
+    REGISTER_ATTRIBUTE(RectTransformation, "anchoredPosition", GetAnchoredPosition, SetAnchoredPosition, glm::vec2, AttributeFlags::Public, "Anchored position");
+    REGISTER_ATTRIBUTE(RectTransformation, "offsetMin", GetOffsetMin, SetOffsetMin, glm::vec2, AttributeFlags::Public, "Offset min");
+    REGISTER_ATTRIBUTE(RectTransformation, "offsetMax", GetOffsetMax, SetOffsetMax, glm::vec2, AttributeFlags::Public, "Offset max");
+    REGISTER_ATTRIBUTE(RectTransformation, "size", GetSize, SetSize, glm::vec2, AttributeFlags::Public, "Size");
+    REGISTER_ATTRIBUTE(RectTransformation, "pivot", GetPivot, SetPivot, glm::vec2, AttributeFlags::Public, "Pivot");
+    REGISTER_ATTRIBUTE(RectTransformation, "localRotation", GetLocalRotation, SetLocalRotation, glm::vec3, AttributeFlags::Public, "Rotation");
 }
 
 bool RectTransformation::Validate(EntitiesRegistry* entitiesRegistry)

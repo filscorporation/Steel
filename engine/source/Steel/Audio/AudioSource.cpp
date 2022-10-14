@@ -7,8 +7,8 @@
 void AudioSource::RegisterType()
 {
     REGISTER_COMPONENT(AudioSource);
-    REGISTER_ATTRIBUTE(AudioSource, "sourceVolume", GetVolume, SetVolume, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(AudioSource, "isLoop", GetIsLoop, SetIsLoop, bool, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(AudioSource, "sourceVolume", GetVolume, SetVolume, float, AttributeFlags::Public, "Source volume");
+    REGISTER_ATTRIBUTE(AudioSource, "isLoop", GetIsLoop, SetIsLoop, bool, AttributeFlags::Public, "Is loop");
 }
 
 void AudioSource::OnCreated(EntitiesRegistry* entitiesRegistry)

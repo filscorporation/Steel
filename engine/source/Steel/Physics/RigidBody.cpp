@@ -11,15 +11,15 @@
 void RigidBody::RegisterType()
 {
     REGISTER_COMPONENT(RigidBody);
-    REGISTER_ENUM_ATTRIBUTE(RigidBody, "type", GetType, SetType, RigidBodyTypes::RigidBodyType, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RigidBody, "mass", GetMass, SetMass, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RigidBody, "gravityScale", GetGravityScale, SetGravityScale, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RigidBody, "friction", GetFriction, SetFriction, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RigidBody, "restitution", GetRestitution, SetRestitution, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RigidBody, "linearDamping", GetLinearDamping, SetLinearDamping, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RigidBody, "angularDamping", GetAngularDamping, SetAngularDamping, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RigidBody, "isFixedRotation", GetIsFixedRotation, SetIsFixedRotation, bool, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(RigidBody, "useCCD", GetUseContinuousCollisionDetection, SetUseContinuousCollisionDetection, bool, AttributeFlags::Public);
+    REGISTER_ENUM_ATTRIBUTE(RigidBody, "type", GetType, SetType, RigidBodyTypes::RigidBodyType, AttributeFlags::Public, "Type");
+    REGISTER_ATTRIBUTE(RigidBody, "mass", GetMass, SetMass, float, AttributeFlags::Public, "Mass");
+    REGISTER_ATTRIBUTE(RigidBody, "gravityScale", GetGravityScale, SetGravityScale, float, AttributeFlags::Public, "Gravity scale");
+    REGISTER_ATTRIBUTE(RigidBody, "friction", GetFriction, SetFriction, float, AttributeFlags::Public, "Friction");
+    REGISTER_ATTRIBUTE(RigidBody, "restitution", GetRestitution, SetRestitution, float, AttributeFlags::Public, "Restitution");
+    REGISTER_ATTRIBUTE(RigidBody, "linearDamping", GetLinearDamping, SetLinearDamping, float, AttributeFlags::Public, "Linear damping");
+    REGISTER_ATTRIBUTE(RigidBody, "angularDamping", GetAngularDamping, SetAngularDamping, float, AttributeFlags::Public, "Angular damping");
+    REGISTER_ATTRIBUTE(RigidBody, "isFixedRotation", GetIsFixedRotation, SetIsFixedRotation, bool, AttributeFlags::Public, "Is fixed rotation");
+    REGISTER_ATTRIBUTE(RigidBody, "useCCD", GetUseContinuousCollisionDetection, SetUseContinuousCollisionDetection, bool, AttributeFlags::Public, "Use continuous collision detection");
 }
 
 void RigidBody::OnCreated(EntitiesRegistry* entitiesRegistry)

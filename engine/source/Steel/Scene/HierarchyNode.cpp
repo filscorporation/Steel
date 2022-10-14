@@ -8,14 +8,14 @@ bool lock = false;
 void HierarchyNode::RegisterType()
 {
     REGISTER_COMPONENT(HierarchyNode);
-    REGISTER_ATTRIBUTE(HierarchyNode, "childrenCount", GetChildrenCount, SetChildrenCount, uint32_t, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(HierarchyNode, "firstChildNode", GetFirstChildNode, SetFirstChildNode, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(HierarchyNode, "hierarchyDepth", GetHierarchyDepth, SetHierarchyDepth, uint32_t, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(HierarchyNode, "nodeIndex", GetNodeIndex, SetNodeIndex, uint32_t, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(HierarchyNode, "thickness", GetThickness, SetThickness, uint32_t, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(HierarchyNode, "previousNode", GetPreviousNode, SetPreviousNode, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(HierarchyNode, "nextNode", GetNextNode, SetNextNode, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(HierarchyNode, "parentNode", GetParentNode, SetParentNode, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(HierarchyNode, "childrenCount", GetChildrenCount, SetChildrenCount, uint32_t, AttributeFlags::Public, "Children count");
+    REGISTER_ID_ATTRIBUTE(HierarchyNode, "firstChildNode", GetFirstChildNode, SetFirstChildNode, AttributeFlags::Public, "First child node");
+    REGISTER_ATTRIBUTE(HierarchyNode, "hierarchyDepth", GetHierarchyDepth, SetHierarchyDepth, uint32_t, AttributeFlags::Public, "Hierarchy depth");
+    REGISTER_ATTRIBUTE(HierarchyNode, "nodeIndex", GetNodeIndex, SetNodeIndex, uint32_t, AttributeFlags::Public, "Node index");
+    REGISTER_ATTRIBUTE(HierarchyNode, "thickness", GetThickness, SetThickness, uint32_t, AttributeFlags::Public, "Thickness");
+    REGISTER_ID_ATTRIBUTE(HierarchyNode, "previousNode", GetPreviousNode, SetPreviousNode, AttributeFlags::Public, "Previous node");
+    REGISTER_ID_ATTRIBUTE(HierarchyNode, "nextNode", GetNextNode, SetNextNode, AttributeFlags::Public, "Next node");
+    REGISTER_ID_ATTRIBUTE(HierarchyNode, "parentNode", GetParentNode, SetParentNode, AttributeFlags::Public, "Parent node");
 }
 
 void HierarchyNode::OnRemoved(EntitiesRegistry* entitiesRegistry)

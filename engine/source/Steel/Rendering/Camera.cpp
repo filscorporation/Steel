@@ -5,13 +5,13 @@
 void Camera::RegisterType()
 {
     REGISTER_COMPONENT(Camera);
-    REGISTER_ATTRIBUTE(Camera, "renderMask", GetRenderMask, SetRenderMask, RenderMask, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(Camera, "width", GetWidth, SetWidth, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(Camera, "height", GetHeight, SetHeight, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(Camera, "nearClippingPlane", GetNearClippingPlane, SetNearClippingPlane, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(Camera, "farClippingPlane", GetFarClippingPlane, SetFarClippingPlane, float, AttributeFlags::Public);
-    REGISTER_ENUM_ATTRIBUTE(Camera, "resizeMode", GetResizeMode, SetResizeMode, CameraResizeModes::CameraResizeMode, AttributeFlags::Public);
-    REGISTER_ENUM_ATTRIBUTE(Camera, "clearFlag", GetClearFlag, SetClearFlag, ClearFlags::ClearFlag, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(Camera, "renderMask", GetRenderMask, SetRenderMask, RenderMask, AttributeFlags::Public, "Render mask");
+    REGISTER_ATTRIBUTE(Camera, "width", GetWidth, SetWidth, float, AttributeFlags::Public, "Width");
+    REGISTER_ATTRIBUTE(Camera, "height", GetHeight, SetHeight, float, AttributeFlags::Public, "Height");
+    REGISTER_ATTRIBUTE(Camera, "nearClippingPlane", GetNearClippingPlane, SetNearClippingPlane, float, AttributeFlags::Public, "Near clipping plane");
+    REGISTER_ATTRIBUTE(Camera, "farClippingPlane", GetFarClippingPlane, SetFarClippingPlane, float, AttributeFlags::Public, "Far clipping plane");
+    REGISTER_ENUM_ATTRIBUTE(Camera, "resizeMode", GetResizeMode, SetResizeMode, CameraResizeModes::CameraResizeMode, AttributeFlags::Public, "Resize mode");
+    REGISTER_ENUM_ATTRIBUTE(Camera, "clearFlag", GetClearFlag, SetClearFlag, ClearFlags::ClearFlag, AttributeFlags::Public, "Clear flag");
 }
 
 RenderMask Camera::GetRenderMask() const

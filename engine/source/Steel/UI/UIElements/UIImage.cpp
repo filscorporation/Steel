@@ -7,10 +7,10 @@
 void UIImage::RegisterType()
 {
     REGISTER_COMPONENT(UIImage);
-    REGISTER_RESOURCE_ATTRIBUTE(UIImage, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public);
-    REGISTER_RESOURCE_ATTRIBUTE(UIImage, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIImage, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIImage, "consumeEvents", GetConsumeEvents, SetConsumeEvents, bool, AttributeFlags::Public);
+    REGISTER_RESOURCE_ATTRIBUTE(UIImage, "material", GetMaterial, SetMaterial, Material*, ResourceTypes::Material, AttributeFlags::Public, "Material");
+    REGISTER_RESOURCE_ATTRIBUTE(UIImage, "image", GetImage, SetImage, Sprite*, ResourceTypes::Sprite, AttributeFlags::Public, "Image");
+    REGISTER_ATTRIBUTE(UIImage, "color", GetColor, SetColor, glm::vec4, AttributeFlags::Public, "Color");
+    REGISTER_ATTRIBUTE(UIImage, "consumeEvents", GetConsumeEvents, SetConsumeEvents, bool, AttributeFlags::Public, "Consume events");
 }
 
 bool UIImage::Validate(EntitiesRegistry* entitiesRegistry)

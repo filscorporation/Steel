@@ -7,10 +7,10 @@
 void UICheckBox::RegisterType()
 {
     REGISTER_COMPONENT(UICheckBox);
-    REGISTER_ATTRIBUTE(UICheckBox, "value", GetValue, SetValue, bool, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UICheckBox, "transitionInfo", GetTransitionsInfo, SetTransitionsInfo, TransitionsInfo, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(UICheckBox, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UICheckBox, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UICheckBox, "value", GetValue, SetValue, bool, AttributeFlags::Public, "Value");
+    REGISTER_ATTRIBUTE(UICheckBox, "transitionInfo", GetTransitionsInfo, SetTransitionsInfo, TransitionsInfo, AttributeFlags::Public, "Transition info");
+    REGISTER_ID_ATTRIBUTE(UICheckBox, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public, "Target image");
+    REGISTER_ATTRIBUTE(UICheckBox, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public, "Is interactable");
 }
 
 bool UICheckBox::Validate(EntitiesRegistry* entitiesRegistry)

@@ -7,9 +7,9 @@
 void UIButton::RegisterType()
 {
     REGISTER_COMPONENT(UIButton);
-    REGISTER_ATTRIBUTE(UIButton, "transitionInfo", GetTransitionsInfo, SetTransitionsInfo, TransitionsInfo, AttributeFlags::Public);
-    REGISTER_ID_ATTRIBUTE(UIButton, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(UIButton, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(UIButton, "transitionInfo", GetTransitionsInfo, SetTransitionsInfo, TransitionsInfo, AttributeFlags::Public, "Transition info");
+    REGISTER_ID_ATTRIBUTE(UIButton, "targetImage", GetTargetImage, SetTargetImage, AttributeFlags::Public, "Target image");
+    REGISTER_ATTRIBUTE(UIButton, "isInteractable", GetInteractable, SetInteractable, bool, AttributeFlags::Public, "Is interactable");
 }
 
 bool UIButton::Validate(EntitiesRegistry* entitiesRegistry)

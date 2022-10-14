@@ -10,7 +10,7 @@
 void BoxCollider::RegisterType()
 {
     REGISTER_COMPONENT(BoxCollider);
-    REGISTER_ATTRIBUTE(BoxCollider, "size", GetSize, SetSize, glm::vec2, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(BoxCollider, "size", GetSize, SetSize, glm::vec2, AttributeFlags::Public, "Size");
 }
 
 void BoxCollider::OnCreated(EntitiesRegistry* entitiesRegistry)
