@@ -358,6 +358,21 @@ float CoreInternalCalls::Time_GetDeltaTime()
     return Time::DeltaTime();
 }
 
+float CoreInternalCalls::Time_GetUnscaledDeltaTime()
+{
+    return Time::UnscaledDeltaTime();
+}
+
+float CoreInternalCalls::Time_GetTimeSinceStartup()
+{
+    return Time::TimeSinceStartup();
+}
+
+uint64_t CoreInternalCalls::Time_GetFrameCount()
+{
+    return Time::FrameCount();
+}
+
 float CoreInternalCalls::Time_GetFixedDeltaTime()
 {
     return Time::FixedDeltaTime;

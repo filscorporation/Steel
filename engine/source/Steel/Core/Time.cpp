@@ -19,6 +19,11 @@ float Time::UnscaledDeltaTime()
     return deltaTime;
 }
 
+float Time::TimeSinceStartup()
+{
+    return (float)glfwGetTime();
+}
+
 uint64_t Time::FrameCount()
 {
     return frameCount;

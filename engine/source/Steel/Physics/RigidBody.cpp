@@ -28,6 +28,7 @@ void RigidBody::OnCreated(EntitiesRegistry* entitiesRegistry)
     {
         info = new RigidBody::RigidBodyInfo();
 
+        ApplyType();
         ApplyPhysicsProperties();
     }
 }
@@ -49,6 +50,7 @@ void RigidBody::OnEnabled(EntitiesRegistry* entitiesRegistry)
     {
         info = new RigidBody::RigidBodyInfo();
 
+        ApplyType();
         ApplyPhysicsProperties();
     }
 }
@@ -64,14 +66,15 @@ void RigidBody::OnDisabled(EntitiesRegistry* entitiesRegistry)
     info = nullptr;
 }
 
-void RigidBody::ApplyPhysicsProperties()
+void RigidBody::ApplyType()
 {
-    // Apply type
     auto typeBackup = _type;
     _type = RigidBodyTypes::None;
     SetType(typeBackup);
+}
 
-    // Apply all properties
+void RigidBody::ApplyPhysicsProperties()
+{
     SetGravityScale(_gravityScale);
     SetFriction(_friction);
     SetRestitution(_restitution);
@@ -145,6 +148,9 @@ void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
     if (type != _type && AssertInitialized())
         return;
 
+    if (type == _type && info->Body != nullptr)
+        return; // Skip setting the same type (might happen at deserialization)
+
     _type = type;
     switch (type)
     {
@@ -160,6 +166,8 @@ void RigidBody::SetType(RigidBodyTypes::RigidBodyType type)
         case RigidBodyTypes::None:
             break;
     }
+
+    ApplyPhysicsProperties();
 }
 
 void RigidBody::SetAutoFixture()

@@ -23,24 +23,24 @@ void SceneRenderer::Draw(Scene* scene, Framebuffer* framebuffer)
             continue;
 
         RenderTask renderTask;
-        renderTask.Source = new SceneDrawCallsSource(scene, cameras[i].GetRenderMask());
+        SceneDrawCallsSource drawCallsSource(scene, cameras[i].GetRenderMask());
+        renderTask.Source = &drawCallsSource;
         renderTask.ViewProjection = cameras[i].GetViewProjection();
         renderTask.TargetFramebuffer = cameras[i].GetCustomTargetFramebuffer() != nullptr
                 ? cameras[i].GetCustomTargetFramebuffer()
                 : framebuffer;
         renderTask.ClearFlagsValue = cameras[i].GetClearFlag();
         Renderer::Draw(renderTask);
-        delete renderTask.Source;
     }
 
     // Render UI
     {
         RenderTask renderTask;
-        renderTask.Source = new UIDrawCallsSource(scene);
+        UIDrawCallsSource drawCallsSource(scene);
+        renderTask.Source = &drawCallsSource;
         renderTask.ViewProjection = Screen::GetUIViewProjection();
         renderTask.TargetFramebuffer = framebuffer;
         renderTask.ClearFlagsValue = ClearFlags::Depth | ClearFlags::Stencil;
         Renderer::Draw(renderTask);
-        delete renderTask.Source;
     }
 }

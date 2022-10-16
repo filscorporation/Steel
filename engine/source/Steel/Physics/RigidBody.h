@@ -70,6 +70,7 @@ public:
     std::unordered_map<EntityID, Collision> ActiveContacts;
 
 private:
+    void ApplyType();
     void ApplyPhysicsProperties();
 
     void SetDynamic();

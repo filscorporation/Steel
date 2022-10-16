@@ -10,6 +10,7 @@ public:
 
     static float DeltaTime();
     static float UnscaledDeltaTime();
+    static float TimeSinceStartup();
     static uint64_t FrameCount();
     static float GetFixedDeltaTime();
 

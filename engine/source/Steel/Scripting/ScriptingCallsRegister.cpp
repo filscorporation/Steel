@@ -14,6 +14,9 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.Log::LogWarning_Internal", (void*)CoreInternalCalls::Log_LogWarning);
     mono_add_internal_call("Steel.Log::LogError_Internal", (void*)CoreInternalCalls::Log_LogError);
     mono_add_internal_call("Steel.Time::GetDeltaTime_Internal", (void*)CoreInternalCalls::Time_GetDeltaTime);
+    mono_add_internal_call("Steel.Time::GetUnscaledDeltaTime_Internal", (void*)CoreInternalCalls::Time_GetUnscaledDeltaTime);
+    mono_add_internal_call("Steel.Time::GetTimeSinceStartup_Internal", (void*)CoreInternalCalls::Time_GetTimeSinceStartup);
+    mono_add_internal_call("Steel.Time::GetFrameCount_Internal", (void*)CoreInternalCalls::Time_GetFrameCount);
     mono_add_internal_call("Steel.Time::GetFixedDeltaTime_Internal", (void*)CoreInternalCalls::Time_GetFixedDeltaTime);
     mono_add_internal_call("Steel.Time::SetFixedDeltaTime_Internal", (void*)CoreInternalCalls::Time_SetFixedDeltaTime);
     mono_add_internal_call("Steel.Time::GetTimeScale_Internal", (void*)CoreInternalCalls::Time_GetTimeScale);

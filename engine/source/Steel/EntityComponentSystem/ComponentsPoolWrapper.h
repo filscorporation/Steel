@@ -97,14 +97,12 @@ public:
 
     void BeforeDeleteAll() override
     {
-        for (auto& component : Storage)
-        {
-            component.OnRemoved(_entitiesRegistry);
-        }
-        for (auto& component : InactiveStorage)
-        {
-            component.OnRemoved(_entitiesRegistry);
-        }
+        int activeSize = Storage.Size();
+        for (int i = 0; i < activeSize; ++i)
+            if (Storage[i].IsAlive()) Storage[i].OnRemoved(_entitiesRegistry);
+        int inactiveSize = InactiveStorage.Size();
+        for (int i = 0; i < inactiveSize; ++i)
+            if (InactiveStorage[i].IsAlive()) InactiveStorage[i].OnRemoved(_entitiesRegistry);
     }
 
     void DeleteByEntityID(EntityID entityID, EntityID id) override
@@ -214,13 +212,11 @@ public:
 
     void OnCreateAll() override
     {
-        for (auto& component : Storage)
-        {
-            component.OnCreated(_entitiesRegistry);
-        }
-        for (auto& component : InactiveStorage)
-        {
-            component.OnCreated(_entitiesRegistry);
-        }
+        int activeSize = Storage.Size();
+        for (int i = 0; i < activeSize; ++i)
+            if (Storage[i].IsAlive()) Storage[i].OnCreated(_entitiesRegistry);
+        int inactiveSize = InactiveStorage.Size();
+        for (int i = 0; i < inactiveSize; ++i)
+            if (InactiveStorage[i].IsAlive()) InactiveStorage[i].OnCreated(_entitiesRegistry);
     }
 };

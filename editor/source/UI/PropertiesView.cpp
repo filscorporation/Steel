@@ -82,6 +82,8 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
     // TODO: compare with previous
     if (!isDirty)
     {
+        editor->SwitchContext(editor->AppContext);
+
         // Apply data changed by properties
         for (auto& componentNodeWrapper : componentsNodes)
         {
@@ -98,6 +100,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                 auto typeInfo = TypeInfoStorage::GetTypeInfo(componentNodeWrapper->TypeID);
                 auto typeID = componentNodeWrapper->TypeID;
 
+                // TODO: linear search is bad
                 int rawComponentIndex = -1;
                 for (int i = 0; i < rawData.size(); i++)
                 {
@@ -118,6 +121,8 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                 SerializationManager::Deserialize(typeID, object, componentNodeWrapper->Node, context);
             }
         }
+
+        editor->SwitchContext(editor->EditorContext);
     }
 
     if (!isDirty)

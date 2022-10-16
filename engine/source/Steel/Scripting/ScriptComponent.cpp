@@ -22,10 +22,7 @@ void ScriptComponent::OnCreated(EntitiesRegistry* entitiesRegistry)
     if (!Application::Instance->IsRunning())
         return;
 
-    for (auto script : Scripts)
-    {
-        TryCallEventMethod(ScriptEventTypes::OnCreate, nullptr);
-    }
+    TryCallEventMethod(ScriptEventTypes::OnCreate, nullptr);
 }
 
 void ScriptComponent::OnRemoved(EntitiesRegistry* entitiesRegistry)

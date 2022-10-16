@@ -11,6 +11,21 @@ namespace Steel
         /// Time passed from the last frame
         /// </summary>
         public static float DeltaTime => GetDeltaTime_Internal();
+        
+        /// <summary>
+        /// Time passed from the last frame (not affected by time scale)
+        /// </summary>
+        public static float UnscaledDeltaTime => GetUnscaledDeltaTime_Internal();
+        
+        /// <summary>
+        /// Time passed since application startup
+        /// </summary>
+        public static float TimeSinceStartup => GetTimeSinceStartup_Internal();
+        
+        /// <summary>
+        /// Total frames count since application startup
+        /// </summary>
+        public static ulong FrameCount => GetFrameCount_Internal();
 
         /// <summary>
         /// Fixed delta time (used by physics)
@@ -32,6 +47,15 @@ namespace Steel
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float GetDeltaTime_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float GetUnscaledDeltaTime_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float GetTimeSinceStartup_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern ulong GetFrameCount_Internal();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float GetTimeScale_Internal();
