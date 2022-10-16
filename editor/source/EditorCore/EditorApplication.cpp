@@ -147,6 +147,7 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
         case EditorStates::Playing:
             if (state == EditorStates::Stopped)
                 EnterPlayMode(newState);
+            Time::ResetFixedDeltaTime();
             break;
         case EditorStates::Paused:
             if (state == EditorStates::Stopped)
@@ -155,6 +156,7 @@ void EditorApplication::SetState(EditorStates::EditorState newState)
         case EditorStates::Step:
             if (state == EditorStates::Stopped)
                 return;
+            Time::ResetFixedDeltaTime();
             break;
     }
 

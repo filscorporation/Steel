@@ -7,6 +7,7 @@ class Time
 public:
     static void Update();
     static bool TryFixedUpdate();
+    static void ResetFixedDeltaTime();
 
     static float DeltaTime();
     static float UnscaledDeltaTime();

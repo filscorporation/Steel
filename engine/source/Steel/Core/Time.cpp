@@ -53,3 +53,8 @@ bool Time::TryFixedUpdate()
 
     return false;
 }
+
+void Time::ResetFixedDeltaTime()
+{
+    lastFixedFrameTime = (float)glfwGetTime() - FixedDeltaTime;
+}
