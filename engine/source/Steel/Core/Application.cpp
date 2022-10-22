@@ -84,8 +84,11 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     context->Resources->LoadResources();
     context->Resources->LoadDefaultResources();
 
+    auto sceneData = new SceneData("New scene");
+    context->Resources->AddResource(sceneData);
+
     context->Scenes = new SceneManager();
-    context->Scenes->SetActiveScene(context->Scenes->CreateNewScene("New scene"));
+    context->Scenes->SetActiveScene(context->Scenes->CreateNewScene(sceneData));
     context->Scenes->GetActiveScene()->Init(true);
 
     ScriptingSystem::CreateDomain();
@@ -132,6 +135,8 @@ void Application::RunUpdate()
     Input::PollEvents();
     Screen::UpdateSize();
 
+    TrySwitchScene();
+
     // Update scene
     auto scene = CurrentContext->Scenes->GetActiveScene();
     scene->Refresh();
@@ -174,6 +179,26 @@ void Application::Quit()
 bool Application::IsRunning()
 {
     return IsRunningInternal;
+}
+
+void Application::SwitchScenes(Scene* newScene)
+{
+    SceneToSwitch = newScene;
+}
+
+void Application::TrySwitchScene()
+{
+    if (SceneToSwitch == nullptr)
+        return;
+
+    // Terminate current  scene
+    AppContext->Scenes->DeleteActiveScene();
+
+    // Load new scene
+    AppContext->Scenes->SetActiveScene(SceneToSwitch);
+
+    SceneToSwitch->Init(true);
+    SceneToSwitch = nullptr;
 }
 
 ScreenParameters& Application::ScreenParametersForUpdate()

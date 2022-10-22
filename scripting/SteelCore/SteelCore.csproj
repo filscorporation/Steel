@@ -88,6 +88,8 @@
         <Compile Include="Rendering\StencilOperation.cs" />
         <Compile Include="Resources\AsepriteData.cs" />
         <Compile Include="Resources\ResourcesManager.cs" />
+        <Compile Include="Scene\Scene.cs" />
+        <Compile Include="Scene\SceneManager.cs" />
         <Compile Include="Scene\Transformation.cs" />
         <Compile Include="UI\AlignmentType.cs" />
         <Compile Include="UI\EventManager\CallbackAction.cs" />

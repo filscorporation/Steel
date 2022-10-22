@@ -7,8 +7,6 @@
 
 std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> SerializationManager::_attributesInfo;
 
-YAML::Node* SerializationManager::_sceneBackup = nullptr;
-
 void SerializationManager::Init()
 {
     Log::LogDebug("Serialization manager initialized");
@@ -24,9 +22,6 @@ void SerializationManager::Terminate()
         }
     }
     _attributesInfo.clear();
-
-    delete _sceneBackup;
-    _sceneBackup = nullptr;
 }
 
 void SerializationManager::SerializeScene(Scene* scene, const std::string& filePath)
@@ -43,7 +38,7 @@ void SerializationManager::SerializeScene(Scene* scene, const std::string& fileP
     Log::LogInfo("Saved scene " + filePath);
 }
 
-Scene* SerializationManager::DeserializeScene(const std::string& filePath)
+void SerializationManager::DeserializeScene(Scene* scene, const std::string& filePath)
 {
     std::string fullPathString = RESOURCES_PATH;
     fullPathString += filePath;
@@ -52,40 +47,27 @@ Scene* SerializationManager::DeserializeScene(const std::string& filePath)
     if (!infile.good())
     {
         Log::LogError("Error loading scene: file {0} does not exist", fullPathString);
-        return nullptr;
+        return;
     }
 
     YAML::Node node = YAML::Load(infile);
-    auto scene = new Scene("");
 
     DeserializeScene(scene, node);
 
     Log::LogInfo("Loaded scene " + filePath);
-
-    return scene;
 }
 
-void SerializationManager::BackupScene(Scene* scene)
+SceneBackup* SerializationManager::BackupScene(Scene* scene, SceneData* sceneData)
 {
-    if (_sceneBackup != nullptr)
-    {
-        delete _sceneBackup;
-        _sceneBackup = nullptr;
-    }
+    auto backup = new SceneBackup(new YAML::Node(), sceneData);
+    SerializeScene(scene, *backup->Node);
 
-    _sceneBackup = new YAML::Node;
-    SerializeScene(scene, *_sceneBackup);
+    return backup;
 }
 
-void SerializationManager::RestoreScene(Scene* scene)
+void SerializationManager::RestoreScene(SceneBackup* backup, Scene* scene)
 {
-    if (_sceneBackup == nullptr)
-    {
-        Log::LogError("No scene to restore from backup");
-        return;
-    }
-
-    DeserializeScene(scene, *_sceneBackup);
+    DeserializeScene(scene, *backup->Node);
 }
 
 void SerializationManager::RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo)

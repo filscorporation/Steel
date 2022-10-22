@@ -56,6 +56,7 @@ public:
     void Quit();
     virtual bool IsRunning();
 
+    void SwitchScenes(Scene* newScene);
     ScreenParameters& ScreenParametersForUpdate();
     ResourcesManager* GetResourcesManager();
     SceneManager* GetSceneManager();
@@ -70,9 +71,11 @@ protected:
     bool EntryPointCalled = false;
     ApplicationContext* CurrentContext = nullptr;
     ApplicationContext* AppContext = nullptr;
+    Scene* SceneToSwitch = nullptr;
 
     virtual void Terminate();
     void InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer);
     ApplicationContext* CreateContext(ApplicationSettings settings);
     void SwitchContext(ApplicationContext* context);
+    void TrySwitchScene();
 };

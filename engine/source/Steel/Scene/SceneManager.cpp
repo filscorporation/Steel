@@ -5,9 +5,9 @@ SceneManager::~SceneManager()
     delete activeScene;
 }
 
-Scene* SceneManager::CreateNewScene(const std::string& sceneName)
+Scene* SceneManager::CreateNewScene(SceneData* sceneData)
 {
-    auto scene = new Scene(sceneName);
+    auto scene = new Scene(sceneData->GetName(), sceneData->ID);
 
     return scene;
 }
@@ -27,10 +27,4 @@ void SceneManager::DeleteActiveScene()
 {
     delete activeScene;
     activeScene = nullptr;
-}
-
-Scene* SceneManager::GetScene(const std::string& sceneName)
-{
-    // TODO: not implemented
-    return nullptr;
 }

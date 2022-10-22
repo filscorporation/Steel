@@ -17,9 +17,10 @@
 #include "Steel/Scripting/ScriptingSystem.h"
 #include "Steel/UI/RectTransformation.h"
 
-Scene::Scene(const std::string& name)
+Scene::Scene(const std::string& name, ResourceID sourceID)
 {
     _name = name;
+    _sourceID = sourceID;
     entitiesRegistry = new EntitiesRegistry();
     TypeInfoStorage::InitializeTypesFromStorage(entitiesRegistry);
 
@@ -77,6 +78,11 @@ const std::string& Scene::GetName()
 void Scene::SetName(const std::string& name)
 {
     _name = name;
+}
+
+ResourceID Scene::GetSourceID()
+{
+    return _sourceID;
 }
 
 EntitiesRegistry* Scene::GetEntitiesRegistry()

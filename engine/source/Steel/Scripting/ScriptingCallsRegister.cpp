@@ -83,6 +83,13 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.Material::GetProperties_Internal", (void*)CoreInternalCalls::Material_GetProperties);
     mono_add_internal_call("Steel.Material::SetProperties_Internal", (void*)CoreInternalCalls::Material_SetProperties);
 
+    mono_add_internal_call("Steel.SceneManager::CreateNewScene_Internal", (void*)CoreInternalCalls::SceneManager_CreateNewScene);
+    mono_add_internal_call("Steel.SceneManager::SetActiveScene_Internal", (void*)CoreInternalCalls::SceneManager_SetActiveScene);
+    mono_add_internal_call("Steel.SceneManager::SetActiveScene_Internal2", (void*)CoreInternalCalls::SceneManager_SetActiveScene2);
+    mono_add_internal_call("Steel.SceneManager::GetActiveScene_Internal", (void*)CoreInternalCalls::SceneManager_GetActiveScene);
+
+    mono_add_internal_call("Steel.Scene::GetName_Internal", (void*)CoreInternalCalls::Scene_GetName);
+
     mono_add_internal_call("Steel.Entity::CreateNewEntity_Internal", (void*)EntityInternalCalls::Entity_CreateNewEntity);
     mono_add_internal_call("Steel.Entity::CreateNewEntity_Internal2", (void*)EntityInternalCalls::Entity_CreateNewEntity2);
     mono_add_internal_call("Steel.Entity::CreateNewEntity_Internal3", (void*)EntityInternalCalls::Entity_CreateNewEntity3);

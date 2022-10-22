@@ -25,6 +25,11 @@ public:
         return Types::Script;
     }
 
+    bool RequireName() const override
+    {
+         return false;
+    }
+
     void Serialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) override
     {
         auto list = Get(object);

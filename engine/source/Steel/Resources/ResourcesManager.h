@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "AsepriteData.h"
+#include "SceneData.h"
 #include "ResourceID.h"
 #include "Steel/Animation/Animation.h"
 #include "Steel/Audio/AudioTrack.h"
@@ -40,6 +41,7 @@ public:
     AudioTrack* LoadAudioTrack(const char* filePath);
     Font* LoadFont(const char* fontPath, bool engineResource = false);
     Shader* LoadShader(const char* fileVSPath, const char* fileFSPath);
+    SceneData* LoadSceneData(const char* filePath);
 
     Sprite* GetSprite(ResourceID imageID);
     Texture* GetTexture(ResourceID textureID);
@@ -48,6 +50,7 @@ public:
     Animation* GetAnimation(ResourceID animationID);
     Font* GetFont(ResourceID fontID);
     Shader* GetShader(ResourceID shaderID);
+    SceneData* GetSceneData(ResourceID resourceID);
 
     int GetDefaultPixelsPerUnit();
     void SetDefaultPixelsPerUnit(int newValue);

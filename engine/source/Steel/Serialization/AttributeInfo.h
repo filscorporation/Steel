@@ -42,7 +42,7 @@ public:
 
     void Deserialize(Serializable* object, const YAML::Node& node, SerializationContext& context) const
     {
-        if (node[_name])
+        if (!_accessor->RequireName() || node[_name])
             _accessor->Deserialize(object, _name, node, context);
     }
 

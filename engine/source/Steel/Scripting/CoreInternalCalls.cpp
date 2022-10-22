@@ -353,6 +353,62 @@ void CoreInternalCalls::Material_SetProperties(ResourceID resourceID, MaterialPr
     material->Properties = propertiesOut;
 }
 
+ResourceID CoreInternalCalls::SceneManager_CreateNewScene(MonoString* name)
+{
+    auto sceneData = new SceneData(ScriptingCore::ToString(name));
+    Application::Instance->GetResourcesManager()->AddResource(sceneData);
+    return sceneData->ID;
+}
+
+void CoreInternalCalls::SceneManager_SetActiveScene(ResourceID sceneID)
+{
+    SceneData* sceneData = Application::Instance->GetResourcesManager()->GetSceneData(sceneID);
+    if (sceneData == nullptr)
+    {
+        Log::LogError("Can't set active scene: scene {0} does not exist", sceneID);
+        return;
+    }
+
+    auto scene = Application::Instance->GetSceneManager()->CreateNewScene(sceneData);
+    if (!sceneData->Path.empty())
+        SerializationManager::DeserializeScene(scene, sceneData->Path);
+
+    Application::Instance->SwitchScenes(scene);
+}
+
+void CoreInternalCalls::SceneManager_SetActiveScene2(MonoString* path)
+{
+    const char* pathString = ScriptingCore::ToString(path);
+    SceneData* sceneData = Application::Instance->GetResourcesManager()->LoadSceneData(pathString);
+    if (sceneData == nullptr)
+    {
+        Log::LogError("Can't set active scene: file at {0} does not exist", pathString);
+        return;
+    }
+
+    auto scene = Application::Instance->GetSceneManager()->CreateNewScene(sceneData);
+    if (!sceneData->Path.empty())
+        SerializationManager::DeserializeScene(scene, sceneData->Path);
+
+    Application::Instance->SwitchScenes(scene);
+}
+
+ResourceID CoreInternalCalls::SceneManager_GetActiveScene()
+{
+    return Application::Instance->GetSceneManager()->GetActiveScene()->GetSourceID();
+}
+
+MonoString* CoreInternalCalls::Scene_GetName(ResourceID sceneID)
+{
+    SceneData* sceneData = Application::Instance->GetResourcesManager()->GetSceneData(sceneID);
+    if (sceneData == nullptr)
+    {
+        Log::LogError("Scene {0} does not exist", sceneID);
+        return nullptr;
+    }
+    return ScriptingCore::FromString(sceneData->GetName().c_str());
+}
+
 float CoreInternalCalls::Time_GetDeltaTime()
 {
     return Time::DeltaTime();

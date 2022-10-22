@@ -1,6 +1,6 @@
 #pragma once
 
-#define RESOURCE_TYPES_COUNT 9
+#define RESOURCE_TYPES_COUNT 10
 
 namespace ResourceTypes
 {
@@ -15,5 +15,6 @@ namespace ResourceTypes
         AsepriteData,
         Shader,
         Material,
+        SceneData,
     };
 }

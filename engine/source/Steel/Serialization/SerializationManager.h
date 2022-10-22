@@ -3,6 +3,8 @@
 #include "AttributeInfo.h"
 #include "SerializationConvert.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
+#include "Steel/Resources/SceneData.h"
+#include "Steel/Scene/SceneBackup.h"
 
 #include <typeindex>
 #include <unordered_map>
@@ -17,9 +19,9 @@ public:
     static void Terminate();
 
     static void SerializeScene(Scene* scene, const std::string& filePath);
-    static Scene* DeserializeScene(const std::string& filePath);
-    static void BackupScene(Scene* scene);
-    static void RestoreScene(Scene* scene);
+    static void DeserializeScene(Scene* scene, const std::string& filePath);
+    static SceneBackup* BackupScene(Scene* scene, SceneData* sceneData);
+    static void RestoreScene(SceneBackup* backup, Scene* scene);
 
     static void SerializeScene(Scene* scene, YAML::Node& node);
     static void DeserializeScene(Scene* scene, YAML::Node& node);
@@ -34,6 +36,4 @@ public:
 
 private:
     static std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> _attributesInfo;
-
-    static YAML::Node* _sceneBackup;
 };

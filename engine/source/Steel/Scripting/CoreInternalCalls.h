@@ -59,6 +59,13 @@ namespace CoreInternalCalls
     void Material_GetProperties(ResourceID resourceID, MaterialPropertyBlockInternal* properties);
     void Material_SetProperties(ResourceID resourceID, MaterialPropertyBlockInternal properties);
 
+    // Scene Manager
+    ResourceID SceneManager_CreateNewScene(MonoString* name);
+    void SceneManager_SetActiveScene(ResourceID sceneID);
+    void SceneManager_SetActiveScene2(MonoString* path);
+    ResourceID SceneManager_GetActiveScene();
+    MonoString* Scene_GetName(ResourceID sceneID);
+
     // Time
     float Time_GetDeltaTime();
     float Time_GetUnscaledDeltaTime();

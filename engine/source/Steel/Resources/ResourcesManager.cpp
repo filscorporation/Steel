@@ -10,6 +10,7 @@
 #include "Steel/UI/FontManager.h"
 
 #include <filesystem>
+#include <yaml-cpp/yaml.h>
 
 ResourcesManager::ResourcesManager()
 {
@@ -66,6 +67,8 @@ void ResourcesManager::TryLoadResource(const std::string& path)
             // Load only if there is fragment shader file with the same name
             LoadAsepriteData(path.c_str());
     }
+    else if (extension == "scene")
+        LoadSceneData(path.c_str());
 }
 
 void ResourcesManager::LoadDefaultResources()
@@ -138,6 +141,8 @@ std::string ResourceTypeToString(ResourceTypes::ResourceType type)
             return "Shader";
         case ResourceTypes::Material:
             return "Material";
+        case ResourceTypes::SceneData:
+            return "SceneData";
     }
 
     return "";
@@ -192,7 +197,7 @@ inline std::string GetNameFromPath(const std::string& path)
     return path.substr(pos == std::string::npos ? 0 : pos, path.find_last_of('.'));
 }
 
-inline std::string GetExtentionFromPath(const std::string& path)
+inline std::string GetExtensionFromPath(const std::string& path)
 {
     return path.substr(path.find_last_of('.') + 1);
 }
@@ -217,7 +222,7 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
     }
 
     Sprite* image;
-    std::string extension = GetExtentionFromPath(fullPath);
+    std::string extension = GetExtensionFromPath(fullPath);
     if (extension == "png")
     {
         image = PngLoader::LoadImage(fullPath.c_str(), path.c_str());
@@ -450,6 +455,40 @@ Shader* ResourcesManager::LoadShader(const char* fileVSPath, const char* fileFSP
 Shader* ResourcesManager::GetShader(ResourceID shaderID)
 {
     return (Shader*)(GetResource(ResourceTypes::Shader, shaderID));
+}
+
+SceneData* ResourcesManager::LoadSceneData(const char* filePath)
+{
+    uint64_t hash = Math::StringHash(filePath);
+    if (ResourceExists(ResourceTypes::SceneData, hash))
+        return GetSceneData(hash);
+
+    std::string fullPathString = RESOURCES_PATH + std::string(filePath);
+    const char* fullPath = fullPathString.c_str();
+
+    std::ifstream infile(fullPath);
+    if (!infile.good())
+    {
+        Log::LogError("Error loading scene: file does not exist");
+        return nullptr;
+    }
+
+    YAML::Node node = YAML::Load(infile);
+    auto sceneName = node["name"].as<std::string>();
+
+    auto sceneData = new SceneData(sceneName);
+
+    sceneData->Path = filePath;
+    AddResource(sceneData);
+
+    Log::LogDebug("Scene data loaded: {0}, {1}", fullPath, sceneData->ID);
+
+    return sceneData;
+}
+
+SceneData* ResourcesManager::GetSceneData(ResourceID resourceID)
+{
+    return (SceneData*)(GetResource(ResourceTypes::SceneData, resourceID));
 }
 
 int ResourcesManager::GetDefaultPixelsPerUnit()

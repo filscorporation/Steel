@@ -32,8 +32,11 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->Resources->LoadResources();
     AppContext->Resources->LoadDefaultResources();
 
+    auto sceneData = new SceneData("New scene");
+    AppContext->Resources->AddResource(sceneData);
+
     AppContext->Scenes = new SceneManager();
-    AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene("New scene"));
+    AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene(sceneData));
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
     ScriptingSystem::CreateDomain();
@@ -92,6 +95,7 @@ void EditorApplication::RunUpdate()
     // Set scene we will update and render into framebuffer
     SwitchContext(AppContext);
 
+    TrySwitchScene();
     auto openedScene = CurrentContext->Scenes->GetActiveScene();
     openedScene->Refresh();
     if (state == EditorStates::Playing || state == EditorStates::Step)
@@ -124,6 +128,8 @@ void EditorApplication::Terminate()
     delete EditorContext->Scenes;
     delete EditorContext->Resources;
     delete EditorContext;
+
+    delete sceneBackup;
 
     EditorTypeSystem::Terminate();
     Application::Terminate();
@@ -168,7 +174,9 @@ void EditorApplication::EnterPlayMode(EditorStates::EditorState newState)
     SwitchContext(AppContext);
 
     // Cache and terminate edited scene
-    SerializationManager::BackupScene(AppContext->Scenes->GetActiveScene());
+    Scene* scene = AppContext->Scenes->GetActiveScene();
+    SceneData* sceneData = AppContext->Resources->GetSceneData(scene->GetSourceID());
+    sceneBackup = SerializationManager::BackupScene(scene, sceneData);
     AppContext->Scenes->DeleteActiveScene();
     ScriptingSystem::UnloadDomain();
 
@@ -177,8 +185,8 @@ void EditorApplication::EnterPlayMode(EditorStates::EditorState newState)
 
     // Initialize scene again from cached data
     ScriptingSystem::CreateDomain();
-    auto scene = new Scene("");
-    SerializationManager::RestoreScene(scene);
+    scene = AppContext->Scenes->CreateNewScene(sceneBackup->Data);
+    SerializationManager::RestoreScene(sceneBackup, scene);
     AppContext->Scenes->SetActiveScene(scene);
 
     scene->Init(true);
@@ -189,6 +197,12 @@ void EditorApplication::EnterPlayMode(EditorStates::EditorState newState)
 
 void EditorApplication::EnterEditMode(EditorStates::EditorState newState)
 {
+    if (sceneBackup == nullptr)
+    {
+        Log::LogError("No scene to restore from backup");
+        return;
+    }
+
     SwitchContext(AppContext);
 
     // Terminate played scene
@@ -200,8 +214,8 @@ void EditorApplication::EnterEditMode(EditorStates::EditorState newState)
 
     // Initialize scene from cached data
     ScriptingSystem::CreateDomain();
-    auto scene = new Scene("");
-    SerializationManager::RestoreScene(scene);
+    auto scene = AppContext->Scenes->CreateNewScene(sceneBackup->Data);
+    SerializationManager::RestoreScene(sceneBackup, scene);
     AppContext->Scenes->SetActiveScene(scene);
 
     scene->Init(false);
@@ -209,7 +223,7 @@ void EditorApplication::EnterEditMode(EditorStates::EditorState newState)
     SwitchContext(EditorContext);
 }
 
-void EditorApplication::LoadSceneToEdit(const std::string& filePath)
+void EditorApplication::LoadSceneToEdit(SceneData* sceneData)
 {
     if (GetState() != EditorStates::Stopped)
     {
@@ -225,12 +239,8 @@ void EditorApplication::LoadSceneToEdit(const std::string& filePath)
 
     // Initialize new scene
     ScriptingSystem::CreateDomain();
-    auto scene = SerializationManager::DeserializeScene(filePath);
-    if (scene == nullptr)
-    {
-        // Create new empty scene if loading failed
-        scene = new Scene("");
-    }
+    auto scene = AppContext->Scenes->CreateNewScene(sceneData);
+    SerializationManager::DeserializeScene(scene, sceneData->Path);
     AppContext->Scenes->SetActiveScene(scene);
 
     scene->Init(false);

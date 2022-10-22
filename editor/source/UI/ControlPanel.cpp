@@ -56,7 +56,8 @@ void ControlPanel::LoadScene()
 {
     auto editor = (EditorApplication*)Application::Instance;
 
-    editor->LoadSceneToEdit("test_scene.scene");
+    auto sceneData = editor->GetResourcesManager()->LoadSceneData("test_scene.scene");
+    editor->LoadSceneToEdit(sceneData);
 
     editor->SwitchContext(editor->EditorContext);
 

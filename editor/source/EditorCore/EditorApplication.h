@@ -26,7 +26,7 @@ public:
     void SetState(EditorStates::EditorState newState);
     void EnterPlayMode(EditorStates::EditorState newState);
     void EnterEditMode(EditorStates::EditorState newState);
-    void LoadSceneToEdit(const std::string& filePath);
+    void LoadSceneToEdit(SceneData* sceneData);
 
     ApplicationContext* GetAppContext();
     Framebuffer* ApplicationFramebuffer = nullptr;
@@ -39,6 +39,7 @@ private:
     void CreateEditorViewCamera();
 
     EditorStates::EditorState state = EditorStates::Stopped;
+    SceneBackup* sceneBackup = nullptr;
 
     friend class AppView;
     friend class ControlPanel;

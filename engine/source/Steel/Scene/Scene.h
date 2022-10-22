@@ -17,7 +17,7 @@ public:
     EntitiesRegistry* GetEntitiesRegistry();
     UILayer* GetUILayer();
 
-    explicit Scene(const std::string& name);
+    explicit Scene(const std::string& name, ResourceID sourceID);
     ~Scene() override;
     void Init(bool initSystems);
 
@@ -26,6 +26,8 @@ public:
 
     const std::string& GetName();
     void SetName(const std::string& name);
+
+    ResourceID GetSourceID();
 
     EntityID CreateEntity();
     EntityID CreateEntity(const std::string& name, EntityID parent);
@@ -54,6 +56,7 @@ protected:
     virtual void AfterDraw() { };
 
 private:
+    ResourceID _sourceID = NULL_RESOURCE;
     std::string _name;
     bool systemsInitialized = false;
 
