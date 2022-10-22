@@ -1,8 +1,9 @@
 #include "ScriptingCallsRegister.h"
-#include "ComponentsInternalCalls.h"
-#include "EntityInternalCalls.h"
-#include "CoreInternalCalls.h"
-#include "UIInternalCalls.h"
+#include "Steel/Scripting/InternalCalls/ComponentsInternalCalls.h"
+#include "Steel/Scripting/InternalCalls/EntityInternalCalls.h"
+#include "Steel/Scripting/InternalCalls/CoreInternalCalls.h"
+#include "Steel/Scripting/InternalCalls/ResourcesInternalCalls.h"
+#include "Steel/Scripting/InternalCalls/UIInternalCalls.h"
 
 void ScriptingCallsRegister::RegisterInternalCalls()
 {
@@ -50,38 +51,38 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.Random::NextInt_Internal", (void*)CoreInternalCalls::Random_NextInt);
     mono_add_internal_call("Steel.Random::PerlinNoise_Internal", (void*)CoreInternalCalls::Random_PerlinNoise);
 
-    mono_add_internal_call("Steel.ResourcesManager::LoadImage_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadImage);
-    mono_add_internal_call("Steel.ResourcesManager::LoadAsepriteData_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAsepriteData);
-    mono_add_internal_call("Steel.ResourcesManager::LoadAudioTrack_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadAudioTrack);
-    mono_add_internal_call("Steel.ResourcesManager::LoadShader_Internal", (void*)CoreInternalCalls::ResourcesManager_LoadShader);
-    mono_add_internal_call("Steel.ResourcesManager::CreateMaterial_Internal", (void*)CoreInternalCalls::ResourcesManager_CreateMaterial);
-    mono_add_internal_call("Steel.AudioTrack::GetLength_Internal", (void*)CoreInternalCalls::AudioTrack_GetLength);
-    mono_add_internal_call("Steel.Sprite::SetAsNormal_Internal", (void*)CoreInternalCalls::Sprite_SetAsNormal);
-    mono_add_internal_call("Steel.Sprite::SetAsSpriteSheet_Internal", (void*)CoreInternalCalls::Sprite_SetAsSpriteSheet);
-    mono_add_internal_call("Steel.Sprite::SetAs9Sliced_Internal", (void*)CoreInternalCalls::Sprite_SetAs9Sliced);
-    mono_add_internal_call("Steel.Sprite::SetAs9Sliced_Internal2", (void*)CoreInternalCalls::Sprite_SetAs9Sliced2);
-    mono_add_internal_call("Steel.Sprite::GetTextureID_Internal", (void*)CoreInternalCalls::Sprite_GetTextureID);
-    mono_add_internal_call("Steel.Sprite::GetWidth_Internal", (void*)CoreInternalCalls::Sprite_GetWidth);
-    mono_add_internal_call("Steel.Sprite::GetHeight_Internal", (void*)CoreInternalCalls::Sprite_GetHeight);
-    mono_add_internal_call("Steel.Sprite::GetPixelsPerUnit_Internal", (void*)CoreInternalCalls::Sprite_GetPixelsPerUnit);
-    mono_add_internal_call("Steel.Sprite::SetPixelsPerUnit_Internal", (void*)CoreInternalCalls::Sprite_SetPixelsPerUnit);
-    mono_add_internal_call("Steel.Sprite::GetPivot_Internal", (void*)CoreInternalCalls::Sprite_GetPivot);
-    mono_add_internal_call("Steel.Sprite::SetPivot_Internal", (void*)CoreInternalCalls::Sprite_SetPivot);
-    mono_add_internal_call("Steel.Animation::FromSpriteSheet_Internal", (void*)CoreInternalCalls::Animation_FromSpriteSheet);
-    mono_add_internal_call("Steel.Animation::FromSprites_Internal", (void*)CoreInternalCalls::Animation_FromSprites);
-    mono_add_internal_call("Steel.Animation::GetName_Internal", (void*)CoreInternalCalls::Animation_GetName);
-    mono_add_internal_call("Steel.Animation::SetName_Internal", (void*)CoreInternalCalls::Animation_SetName);
-    mono_add_internal_call("Steel.Animation::GetLoop_Internal", (void*)CoreInternalCalls::Animation_GetLoop);
-    mono_add_internal_call("Steel.Animation::SetLoop_Internal", (void*)CoreInternalCalls::Animation_SetLoop);
-    mono_add_internal_call("Steel.Animation::GetLength_Internal", (void*)CoreInternalCalls::Animation_GetLength);
-    mono_add_internal_call("Steel.Animation::EndWithEmptyFrame_Internal", (void*)CoreInternalCalls::Animation_EndWithEmptyFrame);
-    mono_add_internal_call("Steel.AsepriteData::GetSprites_Internal", (void*)CoreInternalCalls::AsepriteData_GetSprites);
-    mono_add_internal_call("Steel.AsepriteData::GetAnimations_Internal", (void*)CoreInternalCalls::AsepriteData_GetAnimations);
-    mono_add_internal_call("Steel.AsepriteData::CreateEntityFromAsepriteData_Internal", (void*)CoreInternalCalls::AsepriteData_CreateEntityFromAsepriteData);
-    mono_add_internal_call("Steel.Material::GetShader_Internal", (void*)CoreInternalCalls::Material_GetShader);
-    mono_add_internal_call("Steel.Material::SetShader_Internal", (void*)CoreInternalCalls::Material_SetShader);
-    mono_add_internal_call("Steel.Material::GetProperties_Internal", (void*)CoreInternalCalls::Material_GetProperties);
-    mono_add_internal_call("Steel.Material::SetProperties_Internal", (void*)CoreInternalCalls::Material_SetProperties);
+    mono_add_internal_call("Steel.ResourcesManager::LoadImage_Internal", (void*)ResourcesInternalCalls::ResourcesManager_LoadImage);
+    mono_add_internal_call("Steel.ResourcesManager::LoadAsepriteData_Internal", (void*)ResourcesInternalCalls::ResourcesManager_LoadAsepriteData);
+    mono_add_internal_call("Steel.ResourcesManager::LoadAudioTrack_Internal", (void*)ResourcesInternalCalls::ResourcesManager_LoadAudioTrack);
+    mono_add_internal_call("Steel.ResourcesManager::LoadShader_Internal", (void*)ResourcesInternalCalls::ResourcesManager_LoadShader);
+    mono_add_internal_call("Steel.ResourcesManager::CreateMaterial_Internal", (void*)ResourcesInternalCalls::ResourcesManager_CreateMaterial);
+    mono_add_internal_call("Steel.AudioTrack::GetLength_Internal", (void*)ResourcesInternalCalls::AudioTrack_GetLength);
+    mono_add_internal_call("Steel.Sprite::SetAsNormal_Internal", (void*)ResourcesInternalCalls::Sprite_SetAsNormal);
+    mono_add_internal_call("Steel.Sprite::SetAsSpriteSheet_Internal", (void*)ResourcesInternalCalls::Sprite_SetAsSpriteSheet);
+    mono_add_internal_call("Steel.Sprite::SetAs9Sliced_Internal", (void*)ResourcesInternalCalls::Sprite_SetAs9Sliced);
+    mono_add_internal_call("Steel.Sprite::SetAs9Sliced_Internal2", (void*)ResourcesInternalCalls::Sprite_SetAs9Sliced2);
+    mono_add_internal_call("Steel.Sprite::GetTextureID_Internal", (void*)ResourcesInternalCalls::Sprite_GetTextureID);
+    mono_add_internal_call("Steel.Sprite::GetWidth_Internal", (void*)ResourcesInternalCalls::Sprite_GetWidth);
+    mono_add_internal_call("Steel.Sprite::GetHeight_Internal", (void*)ResourcesInternalCalls::Sprite_GetHeight);
+    mono_add_internal_call("Steel.Sprite::GetPixelsPerUnit_Internal", (void*)ResourcesInternalCalls::Sprite_GetPixelsPerUnit);
+    mono_add_internal_call("Steel.Sprite::SetPixelsPerUnit_Internal", (void*)ResourcesInternalCalls::Sprite_SetPixelsPerUnit);
+    mono_add_internal_call("Steel.Sprite::GetPivot_Internal", (void*)ResourcesInternalCalls::Sprite_GetPivot);
+    mono_add_internal_call("Steel.Sprite::SetPivot_Internal", (void*)ResourcesInternalCalls::Sprite_SetPivot);
+    mono_add_internal_call("Steel.Animation::FromSpriteSheet_Internal", (void*)ResourcesInternalCalls::Animation_FromSpriteSheet);
+    mono_add_internal_call("Steel.Animation::FromSprites_Internal", (void*)ResourcesInternalCalls::Animation_FromSprites);
+    mono_add_internal_call("Steel.Animation::GetName_Internal", (void*)ResourcesInternalCalls::Animation_GetName);
+    mono_add_internal_call("Steel.Animation::SetName_Internal", (void*)ResourcesInternalCalls::Animation_SetName);
+    mono_add_internal_call("Steel.Animation::GetLoop_Internal", (void*)ResourcesInternalCalls::Animation_GetLoop);
+    mono_add_internal_call("Steel.Animation::SetLoop_Internal", (void*)ResourcesInternalCalls::Animation_SetLoop);
+    mono_add_internal_call("Steel.Animation::GetLength_Internal", (void*)ResourcesInternalCalls::Animation_GetLength);
+    mono_add_internal_call("Steel.Animation::EndWithEmptyFrame_Internal", (void*)ResourcesInternalCalls::Animation_EndWithEmptyFrame);
+    mono_add_internal_call("Steel.AsepriteData::GetSprites_Internal", (void*)ResourcesInternalCalls::AsepriteData_GetSprites);
+    mono_add_internal_call("Steel.AsepriteData::GetAnimations_Internal", (void*)ResourcesInternalCalls::AsepriteData_GetAnimations);
+    mono_add_internal_call("Steel.AsepriteData::CreateEntityFromAsepriteData_Internal", (void*)ResourcesInternalCalls::AsepriteData_CreateEntityFromAsepriteData);
+    mono_add_internal_call("Steel.Material::GetShader_Internal", (void*)ResourcesInternalCalls::Material_GetShader);
+    mono_add_internal_call("Steel.Material::SetShader_Internal", (void*)ResourcesInternalCalls::Material_SetShader);
+    mono_add_internal_call("Steel.Material::GetProperties_Internal", (void*)ResourcesInternalCalls::Material_GetProperties);
+    mono_add_internal_call("Steel.Material::SetProperties_Internal", (void*)ResourcesInternalCalls::Material_SetProperties);
 
     mono_add_internal_call("Steel.SceneManager::CreateNewScene_Internal", (void*)CoreInternalCalls::SceneManager_CreateNewScene);
     mono_add_internal_call("Steel.SceneManager::SetActiveScene_Internal", (void*)CoreInternalCalls::SceneManager_SetActiveScene);

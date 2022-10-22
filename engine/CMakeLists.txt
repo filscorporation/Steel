@@ -53,22 +53,22 @@ set(SOURCE_FILES
         source/Steel/Physics/PhysicsCore.h source/Steel/Physics/Collider.cpp source/Steel/Physics/Collider.h
         source/Steel/Physics/BoxCollider.cpp source/Steel/Physics/BoxCollider.h source/Steel/Physics/RigidBody.cpp
         source/Steel/Physics/RigidBody.h source/Steel/Physics/PhysicsInfo.h source/Steel/Scripting/ScriptingSystem.cpp
-        source/Steel/Scripting/ScriptingSystem.h source/Steel/Scripting/CoreInternalCalls.h
-        source/Steel/Scripting/CoreInternalCalls.cpp source/Steel/Math/Random.cpp source/Steel/Math/Random.h
+        source/Steel/Scripting/ScriptingSystem.h source/Steel/Scripting/InternalCalls/CoreInternalCalls.h
+        source/Steel/Scripting/InternalCalls/CoreInternalCalls.cpp source/Steel/Math/Random.cpp source/Steel/Math/Random.h
         source/Steel/Scripting/ScriptComponent.cpp source/Steel/Scripting/ScriptComponent.h
         source/Steel/Scripting/ScriptingCore.cpp source/Steel/Scripting/ScriptingCore.h
-        source/Steel/Scripting/EntityInternalCalls.cpp source/Steel/Scripting/EntityInternalCalls.h
-        source/Steel/Scripting/ComponentsInternalCalls.cpp source/Steel/Scripting/ComponentsInternalCalls.h
+        source/Steel/Scripting/InternalCalls/EntityInternalCalls.cpp source/Steel/Scripting/InternalCalls/EntityInternalCalls.h
+        source/Steel/Scripting/InternalCalls/ComponentsInternalCalls.cpp source/Steel/Scripting/InternalCalls/ComponentsInternalCalls.h
         source/Steel/Scripting/ScriptingCallsRegister.cpp source/Steel/Scripting/ScriptingCallsRegister.h
         source/Steel/Rendering/MaterialSystem/BuiltInShaders.h source/Steel/Physics/Physics.cpp source/Steel/Physics/Physics.h
         source/Steel/Physics/PhysicsContactListener.cpp source/Steel/Physics/PhysicsContactListener.h
         source/Steel/Physics/Collision.h source/Steel/UI/RectTransformation.cpp source/Steel/UI/RectTransformation.h
         source/Steel/UI/UIComponent.cpp source/Steel/UI/UIComponent.h
         source/Steel/UI/UIElements/UIImage.cpp source/Steel/UI/UIElements/UIImage.h
-        source/Steel/Scripting/UIInternalCalls.cpp source/Steel/Scripting/UIInternalCalls.h
+        source/Steel/Scripting/InternalCalls/UIInternalCalls.cpp source/Steel/Scripting/InternalCalls/UIInternalCalls.h
         source/Steel/EntityComponentSystem/EntitiesRegistry.h source/Steel/EntityComponentSystem/Entity.h
         source/Steel/Scene/NameComponent.cpp source/Steel/Scene/NameComponent.h source/Steel/Scene/SceneHelper.h
-        source/Steel/Scene/SceneHelper.h source/Steel/Scripting/InternalCallsCommon.h source/Steel/Resources/ResourceID.h
+        source/Steel/Scene/SceneHelper.h source/Steel/Scripting/InternalCalls/InternalCallsCommon.h source/Steel/Resources/ResourceID.h
         source/Steel/EntityComponentSystem/SparseDataSet.h
         source/Steel/Physics/CircleCollider.cpp source/Steel/Physics/CircleCollider.h
         source/Steel/Scene/HierarchyNode.cpp source/Steel/Scene/HierarchyNode.h source/Steel/Scene/Hierarchy.h
@@ -117,7 +117,7 @@ set(SOURCE_FILES
         source/Steel/Scripting/ScriptObjectHandler.h source/Steel/Scripting/ScriptObjectHandler.cpp source/Steel/Scripting/ScriptMethodPointer.h
         source/Steel/Scripting/APIStructs.h source/Steel/Scripting/ScriptingDomain.h source/Steel/Scripting/ScriptSerializationHelper.cpp
         source/Steel/Scripting/ScriptSerializationHelper.h source/Steel/Scripting/Accessors/ScriptStringAttributeAccessor.h
-        source/Steel/Resources/SceneData.cpp source/Steel/Resources/SceneData.h source/Steel/Scene/SceneBackup.h)
+        source/Steel/Resources/SceneData.cpp source/Steel/Resources/SceneData.h source/Steel/Scene/SceneBackup.h source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.cpp source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

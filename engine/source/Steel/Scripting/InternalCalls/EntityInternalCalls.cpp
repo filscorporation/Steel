@@ -1,10 +1,10 @@
-#include <mono/jit/jit.h>
+#include "mono/include/mono/jit/jit.h"
 
 #include "EntityInternalCalls.h"
-#include "../Core/Application.h"
-#include "../Core/Log.h"
-#include "../Scene/SceneHelper.h"
-#include "../Scene/NameComponent.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Scene/SceneHelper.h"
+#include "Steel/Scene/NameComponent.h"
 
 EntityID EntityInternalCalls::Entity_CreateNewEntity()
 {

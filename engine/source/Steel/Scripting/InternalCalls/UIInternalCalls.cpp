@@ -1,9 +1,9 @@
-#include <mono/jit/jit.h>
+#include "mono/include/mono/jit/jit.h"
 
-#include "ScriptingCore.h"
+#include "Steel/Scripting/ScriptingCore.h"
 #include "UIInternalCalls.h"
 #include "InternalCallsCommon.h"
-#include "InternalStructures/MaterialPropertyBlockInternal.h"
+#include "Steel/Scripting/InternalStructures/MaterialPropertyBlockInternal.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Application.h"
 #include "Steel/Scene/SceneHelper.h"
