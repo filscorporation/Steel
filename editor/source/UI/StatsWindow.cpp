@@ -12,13 +12,24 @@ void StatsWindow::UpdateInfo()
 {
     auto editor = (EditorApplication*)Application::Instance;
     auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
-    registry->GetComponent<UIText>(fpsCounterEntity).SetText(std::to_string(GetFPS()));
+
+    UpdateFPS();
+    fpsTextUpdateTimer += Time::UnscaledDeltaTime();
+    if (fpsTextUpdateTimer > 0.2f)
+    {
+        registry->GetComponent<UIText>(fpsCounterEntity).SetText(std::to_string(GetFPS()));
+        fpsTextUpdateTimer = 0.0f;
+    }
+
     registry->GetComponent<UIText>(drawCallsCounterEntity).SetText(std::to_string(editor->GetAppContext()->Stats.DrawCalls));
     registry->GetComponent<UIText>(verticesCounterEntity).SetText(std::to_string(editor->GetAppContext()->Stats.VerticesCount));
 }
 
 void StatsWindow::Init()
 {
+    for (int i = 0; i < FPS_FRAMES_COUNT; ++i)
+        framesList[i] = 0;
+
     auto scene = Application::Instance->GetCurrentScene();
     auto registry = scene->GetEntitiesRegistry();
 
@@ -103,10 +114,30 @@ void StatsWindow::Init()
     }
 }
 
+void StatsWindow::UpdateFPS()
+{
+    // here we fill buffer with delta time of previous frames to calculate average value
+    // if frame is too long - we write delta multiple times to update average faster
+    frameTimer += Time::DeltaTime();
+    do
+    {
+        framesList[frameIndex] = Time::DeltaTime();
+        frameIndex = (frameIndex + 1) % FPS_FRAMES_COUNT;
+        frameTimer -= FPS_MAX_DELTA;
+    }
+    while (frameTimer >= FPS_MAX_DELTA);
+
+    if (frameTimer < 0)
+        frameTimer = 0;
+}
+
 int StatsWindow::GetFPS()
 {
-    float smoothing = 0.9f;
-    float currentFPS = Time::DeltaTime() == 0.0f ? 0.0f : 1.0f / Time::DeltaTime();
-    lastFPS = (lastFPS * smoothing) + (currentFPS * (1.0f - smoothing));
-    return (int)lastFPS;
+    float fps = 0;
+    for (int i = 0; i < FPS_FRAMES_COUNT; ++i)
+        fps += framesList[i];
+    fps /= FPS_FRAMES_COUNT;
+    fps = 1.0f / fps;
+
+    return std::ceil(fps);
 }

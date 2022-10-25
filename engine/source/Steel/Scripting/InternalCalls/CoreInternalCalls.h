@@ -4,7 +4,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
-#include "ScriptingCore.h"
+#include "Steel/Scripting/ScriptingCore.h"
 
 namespace CoreInternalCalls
 {

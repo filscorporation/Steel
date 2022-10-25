@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "ScriptingCore.h"
-#include "ScriptComponent.h"
+#include "Steel/Scripting/ScriptingCore.h"
+#include "Steel/Scripting/ScriptComponent.h"
 #include "Steel/Scene/IDComponent.h"
 
 namespace EntityInternalCalls
