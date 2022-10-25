@@ -3,8 +3,6 @@
 #include "Steel/Core/Log.h"
 #include "Steel/UI/RectTransformation.h"
 
-#define TRANSFORM_EPS 0.000001f
-
 void Transformation::RegisterType()
 {
     REGISTER_COMPONENT(Transformation);
@@ -150,9 +148,7 @@ const glm::vec3& Transformation::GetLocalPosition() const
 
 void Transformation::SetLocalPosition(const glm::vec3& position)
 {
-    if (   std::abs(_localPosition.x - position.x) < TRANSFORM_EPS
-        && std::abs(_localPosition.y - position.y) < TRANSFORM_EPS
-        && std::abs(_localPosition.z - position.z) < TRANSFORM_EPS)
+    if (_localPosition == position)
         return;
 
     _localPosition = position;
@@ -167,9 +163,7 @@ const glm::vec3& Transformation::GetLocalRotation() const
 
 void Transformation::SetLocalRotation(const glm::vec3& rotation)
 {
-    if (   std::abs(_localRotation.x - rotation.x) < TRANSFORM_EPS
-        && std::abs(_localRotation.y - rotation.y) < TRANSFORM_EPS
-        && std::abs(_localRotation.z - rotation.z) < TRANSFORM_EPS)
+    if (_localRotation == rotation)
         return;
 
     _localRotation = rotation;
@@ -184,9 +178,7 @@ const glm::vec3& Transformation::GetLocalScale() const
 
 void Transformation::SetLocalScale(const glm::vec3& scale)
 {
-    if (   std::abs(_localScale.x - scale.x) < TRANSFORM_EPS
-        && std::abs(_localScale.y - scale.y) < TRANSFORM_EPS
-        && std::abs(_localScale.z - scale.z) < TRANSFORM_EPS)
+    if (_localScale == scale)
         return;
 
     _localScale = scale;

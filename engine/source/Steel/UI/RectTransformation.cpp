@@ -4,8 +4,6 @@
 #include "Steel/Core/Log.h"
 #include "Steel/Scene/Transformation.h"
 
-#define TRANSFORM_EPS 0.000001f
-
 void RectTransformation::RegisterType()
 {
     REGISTER_COMPONENT(RectTransformation);
@@ -42,8 +40,7 @@ const glm::vec2& RectTransformation::GetAnchorMin() const
 
 void RectTransformation::SetAnchorMin(const glm::vec2& anchor)
 {
-    if (   std::abs(_anchorMin.x - anchor.x) < TRANSFORM_EPS
-        && std::abs(_anchorMin.y - anchor.y) < TRANSFORM_EPS)
+    if (_anchorMin == anchor)
         return;
 
     _anchorMin = anchor;
@@ -61,8 +58,7 @@ const glm::vec2& RectTransformation::GetAnchorMax() const
 
 void RectTransformation::SetAnchorMax(const glm::vec2& anchor)
 {
-    if (   std::abs(_anchorMax.x - anchor.x) < TRANSFORM_EPS
-        && std::abs(_anchorMax.y - anchor.y) < TRANSFORM_EPS)
+    if (_anchorMax == anchor)
         return;
 
     _anchorMax = anchor;
@@ -80,8 +76,7 @@ const glm::vec2& RectTransformation::GetAnchoredPosition() const
 
 void RectTransformation::SetAnchoredPosition(const glm::vec2& position)
 {
-    if (   std::abs(_anchoredPosition.x - position.x) < TRANSFORM_EPS
-        && std::abs(_anchoredPosition.y - position.y) < TRANSFORM_EPS)
+    if (_anchoredPosition == position)
         return;
 
     _anchoredPosition = position;
@@ -96,8 +91,7 @@ const glm::vec2& RectTransformation::GetOffsetMin() const
 
 void RectTransformation::SetOffsetMin(const glm::vec2& offset)
 {
-    if (   std::abs(_offsetMin.x - offset.x) < TRANSFORM_EPS
-        && std::abs(_offsetMin.y - offset.y) < TRANSFORM_EPS)
+    if (_offsetMin == offset)
         return;
 
     _offsetMin = offset;
@@ -113,8 +107,7 @@ const glm::vec2& RectTransformation::GetOffsetMax() const
 
 void RectTransformation::SetOffsetMax(const glm::vec2& offset)
 {
-    if (   std::abs(_offsetMax.x - offset.x) < TRANSFORM_EPS
-        && std::abs(_offsetMax.y - offset.y) < TRANSFORM_EPS)
+    if (_offsetMax == offset)
         return;
 
     _offsetMax = offset;
@@ -135,8 +128,7 @@ const glm::vec2& RectTransformation::GetRealSizeCached() const
 
 void RectTransformation::SetSize(const glm::vec2& size)
 {
-    if (   std::abs(_size.x - size.x) < TRANSFORM_EPS
-        && std::abs(_size.y - size.y) < TRANSFORM_EPS)
+    if (_size == size)
         return;
 
     _size = glm::vec2(std::max(size.x, 0.0f), std::max(size.y, 0.0f));
@@ -152,8 +144,7 @@ const glm::vec2& RectTransformation::GetPivot() const
 
 void RectTransformation::RectTransformation::SetPivot(const glm::vec2& pivot)
 {
-    if (   std::abs(_pivot.x - pivot.x) < TRANSFORM_EPS
-        && std::abs(_pivot.y - pivot.y) < TRANSFORM_EPS)
+    if (pivot == _pivot)
         return;
 
     _pivot = pivot;
@@ -206,9 +197,7 @@ const glm::vec3& RectTransformation::GetLocalRotation() const
 
 void RectTransformation::SetLocalRotation(const glm::vec3& rotation)
 {
-    if (   std::abs(_localRotation.x - rotation.x) < TRANSFORM_EPS
-        && std::abs(_localRotation.y - rotation.y) < TRANSFORM_EPS
-        && std::abs(_localRotation.z - rotation.z) < TRANSFORM_EPS)
+    if (_localRotation == rotation)
         return;
 
     _localRotation = rotation;
@@ -302,9 +291,10 @@ void RectTransformation::UpdateTransformation(UILayer* layer, ComponentAccessor<
         parentRT.IncreaseCurrentThickness(hierarchyNode.GetThickness());
     }
 
+    const float transformEps = 0.000001f;
     for (int i = 0; i < 2; ++i)
     {
-        if (std::abs(_anchorMin[i] - _anchorMax[i]) < TRANSFORM_EPS)
+        if (std::abs(_anchorMin[i] - _anchorMax[i]) < transformEps)
         {
             _realPosition[i] = parentPosition[i] + parentSize[i] * (_anchorMin[i] - 0.5f) + _size[i] * (0.5f - _pivot[i]) + _anchoredPosition[i];
             _realSize[i] = _size[i];
