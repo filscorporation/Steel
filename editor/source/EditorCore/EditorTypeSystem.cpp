@@ -3,6 +3,8 @@
 #include "../UI/ControlPanel.h"
 #include "../UI/HierarchyElement.h"
 #include "../UI/HierarchyView.h"
+#include "../UI/ProjectView.h"
+#include "../UI/ProjectViewElement.h"
 #include "../UI/PropertiesView.h"
 #include "../UI/SceneView.h"
 #include "../UI/StatsWindow.h"
@@ -16,6 +18,8 @@ void EditorTypeSystem::Init()
     ControlPanel::RegisterType();
     HierarchyElement::RegisterType();
     HierarchyView::RegisterType();
+    ProjectView::RegisterType();
+    ProjectViewElement::RegisterType();
     PropertiesView::RegisterType();
     SceneView::RegisterType();
     StatsWindow::RegisterType();

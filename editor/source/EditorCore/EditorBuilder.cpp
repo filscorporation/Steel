@@ -2,6 +2,7 @@
 #include "../UI/AppView.h"
 #include "../UI/ControlPanel.h"
 #include "../UI/HierarchyView.h"
+#include "../UI/ProjectView.h"
 #include "../UI/PropertiesView.h"
 #include "../UI/UIEditorTab.h"
 #include "../UI/SceneView.h"
@@ -85,8 +86,8 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         auto& projectViewRT = entitiesRegistry->GetComponent<RectTransformation>(projectViewEntity);
         projectViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         projectViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-        auto& projectImage = entitiesRegistry->AddComponent<UIImage>(projectViewEntity);
-        projectImage.SetImage(uiLayer->UIResources.StraightFrameSprite);
+        auto& projectView = entitiesRegistry->AddComponent<ProjectView>(projectViewEntity);
+        projectView.Init(entitiesRegistry);
     }
 
     // Hierarchy view
