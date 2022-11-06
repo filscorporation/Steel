@@ -147,7 +147,7 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
     }
     if (eventsMask & UIEventTypes::ScrollDelta)
     {
-        if (std::abs(uiEvent.ScrollDelta.x) > 0.001f && std::abs(uiEvent.ScrollDelta.y) > 0.001f)
+        if (std::abs(uiEvent.ScrollDelta.x) > 0.001f || std::abs(uiEvent.ScrollDelta.y) > 0.001f)
         {
             eventType = eventType | UIEventTypes::ScrollDelta;
         }

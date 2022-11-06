@@ -108,6 +108,9 @@ namespace UIInternalCalls
     EntityID UILayoutGroup_AddElement(EntityID entityID, float minWidth, float minHeight, float prefWidth, float prefHeight);
     EntityID UILayoutGroup_AddElement2(EntityID entityID, EntityID elementID);
 
+    // UI scrollable view
+    EntityID UIScrollableView_GetContent(EntityID entityID);
+
     // UI
     EntityID UI_CreateUIElement();
     EntityID UI_CreateUIElement2(MonoString* name);
@@ -128,5 +131,7 @@ namespace UIInternalCalls
     EntityID UI_CreateUITabs2(MonoArray* tabs, MonoString* name, EntityID parentEntityID);
     EntityID UI_CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type);
     EntityID UI_CreateUILayoutGroup2(LayoutGroupTypes::LayoutGroupType type, MonoString* name, EntityID parentEntityID);
+    EntityID UI_CreateUIScrollableView();
+    EntityID UI_CreateUIScrollableView2(MonoString* name, EntityID parentEntityID);
     bool UI_IsPointerOverUI();
 }

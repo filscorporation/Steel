@@ -16,13 +16,13 @@ void HierarchyView::Init(EntitiesRegistry* entitiesRegistry)
 {
     auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
 
-    EntityID frameEntity = layer->CreateUIImage(layer->UIResources.StraightFrameSprite, "Frame", Owner);
-    auto& frameRT = entitiesRegistry->GetComponent<RectTransformation>(frameEntity);
-    frameRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-    frameRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+    EntityID contentEntity = layer->CreateUIElement("Hierarchy content", Owner);
+    auto& contentRT = entitiesRegistry->GetComponent<RectTransformation>(contentEntity);
+    contentRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+    contentRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
 
     {
-        EntityID tabEntity = layer->CreateUIImage(layer->UIResources.DefaultPixelSprite, "Tab image", frameEntity);
+        EntityID tabEntity = layer->CreateUIImage(layer->UIResources.DefaultPixelSprite, "Tab image", contentEntity);
         auto& tabImage = entitiesRegistry->GetComponent<UIImage>(tabEntity);
         tabImage.SetColor(STYLE_DARK_GREY);
         auto& tabImageRT = entitiesRegistry->GetComponent<RectTransformation>(tabEntity);
@@ -61,7 +61,7 @@ void HierarchyView::Init(EntitiesRegistry* entitiesRegistry)
     }
 
     {
-        _parentEntity = layer->CreateUIElement("Nodes", frameEntity);
+        _parentEntity = layer->CreateUIElement("Nodes", contentEntity);
         auto& nodesParentRT = entitiesRegistry->GetComponent<RectTransformation>(_parentEntity);
         nodesParentRT.SetParallelHierarchy(true);
         nodesParentRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
@@ -78,7 +78,9 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
     auto sceneRegistry = appScene->GetEntitiesRegistry();
 
+    // Parent of a parent (scrollable view and then editor tab)
     EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).GetParentNode();
+    parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(parentEntity).GetParentNode();
     bool isFocused = entitiesRegistry->GetComponent<UIEditorTab>(parentEntity).GetIsFocused();
 
     auto nodes = new std::unordered_map<EntityID, HierarchyViewNode>();
@@ -118,6 +120,9 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
 
     delete lastNodes;
     lastNodes = nodes;
+
+    auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
+    rt.SetSize(glm::vec2(0.0f, (int)(*nodes).size() * STYLE_BUTTON_H + STYLE_OFFSET * 2 + STYLE_BUTTON_H * 1.2f));
 
     // Controls
     if (isFocused && Input::IsKeyJustPressed(KeyCodes::Delete))

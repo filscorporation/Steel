@@ -11,6 +11,7 @@
 #include "Steel/UI/UIElements/UIButton.h"
 #include "Steel/UI/UIElements/UICheckBox.h"
 #include "Steel/UI/UIElements/UILayoutGroup.h"
+#include "Steel/UI/UIElements/UIScrollableView.h"
 #include "Steel/UI/UIElements/UIText.h"
 #include "Steel/UI/UIElements/UITabs.h"
 
@@ -585,6 +586,13 @@ EntityID UIInternalCalls::UILayoutGroup_AddElement2(EntityID entityID, EntityID 
     return component.AddElement(elementID);
 }
 
+EntityID UIInternalCalls::UIScrollableView_GetContent(EntityID entityID)
+{
+    GET_COMPONENT_OR_RETURN(UIScrollableView, NULL_ENTITY)
+
+    return component.GetContent();
+}
+
 EntityID UIInternalCalls::UI_CreateUIElement()
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIElement();
@@ -690,4 +698,14 @@ EntityID UIInternalCalls::UI_CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupTy
 EntityID UIInternalCalls::UI_CreateUILayoutGroup2(LayoutGroupTypes::LayoutGroupType type, MonoString* name, EntityID parentEntityID)
 {
     return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUILayoutGroup(type, ScriptingCore::ToString(name), parentEntityID);
+}
+
+EntityID UIInternalCalls::UI_CreateUIScrollableView()
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIScrollableView();
+}
+
+EntityID UIInternalCalls::UI_CreateUIScrollableView2(MonoString* name, EntityID parentEntityID)
+{
+    return Application::Instance->GetCurrentScene()->GetUILayer()->CreateUIScrollableView(ScriptingCore::ToString(name), parentEntityID);
 }

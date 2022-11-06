@@ -261,6 +261,34 @@ namespace Steel
 
             return element;
         }
+        
+        /// <summary>
+        /// Creates new UI scrollable view
+        /// </summary>
+        /// <returns>Created element</returns>
+        public static UIScrollableView CreateUIScrollableView()
+        {
+            Entity entity = new Entity(CreateUIScrollableView_Internal());
+            UIScrollableView element = new UIScrollableView();
+            element.Entity = entity;
+
+            return element;
+        }
+
+        /// <summary>
+        /// Creates new UI scrollable view
+        /// </summary>
+        /// <param name="name">Entity name</param>
+        /// <param name="parent">Entity's parent in the hierarchy</param>
+        /// <returns>Created element</returns>
+        public static UIScrollableView CreateUIScrollableView(string name, Entity parent)
+        {
+            Entity entity = new Entity(CreateUIScrollableView_Internal2(name, parent?.EntityID ?? Entity.NULL_ENTITY_ID));
+            UIScrollableView element = new UIScrollableView();
+            element.Entity = entity;
+
+            return element;
+        }
 
         /// <summary>
         /// Is there any UI object under mouse cursor
@@ -323,6 +351,12 @@ namespace Steel
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateUILayoutGroup_Internal2(UILayoutGroup.LayoutType type, string name, uint parentEntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUIScrollableView_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint CreateUIScrollableView_Internal2(string name, uint parentEntityID);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool IsPointerOverUI_Internal();

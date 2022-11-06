@@ -49,6 +49,8 @@ public:
     EntityID CreateUITabs(const std::vector<std::string>& tabsNames, const std::string& name, EntityID parent);
     EntityID CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type);
     EntityID CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type, const std::string& name, EntityID parent);
+    EntityID CreateUIScrollableView();
+    EntityID CreateUIScrollableView(const std::string& name, EntityID parent);
 
     int PixelsPerUnit = 32;
 

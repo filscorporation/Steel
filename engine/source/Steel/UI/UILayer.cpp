@@ -4,6 +4,7 @@
 #include "UIElements/UICheckBox.h"
 #include "UIElements/UIInputField.h"
 #include "UIElements/UILayoutGroup.h"
+#include "UIElements/UIScrollableView.h"
 #include "UIElements/UITabs.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
@@ -382,6 +383,20 @@ EntityID UILayer::CreateUILayoutGroup(LayoutGroupTypes::LayoutGroupType type, co
     auto entity = CreateUIElement(name, parent);
     auto& layout = _scene->GetEntitiesRegistry()->AddComponent<UILayoutGroup>(entity);
     layout.SetType(type);
+
+    return entity;
+}
+
+EntityID UILayer::CreateUIScrollableView()
+{
+    return CreateUIScrollableView("Scrollable view", NULL_ENTITY);
+}
+
+EntityID UILayer::CreateUIScrollableView(const std::string& name, EntityID parent)
+{
+    auto entity = CreateUIElement(name, parent);
+    _scene->GetEntitiesRegistry()->AddComponent<UIClipping>(entity);
+    _scene->GetEntitiesRegistry()->AddComponent<UIScrollableView>(entity);
 
     return entity;
 }

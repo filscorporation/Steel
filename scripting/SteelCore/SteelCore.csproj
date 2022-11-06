@@ -109,6 +109,7 @@
         <Compile Include="UI\UIElements\UILayoutGroup.cs" />
         <Compile Include="UI\UIElements\UIImage.cs" />
         <Compile Include="UI\UIElements\UIInputField.cs" />
+        <Compile Include="UI\UIElements\UIScrollableView.cs" />
         <Compile Include="UI\UIElements\UITabs.cs" />
         <Compile Include="UI\UIElements\UIText.cs" />
     </ItemGroup>

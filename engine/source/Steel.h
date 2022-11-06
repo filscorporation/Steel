@@ -28,5 +28,6 @@
 #include "Steel/UI/UIElements/UIImage.h"
 #include "Steel/UI/UIElements/UIInputField.h"
 #include "Steel/UI/UIElements/UILayoutGroup.h"
+#include "Steel/UI/UIElements/UIScrollableView.h"
 #include "Steel/UI/UIElements/UIText.h"
 #include "Steel/UI/UIElements/UITabs.h"

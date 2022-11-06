@@ -63,10 +63,14 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         // Properties view
         entitiesRegistry->AddComponent<UIEditorTab>(propertiesTabs.GetTab(0)).TabsEntityID = propertiesTabsEntity;
         entitiesRegistry->GetComponent<UIEventHandler>(propertiesTabs.GetTab(0)).RectEntity = l1child1Entity;
-        EntityID propertiesViewEntity = uiLayer->CreateUIElement("Properties view", propertiesTabs.GetTab(0));
-        auto& propertiesViewRT = entitiesRegistry->GetComponent<RectTransformation>(propertiesViewEntity);
-        propertiesViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-        propertiesViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto scrollableViewEntity = uiLayer->CreateUIElement("View", propertiesTabs.GetTab(0));
+        auto& scrollableViewRT = entitiesRegistry->GetComponent<RectTransformation>(scrollableViewEntity);
+        scrollableViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+        scrollableViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto& scrollableView = entitiesRegistry->AddComponent<UIScrollableView>(scrollableViewEntity);
+        entitiesRegistry->AddComponent<UIClipping>(scrollableView.Owner);
+        entitiesRegistry->AddComponent<UIImage>(scrollableView.Owner).SetImage(uiLayer->UIResources.StraightFrameSprite);
+        EntityID propertiesViewEntity = scrollableView.GetContent();
         auto& propertiesView = entitiesRegistry->AddComponent<PropertiesView>(propertiesViewEntity);
         propertiesView.Init(entitiesRegistry);
     }
@@ -82,10 +86,14 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         // Project view
         entitiesRegistry->AddComponent<UIEditorTab>(projectTabs.GetTab(0)).TabsEntityID = projectTabsEntity;
         entitiesRegistry->GetComponent<UIEventHandler>(projectTabs.GetTab(0)).RectEntity = l2child1Entity;
-        EntityID projectViewEntity = uiLayer->CreateUIElement("Project view", projectTabs.GetTab(0));
-        auto& projectViewRT = entitiesRegistry->GetComponent<RectTransformation>(projectViewEntity);
-        projectViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-        projectViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto scrollableViewEntity = uiLayer->CreateUIElement("View", projectTabs.GetTab(0));
+        auto& scrollableViewRT = entitiesRegistry->GetComponent<RectTransformation>(scrollableViewEntity);
+        scrollableViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+        scrollableViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto& scrollableView = entitiesRegistry->AddComponent<UIScrollableView>(scrollableViewEntity);
+        entitiesRegistry->AddComponent<UIClipping>(scrollableView.Owner);
+        entitiesRegistry->AddComponent<UIImage>(scrollableView.Owner).SetImage(uiLayer->UIResources.StraightFrameSprite);
+        EntityID projectViewEntity = scrollableView.GetContent();
         auto& projectView = entitiesRegistry->AddComponent<ProjectView>(projectViewEntity);
         projectView.Init(entitiesRegistry);
     }
@@ -101,10 +109,14 @@ void EditorBuilder::BuildLayout(EditorScene* editorScene)
         // Hierarchy view
         entitiesRegistry->AddComponent<UIEditorTab>(hierarchyTabs.GetTab(0)).TabsEntityID = hierarchyTabsEntity;
         entitiesRegistry->GetComponent<UIEventHandler>(hierarchyTabs.GetTab(0)).RectEntity = l3child1Entity;
-        EntityID hierarchyViewEntity = uiLayer->CreateUIElement("Hierarchy view", hierarchyTabs.GetTab(0));
-        auto& hierarchyViewRT = entitiesRegistry->GetComponent<RectTransformation>(hierarchyViewEntity);
-        hierarchyViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-        hierarchyViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto scrollableViewEntity = uiLayer->CreateUIElement("View", hierarchyTabs.GetTab(0));
+        auto& scrollableViewRT = entitiesRegistry->GetComponent<RectTransformation>(scrollableViewEntity);
+        scrollableViewRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
+        scrollableViewRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
+        auto& scrollableView = entitiesRegistry->AddComponent<UIScrollableView>(scrollableViewEntity);
+        entitiesRegistry->AddComponent<UIClipping>(scrollableView.Owner);
+        entitiesRegistry->AddComponent<UIImage>(scrollableView.Owner).SetImage(uiLayer->UIResources.StraightFrameSprite);
+        EntityID hierarchyViewEntity = scrollableView.GetContent();
         auto& hierarchyView = entitiesRegistry->AddComponent<HierarchyView>(hierarchyViewEntity);
         hierarchyView.Init(entitiesRegistry);
     }

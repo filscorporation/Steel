@@ -23,6 +23,7 @@ void CoreTypeSystem::Init()
     UIImage::RegisterType();
     UIInputField::RegisterType();
     UILayoutGroup::RegisterType();
+    UIScrollableView::RegisterType();
     UITabs::RegisterType();
     UIText::RegisterType();
     RectTransformation::RegisterType();

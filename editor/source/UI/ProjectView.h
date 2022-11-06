@@ -37,7 +37,7 @@ private:
     std::string currentPathString;
     std::string targetPathString;
 
-    EntityID parentEntity = NULL_ENTITY;
+    EntityID _parentEntity = NULL_ENTITY;
     std::unordered_map<std::string, ProjectViewNode>* nodes = nullptr;
 
     void RebuildAll(EntitiesRegistry* entitiesRegistry);

@@ -12,18 +12,12 @@ void ProjectView::RegisterType()
 
 void ProjectView::Init(EntitiesRegistry* entitiesRegistry)
 {
-    auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
-
-    EntityID frameEntity = layer->CreateUIImage(layer->UIResources.StraightFrameSprite, "Frame", Owner);
-    auto& frameRT = entitiesRegistry->GetComponent<RectTransformation>(frameEntity);
-    frameRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-    frameRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
-
     targetPathString = std::string(Application::Context()->Resources->GetResourcesPath());
 
+    auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
     {
-        parentEntity = layer->CreateUIElement("Nodes", frameEntity);
-        auto& nodesParentRT = entitiesRegistry->GetComponent<RectTransformation>(parentEntity);
+        _parentEntity = layer->CreateUIElement("Nodes", Owner);
+        auto& nodesParentRT = entitiesRegistry->GetComponent<RectTransformation>(_parentEntity);
         nodesParentRT.SetParallelHierarchy(true);
         nodesParentRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
         nodesParentRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
@@ -34,7 +28,9 @@ void ProjectView::Init(EntitiesRegistry* entitiesRegistry)
 
 void ProjectView::Update(EntitiesRegistry* entitiesRegistry)
 {
+    // Parent of a parent (scrollable view and then editor tab)
     EntityID parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(Owner).GetParentNode();
+    parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(parentEntity).GetParentNode();
     bool isFocused = entitiesRegistry->GetComponent<UIEditorTab>(parentEntity).GetIsFocused();
 
     std::filesystem::path currentPath(currentPathString);
@@ -97,13 +93,17 @@ void ProjectView::RebuildAll(EntitiesRegistry* entitiesRegistry)
     {
         (*nodes)[i->path().filename().u8string()] = CreateElement(entitiesRegistry, i->path(), (int)(*nodes).size());
     }
+
+    auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
+    rt.SetAnchoredPosition(glm::vec2(0.0f, 0.0f));
+    rt.SetSize(glm::vec2(0.0f, (float)(*nodes).size() * STYLE_BUTTON_H + STYLE_OFFSET * 2 + STYLE_BUTTON_H * 1.2f));
 }
 
 ProjectViewNode ProjectView::CreateElement(EntitiesRegistry* entitiesRegistry, const std::filesystem::path& filePath, int order)
 {
     auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
 
-    EntityID elementEntity = layer->CreateUIElement("Node", parentEntity);
+    EntityID elementEntity = layer->CreateUIElement("Node", _parentEntity);
 
     ProjectViewNode projectViewNode;
     projectViewNode.Order = order;
@@ -120,6 +120,9 @@ ProjectViewNode ProjectView::CreateElement(EntitiesRegistry* entitiesRegistry, c
 
 void ProjectView::ElementClicked(EntityID elementID)
 {
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+    auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
+
     if (nodes != nullptr)
     {
         auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();

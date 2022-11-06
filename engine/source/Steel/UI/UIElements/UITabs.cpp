@@ -38,7 +38,6 @@ void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
     buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();
     buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetHeight();
 
-
     if (content == NULL_ENTITY)
     {
         content = layer->CreateUIElement("Tabs content", Owner);

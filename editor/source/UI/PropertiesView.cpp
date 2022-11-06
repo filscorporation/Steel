@@ -29,12 +29,7 @@ void PropertiesView::RegisterType()
 
 void PropertiesView::Init(EntitiesRegistry* entitiesRegistry)
 {
-    auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
 
-    EntityID frameEntity = layer->CreateUIImage(layer->UIResources.StraightFrameSprite, "Frame", Owner);
-    auto& frameRT = entitiesRegistry->GetComponent<RectTransformation>(frameEntity);
-    frameRT.SetAnchorMin(glm::vec2(0.0f, 0.0f));
-    frameRT.SetAnchorMax(glm::vec2(1.0f, 1.0f));
 }
 
 void PropertiesView::Update(EntitiesRegistry* entitiesRegistry)
@@ -302,6 +297,8 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
 
         y -= BIG_OFFSET;
     }
+
+    entitiesRegistry->GetComponent<RectTransformation>(Owner).SetSize(glm::vec2(0.0f, -y));
 }
 
 void PropertiesView::ClearProperties(EntitiesRegistry* entitiesRegistry)
@@ -317,6 +314,8 @@ void PropertiesView::ClearProperties(EntitiesRegistry* entitiesRegistry)
         delete nodeWrapper;
     }
     componentsNodes.clear();
+
+    entitiesRegistry->GetComponent<RectTransformation>(Owner).SetAnchoredPosition(glm::vec2(0.0f, 0.0f)); // or maybe remember
 }
 
 EntityID PropertiesView::CreateSimpleStringElement(

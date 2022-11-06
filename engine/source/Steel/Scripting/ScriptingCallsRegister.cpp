@@ -291,6 +291,8 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.UILayoutGroup::AddElement_Internal", (void*)UIInternalCalls::UILayoutGroup_AddElement);
     mono_add_internal_call("Steel.UILayoutGroup::AddElement_Internal2", (void*)UIInternalCalls::UILayoutGroup_AddElement2);
 
+    mono_add_internal_call("Steel.UIScrollableView::GetContent_Internal", (void*)UIInternalCalls::UIScrollableView_GetContent);
+
     mono_add_internal_call("Steel.UI::CreateUIElement_Internal", (void*)UIInternalCalls::UI_CreateUIElement);
     mono_add_internal_call("Steel.UI::CreateUIElement_Internal2", (void*)UIInternalCalls::UI_CreateUIElement2);
     mono_add_internal_call("Steel.UI::CreateUIElement_Internal3", (void*)UIInternalCalls::UI_CreateUIElement3);
@@ -310,5 +312,7 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.UI::CreateUITabs_Internal2", (void*)UIInternalCalls::UI_CreateUITabs2);
     mono_add_internal_call("Steel.UI::CreateUILayoutGroup_Internal", (void*)UIInternalCalls::UI_CreateUILayoutGroup);
     mono_add_internal_call("Steel.UI::CreateUILayoutGroup_Internal2", (void*)UIInternalCalls::UI_CreateUILayoutGroup2);
+    mono_add_internal_call("Steel.UI::CreateUIScrollableView_Internal", (void*)UIInternalCalls::UI_CreateUIScrollableView);
+    mono_add_internal_call("Steel.UI::CreateUIScrollableView_Internal2", (void*)UIInternalCalls::UI_CreateUIScrollableView2);
     mono_add_internal_call("Steel.UI::IsPointerOverUI_Internal", (void*)UIInternalCalls::UI_IsPointerOverUI);
 }

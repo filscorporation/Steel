@@ -9,6 +9,11 @@ class Math
 public:
     constexpr static const float Pi = 3.1415926536f;
 
+    static float Clamp(float a, float min, float max)
+    {
+        return std::min(max, std::max(min, a));
+    }
+
     static float Clamp01(float a)
     {
         return std::min(1.0f, std::max(0.0f, a));
