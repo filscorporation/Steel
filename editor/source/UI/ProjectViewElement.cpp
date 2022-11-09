@@ -45,3 +45,38 @@ void ProjectViewElement::SetPosition(EntitiesRegistry* entitiesRegistry, int ord
     rectTransformation.SetPivot(glm::vec2(0.0f, 1.0f));
     rectTransformation.SetAnchoredPosition(glm::vec2(0.0f, -STYLE_BUTTON_H * order));
 }
+
+void ProjectViewElement::SetDefaultNodeStyle(EntitiesRegistry* entitiesRegistry) const
+{
+    auto& uiButton = entitiesRegistry->GetComponent<UIButton>(buttonEntityID);
+
+    TransitionsInfo transitionsInfo {};
+    transitionsInfo.TransitionType = TransitionTypes::ColorShift;
+    transitionsInfo.TransitionDuration = 0.1f;
+    transitionsInfo.Normal.FromColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    transitionsInfo.Hovered.FromColor(glm::vec4(0.85f, 0.85f, 0.85f, 1.0f));
+    transitionsInfo.Selected.FromColor(glm::vec4(0.75f, 0.75f, 0.75f, 1.0f));
+    transitionsInfo.Clicked.FromColor(glm::vec4(0.55f, 0.55f, 0.55f, 1.0f));
+    transitionsInfo.Disabled.FromColor(glm::vec4(0.35f, 0.35f, 0.35f, 1.0f));
+
+    uiButton.SetTransitionsInfo(transitionsInfo);
+}
+
+void ProjectViewElement::SetSelectedNodeStyle(EntitiesRegistry* entitiesRegistry) const
+{
+    auto& uiButton = entitiesRegistry->GetComponent<UIButton>(buttonEntityID);
+
+    const float WHITE_COMPONENT = 0.8f;
+    const float BLUE_COMPONENT = 1.0f;
+
+    TransitionsInfo transitionsInfo {};
+    transitionsInfo.TransitionType = TransitionTypes::ColorShift;
+    transitionsInfo.TransitionDuration = 0.1f;
+    transitionsInfo.Normal.FromColor(glm::vec4(WHITE_COMPONENT * 1.0f, WHITE_COMPONENT * 1.0f, BLUE_COMPONENT * 1.0f, 1.0f));
+    transitionsInfo.Hovered.FromColor(glm::vec4(WHITE_COMPONENT * 0.85f, WHITE_COMPONENT * 0.85f, BLUE_COMPONENT * 0.85f, 1.0f));
+    transitionsInfo.Selected.FromColor(glm::vec4(WHITE_COMPONENT * 0.75f, WHITE_COMPONENT * 0.75f, BLUE_COMPONENT * 0.75f, 1.0f));
+    transitionsInfo.Clicked.FromColor(glm::vec4(WHITE_COMPONENT * 0.55f, WHITE_COMPONENT * 0.55f, BLUE_COMPONENT * 0.55f, 1.0f));
+    transitionsInfo.Disabled.FromColor(glm::vec4(WHITE_COMPONENT * 0.35f, WHITE_COMPONENT * 0.35f, BLUE_COMPONENT * 0.35f, 1.0f));
+
+    uiButton.SetTransitionsInfo(transitionsInfo);
+}

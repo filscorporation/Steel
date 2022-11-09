@@ -16,6 +16,9 @@ public:
 
     void Init(EntitiesRegistry* entitiesRegistry, UILayer* layer, const ProjectView& projectView, const ProjectViewNode& node);
 
+    void SetSelectedNodeStyle(EntitiesRegistry* entitiesRegistry) const;
+    void SetDefaultNodeStyle(EntitiesRegistry* entitiesRegistry) const;
+
 private:
     EntityID buttonEntityID = NULL_ENTITY;
 

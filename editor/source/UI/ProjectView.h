@@ -10,6 +10,7 @@
 struct ProjectViewNode
 {
     int Order = 0;
+    bool IsSelected = false;
     bool NodeDirty = false;
     std::string FileName;
     std::string PathString;
@@ -27,18 +28,21 @@ public:
     void Init(EntitiesRegistry* entitiesRegistry);
     void Update(EntitiesRegistry* entitiesRegistry);
 
+    void GetSelectedFiles(EntitiesRegistry* entitiesRegistry, std::vector<std::string>& selectedFiles);
     void FocusOnFile(EntitiesRegistry* entitiesRegistry, const std::string& filePath);
     void Clear(EntitiesRegistry* entitiesRegistry);
-    ProjectViewNode CreateElement(EntitiesRegistry* entitiesRegistry, const std::filesystem::path& filePath, int order);
+    ProjectViewNode CreateElement(EntitiesRegistry* entitiesRegistry, const std::filesystem::path& filePath, int order) const;
 
     void ElementClicked(EntityID elementID);
 
 private:
     std::string currentPathString;
     std::string targetPathString;
+    float lastClickTime = -1.0f;
 
     EntityID _parentEntity = NULL_ENTITY;
     std::unordered_map<std::string, ProjectViewNode>* nodes = nullptr;
 
     void RebuildAll(EntitiesRegistry* entitiesRegistry);
+    bool TryDoubleClick(const ProjectViewNode& node);
 };

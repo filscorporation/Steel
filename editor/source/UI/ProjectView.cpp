@@ -1,9 +1,11 @@
 #include "ProjectView.h"
 #include "UIEditorTab.h"
-#include "../EditorCore/EditorBuilder.h"
 #include "ProjectViewElement.h"
+#include "../EditorCore/EditorBuilder.h"
 
 #include <Steel.h>
+
+#define MIN_DOUBLE_CLICK_TIME 0.4f
 
 void ProjectView::RegisterType()
 {
@@ -53,12 +55,23 @@ void ProjectView::Update(EntitiesRegistry* entitiesRegistry)
     }
 }
 
+void ProjectView::GetSelectedFiles(EntitiesRegistry* entitiesRegistry, std::vector<std::string>& selectedFiles)
+{
+    for (auto& node : *nodes)
+    {
+        if (node.second.IsSelected)
+        {
+            selectedFiles.push_back(node.second.PathString);
+        }
+    }
+}
+
 void ProjectView::FocusOnFile(EntitiesRegistry* entitiesRegistry, const std::string& filePath)
 {
     std::filesystem::path currentPath(currentPathString);
     if (currentPath != std::filesystem::path(Application::Context()->Resources->GetResourcesPath()))
     {
-        targetPathString = currentPath.parent_path();
+        targetPathString = currentPath.parent_path().u8string();
     }
 }
 
@@ -99,7 +112,7 @@ void ProjectView::RebuildAll(EntitiesRegistry* entitiesRegistry)
     rt.SetSize(glm::vec2(0.0f, (float)(*nodes).size() * STYLE_BUTTON_H + STYLE_OFFSET * 2 + STYLE_BUTTON_H * 1.2f));
 }
 
-ProjectViewNode ProjectView::CreateElement(EntitiesRegistry* entitiesRegistry, const std::filesystem::path& filePath, int order)
+ProjectViewNode ProjectView::CreateElement(EntitiesRegistry* entitiesRegistry, const std::filesystem::path& filePath, int order) const
 {
     auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
 
@@ -126,16 +139,47 @@ void ProjectView::ElementClicked(EntityID elementID)
     if (nodes != nullptr)
     {
         auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
+        bool additiveSelect = Input::IsKeyPressed(KeyCodes::LeftControl) || Input::IsKeyPressed(KeyCodes::RightControl);
 
         for (auto& node : *nodes)
         {
             if (node.second.UIElementEntity == elementID)
             {
-                // TODO: change to selection
-                if (node.second.IsDirectory)
-                    targetPathString = node.second.PathString;
+                if (!node.second.IsSelected)
+                {
+                    node.second.IsSelected = true;
+                    registry->GetComponent<ProjectViewElement>(node.second.UIElementEntity).SetSelectedNodeStyle(registry);
+                }
+
+                if (TryDoubleClick(node.second))
+                    break;
             }
-            // TODO: disselect
+            else
+            {
+                if (!additiveSelect && node.second.IsSelected)
+                {
+                    // Deselect all others nodes
+                    node.second.IsSelected = false;
+                    registry->GetComponent<ProjectViewElement>(node.second.UIElementEntity).SetDefaultNodeStyle(registry);
+                }
+            }
         }
     }
+}
+
+bool ProjectView::TryDoubleClick(const ProjectViewNode& node)
+{
+    bool result = false;
+    float currentClickTime = Time::TimeSinceStartup();
+    if (lastClickTime > 0.0f && currentClickTime - lastClickTime <= MIN_DOUBLE_CLICK_TIME)
+    {
+        if (node.IsDirectory)
+        {
+            targetPathString = node.PathString;
+            result = true;
+        }
+    }
+    lastClickTime = currentClickTime;
+
+    return result;
 }
