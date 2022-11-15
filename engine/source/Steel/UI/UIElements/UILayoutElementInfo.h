@@ -1,5 +1,6 @@
 #include "Steel/EntityComponentSystem/Entity.h"
 #include "Steel/Serialization/Serializable.h"
+#include "Steel/EntityComponentSystem/TypeInfo.h"
 
 struct UILayoutElementInfo : public Serializable
 {

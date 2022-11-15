@@ -4,6 +4,7 @@
 #include "Steel/Scene/Hierarchy.h"
 #include "Steel/UI/UIEventHandler.h"
 #include "Steel/Scene/SceneHelper.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #define SO_OFFSET 0.1f
 

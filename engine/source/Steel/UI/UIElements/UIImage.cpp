@@ -3,6 +3,7 @@
 #include "Steel/Scene/Hierarchy.h"
 #include "Steel/Scene/SceneHelper.h"
 #include "Steel/UI/UIEventHandler.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void UIImage::RegisterType()
 {

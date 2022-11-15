@@ -10,6 +10,8 @@
 
 class Shader : public Resource
 {
+    DEFINE_TYPE(Shader)
+
 public:
     Shader(const char* vertexCode, const char* fragmentCode);
     virtual ~Shader();

@@ -16,6 +16,7 @@
 #include "Steel/Physics/Physics.h"
 #include "Steel/Scripting/ScriptingSystem.h"
 #include "Steel/UI/RectTransformation.h"
+#include "Steel/EntityComponentSystem/TypeInfoStorage.h"
 
 Scene::Scene(const std::string& name, ResourceID sourceID)
 {

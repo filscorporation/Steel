@@ -3,6 +3,7 @@
 #include "Steel/Core/Log.h"
 #include "Steel/Rendering/SpriteRenderer.h"
 #include "Steel/UI/UIElements/UIImage.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void Animator::RegisterType()
 {

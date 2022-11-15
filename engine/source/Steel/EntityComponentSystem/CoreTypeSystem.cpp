@@ -1,4 +1,5 @@
 #include "CoreTypeSystem.h"
+#include "TypeInfoStorage.h"
 #include "Steel/Core/Components.h"
 
 void CoreTypeSystem::Init()

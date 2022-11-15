@@ -22,7 +22,7 @@ public:
 
     const TypeInfo* GetTypeInfo() override
     {
-        return T::GetTypeInfo();
+        return T::GetTypeInfoStatic();
     }
 };
 
@@ -37,7 +37,7 @@ public:
 
     const TypeInfo* GetTypeInfo() override
     {
-        return T::GetTypeInfo();
+        return T::GetTypeInfoStatic();
     }
 };
 

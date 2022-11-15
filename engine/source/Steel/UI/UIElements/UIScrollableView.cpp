@@ -1,6 +1,7 @@
 #include "UIScrollableView.h"
 #include "Steel/Scene/SceneHelper.h"
 #include "Steel/UI/UIEventHandler.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #define SCROLL_SENSITIVITY 25.0f
 

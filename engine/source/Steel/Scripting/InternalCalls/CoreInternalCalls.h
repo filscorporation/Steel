@@ -5,6 +5,8 @@
 #include <glm/vec4.hpp>
 
 #include "Steel/Scripting/ScriptingCore.h"
+#include "Steel/Resources/ResourceID.h"
+#include "Steel/Serialization/SerializationManager.h"
 
 namespace CoreInternalCalls
 {

@@ -1,4 +1,5 @@
 #include "UILayoutElementInfo.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void UILayoutElementInfo::RegisterType()
 {

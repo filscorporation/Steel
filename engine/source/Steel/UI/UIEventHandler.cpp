@@ -2,6 +2,7 @@
 #include "../Core/Log.h"
 #include "../Core/Time.h"
 #include "../Scripting/ScriptComponent.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void UIEventHandler::RegisterType()
 {

@@ -2,6 +2,7 @@
 #include "Hierarchy.h"
 #include "Steel/Core/Application.h"
 #include "Steel/UI/RectTransformation.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 bool lock = false;
 

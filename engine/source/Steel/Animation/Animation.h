@@ -21,6 +21,8 @@ struct Curve
 
 class Animation : public Resource
 {
+    DEFINE_TYPE(Animation)
+
 public:
     Animation();
     Animation(Sprite* sourceSprite, float animationLength);

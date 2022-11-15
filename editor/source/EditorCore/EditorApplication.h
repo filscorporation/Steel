@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Steel.h>
+#include <Steel/Scene/SceneBackup.h>
 
 namespace EditorStates
 {

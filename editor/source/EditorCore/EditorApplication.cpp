@@ -1,10 +1,12 @@
-#include <Steel/Scripting/ScriptingSystem.h>
-#include <Steel/Rendering/SceneRenderer.h>
 #include "EditorApplication.h"
 #include "EditorScene.h"
 #include "EditorBuilder.h"
 #include "EditorSceneRenderer.h"
 #include "EditorTypeSystem.h"
+
+#include <Steel/Scripting/ScriptingSystem.h>
+#include <Steel/Rendering/SceneRenderer.h>
+#include <Steel/Serialization/SerializationManager.h>
 
 void EditorApplication::Init(ApplicationSettings settings)
 {

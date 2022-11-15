@@ -3,6 +3,7 @@
 #include "Steel/Core/Log.h"
 #include "Steel/EntityComponentSystem/TypeInfoStorage.h"
 #include "Steel/Resources/ResourcesManager.h"
+#include "Steel/Resources/Resource.h"
 #include "Steel/Scene/Scene.h"
 
 std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> SerializationManager::_attributesInfo;
@@ -70,19 +71,6 @@ void SerializationManager::RestoreScene(SceneBackup* backup, Scene* scene)
     DeserializeScene(scene, *backup->Node);
 }
 
-void SerializationManager::RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo)
-{
-    _attributesInfo[typeID].emplace_back(attributeInfo);
-}
-
-std::vector<AttributeInfo>& SerializationManager::GetAttributes(ComponentTypeID typeID)
-{
-    if (_attributesInfo.find(typeID) == _attributesInfo.end())
-        Log::LogError("Get attributes for non existing type {0}", typeID);
-
-    return _attributesInfo[typeID];
-}
-
 void SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
 {
     SerializationContext context;
@@ -119,7 +107,7 @@ void SerializationManager::SerializeScene(Scene* scene, YAML::Node& node)
         for (auto& dataPair : rawData)
         {
             auto object = static_cast<Serializable*>(dataPair.Data);
-            auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.TypeID);
+            auto typeInfo = object->GetTypeInfo();
 
             YAML::Node componentNode;
             Serialize(typeInfo->ID, object, componentNode, context);
@@ -215,4 +203,43 @@ void SerializationManager::Deserialize(ComponentTypeID typeID, Serializable* obj
             attribute.Deserialize(object, node, context);
         }
     }
+}
+
+void SerializationManager::SerializeResource(Resource* resource, const std::string& filePath)
+{
+    SerializationContext context;
+    context.SerializedScene = nullptr;
+    context.ResourcesSource = Application::Context()->Resources;
+
+    YAML::Node node;
+    auto object = static_cast<Serializable*>(resource);
+    auto typeInfo = resource->GetTypeInfo();
+
+    // TODO: prefill node
+    node["type_id"] = (int)resource->Type;
+    node["id"] = (int)resource->ID;
+    YAML::Node dataNode = node["data"];
+
+    Serialize(typeInfo->ID, object, dataNode, context);
+
+    std::ofstream fout(filePath);
+    fout << node;
+}
+
+void SerializationManager::DeserializeResource(Resource* resource, const std::string& filePath)
+{
+    // TODO
+}
+
+void SerializationManager::RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo)
+{
+    _attributesInfo[typeID].emplace_back(attributeInfo);
+}
+
+std::vector<AttributeInfo>& SerializationManager::GetAttributes(ComponentTypeID typeID)
+{
+    if (_attributesInfo.find(typeID) == _attributesInfo.end())
+        Log::LogError("Get attributes for non existing type {0}", typeID);
+
+    return _attributesInfo[typeID];
 }

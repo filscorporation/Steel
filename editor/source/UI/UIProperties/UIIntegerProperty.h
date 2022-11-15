@@ -5,6 +5,7 @@
 #include <Steel/EntityComponentSystem/EntitiesRegistry.h>
 #include <Steel/EntityComponentSystem/Entity.h>
 #include <Steel/EntityComponentSystem/TypeInfo.h>
+#include <Steel/Serialization/AttributeInfo.h>
 #include <Steel/UI/UILayer.h>
 
 class UIIntegerProperty

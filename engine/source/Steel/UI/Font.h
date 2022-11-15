@@ -35,6 +35,8 @@ struct CharactersAtlas
 
 class Font : public Resource
 {
+    DEFINE_TYPE(Font)
+
 public:
     Font();
     ~Font() override;

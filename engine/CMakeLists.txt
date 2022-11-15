@@ -118,7 +118,8 @@ set(SOURCE_FILES
         source/Steel/Scripting/APIStructs.h source/Steel/Scripting/ScriptingDomain.h source/Steel/Scripting/ScriptSerializationHelper.cpp
         source/Steel/Scripting/ScriptSerializationHelper.h source/Steel/Scripting/Accessors/ScriptStringAttributeAccessor.h
         source/Steel/Resources/SceneData.cpp source/Steel/Resources/SceneData.h source/Steel/Scene/SceneBackup.h source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.cpp
-        source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.h source/Steel/UI/UIElements/UIScrollableView.cpp source/Steel/UI/UIElements/UIScrollableView.h)
+        source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.h source/Steel/UI/UIElements/UIScrollableView.cpp source/Steel/UI/UIElements/UIScrollableView.h
+        source/Steel/Serialization/AttributesRegistration.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

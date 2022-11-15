@@ -3,6 +3,7 @@
 #include "Steel/Core/Log.h"
 #include "Steel/Scene/Hierarchy.h"
 #include "Steel/Scene/SceneHelper.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #include <vector>
 #include <cctype>

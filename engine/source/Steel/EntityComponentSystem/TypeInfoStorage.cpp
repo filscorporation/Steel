@@ -30,5 +30,6 @@ void TypeInfoStorage::GetTypeInfos(std::vector<const TypeInfo*>& typeInfos)
 
 const TypeInfo* TypeInfoStorage::GetTypeInfo(ComponentTypeID typeID)
 {
+    // TODO: redundant?
     return storage.find(typeID) == storage.end() ? nullptr : storage[typeID]->GetTypeInfo();
 }

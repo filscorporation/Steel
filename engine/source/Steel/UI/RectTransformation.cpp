@@ -3,6 +3,7 @@
 #include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Scene/Transformation.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void RectTransformation::RegisterType()
 {

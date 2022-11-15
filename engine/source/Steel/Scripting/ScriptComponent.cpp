@@ -3,6 +3,7 @@
 #include "ScriptMethodPointer.h"
 #include "Steel/Core/Application.h"
 #include "Steel/UI/UIEventHandler.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #include <cstdint>
 

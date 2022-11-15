@@ -6,6 +6,8 @@
 
 class Texture : public Resource
 {
+    DEFINE_TYPE(Texture)
+
 public:
     explicit Texture();
     ~Texture() override;

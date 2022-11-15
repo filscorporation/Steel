@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Screen.h"
 #include "Steel/Scene/SceneHelper.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void Camera::RegisterType()
 {

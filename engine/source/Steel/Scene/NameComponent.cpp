@@ -1,4 +1,5 @@
 #include "NameComponent.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void NameComponent::RegisterType()
 {

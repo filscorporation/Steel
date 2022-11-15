@@ -5,6 +5,8 @@
 
 class AsepriteData : public Resource
 {
+    DEFINE_TYPE(AsepriteData)
+
 public:
     AsepriteData();
 

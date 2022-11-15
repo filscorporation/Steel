@@ -6,6 +6,8 @@
 
 class AudioTrack : public Resource
 {
+    DEFINE_TYPE(AudioTrack)
+
 public:
     AudioTrack();
     ~AudioTrack() override;

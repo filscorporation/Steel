@@ -1,4 +1,10 @@
 #include "Sprite.h"
+#include "Steel/Serialization/AttributesRegistration.h"
+
+void Sprite::RegisterType()
+{
+    REGISTER_TYPE(Sprite);
+}
 
 Sprite::Sprite(Texture* texture)
 {

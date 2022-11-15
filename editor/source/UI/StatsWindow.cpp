@@ -2,6 +2,7 @@
 #include "../EditorCore/EditorApplication.h"
 
 #include <Steel.h>
+#include <Steel/Serialization/AttributesRegistration.h>
 
 void StatsWindow::RegisterType()
 {

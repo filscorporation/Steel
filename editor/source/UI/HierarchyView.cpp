@@ -6,6 +6,7 @@
 #include "SceneView.h"
 
 #include <Steel.h>
+#include <Steel/Serialization/AttributesRegistration.h>
 
 void HierarchyView::RegisterType()
 {

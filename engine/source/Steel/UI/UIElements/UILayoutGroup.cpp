@@ -1,6 +1,7 @@
 #include "UILayoutGroup.h"
 #include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void UILayoutGroup::RegisterType()
 {

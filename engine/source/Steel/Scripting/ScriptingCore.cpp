@@ -6,6 +6,7 @@
 #include "Steel/Core/Log.h"
 #include "Steel/Core/Application.h"
 #include "Steel/Scripting/Accessors/ScriptStringAttributeAccessor.h"
+#include "Steel/EntityComponentSystem/TypeInfoStorage.h"
 
 #include <mono/metadata/attrdefs.h>
 

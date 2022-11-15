@@ -1,6 +1,7 @@
 #include "MeshRenderer.h"
 #include "Steel/Scene/SceneHelper.h"
 #include "Steel/Core/Log.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void MeshRenderer::RegisterType()
 {

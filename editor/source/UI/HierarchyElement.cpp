@@ -2,6 +2,7 @@
 #include "../EditorCore/EditorBuilder.h"
 
 #include <Steel/Scene/NameComponent.h>
+#include <Steel/Serialization/AttributesRegistration.h>
 
 void HierarchyElement::RegisterType()
 {

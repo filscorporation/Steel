@@ -4,6 +4,8 @@
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
 
+#include <Steel/Serialization/AttributesRegistration.h>
+
 void SceneView::RegisterType()
 {
     REGISTER_COMPONENT(SceneView);

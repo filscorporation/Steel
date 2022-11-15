@@ -3,6 +3,7 @@
 #include "PhysicsInfo.h"
 #include "Steel/Rendering/SpriteRenderer.h"
 #include "Steel/Scene/SceneHelper.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #include <box2d/box2d.h>
 

@@ -2,6 +2,7 @@
 #include "SceneHelper.h"
 #include "Steel/Core/Log.h"
 #include "Steel/UI/RectTransformation.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void Transformation::RegisterType()
 {

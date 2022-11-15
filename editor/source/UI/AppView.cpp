@@ -5,6 +5,7 @@
 #include "../EditorCore/EditorBuilder.h"
 
 #include <Steel.h>
+#include <Steel/Serialization/AttributesRegistration.h>
 
 #undef LoadImage
 

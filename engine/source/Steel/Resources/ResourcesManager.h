@@ -28,6 +28,7 @@ public:
 
     const char* GetResourcesPath();
 
+    void SaveResources();
     void LoadResources();
     void LoadDefaultResources();
 
@@ -68,6 +69,7 @@ public:
 
 private:
     void TryLoadResource(const std::string& path);
+    static std::string DataFilePath(const std::string& fileFullPath);
 
     std::vector<std::unordered_map<ResourceID, Resource*>> resources;
 

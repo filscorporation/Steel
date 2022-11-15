@@ -1,4 +1,5 @@
 #include "IDComponent.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void IDComponent::RegisterType()
 {

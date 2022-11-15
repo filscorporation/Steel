@@ -29,6 +29,9 @@ public:
     static void Serialize(ComponentTypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context);
     static void Deserialize(ComponentTypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context);
 
+    static void SerializeResource(Resource* resource, const std::string& filePath);
+    static void DeserializeResource(Resource* resource, const std::string& filePath);
+
     static void RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo);
     static std::vector<AttributeInfo>& GetAttributes(ComponentTypeID typeID);
     template<class T>

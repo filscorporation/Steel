@@ -8,6 +8,8 @@
 
 class Material : public Resource
 {
+    DEFINE_TYPE(Material)
+
 public:
     Material();
 

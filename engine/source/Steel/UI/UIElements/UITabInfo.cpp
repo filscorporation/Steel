@@ -1,4 +1,5 @@
 #include "UITabInfo.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void UITabInfo::RegisterType()
 {

@@ -6,6 +6,7 @@
 
 #include <Steel.h>
 #include <Steel/Common/StringUtils.h>
+#include <Steel/Serialization/AttributesRegistration.h>
 
 #define ADD_TO_STRING_ELEMENT(m_type) \
 { \

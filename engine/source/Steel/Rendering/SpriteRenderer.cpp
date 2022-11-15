@@ -1,5 +1,6 @@
 #include "SpriteRenderer.h"
 #include "Steel/Scene/SceneHelper.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void SpriteRenderer::RegisterType()
 {

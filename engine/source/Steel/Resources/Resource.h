@@ -2,15 +2,18 @@
 
 #include "ResourceID.h"
 #include "ResourceType.h"
+#include "Steel/Serialization/Serializable.h"
+#include "Steel/EntityComponentSystem/TypeInfo.h"
 
 #include <string>
 
-class Resource
+class Resource : public Serializable
 {
 public:
-    virtual ~Resource() = default;
+    ~Resource() override = default;
 
     ResourceID ID = NULL_RESOURCE;
     ResourceTypes::ResourceType Type = ResourceTypes::Undefined;
     std::string Path;
+    std::string FullPath;
 };

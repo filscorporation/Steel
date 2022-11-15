@@ -10,6 +10,8 @@
 
 class Sprite : public Resource
 {
+    DEFINE_TYPE(Sprite)
+
 public:
     explicit Sprite(Texture* texture);
     ~Sprite() override;

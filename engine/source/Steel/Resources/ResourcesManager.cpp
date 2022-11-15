@@ -7,6 +7,7 @@
 #include "Steel/Audio/AudioCore.h"
 #include "Steel/Audio/WavLoader.h"
 #include "Steel/Rendering/MaterialSystem/BuiltInShaders.h"
+#include "Steel/Serialization/SerializationManager.h"
 #include "Steel/UI/FontManager.h"
 
 #include <filesystem>
@@ -33,6 +34,26 @@ ResourcesManager::~ResourcesManager()
     FontManager::Terminate();
 }
 
+void ResourcesManager::SaveResources()
+{
+    for (const auto& resourceStorage : resources)
+    {
+        for (auto resource : resourceStorage)
+        {
+            if (std::filesystem::exists(resource.second->FullPath))
+            {
+                // TODO: check if changed
+                SerializationManager::SerializeResource(resource.second, DataFilePath(resource.second->FullPath));
+            }
+        }
+    }
+}
+
+std::string ResourcesManager::DataFilePath(const std::string& fileFullPath)
+{
+    return fileFullPath + ".data";
+}
+
 void ResourcesManager::LoadResources()
 {
     if (!std::filesystem::exists(RESOURCES_PATH))
@@ -41,22 +62,24 @@ void ResourcesManager::LoadResources()
         return;
     }
 
+    int resourcesPathLen = (int)std::string(RESOURCES_PATH).size();
     for (std::filesystem::recursive_directory_iterator i(RESOURCES_PATH), end; i != end; ++i)
-        if (!is_directory(i->path()))
-            TryLoadResource(i->path().filename().u8string());
+        if (!is_directory(i->path()) && is_regular_file(i->path()))
+            TryLoadResource(i->path().u8string().substr(resourcesPathLen));
 }
 
 void ResourcesManager::TryLoadResource(const std::string& path)
 {
+    Resource* resource = nullptr;
     std::string extension = path.substr(path.find_last_of('.') + 1);
     if (extension == "png")
-        LoadSprite(path.c_str());
+        resource = LoadSprite(path.c_str());
     else if (extension == "wav")
-        LoadAudioTrack(path.c_str());
+        resource = LoadAudioTrack(path.c_str());
     else if (extension == "ttf")
-        LoadFont(path.c_str());
+        resource = LoadFont(path.c_str());
     else if (extension == "aseprite")
-        LoadAsepriteData(path.c_str());
+        resource = LoadAsepriteData(path.c_str());
     else if (extension == "vs")
     {
         // TODO: combine shaders into one file
@@ -65,10 +88,14 @@ void ResourcesManager::TryLoadResource(const std::string& path)
         std::ifstream infile(fsPath);
         if (infile.good())
             // Load only if there is fragment shader file with the same name
-            LoadAsepriteData(path.c_str());
+            resource = LoadShader(path.c_str(), fsPath.c_str());
     }
     else if (extension == "scene")
-        LoadSceneData(path.c_str());
+        resource = LoadSceneData(path.c_str());
+
+    // Deserialize data
+    if (resource != nullptr)
+        SerializationManager::DeserializeResource(resource, DataFilePath(resource->FullPath));
 }
 
 void ResourcesManager::LoadDefaultResources()
@@ -210,9 +237,8 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
     if (ResourceExists(ResourceTypes::Sprite, hash))
         return GetSprite(hash);
 
-    std::string fullPathString = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
-    fullPathString += filePath;
-    std::string fullPath = fullPathString;
+    std::string fullPath = engineResource ? ENGINE_RESOURCES_PATH : RESOURCES_PATH;
+    fullPath += filePath;
 
     std::ifstream infile(fullPath);
     if (!infile.good())
@@ -230,6 +256,7 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
             return nullptr;
 
         image->Path = path;
+        image->FullPath = fullPath;
         AddResource(image);
     }
     else if (extension == "aseprite")
@@ -287,11 +314,12 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
         return data;
     }
 
-    std::string fullPathString = RESOURCES_PATH;
-    fullPathString += filePath;
-    std::string fullPath = fullPathString;
+    std::string fullPath = RESOURCES_PATH;
+    fullPath += filePath;
+
     auto data = new AsepriteData();
     data->Path = filePath;
+    data->FullPath = fullPath;
     data->Name = GetNameFromPath(filePath);
 
     std::ifstream infile(fullPath);
@@ -362,6 +390,7 @@ AudioTrack* ResourcesManager::LoadAudioTrack(const char* filePath)
     delete[] data;
 
     audioTrack->Path = filePath;
+    audioTrack->FullPath = fullPathString;
     AddResource(audioTrack);
 
     Log::LogDebug("Audio track loaded: {0}, {1}", fullPath, audioTrack->ID);
@@ -410,6 +439,7 @@ Font* ResourcesManager::LoadFont(const char* fontPath, bool engineResource)
         return nullptr;
 
     font->Path = path;
+    font->FullPath = fullPathString;
     AddResource(font);
 
     Log::LogDebug("Font loaded: {0}, {1}", fullPath, font->ID);
@@ -447,6 +477,7 @@ Shader* ResourcesManager::LoadShader(const char* fileVSPath, const char* fileFSP
         return nullptr;
 
     shader->Path = path;
+    shader->FullPath = fullVSPathString;
     AddResource(shader);
 
     return shader;
@@ -479,6 +510,7 @@ SceneData* ResourcesManager::LoadSceneData(const char* filePath)
     auto sceneData = new SceneData(sceneName);
 
     sceneData->Path = filePath;
+    sceneData->FullPath = fullPathString;
     AddResource(sceneData);
 
     Log::LogDebug("Scene data loaded: {0}, {1}", fullPath, sceneData->ID);

@@ -4,6 +4,7 @@
 #include "Steel/Scene/SceneHelper.h"
 #include "Steel/Scripting/ScriptingCore.h"
 #include "Steel/Scripting/ScriptingSystem.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #include <algorithm>
 #include <string>

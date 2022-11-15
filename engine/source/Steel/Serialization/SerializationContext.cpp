@@ -1,6 +1,7 @@
 #include "SerializationContext.h"
 #include "Steel/Scene/Scene.h"
 #include "Steel/Resources/ResourcesManager.h"
+#include "Steel/Resources/Resource.h"
 
 UUID_TYPE SerializationContext::GetUUID(EntityID entityID) const
 {

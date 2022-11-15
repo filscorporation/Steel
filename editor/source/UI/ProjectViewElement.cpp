@@ -1,6 +1,8 @@
 #include "ProjectViewElement.h"
 #include "../EditorCore/EditorBuilder.h"
 
+#include <Steel/Serialization/AttributesRegistration.h>
+
 void ProjectViewElement::RegisterType()
 {
     REGISTER_COMPONENT(ProjectViewElement);

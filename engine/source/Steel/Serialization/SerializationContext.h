@@ -6,6 +6,7 @@
 
 class Scene;
 class ResourcesManager;
+class Resource;
 
 struct SerializationContext
 {

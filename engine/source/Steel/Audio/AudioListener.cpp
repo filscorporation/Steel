@@ -2,6 +2,7 @@
 #include "AudioCore.h"
 #include "Steel/Scene/Transformation.h"
 #include "Steel/Scene/SceneHelper.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void AudioListener::RegisterType()
 {

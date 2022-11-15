@@ -1,10 +1,10 @@
 #pragma once
 
-#include <cstdint>
-
 #include "Entity.h"
 #include "EntitiesRegistry.h"
 #include "Steel/Serialization/Serializable.h"
+
+#include <cstdint>
 
 class Component : public Serializable
 {

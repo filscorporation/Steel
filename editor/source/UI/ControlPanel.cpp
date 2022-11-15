@@ -3,6 +3,8 @@
 #include "../EditorCore/EditorApplication.h"
 #include "../EditorCore/EditorBuilder.h"
 
+#include <Steel/Serialization/AttributesRegistration.h>
+
 void ControlPanel::RegisterType()
 {
     REGISTER_COMPONENT(ControlPanel);
@@ -50,6 +52,8 @@ void ControlPanel::SaveScene()
 {
     auto editor = (EditorApplication*)Application::Instance;
     SerializationManager::SerializeScene(editor->AppContext->Scenes->GetActiveScene(), "test_scene.scene");
+    // TODO: temporary solution
+    editor->AppContext->Resources->SaveResources();
 }
 
 void ControlPanel::LoadScene()

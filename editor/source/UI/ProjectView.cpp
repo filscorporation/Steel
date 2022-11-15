@@ -4,6 +4,7 @@
 #include "../EditorCore/EditorBuilder.h"
 
 #include <Steel.h>
+#include <Steel/Serialization/AttributesRegistration.h>
 
 #define MIN_DOUBLE_CLICK_TIME 0.4f
 

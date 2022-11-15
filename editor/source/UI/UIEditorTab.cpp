@@ -3,6 +3,8 @@
 #include <Steel/UI/UIElements/UITabs.h>
 #include "UIEditorTab.h"
 
+#include <Steel/Serialization/AttributesRegistration.h>
+
 void UIEditorTab::RegisterType()
 {
     REGISTER_COMPONENT(UIEditorTab);
