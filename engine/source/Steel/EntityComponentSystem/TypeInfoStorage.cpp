@@ -27,9 +27,3 @@ void TypeInfoStorage::GetTypeInfos(std::vector<const TypeInfo*>& typeInfos)
         typeInfos.push_back(typePair.second->GetTypeInfo());
     }
 }
-
-const TypeInfo* TypeInfoStorage::GetTypeInfo(TypeID typeID)
-{
-    // TODO: redundant?
-    return storage.find(typeID) == storage.end() ? nullptr : storage[typeID]->GetTypeInfo();
-}

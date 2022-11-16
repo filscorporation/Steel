@@ -15,7 +15,7 @@
 
 class RectTransformation : public Component
 {
-    DEFINE_COMPONENT(RectTransformation)
+    DEFINE_TYPE(RectTransformation)
 
 public:
     explicit RectTransformation(EntityID ownerEntityID) : Component(ownerEntityID) { };

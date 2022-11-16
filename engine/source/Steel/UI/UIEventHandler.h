@@ -19,7 +19,7 @@ namespace EventHandlerTypes
 
 class UIEventHandler : public Component
 {
-    DEFINE_COMPONENT(UIEventHandler)
+    DEFINE_TYPE(UIEventHandler)
 
 public:
     explicit UIEventHandler(EntityID ownerEntityID) : Component(ownerEntityID) { }

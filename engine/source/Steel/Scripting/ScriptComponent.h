@@ -10,7 +10,7 @@ struct Collision;
 
 class ScriptComponent : public Component
 {
-    DEFINE_COMPONENT(ScriptComponent)
+    DEFINE_TYPE(ScriptComponent)
 
 public:
     explicit ScriptComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }

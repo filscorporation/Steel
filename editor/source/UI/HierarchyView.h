@@ -42,7 +42,7 @@ struct HierarchyViewNode
 
 class HierarchyView : public UIComponent
 {
-    DEFINE_COMPONENT(HierarchyView)
+    DEFINE_TYPE(HierarchyView)
 
 public:
     explicit HierarchyView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

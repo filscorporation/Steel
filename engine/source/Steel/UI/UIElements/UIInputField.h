@@ -22,7 +22,7 @@ typedef std::function<void(EntityID, std::string)> InputFieldSubmitCallback;
 
 class UIInputField : public UIInteractable
 {
-    DEFINE_COMPONENT(UIInputField)
+    DEFINE_TYPE(UIInputField)
 
 public:
     explicit UIInputField(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { }

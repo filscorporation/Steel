@@ -13,7 +13,7 @@ typedef std::function<void(EntityID)> CheckBoxCallback;
 
 class UICheckBox : public UIInteractable
 {
-    DEFINE_COMPONENT(UICheckBox)
+    DEFINE_TYPE(UICheckBox)
 
 public:
     explicit UICheckBox(EntityID ownerEntityID) : UIInteractable(ownerEntityID) { };

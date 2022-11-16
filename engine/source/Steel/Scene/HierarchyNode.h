@@ -8,7 +8,7 @@
 
 class HierarchyNode : public Component, public HierarchyParent
 {
-    DEFINE_COMPONENT(HierarchyNode)
+    DEFINE_TYPE(HierarchyNode)
 
 public:
     explicit HierarchyNode(EntityID ownerEntityID) : Component(ownerEntityID) { }

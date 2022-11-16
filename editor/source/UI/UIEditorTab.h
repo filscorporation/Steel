@@ -5,7 +5,7 @@
 
 class UIEditorTab : public UIComponent
 {
-    DEFINE_COMPONENT(UIEditorTab)
+    DEFINE_TYPE(UIEditorTab)
 
 public:
     explicit UIEditorTab(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

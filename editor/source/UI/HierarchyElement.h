@@ -9,7 +9,7 @@
 
 class HierarchyElement : public UIComponent
 {
-    DEFINE_COMPONENT(HierarchyElement)
+    DEFINE_TYPE(HierarchyElement)
 
 public:
     explicit HierarchyElement(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

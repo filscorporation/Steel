@@ -20,7 +20,7 @@ struct ProjectViewNode
 
 class ProjectView : public UIComponent
 {
-    DEFINE_COMPONENT(ProjectView)
+    DEFINE_TYPE(ProjectView)
 
 public:
     explicit ProjectView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

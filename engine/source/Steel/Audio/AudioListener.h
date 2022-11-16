@@ -4,7 +4,7 @@
 
 class AudioListener : public Component
 {
-    DEFINE_COMPONENT(AudioListener)
+    DEFINE_TYPE(AudioListener)
 
 public:
     explicit AudioListener(EntityID ownerEntityID) : Component(ownerEntityID) { }

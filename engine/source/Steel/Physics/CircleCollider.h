@@ -6,7 +6,7 @@
 
 class CircleCollider : public Collider
 {
-    DEFINE_COMPONENT(CircleCollider)
+    DEFINE_TYPE(CircleCollider)
 
     struct CircleColliderInfo;
 

@@ -19,7 +19,7 @@ namespace RigidBodyTypes
 
 class RigidBody : public Component
 {
-    DEFINE_COMPONENT(RigidBody)
+    DEFINE_TYPE(RigidBody)
 
     struct RigidBodyInfo;
 

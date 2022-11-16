@@ -6,7 +6,7 @@
 
 class SceneView : public UIComponent
 {
-    DEFINE_COMPONENT(SceneView)
+    DEFINE_TYPE(SceneView)
 
 public:
     explicit SceneView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

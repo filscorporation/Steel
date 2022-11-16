@@ -93,7 +93,6 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                 // TODO: keep in mind that between PropertyView catches event and this place some fields can be modified,
                 // TODO: so applying data from node to object here can overwrite some external changes
 
-                auto typeInfo = TypeInfoStorage::GetTypeInfo(componentNodeWrapper->ComponentTypeID);
                 auto typeID = componentNodeWrapper->ComponentTypeID;
 
                 // TODO: linear search is bad
@@ -109,7 +108,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
 
                 if (rawComponentIndex == -1)
                 {
-                    Log::LogError("Component of type {0} was changed by view, but was not found in deserialized data", typeInfo->TypeName);
+                    Log::LogError("Component of type {0} was changed by view, but was not found in deserialized data", typeID);
                     continue;
                 }
 
@@ -130,7 +129,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
     for (auto& dataPair : rawData)
     {
         auto object = static_cast<Serializable*>(dataPair.Data);
-        auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.DataTypeID);
+        auto typeInfo = object->GetTypeInfo();
 
         // Can skip some types (leave now for test)
         //if (typeInfo->ID == HierarchyNode::GetTypeInfo()->ID) continue;

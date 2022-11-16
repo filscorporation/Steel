@@ -9,7 +9,7 @@
 
 class UILayoutGroup : public UIComponent
 {
-    DEFINE_COMPONENT(UILayoutGroup)
+    DEFINE_TYPE(UILayoutGroup)
 
 public:
     explicit UILayoutGroup(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

@@ -9,7 +9,7 @@
 
 class ProjectViewElement : public UIComponent
 {
-    DEFINE_COMPONENT(ProjectViewElement)
+    DEFINE_TYPE(ProjectViewElement)
 
 public:
     explicit ProjectViewElement(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

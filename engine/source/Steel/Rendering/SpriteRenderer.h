@@ -10,7 +10,7 @@
 
 class SpriteRenderer : public Component
 {
-    DEFINE_COMPONENT(SpriteRenderer)
+    DEFINE_TYPE(SpriteRenderer)
 
 public:
     explicit SpriteRenderer(EntityID ownerEntityID) : Component(ownerEntityID) { }

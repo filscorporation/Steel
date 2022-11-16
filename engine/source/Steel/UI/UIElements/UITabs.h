@@ -7,7 +7,7 @@
 
 class UITabs : public UIComponent
 {
-    DEFINE_COMPONENT(UITabs)
+    DEFINE_TYPE(UITabs)
 
 public:
     explicit UITabs(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

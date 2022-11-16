@@ -9,7 +9,7 @@
 
 class UIClipping : public UIComponent
 {
-    DEFINE_COMPONENT(UIClipping)
+    DEFINE_TYPE(UIClipping)
 
 public:
     explicit UIClipping(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

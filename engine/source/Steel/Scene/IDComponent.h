@@ -6,7 +6,7 @@
 
 class IDComponent : public Component
 {
-    DEFINE_COMPONENT(IDComponent)
+    DEFINE_TYPE(IDComponent)
 
 public:
     explicit IDComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }

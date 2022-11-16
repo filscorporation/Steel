@@ -6,7 +6,7 @@
 
 class UIScrollableView : public UIComponent
 {
-    DEFINE_COMPONENT(UIScrollableView)
+    DEFINE_TYPE(UIScrollableView)
 
 public:
     explicit UIScrollableView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

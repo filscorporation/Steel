@@ -14,7 +14,7 @@
 
 class PropertiesView : public UIComponent
 {
-    DEFINE_COMPONENT(PropertiesView)
+    DEFINE_TYPE(PropertiesView)
 
 public:
     explicit PropertiesView(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };

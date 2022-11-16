@@ -8,7 +8,7 @@
 
 class StatsWindow : public UIComponent
 {
-    DEFINE_COMPONENT(StatsWindow)
+    DEFINE_TYPE(StatsWindow)
 
 public:
     explicit StatsWindow(EntityID ownerEntityID) : UIComponent(ownerEntityID) { };
