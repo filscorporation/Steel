@@ -1,6 +1,6 @@
 #include "TypeInfoStorage.h"
 
-std::unordered_map<ComponentTypeID, TypeInfoRegistererBase*> TypeInfoStorage::storage;
+std::unordered_map<TypeID, TypeInfoRegistererBase*> TypeInfoStorage::storage;
 
 void TypeInfoStorage::Clear()
 {
@@ -28,7 +28,7 @@ void TypeInfoStorage::GetTypeInfos(std::vector<const TypeInfo*>& typeInfos)
     }
 }
 
-const TypeInfo* TypeInfoStorage::GetTypeInfo(ComponentTypeID typeID)
+const TypeInfo* TypeInfoStorage::GetTypeInfo(TypeID typeID)
 {
     // TODO: redundant?
     return storage.find(typeID) == storage.end() ? nullptr : storage[typeID]->GetTypeInfo();

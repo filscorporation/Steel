@@ -7,6 +7,6 @@
 struct ComponentNodeWrapper
 {
     YAML::Node Node;
-    ComponentTypeID TypeID;
+    TypeID ComponentTypeID;
     bool IsDirty;
 };

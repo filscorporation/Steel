@@ -7,15 +7,15 @@ struct RawComponentData
     RawComponentData()
     {
         Data = nullptr;
-        TypeID = 0;
+        DataTypeID = 0;
     }
 
-    RawComponentData(void* data, ComponentTypeID typeID)
+    RawComponentData(void* data, TypeID typeID)
     {
         Data = data;
-        TypeID = typeID;
+        DataTypeID = typeID;
     }
 
     void* Data;
-    ComponentTypeID TypeID;
+    TypeID DataTypeID;
 };

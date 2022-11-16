@@ -6,7 +6,7 @@
 #include "Steel/Resources/Resource.h"
 #include "Steel/Scene/Scene.h"
 
-std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> SerializationManager::_attributesInfo;
+std::unordered_map<TypeID, std::vector<AttributeInfo>> SerializationManager::_attributesInfo;
 
 void SerializationManager::Init()
 {
@@ -183,7 +183,7 @@ void SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
     scene->SetFirstChildNode(context.GetEntityID(node["firstChildNode"].as<UUID_TYPE>()));
 }
 
-void SerializationManager::Serialize(ComponentTypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context)
+void SerializationManager::Serialize(TypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context)
 {
     if (_attributesInfo.find(typeID) != _attributesInfo.end())
     {
@@ -194,7 +194,7 @@ void SerializationManager::Serialize(ComponentTypeID typeID, Serializable* objec
     }
 }
 
-void SerializationManager::Deserialize(ComponentTypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context)
+void SerializationManager::Deserialize(TypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context)
 {
     if (_attributesInfo.find(typeID) != _attributesInfo.end())
     {
@@ -231,12 +231,12 @@ void SerializationManager::DeserializeResource(Resource* resource, const std::st
     // TODO
 }
 
-void SerializationManager::RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo)
+void SerializationManager::RegisterAttribute(TypeID typeID, const AttributeInfo& attributeInfo)
 {
     _attributesInfo[typeID].emplace_back(attributeInfo);
 }
 
-std::vector<AttributeInfo>& SerializationManager::GetAttributes(ComponentTypeID typeID)
+std::vector<AttributeInfo>& SerializationManager::GetAttributes(TypeID typeID)
 {
     if (_attributesInfo.find(typeID) == _attributesInfo.end())
         Log::LogError("Get attributes for non existing type {0}", typeID);

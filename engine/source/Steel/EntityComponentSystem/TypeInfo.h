@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-using ComponentTypeID = uint64_t; // TODO: rename
+using TypeID = uint64_t;
 
 class TypeInfo
 {
@@ -10,7 +10,7 @@ public:
     explicit TypeInfo(const char* className, bool isComponent = true);
 
     const char* TypeName;
-    ComponentTypeID ID;
+    TypeID ID;
     const bool IsComponent = true;
 };
 

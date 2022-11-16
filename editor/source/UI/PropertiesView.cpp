@@ -93,14 +93,14 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                 // TODO: keep in mind that between PropertyView catches event and this place some fields can be modified,
                 // TODO: so applying data from node to object here can overwrite some external changes
 
-                auto typeInfo = TypeInfoStorage::GetTypeInfo(componentNodeWrapper->TypeID);
-                auto typeID = componentNodeWrapper->TypeID;
+                auto typeInfo = TypeInfoStorage::GetTypeInfo(componentNodeWrapper->ComponentTypeID);
+                auto typeID = componentNodeWrapper->ComponentTypeID;
 
                 // TODO: linear search is bad
                 int rawComponentIndex = -1;
                 for (int i = 0; i < rawData.size(); i++)
                 {
-                    if (rawData[i].TypeID == typeID)
+                    if (rawData[i].DataTypeID == typeID)
                     {
                         rawComponentIndex = i;
                         break;
@@ -130,13 +130,13 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
     for (auto& dataPair : rawData)
     {
         auto object = static_cast<Serializable*>(dataPair.Data);
-        auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.TypeID);
+        auto typeInfo = TypeInfoStorage::GetTypeInfo(dataPair.DataTypeID);
 
         // Can skip some types (leave now for test)
         //if (typeInfo->ID == HierarchyNode::GetTypeInfo()->ID) continue;
 
         auto componentNodeWrapper = new ComponentNodeWrapper();
-        componentNodeWrapper->TypeID = typeInfo->ID;
+        componentNodeWrapper->ComponentTypeID = typeInfo->ID;
         componentsNodes.push_back(componentNodeWrapper);
         SerializationManager::Serialize(typeInfo->ID, object, componentNodeWrapper->Node, context);
 

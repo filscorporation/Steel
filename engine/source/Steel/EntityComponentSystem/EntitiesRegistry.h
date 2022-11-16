@@ -41,7 +41,7 @@ private:
     std::vector<EntityStates::EntityState> entityStates;
 
     // Stores all components pools by Component type ID
-    std::unordered_map<ComponentTypeID, ComponentsPoolWrapperBase*> componentsMap;
+    std::unordered_map<TypeID, ComponentsPoolWrapperBase*> componentsMap;
 
     int freeIDsCount = 0;
     EntityID nextFreeID = 0;
@@ -222,7 +222,7 @@ public:
         return ComponentIterator<T>((ComponentsPoolWrapper<T>*)componentsMap[typeID], active);
     }
 
-    EntitiesIterator GetEntitiesIterator(ComponentTypeID typeID, bool active = true)
+    EntitiesIterator GetEntitiesIterator(TypeID typeID, bool active = true)
     {
         if (componentsMap.find(typeID) == componentsMap.end())
         {
@@ -308,7 +308,7 @@ public:
         return GetComponent<T>(entityID);
     }
 
-    bool AddComponent(EntityID entityID, ComponentTypeID typeID)
+    bool AddComponent(EntityID entityID, TypeID typeID)
     {
         if (componentsMap.find(typeID) == componentsMap.end())
         {
@@ -327,7 +327,7 @@ public:
         return HasComponent(entityID, TYPE_ID(T));
     }
 
-    bool HasComponent(EntityID entityID, ComponentTypeID typeID)
+    bool HasComponent(EntityID entityID, TypeID typeID)
     {
         EntityID id = Entity::EntityIDGetID(entityID);
 
@@ -362,7 +362,7 @@ public:
         return RemoveComponent(entityID, TYPE_ID(T));
     }
 
-    bool RemoveComponent(EntityID entityID, ComponentTypeID typeID)
+    bool RemoveComponent(EntityID entityID, TypeID typeID)
     {
         EntityID id = Entity::EntityIDGetID(entityID);
 
@@ -401,7 +401,7 @@ public:
         return true;
     }
 
-    RawComponentData RestoreComponent(ComponentTypeID typeID, EntityID entityID)
+    RawComponentData RestoreComponent(TypeID typeID, EntityID entityID)
     {
         EntityID id = Entity::EntityIDGetID(entityID);
         if (!EntityExists(entityID))

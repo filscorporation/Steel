@@ -65,8 +65,8 @@ public:
     static void Clear();
     static void InitializeTypesFromStorage(EntitiesRegistry* entitiesRegistry);
     static void GetTypeInfos(std::vector<const TypeInfo*>& typeInfos);
-    static const TypeInfo* GetTypeInfo(ComponentTypeID typeID);
+    static const TypeInfo* GetTypeInfo(TypeID typeID);
 
 private:
-    static std::unordered_map<ComponentTypeID, TypeInfoRegistererBase*> storage;
+    static std::unordered_map<TypeID, TypeInfoRegistererBase*> storage;
 };

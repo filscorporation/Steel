@@ -26,17 +26,17 @@ public:
     static void SerializeScene(Scene* scene, YAML::Node& node);
     static void DeserializeScene(Scene* scene, YAML::Node& node);
 
-    static void Serialize(ComponentTypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context);
-    static void Deserialize(ComponentTypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context);
+    static void Serialize(TypeID typeID, Serializable* object, YAML::Node& node, SerializationContext& context);
+    static void Deserialize(TypeID typeID, Serializable* object, const YAML::Node& node, SerializationContext& context);
 
     static void SerializeResource(Resource* resource, const std::string& filePath);
     static void DeserializeResource(Resource* resource, const std::string& filePath);
 
-    static void RegisterAttribute(ComponentTypeID typeID, const AttributeInfo& attributeInfo);
-    static std::vector<AttributeInfo>& GetAttributes(ComponentTypeID typeID);
+    static void RegisterAttribute(TypeID typeID, const AttributeInfo& attributeInfo);
+    static std::vector<AttributeInfo>& GetAttributes(TypeID typeID);
     template<class T>
     static std::vector<AttributeInfo>& GetAttributes() { return GetAttributes(TYPE_ID(T)); }
 
 private:
-    static std::unordered_map<ComponentTypeID, std::vector<AttributeInfo>> _attributesInfo;
+    static std::unordered_map<TypeID, std::vector<AttributeInfo>> _attributesInfo;
 };
