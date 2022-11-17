@@ -36,8 +36,8 @@ void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
     initialized = true;
     auto layer = Application::Instance->GetCurrentScene()->GetUILayer();
 
-    buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();
-    buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetHeight();
+    buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->GetSpriteTexture()->GetWidth();
+    buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->GetSpriteTexture()->GetHeight();
 
     if (content == NULL_ENTITY)
     {
@@ -70,8 +70,8 @@ void UITabs::OnCreated(EntitiesRegistry* entitiesRegistry)
 void UITabs::SetOpenTabSprite(Sprite* tabOpenedSprite)
 {
     _tabOpenedSprite = tabOpenedSprite;
-    buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetWidth();
-    buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->SpriteTexture->GetHeight();
+    buttonWidth = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->GetSpriteTexture()->GetWidth();
+    buttonHeight = _tabOpenedSprite == nullptr ? 0 : _tabOpenedSprite->GetSpriteTexture()->GetHeight();
 
     if (initialized)
     {

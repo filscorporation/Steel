@@ -44,7 +44,7 @@ void SpriteRenderer::Draw(RenderContext* renderContext)
     drawCall.RenderMaterial = _material;
     drawCall.CustomProperties = _customProperties;
     drawCall.SortingOrder = _sortingOrder;
-    drawCall.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
+    drawCall.Queue = _image->GetIsTransparent() ? RenderingQueue::Transparent : RenderingQueue::Opaque;
 
     renderContext->List.AddDrawCall(drawCall);
 }
@@ -113,16 +113,16 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
 
     _sortingOrder = transformation.GetGlobalSortingOrderCached();
 
-    _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->SpriteTexture->GetTextureID());
+    _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->GetSpriteTexture()->GetTextureID());
     _customProperties.UpdateHash();
 
     ib.Clear();
     vb.Clear();
 
-    if (_image != nullptr && _material != nullptr && _image->SpriteTexture != nullptr)
+    if (_image != nullptr && _material != nullptr && _image->GetSpriteTexture() != nullptr)
     {
         glm::vec2 texCoords[4];
-        if (_image->IsSpriteSheet)
+        if (_image->GetIsSpriteSheet())
         {
             _image->GetTexCoord(currentImageTileIndex, texCoords);
         }
@@ -135,10 +135,10 @@ void SpriteRenderer::RebuildInner(Transformation& transformation)
         }
 
         glm::vec4 defaultVertices[4];
-        defaultVertices[0] = glm::vec4(1.0f - _image->Pivot.x, 1.0f - _image->Pivot.y, 0.0f, 1.0f);
-        defaultVertices[1] = glm::vec4(1.0f - _image->Pivot.x, 0.0f - _image->Pivot.y, 0.0f, 1.0f);
-        defaultVertices[2] = glm::vec4(0.0f - _image->Pivot.x, 1.0f - _image->Pivot.y, 0.0f, 1.0f);
-        defaultVertices[3] = glm::vec4(0.0f - _image->Pivot.x, 0.0f - _image->Pivot.y, 0.0f, 1.0f);
+        defaultVertices[0] = glm::vec4(1.0f - _image->GetPivot().x, 1.0f - _image->GetPivot().y, 0.0f, 1.0f);
+        defaultVertices[1] = glm::vec4(1.0f - _image->GetPivot().x, 0.0f - _image->GetPivot().y, 0.0f, 1.0f);
+        defaultVertices[2] = glm::vec4(0.0f - _image->GetPivot().x, 1.0f - _image->GetPivot().y, 0.0f, 1.0f);
+        defaultVertices[3] = glm::vec4(0.0f - _image->GetPivot().x, 0.0f - _image->GetPivot().y, 0.0f, 1.0f);
 
         glm::vec3 vertices[4];
         glm::mat4 matrix = transformation.GetTransformationMatrixCached()

@@ -75,32 +75,32 @@ void ResourcesInternalCalls::Sprite_SetAs9Sliced2(ResourceID spriteID, int offse
 uint32_t ResourcesInternalCalls::Sprite_GetTextureID(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
-    return image == nullptr || image->SpriteTexture == nullptr ? 0 : image->SpriteTexture->GetTextureID();
+    return image == nullptr || image->GetSpriteTexture() == nullptr ? 0 : image->GetSpriteTexture()->GetTextureID();
 }
 
 int ResourcesInternalCalls::Sprite_GetWidth(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
-    return image == nullptr || image->SpriteTexture == nullptr ? 0 : (int)image->SpriteTexture->GetWidth();
+    return image == nullptr || image->GetSpriteTexture() == nullptr ? 0 : (int)image->GetSpriteTexture()->GetWidth();
 }
 
 int ResourcesInternalCalls::Sprite_GetHeight(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
-    return image == nullptr || image->SpriteTexture == nullptr ? 0 : (int)image->SpriteTexture->GetHeight();
+    return image == nullptr || image->GetSpriteTexture() == nullptr ? 0 : (int)image->GetSpriteTexture()->GetHeight();
 }
 
 int ResourcesInternalCalls::Sprite_GetPixelsPerUnit(ResourceID spriteID)
 {
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
-    return image == nullptr ? 0 : image->PixelsPerUnit;
+    return image == nullptr ? 0 : image->GetPixelsPerUnit();
 }
 
 void ResourcesInternalCalls::Sprite_SetPixelsPerUnit(ResourceID spriteID, int pixelsPerUnit)
 {
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
-        image->PixelsPerUnit = pixelsPerUnit;
+        image->SetPixelsPerUnit(pixelsPerUnit);
 }
 
 void ResourcesInternalCalls::Sprite_GetPivot(ResourceID spriteID, glm::vec2* pivot)
@@ -108,8 +108,8 @@ void ResourcesInternalCalls::Sprite_GetPivot(ResourceID spriteID, glm::vec2* piv
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
     {
-        pivot->x = image->Pivot.x;
-        pivot->y = image->Pivot.y;
+        pivot->x = image->GetPivot().x;
+        pivot->y = image->GetPivot().y;
     }
 }
 
@@ -118,8 +118,10 @@ void ResourcesInternalCalls::Sprite_SetPivot(ResourceID spriteID, glm::vec2* piv
     auto image = Application::Instance->GetResourcesManager()->GetSprite(spriteID);
     if (image != nullptr)
     {
-        image->Pivot.x = pivot->x;
-        image->Pivot.y = pivot->y;
+        auto current = image->GetPivot();
+        current.x = pivot->x;
+        current.y = pivot->y;
+        image->SetPivot(current);
     }
 }
 

@@ -1,4 +1,10 @@
 #include "Animation.h"
+#include "Steel/Serialization/AttributesRegistration.h"
+
+void Animation::RegisterType()
+{
+    REGISTER_TYPE(Animation);
+}
 
 Animation::Animation()
 {

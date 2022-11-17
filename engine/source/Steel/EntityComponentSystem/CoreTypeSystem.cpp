@@ -1,6 +1,7 @@
 #include "CoreTypeSystem.h"
 #include "TypeInfoStorage.h"
 #include "Steel/Core/Components.h"
+#include "Steel/Core/Resources.h"
 
 void CoreTypeSystem::Init()
 {
@@ -32,6 +33,16 @@ void CoreTypeSystem::Init()
 
     UITabInfo::RegisterType();
     UILayoutElementInfo::RegisterType();
+
+    Animation::RegisterType();
+    AudioTrack::RegisterType();
+    Sprite::RegisterType();
+    Material::RegisterType();
+    Shader::RegisterType();
+    Texture::RegisterType();
+    AsepriteData::RegisterType();
+    SceneData::RegisterType();
+    Font::RegisterType();
 }
 
 void CoreTypeSystem::Terminate()

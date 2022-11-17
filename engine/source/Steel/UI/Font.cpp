@@ -5,9 +5,15 @@
 #include "FontManager.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Rendering/Core/OpenGLAPI.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #define CHARACTERS_START 32
 #define CHARACTERS_NUMBER 255
+
+void Font::RegisterType()
+{
+    REGISTER_TYPE(Font);
+}
 
 struct FontData
 {

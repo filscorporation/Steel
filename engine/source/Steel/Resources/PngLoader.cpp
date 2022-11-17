@@ -15,7 +15,7 @@ Sprite* PngLoader::LoadImage(const char* fullPath, const char* path)
 
     auto image = new Sprite(texture);
     image->Path = path;
-    image->IsTransparent = channels == 4 && IsImageTransparent(imageData, width, height);
+    image->SetIsTransparent(channels == 4 && IsImageTransparent(imageData, width, height));
 
     stbi_image_free(imageData);
 

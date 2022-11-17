@@ -1,4 +1,10 @@
 #include "SceneData.h"
+#include "Steel/Serialization/AttributesRegistration.h"
+
+void SceneData::RegisterType()
+{
+    REGISTER_TYPE(SceneData);
+}
 
 SceneData::SceneData(const std::string& name)
 {

@@ -212,15 +212,15 @@ void SerializationManager::SerializeResource(Resource* resource, const std::stri
     context.ResourcesSource = Application::Context()->Resources;
 
     YAML::Node node;
-    auto object = static_cast<Serializable*>(resource);
     auto typeInfo = resource->GetTypeInfo();
 
-    // TODO: prefill node
     node["type_id"] = (int)resource->Type;
-    node["id"] = (int)resource->ID;
-    YAML::Node dataNode = node["data"];
+    node["id"] = (ResourceID)resource->ID;
 
-    Serialize(typeInfo->ID, object, dataNode, context);
+    YAML::Node dataNode;
+    Serialize(typeInfo->ID, resource, dataNode, context);
+
+    node["data"] = dataNode;
 
     std::ofstream fout(filePath);
     fout << node;
@@ -228,7 +228,28 @@ void SerializationManager::SerializeResource(Resource* resource, const std::stri
 
 void SerializationManager::DeserializeResource(Resource* resource, const std::string& filePath)
 {
-    // TODO
+    SerializationContext context;
+    context.SerializedScene = nullptr;
+    context.ResourcesSource = Application::Context()->Resources;
+
+    std::ifstream infile(filePath);
+    if (!infile.good())
+    {
+        Log::LogError("Error loading resource data: file {0} does not exist", filePath);
+        return;
+    }
+
+    YAML::Node node = YAML::Load(infile);
+
+    auto resourceType = (ResourceTypes::ResourceType)node["type_id"].as<int>();
+    if (resourceType != resource->Type)
+        Log::LogWarning("Deserialized resource type {0} is different from extension type {1}", resourceType, resource->Type);
+
+    resource->ID = node["id"].as<ResourceID>();
+    auto typeInfo = resource->GetTypeInfo();
+
+    YAML::Node dataNode = node["data"];
+    Deserialize(typeInfo->ID, resource, dataNode, context);
 }
 
 void SerializationManager::RegisterAttribute(TypeID typeID, const AttributeInfo& attributeInfo)

@@ -51,7 +51,7 @@ void HierarchyElement::Init(EntitiesRegistry* entitiesRegistry, EntitiesRegistry
         arrowRT.SetAnchorMax(glm::vec2(0.0f, 0.5f));
         if (node.Flags & NodeFlags::Expanded)
             arrowRT.SetRotation(glm::vec3(0.0f, 0.0f, -Math::Pi * 0.5f));
-        auto arrowTexture = layer->UIResources.DefaultArrowSprite->SpriteTexture;
+        auto arrowTexture = layer->UIResources.DefaultArrowSprite->GetSpriteTexture();
         arrowRT.SetSize(glm::vec2(arrowTexture->GetWidth(), arrowTexture->GetHeight()));
         arrowRT.SetAnchoredPosition(glm::vec2(8.0f + STYLE_BUTTON_H * 0.5f + STYLE_BUTTON_H * nodeHN.GetHierarchyDepth(), 0.0f));
 

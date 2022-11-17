@@ -1,6 +1,12 @@
 #include "AudioTrack.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #include <AL/al.h>
+
+void AudioTrack::RegisterType()
+{
+    REGISTER_TYPE(AudioTrack);
+}
 
 AudioTrack::AudioTrack()
 {

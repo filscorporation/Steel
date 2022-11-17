@@ -264,7 +264,7 @@ void UIInputField::RebuildCursorInner(RectTransformation& transformation)
     {
         materialCursor = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
         auto cursorSprite = layer->UIResources.DefaultPixelSprite;
-        propertiesCursor.SetTexture(MAIN_TEX, cursorSprite->SpriteTexture->GetTextureID());
+        propertiesCursor.SetTexture(MAIN_TEX, cursorSprite->GetSpriteTexture()->GetTextureID());
     }
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
@@ -332,7 +332,7 @@ void UIInputField::RebuildSelectionInner(RectTransformation& transformation)
     {
         materialSelection = Application::Instance->GetResourcesManager()->DefaultUIMaterial();
         auto selectionSprite = layer->UIResources.DefaultPixelSprite;
-        propertiesSelection.SetTexture(MAIN_TEX, selectionSprite->SpriteTexture->GetTextureID());
+        propertiesSelection.SetTexture(MAIN_TEX, selectionSprite->GetSpriteTexture()->GetTextureID());
     }
 
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();

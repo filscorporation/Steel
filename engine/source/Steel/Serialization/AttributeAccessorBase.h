@@ -17,7 +17,7 @@ public:
     virtual ~AttributeAccessorBase() = default;
 
     virtual Types::Type GetType() const = 0;
-    virtual bool RequireName() const { return false; }
+    virtual bool RequireName() const { return true; }
     virtual void Serialize(Serializable* object, const std::string& name, YAML::Node& node, SerializationContext& context) = 0;
     virtual void Deserialize(Serializable* object, const std::string& name, const YAML::Node& node, SerializationContext& context) = 0;
 };

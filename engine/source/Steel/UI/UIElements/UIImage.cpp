@@ -64,7 +64,7 @@ void UIImage::Draw(RenderContext* renderContext)
     drawCall.RenderMaterial = _material;
     drawCall.CustomProperties = _customProperties;
     drawCall.SortingOrder = _sortingOrder;
-    drawCall.Queue = _image->IsTransparent ? RenderingQueue::Transparent : RenderingQueue::Opaque;
+    drawCall.Queue = _image->GetIsTransparent() ? RenderingQueue::Transparent : RenderingQueue::Opaque;
 
     renderContext->List.AddDrawCall(drawCall);
 }
@@ -157,7 +157,7 @@ void UIImage::RebuildInner(RectTransformation& transformation)
     ib.Clear();
     vb.Clear();
 
-    _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->SpriteTexture->GetTextureID());
+    _customProperties.SetTexture(MAIN_TEX, _image == nullptr ? 0 : _image->GetSpriteTexture()->GetTextureID());
     _customProperties.SetStencilFunc(ComparisonFunctions::Equal, _clippingLevel, 255);
     _customProperties.UpdateHash();
 
@@ -166,21 +166,21 @@ void UIImage::RebuildInner(RectTransformation& transformation)
 
     glm::mat4 matrix = transformation.GetTransformationMatrixCached();
 
-    if (_image != nullptr && _image->SpriteTexture != nullptr)
+    if (_image != nullptr && _image->GetSpriteTexture() != nullptr)
     {
-        if (_image->IsSliced)
+        if (_image->GetIsSliced())
         {
-            float xtc[4] = { 0.0f, (float)_image->SliceLeftOffset / (float)_image->SpriteTexture->GetWidth(),
-                             1.0f - (float)_image->SliceRightOffset / (float)_image->SpriteTexture->GetWidth(), 1.0f };
-            float ytc[4] = { 0.0f, (float)_image->SliceBottomOffset / (float)_image->SpriteTexture->GetHeight(),
-                             1.0f - (float)_image->SliceTopOffset / (float)_image->SpriteTexture->GetHeight(), 1.0f };
+            float xtc[4] = {0.0f, (float)_image->GetSliceLeftOffset() / (float)_image->GetSpriteTexture()->GetWidth(),
+                             1.0f - (float)_image->GetSliceRightOffset() / (float)_image->GetSpriteTexture()->GetWidth(), 1.0f };
+            float ytc[4] = {0.0f, (float)_image->GetSliceBottomOffset() / (float)_image->GetSpriteTexture()->GetHeight(),
+                             1.0f - (float)_image->GetSliceTopOffset() / (float)_image->GetSpriteTexture()->GetHeight(), 1.0f };
 
             glm::vec2 size = transformation.GetRealSizeCached();
-            float k = (float)_image->PixelsPerUnit / (float)UILayer::Current()->PixelsPerUnit;
-            float xvs[4] = { 0.0f, (float)_image->SliceLeftOffset * k / size.x,
-                             1.0f - (float)_image->SliceRightOffset * k / size.x, 1.0f };
-            float yvs[4] = { 0.0f, (float)_image->SliceBottomOffset * k / size.y,
-                             1.0f - (float)_image->SliceTopOffset * k / size.y, 1.0f };
+            float k = (float)_image->GetPixelsPerUnit() / (float)UILayer::Current()->PixelsPerUnit;
+            float xvs[4] = { 0.0f, (float)_image->GetSliceLeftOffset() * k / size.x,
+                             1.0f - (float)_image->GetSliceRightOffset() * k / size.x, 1.0f };
+            float yvs[4] = { 0.0f, (float)_image->GetSliceBottomOffset() * k / size.y,
+                             1.0f - (float)_image->GetSliceTopOffset() * k / size.y, 1.0f };
 
             const uint32_t indicesSize = 6 * 9;
             auto indices = new uint32_t[indicesSize];
@@ -232,7 +232,7 @@ void UIImage::RebuildInner(RectTransformation& transformation)
         else
         {
             glm::vec2 texCoords[4];
-            if (_image->IsSpriteSheet)
+            if (_image->GetIsSpriteSheet())
             {
                 _image->GetTexCoord(currentImageTileIndex, texCoords);
             }
@@ -250,10 +250,10 @@ void UIImage::RebuildInner(RectTransformation& transformation)
             }
 
             glm::vec3 vertices[4];
-            vertices[0] = matrix * glm::vec4(1.0f - _image->Pivot.x, 1.0f - _image->Pivot.y, 0.0f, 1.0f);
-            vertices[1] = matrix * glm::vec4(1.0f - _image->Pivot.x, 0.0f - _image->Pivot.y, 0.0f, 1.0f);
-            vertices[2] = matrix * glm::vec4(0.0f - _image->Pivot.x, 1.0f - _image->Pivot.y, 0.0f, 1.0f);
-            vertices[3] = matrix * glm::vec4(0.0f - _image->Pivot.x, 0.0f - _image->Pivot.y, 0.0f, 1.0f);
+            vertices[0] = matrix * glm::vec4(1.0f - _image->GetPivot().x, 1.0f - _image->GetPivot().y, 0.0f, 1.0f);
+            vertices[1] = matrix * glm::vec4(1.0f - _image->GetPivot().x, 0.0f - _image->GetPivot().y, 0.0f, 1.0f);
+            vertices[2] = matrix * glm::vec4(0.0f - _image->GetPivot().x, 1.0f - _image->GetPivot().y, 0.0f, 1.0f);
+            vertices[3] = matrix * glm::vec4(0.0f - _image->GetPivot().x, 0.0f - _image->GetPivot().y, 0.0f, 1.0f);
 
             auto indices = new uint32_t[6]{ 0, 1, 2, 1, 2, 3 };
 

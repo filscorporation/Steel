@@ -3,8 +3,14 @@
 #include "Shader.h"
 #include "Steel/Rendering/Core/OpenGLAPI.h"
 #include "Steel/Core/Log.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 #define MAX_TEXTURES 16
+
+void Shader::RegisterType()
+{
+    REGISTER_TYPE(Shader);
+}
 
 Shader::Shader(const char* vertexCode, const char* fragmentCode)
 {

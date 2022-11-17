@@ -284,7 +284,7 @@ Sprite* ResourcesManager::LoadSprite(const char* filePath, bool engineResource)
         return nullptr;
     }
 
-    image->PixelsPerUnit = defaultPixelsPerUnit;
+    image->SetPixelsPerUnit(defaultPixelsPerUnit);
 
     Log::LogDebug("Sprite loaded: {0}, {1}", fullPath, image->ID);
 
@@ -347,7 +347,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const char* filePath, bool loop
     AddResource(data);
 
     for (auto sprite : data->Sprites)
-        sprite->PixelsPerUnit = defaultPixelsPerUnit;
+        sprite->SetPixelsPerUnit(defaultPixelsPerUnit);
 
     Log::LogDebug("Aseprite file loaded: {0}, {1}", fullPath, data->ID);
 

@@ -177,7 +177,7 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
     Application::Context()->Resources->AddResource(texture);
 
     auto image = new Sprite(texture);
-    image->IsTransparent = IsImageTransparent(fullImageData, width, height);
+    image->SetIsTransparent(IsImageTransparent(fullImageData, width, height));
     if (imageIndex == 0)
         image->Path = dataPath;
     else

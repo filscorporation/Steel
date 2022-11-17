@@ -1,5 +1,11 @@
 #include "Texture.h"
 #include "Steel/Rendering/Core/OpenGLAPI.h"
+#include "Steel/Serialization/AttributesRegistration.h"
+
+void Texture::RegisterType()
+{
+    REGISTER_TYPE(Texture);
+}
 
 Texture::Texture()
 {

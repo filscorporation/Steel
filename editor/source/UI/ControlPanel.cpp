@@ -95,7 +95,7 @@ void ControlPanel::CreatePlayButton()
     auto sprite = playButtonSprite;
     playButtonEntity = layer->CreateUIButton(sprite, "Play button", Owner);
     auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(playButtonEntity);
-    buttonRT.SetSize(glm::vec2(sprite->SpriteTexture->GetWidth(), sprite->SpriteTexture->GetHeight()));
+    buttonRT.SetSize(glm::vec2(sprite->GetSpriteTexture()->GetWidth(), sprite->GetSpriteTexture()->GetHeight()));
     buttonRT.SetAnchorMin(glm::vec2(0.5f, 0.5f));
     buttonRT.SetAnchorMax(glm::vec2(0.5f, 0.5f));
     buttonRT.SetAnchoredPosition(glm::vec2(-STYLE_OFFSET - STYLE_BUTTON_H * 2.25f, 0.0f));
@@ -120,7 +120,7 @@ void ControlPanel::CreateStopButton()
     auto sprite = stopButtonSprite;
     stopButtonEntity = layer->CreateUIButton(sprite, "Stop button", Owner);
     auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(stopButtonEntity);
-    buttonRT.SetSize(glm::vec2(sprite->SpriteTexture->GetWidth(), sprite->SpriteTexture->GetHeight()));
+    buttonRT.SetSize(glm::vec2(sprite->GetSpriteTexture()->GetWidth(), sprite->GetSpriteTexture()->GetHeight()));
     buttonRT.SetAnchorMin(glm::vec2(0.5f, 0.5f));
     buttonRT.SetAnchorMax(glm::vec2(0.5f, 0.5f));
     buttonRT.SetAnchoredPosition(glm::vec2(-STYLE_OFFSET - STYLE_BUTTON_H * 2.25f, 0.0f));
@@ -145,7 +145,7 @@ void ControlPanel::CreatePauseButton()
     auto sprite = pauseButtonSprite;
     pauseButtonEntity = layer->CreateUIButton(sprite, "Pause button", Owner);
     auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(pauseButtonEntity);
-    buttonRT.SetSize(glm::vec2(sprite->SpriteTexture->GetWidth(), sprite->SpriteTexture->GetHeight()));
+    buttonRT.SetSize(glm::vec2(sprite->GetSpriteTexture()->GetWidth(), sprite->GetSpriteTexture()->GetHeight()));
     buttonRT.SetAnchorMin(glm::vec2(0.5f, 0.5f));
     buttonRT.SetAnchorMax(glm::vec2(0.5f, 0.5f));
     buttonRT.SetAnchoredPosition(glm::vec2(0.0f, 0.0f));
@@ -170,7 +170,7 @@ void ControlPanel::CreateStepButton()
     auto sprite = stepButtonSprite;
     stepButtonEntity = layer->CreateUIButton(sprite, "Step button", Owner);
     auto& buttonRT = entitiesRegistry->GetComponent<RectTransformation>(stepButtonEntity);
-    buttonRT.SetSize(glm::vec2(sprite->SpriteTexture->GetWidth(), sprite->SpriteTexture->GetHeight()));
+    buttonRT.SetSize(glm::vec2(sprite->GetSpriteTexture()->GetWidth(), sprite->GetSpriteTexture()->GetHeight()));
     buttonRT.SetAnchorMin(glm::vec2(0.5f, 0.5f));
     buttonRT.SetAnchorMax(glm::vec2(0.5f, 0.5f));
     buttonRT.SetAnchoredPosition(glm::vec2(STYLE_OFFSET + STYLE_BUTTON_H * 2.25f, 0.0f));
