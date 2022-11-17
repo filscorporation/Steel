@@ -50,7 +50,6 @@ public:
 
 private:
     FontData* _data;
-    const char* name;
     std::unordered_map<uint32_t, CharactersAtlas> characters;
 
     void InitData(void* data);

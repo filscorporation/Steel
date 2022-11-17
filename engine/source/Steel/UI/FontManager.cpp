@@ -50,7 +50,6 @@ Font* FontManager::FontFromPath(const char* fontPath)
     }
 
     auto font = new Font();
-    font->name = fontPath;
 
     font->InitData(face);
 
