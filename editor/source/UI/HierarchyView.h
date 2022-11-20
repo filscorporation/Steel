@@ -58,6 +58,7 @@ public:
 
     void GetSelectedEntities(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& selectedEntities);
     void FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry);
+    void DeselectAll(EntitiesRegistry* entitiesRegistry);
 
 private:
     EntityID _parentEntity = NULL_ENTITY;
@@ -69,4 +70,5 @@ private:
 
     void DeleteSelectedEntities();
     void CreateNewEntityInHierarchy();
+    void OnElementSelected(EntitiesRegistry* entitiesRegistry);
 };

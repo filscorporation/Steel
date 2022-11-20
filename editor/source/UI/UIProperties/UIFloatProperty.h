@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ComponentNodeWrapper.h"
+#include "TypeNodeWrapper.h"
 
 #include <Steel/EntityComponentSystem/EntitiesRegistry.h>
 #include <Steel/EntityComponentSystem/Entity.h>
@@ -11,6 +11,6 @@
 class UIFloatProperty
 {
 public:
-    static EntityID Create(EntitiesRegistry* entitiesRegistry, UILayer* layer, ComponentNodeWrapper* componentNodeWrapper,
+    static EntityID Create(EntitiesRegistry* entitiesRegistry, UILayer* layer, TypeNodeWrapper* typeNodeWrapper,
                            const TypeInfo* typeInfo, const AttributeInfo& attributeInfo, float& x, float& y, EntityID parent);
 };

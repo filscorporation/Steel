@@ -18,7 +18,7 @@ set(SOURCE_FILES source/main.cpp source/EditorCore/EditorApplication.cpp source/
         source/EditorCore/EditorSceneRenderer.cpp source/EditorCore/EditorSceneRenderer.h source/EditorCore/EditorTypeSystem.cpp
         source/EditorCore/EditorTypeSystem.h source/UI/PropertiesView.cpp source/UI/PropertiesView.h
         source/UI/UIProperties/UIIntegerProperty.cpp source/UI/UIProperties/UIIntegerProperty.h source/UI/UIProperties/UIFloatProperty.cpp
-        source/UI/UIProperties/UIFloatProperty.h source/UI/UIProperties/ComponentNodeWrapper.h source/UI/ProjectView.cpp
+        source/UI/UIProperties/UIFloatProperty.h source/UI/UIProperties/TypeNodeWrapper.h source/UI/ProjectView.cpp
         source/UI/ProjectView.h source/UI/ProjectViewElement.cpp source/UI/ProjectViewElement.h)
 
 # steel

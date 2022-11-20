@@ -31,18 +31,20 @@ public:
     void GetSelectedFiles(EntitiesRegistry* entitiesRegistry, std::vector<std::string>& selectedFiles);
     void FocusOnFile(EntitiesRegistry* entitiesRegistry, const std::string& filePath);
     void Clear(EntitiesRegistry* entitiesRegistry);
+    void DeselectAll(EntitiesRegistry* entitiesRegistry);
     ProjectViewNode CreateElement(EntitiesRegistry* entitiesRegistry, const std::filesystem::path& filePath, int order) const;
 
     void ElementClicked(EntityID elementID);
 
 private:
+    void RebuildAll(EntitiesRegistry* entitiesRegistry);
+    bool TryDoubleClick(const ProjectViewNode& node);
+    void OnElementSelected(EntitiesRegistry* entitiesRegistry);
+
     std::string currentPathString;
     std::string targetPathString;
     float lastClickTime = -1.0f;
 
     EntityID _parentEntity = NULL_ENTITY;
     std::unordered_map<std::string, ProjectViewNode>* nodes = nullptr;
-
-    void RebuildAll(EntitiesRegistry* entitiesRegistry);
-    bool TryDoubleClick(const ProjectViewNode& node);
 };

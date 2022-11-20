@@ -51,7 +51,7 @@ void ResourcesManager::SaveResources()
 
 std::string ResourcesManager::DataFilePath(const std::string& fileFullPath)
 {
-    return fileFullPath + ".data";
+    return fileFullPath + RESOURCE_DATA_EXTENSION;
 }
 
 void ResourcesManager::LoadResources()
@@ -198,6 +198,24 @@ void ResourcesManager::AddResource(Resource* resource)
     }
 
     resources[(int)resource->Type][resource->ID] = resource;
+}
+
+Resource* ResourcesManager::GetResource(const char* filePath)
+{
+    // TODO: replace with path to resource map (use absolute_path)
+
+    for (auto& resourceStorage : resources)
+    {
+        for (auto resource : resourceStorage)
+        {
+            if (resource.second->FullPath == filePath)
+            {
+                return resource.second;
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 Resource* ResourcesManager::GetResource(ResourceTypes::ResourceType type, ResourceID resourceID)

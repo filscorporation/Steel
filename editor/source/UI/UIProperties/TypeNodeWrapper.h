@@ -4,9 +4,9 @@
 
 #include <yaml-cpp/node/node.h>
 
-struct ComponentNodeWrapper
+struct TypeNodeWrapper
 {
     YAML::Node Node;
-    TypeID ComponentTypeID;
+    TypeID DataTypeID;
     bool IsDirty;
 };

@@ -19,6 +19,7 @@
 #define ENGINE_RESOURCES_PATH "../../../engine/resources/"
 #define RESOURCES_PATH "../../resources/"
 #endif
+#define RESOURCE_DATA_EXTENSION ".data"
 
 class ResourcesManager
 {
@@ -32,6 +33,7 @@ public:
     void LoadResources();
     void LoadDefaultResources();
 
+    Resource* GetResource(const char* filePath);
     Resource* GetResource(ResourceTypes::ResourceType type, ResourceID resourceID);
     void AddResource(Resource* resource);
     bool ResourceExists(ResourceTypes::ResourceType type, ResourceID resourceID);

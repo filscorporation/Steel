@@ -4,8 +4,8 @@
 #include <Steel.h>
 #include <Steel/Common/StringUtils.h>
 
-EntityID UIFloatProperty::Create(EntitiesRegistry* entitiesRegistry, UILayer* layer, ComponentNodeWrapper* componentNodeWrapper,
-                                   const TypeInfo* typeInfo, const AttributeInfo& attributeInfo, float& x, float& y, EntityID parent)
+EntityID UIFloatProperty::Create(EntitiesRegistry* entitiesRegistry, UILayer* layer, TypeNodeWrapper* typeNodeWrapper,
+                                 const TypeInfo* typeInfo, const AttributeInfo& attributeInfo, float& x, float& y, EntityID parent)
 {
     EntityID entity = layer->CreateUIElement("property", parent);
 
@@ -42,16 +42,16 @@ EntityID UIFloatProperty::Create(EntitiesRegistry* entitiesRegistry, UILayer* la
         field.SetTextType(TextTypes::DecimalNumber);
 
         std::string attributeName = attributeInfo.Name();
-        field.OnChangedCallback = [attributeName, componentNodeWrapper](EntityID entityID, const std::string& line)
+        field.OnChangedCallback = [attributeName, typeNodeWrapper](EntityID entityID, const std::string& line)
         {
-            componentNodeWrapper->Node[attributeName] = StringUtils::FromString<float>(line);
-            componentNodeWrapper->IsDirty = true;
+            typeNodeWrapper->Node[attributeName] = StringUtils::FromString<float>(line);
+            typeNodeWrapper->IsDirty = true;
         };
 
         auto& fieldText = entitiesRegistry->GetComponent<UIText>(field.GetTargetText());
         fieldText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         fieldText.SetTextSize(16);
-        std::string valueAsString = StringUtils::ToString(componentNodeWrapper->Node[attributeInfo.Name()].as<float>());
+        std::string valueAsString = StringUtils::ToString(typeNodeWrapper->Node[attributeInfo.Name()].as<float>());
         fieldText.SetText(valueAsString);
 
         auto& textRT = entitiesRegistry->GetComponent<RectTransformation>(fieldEntity);

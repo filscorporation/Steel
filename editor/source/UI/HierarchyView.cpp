@@ -4,6 +4,7 @@
 #include "../EditorCore/EditorBuilder.h"
 #include "UIEditorTab.h"
 #include "SceneView.h"
+#include "ProjectView.h"
 
 #include <Steel.h>
 #include <Steel/Serialization/AttributesRegistration.h>
@@ -208,9 +209,9 @@ EntityID HierarchyView::CreateNodeUIElement(EntitiesRegistry* entitiesRegistry, 
 
 void HierarchyView::ElementClicked(EntityID elementID)
 {
+    auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (lastNodes != nullptr)
     {
-        auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
         bool additiveSelect = Input::IsKeyPressed(KeyCodes::LeftControl) || Input::IsKeyPressed(KeyCodes::RightControl);
 
         for (auto& node : *lastNodes)
@@ -220,7 +221,7 @@ void HierarchyView::ElementClicked(EntityID elementID)
                 if (!(node.second.Flags & NodeFlags::Selected))
                 {
                     node.second.Flags = node.second.Flags | NodeFlags::Selected;
-                    registry->GetComponent<HierarchyElement>(node.second.UIElementEntity).SetSelectedNodeStyle(registry);
+                    entitiesRegistry->GetComponent<HierarchyElement>(node.second.UIElementEntity).SetSelectedNodeStyle(entitiesRegistry);
                 }
             }
             else
@@ -229,11 +230,13 @@ void HierarchyView::ElementClicked(EntityID elementID)
                 {
                     // Deselect all others nodes
                     node.second.Flags = node.second.Flags & ~NodeFlags::Selected;
-                    registry->GetComponent<HierarchyElement>(node.second.UIElementEntity).SetDefaultNodeStyle(registry);
+                    entitiesRegistry->GetComponent<HierarchyElement>(node.second.UIElementEntity).SetDefaultNodeStyle(entitiesRegistry);
                 }
             }
         }
     }
+
+    OnElementSelected(entitiesRegistry);
 }
 
 void HierarchyView::ElementExpanded(EntityID elementID)
@@ -256,11 +259,14 @@ void HierarchyView::ElementExpanded(EntityID elementID)
 
 void HierarchyView::GetSelectedEntities(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& selectedEntities)
 {
-    for (auto& node : *lastNodes)
+    if (lastNodes != nullptr)
     {
-        if (node.second.Flags & NodeFlags::Selected)
+        for (auto& node: *lastNodes)
         {
-            selectedEntities.push_back(node.first);
+            if (node.second.Flags & NodeFlags::Selected)
+            {
+                selectedEntities.push_back(node.first);
+            }
         }
     }
 }
@@ -277,6 +283,21 @@ void HierarchyView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
         {
             if (sceneViewIterator[i].IsAlive())
                 sceneViewIterator[i].FocusCameraOnEntity(entitiesRegistry, selectedEntities);
+        }
+    }
+}
+
+void HierarchyView::DeselectAll(EntitiesRegistry* entitiesRegistry)
+{
+    if (lastNodes != nullptr)
+    {
+        for (auto& node : *lastNodes)
+        {
+            if (node.second.Flags & NodeFlags::Selected)
+            {
+                node.second.Flags = node.second.Flags & ~NodeFlags::Selected;
+                entitiesRegistry->GetComponent<HierarchyElement>(node.second.UIElementEntity).SetDefaultNodeStyle(entitiesRegistry);
+            }
         }
     }
 }
@@ -320,4 +341,17 @@ void HierarchyView::CreateNewEntityInHierarchy()
         appScene->CreateEntity("New entity", NULL_ENTITY);
     }
     editor->SwitchContext(editor->EditorContext);
+}
+
+void HierarchyView::OnElementSelected(EntitiesRegistry* entitiesRegistry)
+{
+    // TODO: replace with single selection system
+    auto projectViewIterator = entitiesRegistry->GetComponentIterator<ProjectView>();
+    for (int i = 0; i < projectViewIterator.Size(); ++i)
+    {
+        if (projectViewIterator[i].IsAlive())
+        {
+            projectViewIterator[i].DeselectAll(entitiesRegistry);
+        }
+    }
 }

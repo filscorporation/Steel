@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIProperties/ComponentNodeWrapper.h"
+#include "UIProperties/TypeNodeWrapper.h"
 
 #include <Steel/UI/UIComponent.h>
 #include <Steel/UI/UILayer.h>
@@ -22,14 +22,19 @@ public:
     void Init(EntitiesRegistry* entitiesRegistry);
     void Update(EntitiesRegistry* entitiesRegistry);
 
-    void DrawProperties(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& entities);
+    void DrawSelected(EntitiesRegistry* entitiesRegistry);
+    void DrawEntityProperties(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& entities);
+    void DrawResourceProperties(EntitiesRegistry* entitiesRegistry, const std::vector<std::string>& files);
     void ClearProperties(EntitiesRegistry* entitiesRegistry);
 
 private:
+    void DrawProperties(EntitiesRegistry* entitiesRegistry, const std::vector<Serializable*>& data);
     EntityID CreateSimpleStringElement(EntitiesRegistry* entitiesRegistry, UILayer* layer, const std::string& text, const std::string& name, float& x, float& y);
 
     bool isDirty = true;
     std::vector<EntityID> uiElementsEntities;
-    std::vector<ComponentNodeWrapper*> componentsNodes;
+    std::vector<TypeNodeWrapper*> typesNodes;
+
     EntityID lastEntityID = NULL_ENTITY;
+    std::string lastFilePath;
 };

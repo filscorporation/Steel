@@ -3,6 +3,7 @@
 #include "../EditorCore/EditorApplication.h"
 #include "UIProperties/UIIntegerProperty.h"
 #include "UIProperties/UIFloatProperty.h"
+#include "ProjectView.h"
 
 #include <Steel.h>
 #include <Steel/Common/StringUtils.h>
@@ -13,7 +14,7 @@
     EntityID elementEntity = CreateSimpleStringElement( \
             entitiesRegistry, \
             layer, \
-            StringUtils::ToString(componentNodeWrapper->Node[attribute.Name()].as<m_type>()), \
+            StringUtils::ToString(typeNodeWrapper->Node[attribute.Name()].as<m_type>()), \
             attribute.Label(), \
             x, \
             y \
@@ -35,6 +36,11 @@ void PropertiesView::Init(EntitiesRegistry* entitiesRegistry)
 
 void PropertiesView::Update(EntitiesRegistry* entitiesRegistry)
 {
+    DrawSelected(entitiesRegistry);
+}
+
+void PropertiesView::DrawSelected(EntitiesRegistry* entitiesRegistry)
+{
     std::vector<EntityID> selectedEntities;
     auto hierarchyViewIterator = entitiesRegistry->GetComponentIterator<HierarchyView>();
     for (int i = 0; i < hierarchyViewIterator.Size(); ++i)
@@ -42,13 +48,31 @@ void PropertiesView::Update(EntitiesRegistry* entitiesRegistry)
         if (hierarchyViewIterator[i].IsAlive())
         {
             hierarchyViewIterator[i].GetSelectedEntities(entitiesRegistry, selectedEntities);
-            DrawProperties(entitiesRegistry, selectedEntities);
-            break;
+            if (!selectedEntities.empty())
+            {
+                DrawEntityProperties(entitiesRegistry, selectedEntities);
+                return;
+            }
+        }
+    }
+
+    std::vector<std::string> selectedFiles;
+    auto projectViewIterator = entitiesRegistry->GetComponentIterator<ProjectView>();
+    for (int i = 0; i < projectViewIterator.Size(); ++i)
+    {
+        if (projectViewIterator[i].IsAlive())
+        {
+            projectViewIterator[i].GetSelectedFiles(entitiesRegistry, selectedFiles);
+            if (!selectedFiles.empty())
+            {
+                DrawResourceProperties(entitiesRegistry, selectedFiles);
+                return;
+            }
         }
     }
 }
 
-void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& entities)
+void PropertiesView::DrawEntityProperties(EntitiesRegistry* entitiesRegistry, std::vector<EntityID>& entities)
 {
     if (entities.size() != 1)
         return;
@@ -60,8 +84,70 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
         ClearProperties(entitiesRegistry);
         isDirty = true;
         lastEntityID = entityID;
+        lastFilePath = "";
     }
 
+    auto editor = (EditorApplication*)Application::Instance;
+    auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
+
+    std::vector<RawComponentData> rawData;
+    appScene->GetEntitiesRegistry()->GetAllComponentsForEntity(entityID, rawData);
+
+    std::vector<Serializable*> data;
+    for (auto rawDataElement : rawData)
+    {
+        auto object = static_cast<Serializable*>(rawDataElement.Data);
+        data.emplace_back(object);
+    }
+
+    DrawProperties(entitiesRegistry, data);
+}
+
+void PropertiesView::DrawResourceProperties(EntitiesRegistry* entitiesRegistry, const std::vector<std::string>& files)
+{
+    if (files.size() != 1)
+        return;
+
+    auto& filePath = files[0];
+
+    if (filePath != lastFilePath)
+    {
+        ClearProperties(entitiesRegistry);
+        isDirty = true;
+        lastFilePath = filePath;
+        lastEntityID = NULL_ENTITY;
+    }
+
+    auto editor = (EditorApplication*)Application::Instance;
+    auto appResources = editor->GetAppContext()->Resources;
+
+    Resource* resource = appResources->GetResource(filePath.c_str());
+
+    std::vector<Serializable*> data;
+    data.emplace_back(resource);
+
+    DrawProperties(entitiesRegistry, data);
+}
+
+void PropertiesView::ClearProperties(EntitiesRegistry* entitiesRegistry)
+{
+    for (auto entityID : uiElementsEntities)
+    {
+        entitiesRegistry->DeleteEntity(entityID);
+    }
+    uiElementsEntities.clear();
+
+    for (auto nodeWrapper : typesNodes)
+    {
+        delete nodeWrapper;
+    }
+    typesNodes.clear();
+
+    entitiesRegistry->GetComponent<RectTransformation>(Owner).SetAnchoredPosition(glm::vec2(0.0f, 0.0f)); // or maybe remember
+}
+
+void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, const std::vector<Serializable*>& data)
+{
     auto layer = Application::Context()->Scenes->GetActiveScene()->GetUILayer();
     auto editor = (EditorApplication*)Application::Instance;
     auto appScene = editor->GetAppContext()->Scenes->GetActiveScene();
@@ -72,18 +158,15 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
 
     float y = -Y_OFFSET;
 
-    std::vector<RawComponentData> rawData;
-    appScene->GetEntitiesRegistry()->GetAllComponentsForEntity(entityID, rawData);
-
     // TODO: compare with previous
     if (!isDirty)
     {
         editor->SwitchContext(editor->AppContext);
 
         // Apply data changed by properties
-        for (auto& componentNodeWrapper : componentsNodes)
+        for (auto& typeNodeWrapper : typesNodes)
         {
-            if (componentNodeWrapper->IsDirty)
+            if (typeNodeWrapper->IsDirty)
             {
                 // TODO: if we set dirty here - this will rebuild UI stopping all the animations and editing
                 // TODO: if not - fields changing other fields will get updated in UI
@@ -93,27 +176,26 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                 // TODO: keep in mind that between PropertyView catches event and this place some fields can be modified,
                 // TODO: so applying data from node to object here can overwrite some external changes
 
-                auto typeID = componentNodeWrapper->ComponentTypeID;
+                auto typeID = typeNodeWrapper->DataTypeID;
 
                 // TODO: linear search is bad
-                int rawComponentIndex = -1;
-                for (int i = 0; i < rawData.size(); i++)
+                int dataTypeIndex = -1;
+                for (int i = 0; i < data.size(); i++)
                 {
-                    if (rawData[i].DataTypeID == typeID)
+                    if (data[i]->GetTypeInfo()->ID == typeID)
                     {
-                        rawComponentIndex = i;
+                        dataTypeIndex = i;
                         break;
                     }
                 }
 
-                if (rawComponentIndex == -1)
+                if (dataTypeIndex == -1)
                 {
-                    Log::LogError("Component of type {0} was changed by view, but was not found in deserialized data", typeID);
+                    Log::LogError("Data of type {0} was changed by view, but was not found in deserialized data", typeID);
                     continue;
                 }
 
-                auto object = static_cast<Serializable*>(rawData[rawComponentIndex].Data);
-                SerializationManager::Deserialize(typeID, object, componentNodeWrapper->Node, context);
+                SerializationManager::Deserialize(typeID, data[dataTypeIndex], typeNodeWrapper->Node, context);
             }
         }
 
@@ -126,18 +208,20 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
 
     ClearProperties(entitiesRegistry);
 
-    for (auto& dataPair : rawData)
+    for (auto& object : data)
     {
-        auto object = static_cast<Serializable*>(dataPair.Data);
+        if (object == nullptr)
+            continue;
+
         auto typeInfo = object->GetTypeInfo();
 
         // Can skip some types (leave now for test)
         //if (typeInfo->ID == HierarchyNode::GetTypeInfo()->ID) continue;
 
-        auto componentNodeWrapper = new ComponentNodeWrapper();
-        componentNodeWrapper->ComponentTypeID = typeInfo->ID;
-        componentsNodes.push_back(componentNodeWrapper);
-        SerializationManager::Serialize(typeInfo->ID, object, componentNodeWrapper->Node, context);
+        auto typeNodeWrapper = new TypeNodeWrapper();
+        typeNodeWrapper->DataTypeID = typeInfo->ID;
+        typesNodes.push_back(typeNodeWrapper);
+        SerializationManager::Serialize(typeInfo->ID, object, typeNodeWrapper->Node, context);
 
         float x = X_OFFSET;
 
@@ -187,7 +271,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                     EntityID elementEntity = UIIntegerProperty::Create(
                             entitiesRegistry,
                             layer,
-                            componentNodeWrapper,
+                            typeNodeWrapper,
                             typeInfo,
                             attribute,
                             x,
@@ -213,7 +297,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                     EntityID elementEntity = UIFloatProperty::Create(
                             entitiesRegistry,
                             layer,
-                            componentNodeWrapper,
+                            typeNodeWrapper,
                             typeInfo,
                             attribute,
                             x,
@@ -237,7 +321,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                     EntityID elementEntity = CreateSimpleStringElement(
                             entitiesRegistry,
                             layer,
-                            componentNodeWrapper->Node[attribute.Name()].as<std::string>(),
+                            typeNodeWrapper->Node[attribute.Name()].as<std::string>(),
                             attribute.Name(),
                             x,
                             y
@@ -251,7 +335,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                     EntityID elementEntity = CreateSimpleStringElement(
                             entitiesRegistry,
                             layer,
-                            "<enum value " + StringUtils::ToString(componentNodeWrapper->Node[attribute.Name()].as<int>()) + ">",
+                            "<enum value " + StringUtils::ToString(typeNodeWrapper->Node[attribute.Name()].as<int>()) + ">",
                             attribute.Name(),
                             x,
                             y
@@ -269,7 +353,7 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
                     EntityID elementEntity = CreateSimpleStringElement(
                             entitiesRegistry,
                             layer,
-                            "<list of size " + StringUtils::ToString(componentNodeWrapper->Node[attribute.Name()].size()) + ">",
+                            "<list of size " + StringUtils::ToString(typeNodeWrapper->Node[attribute.Name()].size()) + ">",
                             attribute.Name(),
                             x,
                             y
@@ -299,23 +383,6 @@ void PropertiesView::DrawProperties(EntitiesRegistry* entitiesRegistry, std::vec
     }
 
     entitiesRegistry->GetComponent<RectTransformation>(Owner).SetSize(glm::vec2(0.0f, -y));
-}
-
-void PropertiesView::ClearProperties(EntitiesRegistry* entitiesRegistry)
-{
-    for (auto entityID : uiElementsEntities)
-    {
-        entitiesRegistry->DeleteEntity(entityID);
-    }
-    uiElementsEntities.clear();
-
-    for (auto nodeWrapper : componentsNodes)
-    {
-        delete nodeWrapper;
-    }
-    componentsNodes.clear();
-
-    entitiesRegistry->GetComponent<RectTransformation>(Owner).SetAnchoredPosition(glm::vec2(0.0f, 0.0f)); // or maybe remember
 }
 
 EntityID PropertiesView::CreateSimpleStringElement(

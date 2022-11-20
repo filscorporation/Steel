@@ -4,7 +4,7 @@
 #include <Steel.h>
 #include <Steel/Common/StringUtils.h>
 
-EntityID UIIntegerProperty::Create(EntitiesRegistry* entitiesRegistry, UILayer* layer, ComponentNodeWrapper* componentNodeWrapper,
+EntityID UIIntegerProperty::Create(EntitiesRegistry* entitiesRegistry, UILayer* layer, TypeNodeWrapper* typeNodeWrapper,
                                    const TypeInfo* typeInfo, const AttributeInfo& attributeInfo, float& x, float& y, EntityID parent)
 {
     EntityID entity = layer->CreateUIElement("property", parent);
@@ -42,15 +42,15 @@ EntityID UIIntegerProperty::Create(EntitiesRegistry* entitiesRegistry, UILayer* 
         field.SetTextType(TextTypes::IntegerNumber);
 
         std::string attributeName = attributeInfo.Name();
-        field.OnChangedCallback = [attributeName, componentNodeWrapper](EntityID entityID, const std::string& line)
+        field.OnChangedCallback = [attributeName, typeNodeWrapper](EntityID entityID, const std::string& line)
         {
-            componentNodeWrapper->Node[attributeName] = StringUtils::FromString<int>(line);
-            componentNodeWrapper->IsDirty = true;
+            typeNodeWrapper->Node[attributeName] = StringUtils::FromString<int>(line);
+            typeNodeWrapper->IsDirty = true;
         };
 
         auto& fieldText = entitiesRegistry->GetComponent<UIText>(field.GetTargetText());
         fieldText.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        std::string valueAsString = StringUtils::ToString(componentNodeWrapper->Node[attributeInfo.Name()].as<int>());
+        std::string valueAsString = StringUtils::ToString(typeNodeWrapper->Node[attributeInfo.Name()].as<int>());
         fieldText.SetText(valueAsString);
 
         auto& textRT = entitiesRegistry->GetComponent<RectTransformation>(fieldEntity);

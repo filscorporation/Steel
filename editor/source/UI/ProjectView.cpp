@@ -2,6 +2,7 @@
 #include "UIEditorTab.h"
 #include "ProjectViewElement.h"
 #include "../EditorCore/EditorBuilder.h"
+#include "HierarchyView.h"
 
 #include <Steel.h>
 #include <Steel/Serialization/AttributesRegistration.h>
@@ -58,11 +59,14 @@ void ProjectView::Update(EntitiesRegistry* entitiesRegistry)
 
 void ProjectView::GetSelectedFiles(EntitiesRegistry* entitiesRegistry, std::vector<std::string>& selectedFiles)
 {
-    for (auto& node : *nodes)
+    if (nodes != nullptr)
     {
-        if (node.second.IsSelected)
+        for (auto& node: *nodes)
         {
-            selectedFiles.push_back(node.second.PathString);
+            if (node.second.IsSelected)
+            {
+                selectedFiles.push_back(node.second.PathString);
+            }
         }
     }
 }
@@ -90,6 +94,18 @@ void ProjectView::Clear(EntitiesRegistry* entitiesRegistry)
     nodes = nullptr;
 }
 
+void ProjectView::DeselectAll(EntitiesRegistry* entitiesRegistry)
+{
+    if (nodes != nullptr)
+    {
+        for (auto& node : *nodes)
+        {
+            node.second.IsSelected = false;
+            entitiesRegistry->GetComponent<ProjectViewElement>(node.second.UIElementEntity).SetDefaultNodeStyle(entitiesRegistry);
+        }
+    }
+}
+
 void ProjectView::RebuildAll(EntitiesRegistry* entitiesRegistry)
 {
     Clear(entitiesRegistry);
@@ -105,6 +121,9 @@ void ProjectView::RebuildAll(EntitiesRegistry* entitiesRegistry)
     nodes = new std::unordered_map<std::string, ProjectViewNode>();
     for (std::filesystem::directory_iterator i(currentPathString), end; i != end; ++i)
     {
+        if (i->path().extension() == RESOURCE_DATA_EXTENSION)
+            continue;
+
         (*nodes)[i->path().filename().u8string()] = CreateElement(entitiesRegistry, i->path(), (int)(*nodes).size());
     }
 
@@ -139,7 +158,6 @@ void ProjectView::ElementClicked(EntityID elementID)
 
     if (nodes != nullptr)
     {
-        auto registry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
         bool additiveSelect = Input::IsKeyPressed(KeyCodes::LeftControl) || Input::IsKeyPressed(KeyCodes::RightControl);
 
         for (auto& node : *nodes)
@@ -149,7 +167,7 @@ void ProjectView::ElementClicked(EntityID elementID)
                 if (!node.second.IsSelected)
                 {
                     node.second.IsSelected = true;
-                    registry->GetComponent<ProjectViewElement>(node.second.UIElementEntity).SetSelectedNodeStyle(registry);
+                    entitiesRegistry->GetComponent<ProjectViewElement>(node.second.UIElementEntity).SetSelectedNodeStyle(entitiesRegistry);
                 }
 
                 if (TryDoubleClick(node.second))
@@ -161,11 +179,13 @@ void ProjectView::ElementClicked(EntityID elementID)
                 {
                     // Deselect all others nodes
                     node.second.IsSelected = false;
-                    registry->GetComponent<ProjectViewElement>(node.second.UIElementEntity).SetDefaultNodeStyle(registry);
+                    entitiesRegistry->GetComponent<ProjectViewElement>(node.second.UIElementEntity).SetDefaultNodeStyle(entitiesRegistry);
                 }
             }
         }
     }
+
+    OnElementSelected(entitiesRegistry);
 }
 
 bool ProjectView::TryDoubleClick(const ProjectViewNode& node)
@@ -183,4 +203,17 @@ bool ProjectView::TryDoubleClick(const ProjectViewNode& node)
     lastClickTime = currentClickTime;
 
     return result;
+}
+
+void ProjectView::OnElementSelected(EntitiesRegistry* entitiesRegistry)
+{
+    // TODO: replace with single selection system
+    auto hierarchyViewIterator = entitiesRegistry->GetComponentIterator<HierarchyView>();
+    for (int i = 0; i < hierarchyViewIterator.Size(); ++i)
+    {
+        if (hierarchyViewIterator[i].IsAlive())
+        {
+            hierarchyViewIterator[i].DeselectAll(entitiesRegistry);
+        }
+    }
 }
