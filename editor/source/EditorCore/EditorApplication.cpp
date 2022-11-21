@@ -75,6 +75,7 @@ void EditorApplication::Init(ApplicationSettings settings)
 
     IsInitialized = true;
 
+    _selectionController = new SelectionController();
     EditorBuilder::BuildLayout(editorScene);
 }
 
@@ -123,6 +124,8 @@ void EditorApplication::RunUpdate()
 
 void EditorApplication::Terminate()
 {
+    delete _selectionController;
+
     delete OpenedSceneFramebuffer;
     delete ApplicationFramebuffer;
 
@@ -269,4 +272,9 @@ void EditorApplication::CreateEditorViewCamera()
 bool EditorApplication::IsRunning()
 {
     return IsRunningInternal && state == EditorStates::Playing;
+}
+
+SelectionController* EditorApplication::GetSelectionController() const
+{
+    return _selectionController;
 }

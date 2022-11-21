@@ -2,7 +2,7 @@
 #include "UIEditorTab.h"
 #include "ProjectViewElement.h"
 #include "../EditorCore/EditorBuilder.h"
-#include "HierarchyView.h"
+#include "../EditorCore/EditorApplication.h"
 
 #include <Steel.h>
 #include <Steel/Serialization/AttributesRegistration.h>
@@ -96,6 +96,9 @@ void ProjectView::Clear(EntitiesRegistry* entitiesRegistry)
 
 void ProjectView::DeselectAll(EntitiesRegistry* entitiesRegistry)
 {
+    if (_lockDeselectAll)
+        return;
+
     if (nodes != nullptr)
     {
         for (auto& node : *nodes)
@@ -207,13 +210,8 @@ bool ProjectView::TryDoubleClick(const ProjectViewNode& node)
 
 void ProjectView::OnElementSelected(EntitiesRegistry* entitiesRegistry)
 {
-    // TODO: replace with single selection system
-    auto hierarchyViewIterator = entitiesRegistry->GetComponentIterator<HierarchyView>();
-    for (int i = 0; i < hierarchyViewIterator.Size(); ++i)
-    {
-        if (hierarchyViewIterator[i].IsAlive())
-        {
-            hierarchyViewIterator[i].DeselectAll(entitiesRegistry);
-        }
-    }
+    _lockDeselectAll = true;
+    auto editor = (EditorApplication*)Application::Instance;
+    editor->GetSelectionController()->ClearSelection(entitiesRegistry);
+    _lockDeselectAll = false;
 }

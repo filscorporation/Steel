@@ -4,7 +4,6 @@
 #include "../EditorCore/EditorBuilder.h"
 #include "UIEditorTab.h"
 #include "SceneView.h"
-#include "ProjectView.h"
 
 #include <Steel.h>
 #include <Steel/Serialization/AttributesRegistration.h>
@@ -289,6 +288,9 @@ void HierarchyView::FocusOnSelectedEntities(EntitiesRegistry* entitiesRegistry)
 
 void HierarchyView::DeselectAll(EntitiesRegistry* entitiesRegistry)
 {
+    if (_lockDeselectAll)
+        return;
+
     if (lastNodes != nullptr)
     {
         for (auto& node : *lastNodes)
@@ -345,13 +347,8 @@ void HierarchyView::CreateNewEntityInHierarchy()
 
 void HierarchyView::OnElementSelected(EntitiesRegistry* entitiesRegistry)
 {
-    // TODO: replace with single selection system
-    auto projectViewIterator = entitiesRegistry->GetComponentIterator<ProjectView>();
-    for (int i = 0; i < projectViewIterator.Size(); ++i)
-    {
-        if (projectViewIterator[i].IsAlive())
-        {
-            projectViewIterator[i].DeselectAll(entitiesRegistry);
-        }
-    }
+    _lockDeselectAll = true;
+    auto editor = (EditorApplication*)Application::Instance;
+    editor->GetSelectionController()->ClearSelection(entitiesRegistry);
+    _lockDeselectAll = false;
 }

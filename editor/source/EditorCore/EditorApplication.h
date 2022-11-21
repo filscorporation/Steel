@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../UI/SelectionController.h"
+
 #include <Steel.h>
 #include <Steel/Scene/SceneBackup.h>
 
@@ -35,12 +37,15 @@ public:
     ApplicationContext* EditorContext = nullptr;
     EntityID EditorViewCameraEntity = NULL_ENTITY;
 
+    SelectionController* GetSelectionController() const;
+
 private:
     void Terminate() override;
     void CreateEditorViewCamera();
 
     EditorStates::EditorState state = EditorStates::Stopped;
     SceneBackup* sceneBackup = nullptr;
+    SelectionController* _selectionController = nullptr;
 
     friend class AppView;
     friend class ControlPanel;

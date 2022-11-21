@@ -47,4 +47,5 @@ private:
 
     EntityID _parentEntity = NULL_ENTITY;
     std::unordered_map<std::string, ProjectViewNode>* nodes = nullptr;
+    bool _lockDeselectAll = false;
 };

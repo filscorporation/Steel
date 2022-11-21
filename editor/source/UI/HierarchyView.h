@@ -61,9 +61,6 @@ public:
     void DeselectAll(EntitiesRegistry* entitiesRegistry);
 
 private:
-    EntityID _parentEntity = NULL_ENTITY;
-    std::unordered_map<EntityID, HierarchyViewNode>* lastNodes = nullptr;
-
     void GetNodesData(EntitiesRegistry* sceneRegistry, HierarchyParent& parent, std::unordered_map<EntityID, HierarchyViewNode>* nodes);
     EntityID CreateNodeUIElement(EntitiesRegistry* entitiesRegistry, EntitiesRegistry* sceneRegistry, UILayer* layer,
                                         EntityID parentEntity, EntityID nodeEntity, const HierarchyViewNode& node);
@@ -71,4 +68,8 @@ private:
     void DeleteSelectedEntities();
     void CreateNewEntityInHierarchy();
     void OnElementSelected(EntitiesRegistry* entitiesRegistry);
+
+    EntityID _parentEntity = NULL_ENTITY;
+    std::unordered_map<EntityID, HierarchyViewNode>* lastNodes = nullptr;
+    bool _lockDeselectAll = false;
 };
