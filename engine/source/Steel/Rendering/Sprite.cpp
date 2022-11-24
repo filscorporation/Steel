@@ -108,7 +108,7 @@ int Sprite::TilesCount() const
 
 std::string Sprite::GetName() const
 {
-    std::string path = std::string(Path);
+    std::string path = std::string(FullPath);
     auto pos = path.find_last_of('/');
     if (pos == std::string::npos)
         pos = path.find_last_of('\\');

@@ -81,7 +81,8 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
 
     context->Resources = new ResourcesManager();
     context->Resources->SetDefaultPixelsPerUnit(settings.DefaultPixelsPerUnit);
-    context->Resources->LoadResources();
+    context->Resources->LoadResources(ENGINE_RESOURCES_PATH);
+    context->Resources->LoadResources(RESOURCES_PATH);
     context->Resources->LoadDefaultResources();
 
     auto sceneData = new SceneData("New scene");

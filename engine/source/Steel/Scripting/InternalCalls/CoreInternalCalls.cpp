@@ -83,8 +83,8 @@ void CoreInternalCalls::SceneManager_SetActiveScene(ResourceID sceneID)
     }
 
     auto scene = Application::Instance->GetSceneManager()->CreateNewScene(sceneData);
-    if (!sceneData->Path.empty())
-        SerializationManager::DeserializeScene(scene, sceneData->Path);
+    if (!sceneData->FullPath.empty())
+        SerializationManager::DeserializeScene(scene, sceneData->FullPath);
 
     Application::Instance->SwitchScenes(scene);
 }
@@ -92,7 +92,7 @@ void CoreInternalCalls::SceneManager_SetActiveScene(ResourceID sceneID)
 void CoreInternalCalls::SceneManager_SetActiveScene2(MonoString* path)
 {
     const char* pathString = ScriptingCore::ToString(path);
-    SceneData* sceneData = Application::Instance->GetResourcesManager()->LoadSceneData(pathString);
+    SceneData* sceneData = Application::Instance->GetResourcesManager()->GetSceneData(pathString);
     if (sceneData == nullptr)
     {
         Log::LogError("Can't set active scene: file at {0} does not exist", pathString);
@@ -100,8 +100,8 @@ void CoreInternalCalls::SceneManager_SetActiveScene2(MonoString* path)
     }
 
     auto scene = Application::Instance->GetSceneManager()->CreateNewScene(sceneData);
-    if (!sceneData->Path.empty())
-        SerializationManager::DeserializeScene(scene, sceneData->Path);
+    if (!sceneData->FullPath.empty())
+        SerializationManager::DeserializeScene(scene, sceneData->FullPath);
 
     Application::Instance->SwitchScenes(scene);
 }

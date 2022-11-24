@@ -2,7 +2,6 @@
 #include "Steel/Core/Application.h"
 #include "Steel/Core/Log.h"
 #include "Steel/EntityComponentSystem/TypeInfoStorage.h"
-#include "Steel/Resources/ResourcesManager.h"
 #include "Steel/Resources/Resource.h"
 #include "Steel/Scene/Scene.h"
 
@@ -28,12 +27,10 @@ void SerializationManager::Terminate()
 void SerializationManager::SerializeScene(Scene* scene, const std::string& filePath)
 {
     YAML::Node node;
-    std::string fullPathString = RESOURCES_PATH;
-    fullPathString += filePath;
 
     SerializeScene(scene, node);
 
-    std::ofstream fout(fullPathString);
+    std::ofstream fout(filePath);
     fout << node;
 
     Log::LogInfo("Saved scene " + filePath);
@@ -41,13 +38,10 @@ void SerializationManager::SerializeScene(Scene* scene, const std::string& fileP
 
 void SerializationManager::DeserializeScene(Scene* scene, const std::string& filePath)
 {
-    std::string fullPathString = RESOURCES_PATH;
-    fullPathString += filePath;
-
-    std::ifstream infile(fullPathString);
+    std::ifstream infile(filePath);
     if (!infile.good())
     {
-        Log::LogError("Error loading scene: file {0} does not exist", fullPathString);
+        Log::LogError("Error loading scene: file {0} does not exist", filePath);
         return;
     }
 
@@ -228,16 +222,16 @@ void SerializationManager::SerializeResource(Resource* resource, const std::stri
 
 void SerializationManager::DeserializeResource(Resource* resource, const std::string& filePath)
 {
-    SerializationContext context;
-    context.SerializedScene = nullptr;
-    context.ResourcesSource = Application::Context()->Resources;
-
     std::ifstream infile(filePath);
     if (!infile.good())
     {
-        Log::LogError("Error loading resource data: file {0} does not exist", filePath);
+        // No resource data, don't deserialize
         return;
     }
+
+    SerializationContext context;
+    context.SerializedScene = nullptr;
+    context.ResourcesSource = Application::Context()->Resources;
 
     YAML::Node node = YAML::Load(infile);
 

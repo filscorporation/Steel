@@ -75,7 +75,7 @@ void CircleCollider::SetRadius(float radius)
     _radius = std::abs(radius);
     autoSize = false;
 
-    if (PhysicsCore::Initialized())
+    if (PhysicsCore::Initialized() && info != nullptr)
     {
         info->CircleShape->m_radius = _radius;
         OnSizeChanged();

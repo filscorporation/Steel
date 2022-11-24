@@ -20,10 +20,10 @@ void ControlPanel::Init()
     tabImage.SetImage(layer->UIResources.DefaultPixelSprite);
     tabImage.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-    playButtonSprite = resources->LoadSprite("play_button.png");
-    stopButtonSprite = resources->LoadSprite("stop_button.png");
-    pauseButtonSprite = resources->LoadSprite("pause_button.png");
-    stepButtonSprite = resources->LoadSprite("step_button.png");
+    playButtonSprite = (Sprite*)resources->TryLoadResource(ResourcesManager::GetResourceFilePath("play_button.png"));
+    stopButtonSprite = (Sprite*)resources->TryLoadResource(ResourcesManager::GetResourceFilePath("stop_button.png"));
+    pauseButtonSprite = (Sprite*)resources->TryLoadResource(ResourcesManager::GetResourceFilePath("pause_button.png"));
+    stepButtonSprite = (Sprite*)resources->TryLoadResource(ResourcesManager::GetResourceFilePath("step_button.png"));
 
     UpdateState();
 }
@@ -51,7 +51,7 @@ void ControlPanel::Update(EntitiesRegistry* entitiesRegistry)
 void ControlPanel::SaveScene()
 {
     auto editor = (EditorApplication*)Application::Instance;
-    SerializationManager::SerializeScene(editor->AppContext->Scenes->GetActiveScene(), "test_scene.scene");
+    SerializationManager::SerializeScene(editor->AppContext->Scenes->GetActiveScene(), ResourcesManager::GetResourceFilePath("test_scene.scene"));
     // TODO: temporary solution
     editor->AppContext->Resources->SaveResources();
 }
@@ -60,7 +60,12 @@ void ControlPanel::LoadScene()
 {
     auto editor = (EditorApplication*)Application::Instance;
 
-    auto sceneData = editor->GetResourcesManager()->LoadSceneData("test_scene.scene");
+    auto sceneData = editor->AppContext->Resources->GetSceneData("test_scene.scene"); // using app context as only app will load non engine resources
+    if (sceneData == nullptr)
+    {
+        Log::LogError("No scene to load at path: {0}", ResourcesManager::PathToString(ResourcesManager::GetResourceFilePath("test_scene.scene")));
+        return;
+    }
     editor->LoadSceneToEdit(sceneData);
 
     editor->SwitchContext(editor->EditorContext);

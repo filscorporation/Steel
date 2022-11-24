@@ -102,8 +102,7 @@ void GetCelData(std::ifstream& file, uint32_t celType, char* imageData, uint32_t
     }
 }
 
-Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLeft, uint32_t width, uint32_t height,
-                                     const std::string& dataPath, int imageIndex)
+Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLeft, uint32_t width, uint32_t height)
 {
     char buffer[4];
 
@@ -169,19 +168,10 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
 
     Fill(fullImageData, width, height, (unsigned char*)imageData, celWidth, celHeight, celX, celY);
     Texture* texture = Texture::CreateImageTexture(fullImageData, (uint32_t)width, (uint32_t)height);
-    // Workaround before resources UUIDs
-    if (imageIndex == 0)
-        texture->Path = dataPath;
-    else
-        texture->Path = dataPath + "@TEXTURE" + std::to_string(imageIndex);
     Application::Context()->Resources->AddResource(texture);
 
     auto image = new Sprite(texture);
     image->SetIsTransparent(IsImageTransparent(fullImageData, width, height));
-    if (imageIndex == 0)
-        image->Path = dataPath;
-    else
-        image->Path = dataPath + "@IMAGE" + std::to_string(imageIndex);
 
     Application::Context()->Resources->AddResource(image);
 
@@ -192,7 +182,7 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
 }
 
 bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& inSprites, std::vector<uint32_t>& inDurations,
-                                   bool loopAll, std::vector<Animation*>& outAnimations, const std::string& dataPath)
+                                   std::vector<Animation*>& outAnimations)
 {
     char buffer[4];
 
@@ -261,8 +251,7 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
             delete[] name;
         }
 
-        animation->Loop = loopAll;
-        animation->Path = dataPath + "@" + animation->Name;
+        animation->Loop = false;
         Application::Instance->GetResourcesManager()->AddResource(animation);
         outAnimations.push_back(animation);
     }
@@ -270,7 +259,7 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
     return true;
 }
 
-bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, AsepriteData& outData)
+AsepriteData* AsepriteLoader::LoadAsepriteData(const char* filePath)
 {
     char buffer[4];
     uint32_t bytesBeforeTags = 0;
@@ -280,7 +269,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
     if (!file.is_open())
     {
         Log::LogError("Could not open {0}", filePath);
-        return false;
+        return nullptr;
     }
 
     file.ignore(6); // Ignore file size and magic number
@@ -288,45 +277,47 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
     if (!file.read(buffer, 2))
     {
         Log::LogError("Could not read frames count");
-        return false;
+        return nullptr;
     }
     uint32_t framesCount = ConvertToInt(buffer, 2);
     if (framesCount == 0)
     {
         Log::LogError("Aseprite file contains zero frames");
-        return false;
+        return nullptr;
     }
 
     if (!file.read(buffer, 2))
     {
         Log::LogError("Could not read image width");
-        return false;
+        return nullptr;
     }
     uint32_t width = ConvertToInt(buffer, 2);
 
     if (!file.read(buffer, 2))
     {
         Log::LogError("Could not read image height");
-        return false;
+        return nullptr;
     }
     uint32_t height = ConvertToInt(buffer, 2);
 
     if (!file.read(buffer, 2))
     {
         Log::LogError("Could not read color depth");
-        return false;
+        return nullptr;
     }
     uint32_t colorDepth = ConvertToInt(buffer, 2);
     if (colorDepth != 32)
     {
         Log::LogError("Unexpected color depth: " + std::to_string(colorDepth));
-        return false;
+        return nullptr;
     }
 
     file.ignore(128 - 14); // Ignore 128 bit header
     bytesBeforeTags += 128;
     std::vector<uint32_t> framesDurations;
     framesDurations.reserve(framesCount);
+
+    auto outData = new AsepriteData();
 
     int imagesCount = 0;
     for (uint32_t i = 0; i < framesCount; ++i)
@@ -336,14 +327,14 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
         if (!file.read(buffer, 2))
         {
             Log::LogError("Could not read old frame number of chunks");
-            return false;
+            return nullptr;
         }
         uint32_t oldChunksCount = ConvertToInt(buffer, 2);
 
         if (!file.read(buffer, 2))
         {
             Log::LogError("Could not read frame duration");
-            return false;
+            return nullptr;
         }
         framesDurations.push_back(ConvertToInt(buffer, 2));
 
@@ -352,7 +343,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
         if (!file.read(buffer, 4))
         {
             Log::LogError("Could not read new frame number of chunks");
-            return false;
+            return nullptr;
         }
         uint32_t chunksCount = ConvertToInt(buffer, 4);
 
@@ -366,7 +357,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
             if (!file.read(buffer, 4))
             {
                 Log::LogError("Could not read chunk size");
-                return false;
+                return nullptr;
             }
             uint32_t chunkSize = ConvertToInt(buffer, 4);
             uint32_t chunkSizeLeft = chunkSize - 4;
@@ -374,7 +365,7 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
             if (!file.read(buffer, 2))
             {
                 Log::LogError("Could not read chunk type");
-                return false;
+                return nullptr;
             }
             uint32_t chunkType = ConvertToInt(buffer, 2);
             chunkSizeLeft -= 2;
@@ -382,19 +373,19 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
             if (chunkSizeLeft == 0)
             {
                 Log::LogError("Chunk data is empty");
-                return false;
+                return nullptr;
             }
 
             switch (chunkType)
             {
                 case 0x2005: // Cel Chunk
                 {
-                    auto image = ReadCelChunk(file, chunkSizeLeft, width, height, outData.Path, imagesCount);
+                    auto image = ReadCelChunk(file, chunkSizeLeft, width, height);
                     if (image == nullptr)
-                        return false;
+                        return nullptr;
 
                     imagesCount++;
-                    outData.Sprites.push_back(image);
+                    outData->Sprites.push_back(image);
 
                     break;
                 }
@@ -424,22 +415,21 @@ bool AsepriteLoader::LoadAsepriteData(const char* filePath, bool loopAll, Asepri
         file.clear();
         file.seekg(bytesBeforeTags);
 
-        if (!ReadTagsChunk(file, outData.Sprites, framesDurations, loopAll, outData.Animations, outData.Path))
+        if (!ReadTagsChunk(file, outData->Sprites, framesDurations, outData->Animations))
         {
-            return false;
+            return nullptr;
         }
     }
-    else if (outData.Sprites.size() > 1)
+    else if (outData->Sprites.size() > 1)
     {
         // If there is no tags but multiple sprites - create animation from all of them
-        auto animation = new Animation(outData.Sprites, framesDurations);
+        auto animation = new Animation(outData->Sprites, framesDurations);
 
         animation->Name = "Animation";
-        animation->Path = outData.Path + "@MAIN_ANIMATION";
-        animation->Loop = loopAll;
+        animation->Loop = false;
         Application::Instance->GetResourcesManager()->AddResource(animation);
-        outData.Animations.push_back(animation);
+        outData->Animations.push_back(animation);
     }
 
-    return true;
+    return outData;
 }

@@ -121,7 +121,7 @@ void PropertiesView::DrawResourceProperties(EntitiesRegistry* entitiesRegistry, 
     auto editor = (EditorApplication*)Application::Instance;
     auto appResources = editor->GetAppContext()->Resources;
 
-    Resource* resource = appResources->GetResource(filePath.c_str());
+    Resource* resource = appResources->GetResource(ResourcesManager::GetAbsolutePath(filePath));
 
     std::vector<Serializable*> data;
     data.emplace_back(resource);

@@ -14,6 +14,5 @@ public:
 
     ResourceID ID = NULL_RESOURCE;
     ResourceTypes::ResourceType Type = ResourceTypes::Undefined;
-    std::string Path;
     std::string FullPath;
 };

@@ -5,25 +5,25 @@
 
 ResourceID ResourcesInternalCalls::ResourcesManager_LoadImage(MonoString* path)
 {
-    auto image = Application::Instance->GetResourcesManager()->LoadSprite(ScriptingCore::ToString(path));
+    auto image = Application::Instance->GetResourcesManager()->GetSprite(ScriptingCore::ToString(path));
     return image == nullptr ? NULL_RESOURCE : image->ID;
 }
 
 ResourceID ResourcesInternalCalls::ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll)
 {
-    auto data = Application::Instance->GetResourcesManager()->LoadAsepriteData(ScriptingCore::ToString(path), loopAll);
+    auto data = Application::Instance->GetResourcesManager()->GetAsepriteData(ScriptingCore::ToString(path), loopAll);
     return data == nullptr ? NULL_RESOURCE : data->ID;
 }
 
 ResourceID ResourcesInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
 {
-    auto track = Application::Instance->GetResourcesManager()->LoadAudioTrack(ScriptingCore::ToString(path));
+    auto track = Application::Instance->GetResourcesManager()->GetAudioTrack(ScriptingCore::ToString(path));
     return track == nullptr ? NULL_RESOURCE : track->ID;
 }
 
 ResourceID ResourcesInternalCalls::ResourcesManager_LoadShader(MonoString* vsPath, MonoString* fsPath)
 {
-    auto shader = Application::Instance->GetResourcesManager()->LoadShader(ScriptingCore::ToString(vsPath), ScriptingCore::ToString(fsPath));
+    auto shader = Application::Instance->GetResourcesManager()->GetShader(ScriptingCore::ToString(vsPath), ScriptingCore::ToString(fsPath));
     return shader == nullptr ? NULL_RESOURCE : shader->ID;
 }
 

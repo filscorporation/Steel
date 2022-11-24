@@ -50,8 +50,8 @@ void ProjectView::Update(EntitiesRegistry* entitiesRegistry)
 
     if (currentPath != targetPath)
     {
-        currentPathString = currentPath.u8string();
-        targetPathString = targetPath.u8string();
+        currentPathString = ResourcesManager::PathToString(currentPath);
+        targetPathString = ResourcesManager::PathToString(targetPath);
 
         RebuildAll(entitiesRegistry);
     }
@@ -76,7 +76,7 @@ void ProjectView::FocusOnFile(EntitiesRegistry* entitiesRegistry, const std::str
     std::filesystem::path currentPath(currentPathString);
     if (currentPath != std::filesystem::path(Application::Context()->Resources->GetResourcesPath()))
     {
-        targetPathString = currentPath.parent_path().u8string();
+        targetPathString = ResourcesManager::PathToString(currentPath.parent_path());
     }
 }
 
@@ -127,7 +127,7 @@ void ProjectView::RebuildAll(EntitiesRegistry* entitiesRegistry)
         if (i->path().extension() == RESOURCE_DATA_EXTENSION)
             continue;
 
-        (*nodes)[i->path().filename().u8string()] = CreateElement(entitiesRegistry, i->path(), (int)(*nodes).size());
+        (*nodes)[ResourcesManager::PathToString(i->path().filename())] = CreateElement(entitiesRegistry, i->path(), (int)(*nodes).size());
     }
 
     auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
@@ -144,8 +144,8 @@ ProjectViewNode ProjectView::CreateElement(EntitiesRegistry* entitiesRegistry, c
     ProjectViewNode projectViewNode;
     projectViewNode.Order = order;
     projectViewNode.NodeDirty = false;
-    projectViewNode.FileName = filePath.filename().u8string();
-    projectViewNode.PathString = filePath.u8string();
+    projectViewNode.FileName = ResourcesManager::PathToString(filePath.filename());
+    projectViewNode.PathString = ResourcesManager::PathToString(filePath);
     projectViewNode.IsDirectory = is_directory(filePath);
     projectViewNode.UIElementEntity = elementEntity;
 

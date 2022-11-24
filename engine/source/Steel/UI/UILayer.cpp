@@ -22,22 +22,16 @@ void UILayer::LoadDefaultResources()
     auto resourcesManager = Application::Instance->GetResourcesManager();
     PixelsPerUnit = resourcesManager->GetDefaultPixelsPerUnit();
 
-    UIResources.DefaultFrameSprite = resourcesManager->LoadSprite("frame.png", true);
-    if (UIResources.DefaultFrameSprite != nullptr)
-        UIResources.DefaultFrameSprite->SetAsSliced(6);
-    UIResources.StraightFrameSprite = resourcesManager->LoadSprite("straight_frame.png", true);
-    if (UIResources.StraightFrameSprite != nullptr)
-        UIResources.StraightFrameSprite->SetAsSliced(6);
-    UIResources.DefaultPixelSprite = resourcesManager->LoadSprite("pixel.png", true);
-    UIResources.DefaultStylePixelSprite = resourcesManager->LoadSprite("style_pixel.png", true);
-    UIResources.DefaultArrowSprite = resourcesManager->LoadSprite("arrow.png", true);
-    UIResources.DefaultCheckBoxSprite = resourcesManager->LoadSprite("check_box.png", true);
-    if (UIResources.DefaultCheckBoxSprite != nullptr)
-        UIResources.DefaultCheckBoxSprite->SetAsSliced(2);
-    UIResources.DefaultCheckMarkSprite = resourcesManager->LoadSprite("check_mark.png", true);
-    UIResources.DefaultTabOpenedSprite = resourcesManager->LoadSprite("tab_opened.png", true);
-    UIResources.DefaultTabClosedSprite = resourcesManager->LoadSprite("tab_closed.png", true);
-    UIResources.DefaultTabFocusedSprite = resourcesManager->LoadSprite("tab_focused.png", true); // TODO: move to editor
+    UIResources.DefaultFrameSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("frame.png"));
+    UIResources.StraightFrameSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("straight_frame.png"));
+    UIResources.DefaultPixelSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("pixel.png"));
+    UIResources.DefaultStylePixelSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("style_pixel.png"));
+    UIResources.DefaultArrowSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("arrow.png"));
+    UIResources.DefaultCheckBoxSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("check_box.png"));
+    UIResources.DefaultCheckMarkSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("check_mark.png"));
+    UIResources.DefaultTabOpenedSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("tab_opened.png"));
+    UIResources.DefaultTabClosedSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("tab_closed.png"));
+    UIResources.DefaultTabFocusedSprite = (Sprite*)resourcesManager->GetResource(ResourcesManager::GetEngineResourceFilePath("tab_focused.png"));
 }
 
 void UILayer::Update()

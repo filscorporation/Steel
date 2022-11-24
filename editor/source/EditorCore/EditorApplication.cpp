@@ -31,7 +31,8 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->ScreenParams.IsDirty = false;
 
     AppContext->Resources = new ResourcesManager();
-    AppContext->Resources->LoadResources();
+    AppContext->Resources->LoadResources(ENGINE_RESOURCES_PATH);
+    AppContext->Resources->LoadResources(RESOURCES_PATH);
     AppContext->Resources->LoadDefaultResources();
 
     auto sceneData = new SceneData("New scene");
@@ -59,6 +60,7 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext->ScreenParams.Color = glm::vec3(0.0f, 0.0f, 0.0f);
 
     EditorContext->Resources = new ResourcesManager();
+    EditorContext->Resources->LoadResources(ENGINE_RESOURCES_PATH);
     EditorContext->Resources->LoadDefaultResources();
 
     EditorContext->Scenes = new SceneManager();
@@ -245,7 +247,7 @@ void EditorApplication::LoadSceneToEdit(SceneData* sceneData)
     // Initialize new scene
     ScriptingSystem::CreateDomain();
     auto scene = AppContext->Scenes->CreateNewScene(sceneData);
-    SerializationManager::DeserializeScene(scene, sceneData->Path);
+    SerializationManager::DeserializeScene(scene, sceneData->FullPath);
     AppContext->Scenes->SetActiveScene(scene);
 
     scene->Init(false);

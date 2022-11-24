@@ -6,5 +6,5 @@
 class PngLoader : public FileLoader
 {
 public:
-    static Sprite* LoadImage(const char* fullPath, const char* path);
+    static Sprite* LoadImage(const char* fullPath);
 };

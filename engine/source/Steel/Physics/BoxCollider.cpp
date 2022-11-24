@@ -74,7 +74,7 @@ void BoxCollider::SetSize(const glm::vec2& size)
     _size = glm::vec2(std::abs(size.x), std::abs(size.y));
     autoSize = false;
 
-    if (PhysicsCore::Initialized())
+    if (PhysicsCore::Initialized() && info != nullptr)
     {
         info->BoxShape->SetAsBox(_size.x * 0.5f, _size.y * 0.5f);
         OnSizeChanged();
