@@ -100,7 +100,5 @@ void CircleCollider::PrepareColliderInfo()
 
 void CircleCollider::ApplyPhysicsProperties()
 {
-    info = new CircleCollider::CircleColliderInfo();
-    info->CircleShape = new b2CircleShape();
     SetSizeAutomatically();
 }

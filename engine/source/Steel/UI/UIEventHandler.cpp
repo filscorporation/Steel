@@ -191,9 +191,15 @@ void UIEventHandler::HandleEvent(const ComponentAccessor<RectTransformation>& rt
 
     if (eventType != 0)
     {
+        // Backup component fields, cause calling EventCallback can update registry and make this component invalid
+        bool notifyScriptsBackup = notifyScripts;
+        EntityID ownerBackup = Owner;
+
         if (EventCallback != nullptr)
             EventCallback(Owner, eventType, uiEvent);
-        ScriptsCallback(eventType, uiEvent);
+
+        if (notifyScriptsBackup)
+            ScriptsCallback(ownerBackup, eventType, uiEvent);
     }
 }
 
@@ -207,40 +213,37 @@ void UIEventHandler::DisableNotifyScripts()
     notifyScripts = false;
 }
 
-void UIEventHandler::ScriptsCallback(UIEventTypes::UIEventType eventType, const UIEvent& uiEvent)
+void UIEventHandler::ScriptsCallback(EntityID entityID, UIEventTypes::UIEventType eventType, const UIEvent& uiEvent)
 {
-    if (!notifyScripts)
-        return;
-
     auto entitiesRegistry = Application::Instance->GetCurrentScene()->GetEntitiesRegistry();
     if (eventType & UIEventTypes::MouseEnter)
     {
-        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
-            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseEnterUI();
+        if (entitiesRegistry->HasComponent<ScriptComponent>(entityID))
+            entitiesRegistry->GetComponent<ScriptComponent>(entityID).OnMouseEnterUI();
     }
     if (eventType & UIEventTypes::MouseExit)
     {
-        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
-            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseExitUI();
+        if (entitiesRegistry->HasComponent<ScriptComponent>(entityID))
+            entitiesRegistry->GetComponent<ScriptComponent>(entityID).OnMouseExitUI();
     }
     if (eventType & UIEventTypes::MouseOver)
     {
-        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
-            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseOverUI();
+        if (entitiesRegistry->HasComponent<ScriptComponent>(entityID))
+            entitiesRegistry->GetComponent<ScriptComponent>(entityID).OnMouseOverUI();
     }
     if (eventType & UIEventTypes::MousePressed)
     {
-        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
-            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMousePressedUI();
+        if (entitiesRegistry->HasComponent<ScriptComponent>(entityID))
+            entitiesRegistry->GetComponent<ScriptComponent>(entityID).OnMousePressedUI();
     }
     if (eventType & UIEventTypes::MouseJustPressed)
     {
-        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
-            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseJustPressedUI();
+        if (entitiesRegistry->HasComponent<ScriptComponent>(entityID))
+            entitiesRegistry->GetComponent<ScriptComponent>(entityID).OnMouseJustPressedUI();
     }
     if (eventType & UIEventTypes::MouseJustReleased)
     {
-        if (entitiesRegistry->HasComponent<ScriptComponent>(Owner))
-            entitiesRegistry->GetComponent<ScriptComponent>(Owner).OnMouseJustReleasedUI();
+        if (entitiesRegistry->HasComponent<ScriptComponent>(entityID))
+            entitiesRegistry->GetComponent<ScriptComponent>(entityID).OnMouseJustReleasedUI();
     }
 }

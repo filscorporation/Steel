@@ -46,5 +46,5 @@ private:
 
     bool notifyScripts = false;
 
-    void ScriptsCallback(UIEventTypes::UIEventType eventType, const UIEvent& uiEvent);
+    static void ScriptsCallback(EntityID entityID, UIEventTypes::UIEventType eventType, const UIEvent& uiEvent);
 };
