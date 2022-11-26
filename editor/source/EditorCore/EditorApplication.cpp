@@ -10,7 +10,7 @@
 
 void EditorApplication::Init(ApplicationSettings settings)
 {
-    InitSystems(1400, 800, glm::vec3(0.0f, 0.0f, 0.0f), settings.Fullscreen, settings.DoubleBuffer);
+    InitSystems(1400, 800, glm::vec3(0.0f, 0.0f, 0.0f), settings.Fullscreen, settings.DoubleBuffer, settings.VSync);
     EditorTypeSystem::Init();
 
     // Application

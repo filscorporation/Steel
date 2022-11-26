@@ -173,7 +173,7 @@ void Screen::SetScreenSizeDirty()
     screenSizeDirty = true;
 }
 
-void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer)
+void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync)
 {
     _doubleBuffer = doubleBuffer;
 
@@ -198,6 +198,8 @@ void Screen::Init(int width, int height, glm::vec3 color, bool fullscreen, bool 
         _window = glfwCreateWindow(width, height, "Application", nullptr, nullptr);
     }
     glfwMakeContextCurrent(_window);
+
+    if (!vSync) glfwSwapInterval(0);
 
     glfwGetWindowPos(_window, &_xPosition, &_yPosition);
     glfwGetFramebufferSize(_window, &width, &height);

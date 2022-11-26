@@ -38,7 +38,7 @@ Application::Application()
 
 void Application::Init(ApplicationSettings settings)
 {
-    InitSystems(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer);
+    InitSystems(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer, settings.VSync);
     AppContext = CreateContext(settings);
     AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
@@ -46,12 +46,12 @@ void Application::Init(ApplicationSettings settings)
     Log::LogDebug("Application initialized");
 }
 
-void Application::InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer)
+void Application::InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync)
 {
     Log::Init();
 
     Random::Init();
-    Screen::Init(width, height, color, fullscreen, doubleBuffer);
+    Screen::Init(width, height, color, fullscreen, doubleBuffer, vSync);
 
     CoreTypeSystem::Init();
     SerializationManager::Init();

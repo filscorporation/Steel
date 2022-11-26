@@ -37,7 +37,7 @@ public:
     static bool IsInCallback();
 
 private:
-    static void Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer);
+    static void Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync);
     static void Apply();
 
     static Framebuffer* _framebuffer;

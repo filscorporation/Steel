@@ -23,7 +23,8 @@ struct ApplicationSettings
     int ScreenHeight = 600;
     glm::vec3 ScreenColor = glm::vec3(0.2f, 0.3f, 0.3f);
     bool Fullscreen = false;
-    bool DoubleBuffer = false;
+    bool DoubleBuffer = true;
+    bool VSync = true;
     int DefaultPixelsPerUnit = 32;
 };
 
@@ -74,7 +75,7 @@ protected:
     Scene* SceneToSwitch = nullptr;
 
     virtual void Terminate();
-    void InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer);
+    void InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync);
     ApplicationContext* CreateContext(ApplicationSettings settings);
     void SwitchContext(ApplicationContext* context);
     void TrySwitchScene();
