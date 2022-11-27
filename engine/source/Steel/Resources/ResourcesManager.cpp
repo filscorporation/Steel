@@ -104,7 +104,7 @@ Resource* ResourcesManager::TryLoadResource(const std::filesystem::path& filePat
     }
 
     Resource* resource = nullptr;
-    std::string extension = filePath.extension();
+    std::string extension = PathToString(filePath.extension());
     if (extension == ".png")
         resource = LoadSprite(filePath);
     else if (extension == ".wav")
@@ -251,6 +251,11 @@ Resource* ResourcesManager::GetResource(const std::string& filePath)
     return nullptr;
 }
 
+Resource* ResourcesManager::GetResource(const std::filesystem::path& filePath)
+{
+    return GetResource(PathToString(filePath));
+}
+
 Resource* ResourcesManager::GetResource(ResourceTypes::ResourceType type, ResourceID resourceID)
 {
     if (!ResourceExists(type, resourceID))
@@ -301,7 +306,7 @@ Sprite* ResourcesManager::LoadSprite(const std::filesystem::path& filePath)
     }
 
     Sprite* image;
-    std::string extension = filePath.extension();
+    std::string extension = PathToString(filePath.extension());
     if (extension == ".png")
     {
         image = PngLoader::LoadImage(PathToString(filePath).c_str());
@@ -364,7 +369,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const std::filesystem::path& fi
         return nullptr;
     }
 
-    std::string extension = filePath.extension();
+    std::string extension = PathToString(filePath.extension());
     if (extension != ".aseprite")
     {
         Log::LogError("Error loading aseprite file: .{0} files not supported", extension);
@@ -375,7 +380,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const std::filesystem::path& fi
     if (data == nullptr)
         return nullptr;
 
-    data->Name = GetNameFromPath(filePath);
+    data->Name = GetNameFromPath(PathToString(filePath));
 
     for (auto sprite : data->Sprites)
         sprite->SetPixelsPerUnit(defaultPixelsPerUnit);

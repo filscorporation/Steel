@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.17)
 project(AutoTests VERSION 0.2)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -static-libstdc++ -static-libgcc")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -static-libgcc -pthread -ldl -lpthread -lm")
 endif()
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -22,15 +23,19 @@ add_executable(RunAutoTests ${TESTS_PROJECT_SOURCES} ${TESTS_FILES})
 target_link_libraries(RunAutoTests gtest gtest_main)
 
 # steel
-add_subdirectory(../engine ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} EXCLUDE_FROM_ALL)
 include_directories(../engine/source)
-target_link_libraries(RunAutoTests Steel)
 
 # glm
 include_directories(../engine/includes/glm)
 
-# yaml cpp
-include_directories(../engine/includes/yaml-cpp/include)
-
 # spdlog
 include_directories(../engine/includes/spdlog/include)
+add_compile_definitions(SPDLOG_COMPILED_LIB)
+
+# yaml cpp
+include_directories(../engine/includes/yaml-cpp/include)
+add_compile_definitions(YAML_CPP_STATIC_DEFINE)
+
+# steel
+add_subdirectory(../engine ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} EXCLUDE_FROM_ALL)
+target_link_libraries(RunAutoTests Steel)

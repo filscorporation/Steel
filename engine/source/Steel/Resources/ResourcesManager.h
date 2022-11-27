@@ -41,6 +41,7 @@ public:
     static std::filesystem::path GetEngineResourceFilePath(const std::string& filePath);
     Resource* TryLoadResource(const std::filesystem::path& filePath);
     Resource* GetResource(const std::string& filePath);
+    Resource* GetResource(const std::filesystem::path& filePath);
     Resource* GetResource(ResourceTypes::ResourceType type, ResourceID resourceID);
     void AddResource(Resource* resource);
     bool ResourceExists(ResourceTypes::ResourceType type, ResourceID resourceID);

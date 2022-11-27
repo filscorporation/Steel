@@ -51,7 +51,7 @@ void ControlPanel::Update(EntitiesRegistry* entitiesRegistry)
 void ControlPanel::SaveScene()
 {
     auto editor = (EditorApplication*)Application::Instance;
-    auto testScenePath = ResourcesManager::GetResourceFilePath("test_scene.scene");
+    auto testScenePath = ResourcesManager::PathToString( ResourcesManager::GetResourceFilePath("test_scene.scene"));
     SerializationManager::SerializeScene(editor->AppContext->Scenes->GetActiveScene(), testScenePath);
     editor->AppContext->Resources->UnloadResource(testScenePath);
     editor->AppContext->Resources->TryLoadResource(testScenePath); // load scene we just saved as resource
