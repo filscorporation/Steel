@@ -1,4 +1,5 @@
 #include "TestComponent1.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void TestComponent1::RegisterType()
 {

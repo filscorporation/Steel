@@ -1,17 +1,18 @@
 #include "SerializedComponent.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void SerializedComponent::RegisterType()
 {
     REGISTER_COMPONENT(SerializedComponent);
-    REGISTER_ATTRIBUTE(SerializedComponent, "integerAttribute", GetIntegerAttribute, SetIntegerAttribute, int, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(SerializedComponent, "floatAttribute", GetFloatAttribute, SetFloatAttribute, float, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(SerializedComponent, "boolAttribute", GetBoolAttribute, SetBoolAttribute, bool, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(SerializedComponent, "entityIDAttribute", GetEntityIDAttribute, SetEntityIDAttribute, EntityID, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(SerializedComponent, "stringAttribute", GetStringAttribute, SetStringAttribute, std::string, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(SerializedComponent, "vec2Attribute", GetVec2Attribute, SetVec2Attribute, glm::vec2, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(SerializedComponent, "vec3Attribute", GetVec3Attribute, SetVec3Attribute, glm::vec3, AttributeFlags::Public);
-    REGISTER_ATTRIBUTE(SerializedComponent, "vec4Attribute", GetVec4Attribute, SetVec4Attribute, glm::vec4, AttributeFlags::Public);
-    REGISTER_LIST_ATTRIBUTE(SerializedComponent, "testTypeListAttribute", GetTestTypeListAttribute, SetTestTypeListAttribute, TestType, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(SerializedComponent, "integerAttribute", GetIntegerAttribute, SetIntegerAttribute, int, AttributeFlags::Public, "integerAttribute");
+    REGISTER_ATTRIBUTE(SerializedComponent, "floatAttribute", GetFloatAttribute, SetFloatAttribute, float, AttributeFlags::Public, "floatAttribute");
+    REGISTER_ATTRIBUTE(SerializedComponent, "boolAttribute", GetBoolAttribute, SetBoolAttribute, bool, AttributeFlags::Public, "boolAttribute");
+    REGISTER_ATTRIBUTE(SerializedComponent, "entityIDAttribute", GetEntityIDAttribute, SetEntityIDAttribute, EntityID, AttributeFlags::Public, "entityIDAttribute");
+    REGISTER_ATTRIBUTE(SerializedComponent, "stringAttribute", GetStringAttribute, SetStringAttribute, std::string, AttributeFlags::Public, "stringAttribute");
+    REGISTER_ATTRIBUTE(SerializedComponent, "vec2Attribute", GetVec2Attribute, SetVec2Attribute, glm::vec2, AttributeFlags::Public, "vec2Attribute");
+    REGISTER_ATTRIBUTE(SerializedComponent, "vec3Attribute", GetVec3Attribute, SetVec3Attribute, glm::vec3, AttributeFlags::Public, "vec3Attribute");
+    REGISTER_ATTRIBUTE(SerializedComponent, "vec4Attribute", GetVec4Attribute, SetVec4Attribute, glm::vec4, AttributeFlags::Public, "vec4Attribute");
+    REGISTER_LIST_ATTRIBUTE(SerializedComponent, "testTypeListAttribute", GetTestTypeListAttribute, SetTestTypeListAttribute, TestType, AttributeFlags::Public, "testTypeListAttribute");
 }
 
 int SerializedComponent::GetIntegerAttribute() const

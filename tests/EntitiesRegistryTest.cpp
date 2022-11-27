@@ -1,6 +1,7 @@
 #include "TestsSetUp.h"
 #include "common/TestComponent1.h"
 #include "common/TestComponent2.h"
+#include "Steel/EntityComponentSystem/TypeInfoStorage.h"
 
 TEST(EntitiesRegistryTest, Entities)
 {

@@ -1,9 +1,10 @@
 #include "TestType.h"
+#include "Steel/Serialization/AttributesRegistration.h"
 
 void TestType::RegisterType()
 {
     REGISTER_TYPE(TestType);
-    REGISTER_ATTRIBUTE(TestType, "value", GetValue, SetValue, int, AttributeFlags::Public);
+    REGISTER_ATTRIBUTE(TestType, "value", GetValue, SetValue, int, AttributeFlags::Public, "value");
 }
 
 TestType::TestType(int value)

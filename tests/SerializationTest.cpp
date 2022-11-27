@@ -4,8 +4,11 @@
 
 TEST(SerializationTest, SceneSerialization)
 {
-    auto scene = new Scene("Test scene");
+    auto sceneData = new SceneData("Test scene");
+    Application::Instance->GetResourcesManager()->AddResource(sceneData);
+    auto scene = Application::Instance->GetSceneManager()->CreateNewScene(sceneData);
     Application::Instance->GetSceneManager()->SetActiveScene(scene);
+
     scene->CreateEntity();
     scene->CreateEntity();
     scene->CreateEntity();
@@ -18,7 +21,9 @@ TEST(SerializationTest, SceneSerialization)
 
 TEST(SerializationTest, SceneDeserialization)
 {
-    auto scene = new Scene("");
+    auto sceneData = new SceneData("");
+    Application::Instance->GetResourcesManager()->AddResource(sceneData);
+    auto scene = Application::Instance->GetSceneManager()->CreateNewScene(sceneData);
     Application::Instance->GetSceneManager()->SetActiveScene(scene);
 
     YAML::Node sceneNode = YAML::Load("name: Test scene\n"
@@ -77,8 +82,11 @@ TEST(SerializationTest, SceneDeserialization)
 
 TEST(SerializationTest, ComponentSerialization)
 {
-    auto scene = new Scene("Test scene");
+    auto sceneData = new SceneData("Test scene");
+    Application::Instance->GetResourcesManager()->AddResource(sceneData);
+    auto scene = Application::Instance->GetSceneManager()->CreateNewScene(sceneData);
     Application::Instance->GetSceneManager()->SetActiveScene(scene);
+
     auto registry = scene->GetEntitiesRegistry();
 
     EntityID entityID = scene->CreateEntity();
@@ -98,7 +106,8 @@ TEST(SerializationTest, ComponentSerialization)
     YAML::Node sceneNode;
     SerializationManager::SerializeScene(scene, sceneNode);
 
-    auto loadedScene = new Scene("");
+    auto loadedSceneData = new SceneData("");
+    auto loadedScene = Application::Instance->GetSceneManager()->CreateNewScene(loadedSceneData);
     SerializationManager::DeserializeScene(loadedScene, sceneNode);
     Application::Instance->GetSceneManager()->SetActiveScene(loadedScene);
     auto loadedRegistry = loadedScene->GetEntitiesRegistry();

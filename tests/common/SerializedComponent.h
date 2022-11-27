@@ -3,9 +3,11 @@
 #include "Steel/EntityComponentSystem/Component.h"
 #include "TestType.h"
 
+#include <glm/glm.hpp>
+
 class SerializedComponent : public Component
 {
-    DEFINE_COMPONENT(SerializedComponent)
+    DEFINE_TYPE(SerializedComponent)
 
 public:
     explicit SerializedComponent(EntityID ownerEntityID) : Component(ownerEntityID) { }
