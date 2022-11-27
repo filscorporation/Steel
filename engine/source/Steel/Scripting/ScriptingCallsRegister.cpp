@@ -51,10 +51,10 @@ void ScriptingCallsRegister::RegisterInternalCalls()
     mono_add_internal_call("Steel.Random::NextInt_Internal", (void*)CoreInternalCalls::Random_NextInt);
     mono_add_internal_call("Steel.Random::PerlinNoise_Internal", (void*)CoreInternalCalls::Random_PerlinNoise);
 
-    mono_add_internal_call("Steel.ResourcesManager::LoadImage_Internal", (void*)ResourcesInternalCalls::ResourcesManager_LoadImage);
-    mono_add_internal_call("Steel.ResourcesManager::LoadAsepriteData_Internal", (void*)ResourcesInternalCalls::ResourcesManager_LoadAsepriteData);
-    mono_add_internal_call("Steel.ResourcesManager::LoadAudioTrack_Internal", (void*)ResourcesInternalCalls::ResourcesManager_LoadAudioTrack);
-    mono_add_internal_call("Steel.ResourcesManager::LoadShader_Internal", (void*)ResourcesInternalCalls::ResourcesManager_LoadShader);
+    mono_add_internal_call("Steel.ResourcesManager::GetImage_Internal", (void*)ResourcesInternalCalls::ResourcesManager_GetImage);
+    mono_add_internal_call("Steel.ResourcesManager::GetAsepriteData_Internal", (void*)ResourcesInternalCalls::ResourcesManager_GetAsepriteData);
+    mono_add_internal_call("Steel.ResourcesManager::GetAudioTrack_Internal", (void*)ResourcesInternalCalls::ResourcesManager_GetAudioTrack);
+    mono_add_internal_call("Steel.ResourcesManager::GetShader_Internal", (void*)ResourcesInternalCalls::ResourcesManager_GetShader);
     mono_add_internal_call("Steel.ResourcesManager::CreateMaterial_Internal", (void*)ResourcesInternalCalls::ResourcesManager_CreateMaterial);
     mono_add_internal_call("Steel.AudioTrack::GetLength_Internal", (void*)ResourcesInternalCalls::AudioTrack_GetLength);
     mono_add_internal_call("Steel.Sprite::SetAsNormal_Internal", (void*)ResourcesInternalCalls::Sprite_SetAsNormal);

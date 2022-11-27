@@ -8,10 +8,10 @@
 namespace ResourcesInternalCalls
 {
     // Resources Manager
-    ResourceID ResourcesManager_LoadImage(MonoString* path);
-    ResourceID ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll);
-    ResourceID ResourcesManager_LoadAudioTrack(MonoString* path);
-    ResourceID ResourcesManager_LoadShader(MonoString* vsPath, MonoString* fsPath);
+    ResourceID ResourcesManager_GetImage(MonoString* path);
+    ResourceID ResourcesManager_GetAsepriteData(MonoString* path, bool loopAll);
+    ResourceID ResourcesManager_GetAudioTrack(MonoString* path);
+    ResourceID ResourcesManager_GetShader(MonoString* vsPath, MonoString* fsPath);
     ResourceID ResourcesManager_CreateMaterial(ResourceID shaderID);
     float AudioTrack_GetLength(ResourceID audioTrackID);
     void Sprite_SetAsNormal(ResourceID spriteID);

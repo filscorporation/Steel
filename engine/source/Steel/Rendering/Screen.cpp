@@ -1,10 +1,11 @@
+#include "Screen.h"
+#include "Steel/Core/Application.h"
+#include "Steel/Core/Log.h"
+#include "Steel/Input/Input.h"
+#include "Steel/Rendering/Core/OpenGLAPI.h"
+
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include "Screen.h"
-#include "../Core/Application.h"
-#include "../Core/Log.h"
-#include "../Input/Input.h"
 
 GLFWwindow* _window;
 bool needToUpdateViewport = false;
@@ -271,7 +272,7 @@ void Screen::SwapBuffers()
     if (_doubleBuffer)
         glfwSwapBuffers(_window);
     else
-        glFlush();
+        OpenGLAPI::Flush();
 
     screenSizeDirty = false;
 }

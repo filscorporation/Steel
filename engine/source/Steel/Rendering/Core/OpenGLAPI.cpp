@@ -38,6 +38,11 @@ void OpenGLAPI::DisableBlend()
     glDisable(GL_BLEND);
 }
 
+void OpenGLAPI::Flush()
+{
+    glFlush();
+}
+
 void OpenGLAPI::SetClearColor(float r, float g, float b, float a)
 {
     glClearColor(r, g, b, a);

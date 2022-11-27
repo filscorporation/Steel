@@ -3,25 +3,25 @@
 #include "Steel/Core/Log.h"
 #include "Steel/Input/Input.h"
 
-ResourceID ResourcesInternalCalls::ResourcesManager_LoadImage(MonoString* path)
+ResourceID ResourcesInternalCalls::ResourcesManager_GetImage(MonoString* path)
 {
     auto image = Application::Instance->GetResourcesManager()->GetSprite(ScriptingCore::ToString(path));
     return image == nullptr ? NULL_RESOURCE : image->ID;
 }
 
-ResourceID ResourcesInternalCalls::ResourcesManager_LoadAsepriteData(MonoString* path, bool loopAll)
+ResourceID ResourcesInternalCalls::ResourcesManager_GetAsepriteData(MonoString* path, bool loopAll)
 {
     auto data = Application::Instance->GetResourcesManager()->GetAsepriteData(ScriptingCore::ToString(path), loopAll);
     return data == nullptr ? NULL_RESOURCE : data->ID;
 }
 
-ResourceID ResourcesInternalCalls::ResourcesManager_LoadAudioTrack(MonoString* path)
+ResourceID ResourcesInternalCalls::ResourcesManager_GetAudioTrack(MonoString* path)
 {
     auto track = Application::Instance->GetResourcesManager()->GetAudioTrack(ScriptingCore::ToString(path));
     return track == nullptr ? NULL_RESOURCE : track->ID;
 }
 
-ResourceID ResourcesInternalCalls::ResourcesManager_LoadShader(MonoString* vsPath, MonoString* fsPath)
+ResourceID ResourcesInternalCalls::ResourcesManager_GetShader(MonoString* vsPath, MonoString* fsPath)
 {
     auto shader = Application::Instance->GetResourcesManager()->GetShader(ScriptingCore::ToString(vsPath), ScriptingCore::ToString(fsPath));
     return shader == nullptr ? NULL_RESOURCE : shader->ID;
