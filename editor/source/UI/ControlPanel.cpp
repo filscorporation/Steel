@@ -51,7 +51,10 @@ void ControlPanel::Update(EntitiesRegistry* entitiesRegistry)
 void ControlPanel::SaveScene()
 {
     auto editor = (EditorApplication*)Application::Instance;
-    SerializationManager::SerializeScene(editor->AppContext->Scenes->GetActiveScene(), ResourcesManager::GetResourceFilePath("test_scene.scene"));
+    auto testScenePath = ResourcesManager::GetResourceFilePath("test_scene.scene");
+    SerializationManager::SerializeScene(editor->AppContext->Scenes->GetActiveScene(), testScenePath);
+    editor->AppContext->Resources->UnloadResource(testScenePath);
+    editor->AppContext->Resources->TryLoadResource(testScenePath); // load scene we just saved as resource
     // TODO: temporary solution
     editor->AppContext->Resources->SaveResources();
 }
@@ -69,12 +72,6 @@ void ControlPanel::LoadScene()
     editor->LoadSceneToEdit(sceneData);
 
     editor->SwitchContext(editor->EditorContext);
-
-    // Refresh views after scene changed
-    auto entitiesRegistry = editor->EditorContext->Scenes->GetActiveScene()->GetEntitiesRegistry();
-    auto hierarchyView = entitiesRegistry->GetComponentIterator<HierarchyView>();
-    for (auto& view : hierarchyView)
-        view.Clear(entitiesRegistry);
 }
 
 void ControlPanel::UpdateState()

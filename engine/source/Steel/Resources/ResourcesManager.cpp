@@ -266,6 +266,23 @@ void ResourcesManager::UnloadResource(ResourceTypes::ResourceType type, Resource
         return;
 
     resources[(int)type].erase(resourceID);
+
+    if (!resource->FullPath.empty() && pathResourcesMap.find(resource->FullPath) != pathResourcesMap.end())
+        pathResourcesMap.erase(resource->FullPath);
+
+    delete resource;
+}
+
+void ResourcesManager::UnloadResource(const std::string& filePath)
+{
+    auto resource = GetResource(filePath);
+    if (resource == nullptr)
+        return;
+
+    resources[(int)resource->Type].erase(resource->ID);
+
+    pathResourcesMap.erase(filePath);
+
     delete resource;
 }
 

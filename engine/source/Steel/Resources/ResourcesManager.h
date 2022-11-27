@@ -45,6 +45,7 @@ public:
     void AddResource(Resource* resource);
     bool ResourceExists(ResourceTypes::ResourceType type, ResourceID resourceID);
     void UnloadResource(ResourceTypes::ResourceType type, ResourceID resourceID);
+    void UnloadResource(const std::string& filePath);
 
     Sprite* GetSprite(ResourceID imageID);
     Sprite* GetSprite(const std::string& filePath);

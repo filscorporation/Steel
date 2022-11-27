@@ -84,6 +84,13 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     parentEntity = entitiesRegistry->GetComponent<HierarchyNode>(parentEntity).GetParentNode();
     bool isFocused = entitiesRegistry->GetComponent<UIEditorTab>(parentEntity).GetIsFocused();
 
+    if (lastScene != appScene)
+    {
+        Clear(entitiesRegistry);
+
+        lastScene = appScene;
+    }
+
     auto nodes = new std::unordered_map<EntityID, HierarchyViewNode>();
     GetNodesData(sceneRegistry, (HierarchyParent&)*appScene, nodes);
 
@@ -123,7 +130,7 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     lastNodes = nodes;
 
     auto& rt = entitiesRegistry->GetComponent<RectTransformation>(Owner);
-    rt.SetSize(glm::vec2(0.0f, (int)(*nodes).size() * STYLE_BUTTON_H + STYLE_OFFSET * 2 + STYLE_BUTTON_H * 1.2f));
+    rt.SetSize(glm::vec2(0.0f, (float)(*nodes).size() * STYLE_BUTTON_H + STYLE_OFFSET * 2 + STYLE_BUTTON_H * 1.2f));
 
     // Controls
     if (isFocused && Input::IsKeyJustPressed(KeyCodes::Delete))
@@ -134,20 +141,6 @@ void HierarchyView::Update(EntitiesRegistry* entitiesRegistry)
     {
         FocusOnSelectedEntities(entitiesRegistry);
     }
-}
-
-void HierarchyView::Clear(EntitiesRegistry* entitiesRegistry)
-{
-    if (lastNodes != nullptr)
-    {
-        for (auto& node : *lastNodes)
-        {
-            entitiesRegistry->DeleteEntity(node.second.UIElementEntity);
-        }
-    }
-
-    delete lastNodes;
-    lastNodes = nullptr;
 }
 
 void HierarchyView::OnRemoved(EntitiesRegistry* entitiesRegistry)
@@ -302,6 +295,20 @@ void HierarchyView::DeselectAll(EntitiesRegistry* entitiesRegistry)
             }
         }
     }
+}
+
+void HierarchyView::Clear(EntitiesRegistry* entitiesRegistry)
+{
+    if (lastNodes != nullptr)
+    {
+        for (auto& node : *lastNodes)
+        {
+            entitiesRegistry->DeleteEntity(node.second.UIElementEntity);
+        }
+    }
+
+    delete lastNodes;
+    lastNodes = nullptr;
 }
 
 void HierarchyView::DeleteSelectedEntities()
