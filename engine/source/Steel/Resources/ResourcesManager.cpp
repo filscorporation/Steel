@@ -293,8 +293,9 @@ void ResourcesManager::UnloadResource(const std::string& filePath)
 
 inline std::string GetNameFromPath(const std::string& path)
 {
-    size_t pos = path.find_last_of('/');
-    return path.substr(pos == std::string::npos ? 0 : pos, path.find_last_of('.'));
+    auto filename = std::filesystem::path(path).filename();
+    auto filenameString = ResourcesManager::PathToString(filename);
+    return filenameString.substr(0, filenameString.size() - ResourcesManager::PathToString(filename.extension()).size());
 }
 
 Sprite* ResourcesManager::LoadSprite(const std::filesystem::path& filePath)

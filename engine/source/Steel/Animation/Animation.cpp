@@ -69,7 +69,8 @@ Animation::Animation(std::vector<Sprite*>& sourceSprites, std::vector<uint32_t>&
 
     length = 0.0f;
     Curve curve;
-    for (int i = 0; i < sourceSprites.size(); ++i)
+    int count = (int)std::max(sourceSprites.size(), framesDurations.size());
+    for (int i = 0; i < count; ++i)
     {
         Keyframe keyframe(length, sourceSprites[i] == nullptr ? NULL_RESOURCE : sourceSprites[i]->ID, i);
         curve.Keyframes.emplace_back(keyframe);
