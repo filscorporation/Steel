@@ -20,6 +20,12 @@
 #include "Steel/Scripting/ScriptingSystem.h"
 #include "Steel/Serialization/SerializationManager.h"
 
+#ifdef DISTRIBUTE_BUILD
+#define CONFIG_PATH "application.config"
+#else
+#define CONFIG_PATH "../../application.config"
+#endif
+
 Application* Application::Instance;
 
 ApplicationContext* Application::Context()
@@ -40,7 +46,7 @@ void Application::Init(ApplicationSettings settings)
 {
     InitSystems(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer, settings.VSync);
     AppContext = CreateContext(settings);
-    AppContext->Scenes->GetActiveScene()->CreateMainCamera();
+    TryLoadSceneOrCreateDefault(AppContext);
 
     IsInitialized = true;
     Log::LogDebug("Application initialized");
@@ -79,23 +85,52 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     context->ScreenParams.Color = settings.ScreenColor;
     context->ScreenParams.IsDirty = false;
 
+    context->Config = new ApplicationConfig();
+    SerializationManager::DeserializeConfig(context->Config, GetConfigPath());
+
     context->Resources = new ResourcesManager();
     context->Resources->SetDefaultPixelsPerUnit(settings.DefaultPixelsPerUnit);
     context->Resources->LoadResources(ENGINE_RESOURCES_PATH);
     context->Resources->LoadResources(RESOURCES_PATH);
     context->Resources->LoadDefaultResources();
 
-    auto sceneData = new SceneData("New scene");
-    context->Resources->AddResource(sceneData);
-
     context->Scenes = new SceneManager();
-    context->Scenes->SetActiveScene(context->Scenes->CreateNewScene(sceneData));
-    context->Scenes->GetActiveScene()->Init(true);
 
     ScriptingSystem::CreateDomain();
     context->Scripting = true;
 
     return context;
+}
+
+void Application::TryLoadSceneOrCreateDefault(ApplicationContext* context)
+{
+    Scene* scene = nullptr;
+
+    if (context->Config->StartingScene != NULL_RESOURCE)
+    {
+        auto sceneData = context->Resources->GetSceneData(context->Config->StartingScene);
+        if (sceneData == nullptr)
+        {
+            Log::LogError("Starting scene ({0}) was not found in resources", context->Config->StartingScene);
+        }
+        else
+        {
+            scene = context->Scenes->CreateNewScene(sceneData);
+            if (sceneData->FullPath.empty())
+                Log::LogError("Starting scene was loaded, but full path is empty. Deserialization is not possible");
+            else
+                SerializationManager::DeserializeScene(scene, sceneData->FullPath);
+        }
+    }
+
+    if (scene == nullptr)
+    {
+        auto sceneData = new SceneData("New scene");
+        context->Resources->AddResource(sceneData);
+        scene = context->Scenes->CreateNewScene(sceneData);
+    }
+
+    context->Scenes->SetActiveScene(scene);
 }
 
 void Application::Run()
@@ -110,12 +145,20 @@ void Application::Run()
 
     IsRunningInternal = true;
 
+    BeforeStartRunLoop();
+
     while (IsRunningInternal)
     {
         RunUpdate();
     }
 
     Terminate();
+}
+
+void Application::BeforeStartRunLoop()
+{
+    // Init all systems and call OnCreated
+    AppContext->Scenes->GetActiveScene()->Init(true);
 }
 
 void Application::RunUpdate()
@@ -125,13 +168,6 @@ void Application::RunUpdate()
 
     // Set scene we will update and render
     SwitchContext(AppContext);
-
-    if (!EntryPointCalled)
-    {
-        EntryPointCalled = true;
-        if (CurrentContext->Scripting)
-            ScriptingSystem::CallEntryPoint();
-    }
 
     Input::PollEvents();
     Screen::UpdateSize();
@@ -180,6 +216,11 @@ void Application::Quit()
 bool Application::IsRunning()
 {
     return IsRunningInternal;
+}
+
+const char* Application::GetConfigPath()
+{
+    return CONFIG_PATH;
 }
 
 void Application::SwitchScenes(Scene* newScene)

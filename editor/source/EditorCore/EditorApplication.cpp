@@ -30,20 +30,23 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->ScreenParams.Color = settings.ScreenColor;
     AppContext->ScreenParams.IsDirty = false;
 
+    AppContext->Config = new ApplicationConfig();
+    SerializationManager::DeserializeConfig(AppContext->Config, GetConfigPath());
+
     AppContext->Resources = new ResourcesManager();
     AppContext->Resources->LoadResources(ENGINE_RESOURCES_PATH);
     AppContext->Resources->LoadResources(RESOURCES_PATH);
     AppContext->Resources->LoadDefaultResources();
 
-    auto sceneData = new SceneData("New scene");
-    AppContext->Resources->AddResource(sceneData);
-
     AppContext->Scenes = new SceneManager();
-    AppContext->Scenes->SetActiveScene(AppContext->Scenes->CreateNewScene(sceneData));
-    AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
     ScriptingSystem::CreateDomain();
     AppContext->Scripting = true;
+
+    TryLoadSceneOrCreateDefault(AppContext);
+    if (AppContext->Config->StartingScene == NULL_RESOURCE)
+        // Solution until scene creation menu
+        AppContext->Scenes->GetActiveScene()->CreateMainCamera();
 
     // Editor
     EditorContext = new ApplicationContext();
@@ -59,26 +62,33 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext->ScreenParams.OffsetY = 0;
     EditorContext->ScreenParams.Color = glm::vec3(0.0f, 0.0f, 0.0f);
 
+    EditorContext->Config = new ApplicationConfig();
+
     EditorContext->Resources = new ResourcesManager();
     EditorContext->Resources->LoadResources(ENGINE_RESOURCES_PATH);
     EditorContext->Resources->LoadDefaultResources();
 
     EditorContext->Scenes = new SceneManager();
-    auto editorScene = new EditorScene();
-    EditorContext->Scenes->SetActiveScene(editorScene);
 
     EditorContext->Scripting = false;
 
+    auto editorScene = new EditorScene();
+    EditorContext->Scenes->SetActiveScene(editorScene);
+    editorScene->CreateMainCamera();
+    CreateEditorViewCamera();
+
     ApplicationFramebuffer = new Framebuffer(AppContext->ScreenParams.ResolutionX, AppContext->ScreenParams.ResolutionY);
     OpenedSceneFramebuffer = new Framebuffer(100, 100);
-
-    EditorContext->Scenes->GetActiveScene()->CreateMainCamera();
-    CreateEditorViewCamera();
 
     IsInitialized = true;
 
     _selectionController = new SelectionController();
     EditorBuilder::BuildLayout(editorScene);
+}
+
+void EditorApplication::BeforeStartRunLoop()
+{
+    // For editor all initialization and OnCreate are after Play button is pressed
 }
 
 void EditorApplication::RunUpdate()
@@ -197,7 +207,6 @@ void EditorApplication::EnterPlayMode(EditorStates::EditorState newState)
     AppContext->Scenes->SetActiveScene(scene);
 
     scene->Init(true);
-    ScriptingSystem::CallEntryPoint();
 
     SwitchContext(EditorContext);
 }

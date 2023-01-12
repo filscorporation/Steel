@@ -62,7 +62,6 @@ public:
 
     static bool CallMethod(MonoMethod* method, MonoObject* monoObject, void** params);
     static void CallCallbackMethod(EntityID ownerEntityID, CallbackTypes::CallbackType callbackType, MonoMethod* method);
-    static void FindAndCallEntryPoint();
 
     static const char* ToString(MonoString* monoString);
     static MonoString* FromString(const char* normalString);

@@ -51,12 +51,15 @@ void ControlPanel::Update(EntitiesRegistry* entitiesRegistry)
 void ControlPanel::SaveScene()
 {
     auto editor = (EditorApplication*)Application::Instance;
-    auto testScenePath = ResourcesManager::PathToString( ResourcesManager::GetResourceFilePath("test_scene.scene"));
+    auto testScenePath = ResourcesManager::PathToString(ResourcesManager::GetResourceFilePath("test_scene.scene"));
     SerializationManager::SerializeScene(editor->AppContext->Scenes->GetActiveScene(), testScenePath);
     editor->AppContext->Resources->UnloadResource(testScenePath);
     editor->AppContext->Resources->TryLoadResource(testScenePath); // load scene we just saved as resource
     // TODO: temporary solution
     editor->AppContext->Resources->SaveResources();
+    if (editor->AppContext->Config->StartingScene == NULL_RESOURCE)
+        editor->AppContext->Config->StartingScene = editor->AppContext->Scenes->GetActiveScene()->GetSourceID();
+    SerializationManager::SerializeConfig(editor->AppContext->Config, editor->GetConfigPath());
 }
 
 void ControlPanel::LoadScene()

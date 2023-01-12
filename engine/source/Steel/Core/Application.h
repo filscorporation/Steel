@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../Scene/SceneManager.h"
-#include "../Scene/Scene.h"
-#include "../Resources/ResourcesManager.h"
+#include "ApplicationConfig.h"
+#include "Steel/Scene/SceneManager.h"
+#include "Steel/Scene/Scene.h"
+#include "Steel/Resources/ResourcesManager.h"
 
 struct ScreenParameters
 {
@@ -37,8 +38,9 @@ struct ApplicationStats
 struct ApplicationContext
 {
     ResourcesManager* Resources = nullptr;
+    ApplicationConfig* Config = nullptr;
     SceneManager* Scenes = nullptr;
-    bool Scripting = true; // We do not support multiple script domains, but indicate context that is using it
+    bool Scripting = true; // We do not support multiple script domains, but indicating context that is using it
     ScreenParameters ScreenParams {};
     ApplicationStats Stats {};
     bool IgnoreEvents = false;
@@ -53,9 +55,12 @@ public:
     Application();
     virtual void Init(ApplicationSettings settings);
     void Run();
+    virtual void BeforeStartRunLoop();
     virtual void RunUpdate();
     void Quit();
     virtual bool IsRunning();
+
+    const char* GetConfigPath();
 
     void SwitchScenes(Scene* newScene);
     ScreenParameters& ScreenParametersForUpdate();
@@ -69,7 +74,6 @@ public:
 protected:
     bool IsInitialized = false;
     bool IsRunningInternal;
-    bool EntryPointCalled = false;
     ApplicationContext* CurrentContext = nullptr;
     ApplicationContext* AppContext = nullptr;
     Scene* SceneToSwitch = nullptr;
@@ -77,6 +81,7 @@ protected:
     virtual void Terminate();
     void InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync);
     ApplicationContext* CreateContext(ApplicationSettings settings);
+    void TryLoadSceneOrCreateDefault(ApplicationContext* context);
     void SwitchContext(ApplicationContext* context);
     void TrySwitchScene();
 };

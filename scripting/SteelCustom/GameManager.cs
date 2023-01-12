@@ -2,39 +2,39 @@
 
 namespace SteelCustom
 {
-    public class GameManager
+    // Script component example
+    public class GameManager : ScriptComponent
     {
-        public static void EntryPoint()
+        public override void OnCreate()
         {
             /*
-            Entry point will be called after Application initialized and before main loop will start.
-            Here you can initialize game objects, add components and other game related stuff.
-            This is temporary solution before editor and scene serialization will be added to engine.
+            This will get called when component is added to the entity
+            
             Some code examples:
             -Create entity:
             Entity entity = new Entity();
             -Add sprite renderer
             entity.AddComponent<SpriteRenderer>();
             -Set it's sprite
-            Sprite sprite = ResourcesManager.LoadImage("my_image.png");
+            Sprite sprite = ResourcesManager.GetImage("my_image.png");
             entity.GetComponent<SpriteRenderer>().Sprite = sprite;
             -Move object
             entity.Transformation.Position += new Vector3(0, Time.DeltaTime, 0);
             -Your custom components can be created and added to entities:
             public class MyComponent : ScriptComponent
             {
-                public void override OnCreate()
-                {
-                    // Will be called when component is attached to entity
-                }
-                public void override OnUpdate()
-                {
-                    // Will be called once per frame
-                }
+                // override engine methods here
             }
             */
 
-            Log.LogInfo("EntryPoint completed");
+            Log.LogInfo("GameManager created");
+        }
+
+        public override void OnUpdate()
+        {
+            /*
+            This will get called once per frame
+            */
         }
     }
 }

@@ -12,7 +12,6 @@ public:
     static void UnloadDomain();
     static bool DomainLoaded();
 
-    static void CallEntryPoint(); // TODO: temp solution for entry point before scene serialization
     static void UpdateCoroutines();
     static bool IsInitialized();
 

@@ -68,17 +68,6 @@ bool ScriptingSystem::DomainLoaded()
     return ScriptingCore::DomainLoaded();
 }
 
-void ScriptingSystem::CallEntryPoint()
-{
-    if (!IsInitialized())
-    {
-        Log::LogWarning("Scripting system is not initialized");
-        return;
-    }
-
-    ScriptingCore::FindAndCallEntryPoint();
-}
-
 void ScriptingSystem::UpdateCoroutines()
 {
     if (IsInitialized())

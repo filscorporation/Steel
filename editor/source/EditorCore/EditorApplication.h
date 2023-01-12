@@ -22,6 +22,7 @@ public:
     EditorApplication() : Application() {}
 
     void Init(ApplicationSettings settings) override;
+    void BeforeStartRunLoop() override;
     void RunUpdate() override;
     bool IsRunning() override;
 

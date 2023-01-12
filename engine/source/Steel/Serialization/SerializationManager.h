@@ -2,6 +2,7 @@
 
 #include "AttributeInfo.h"
 #include "SerializationConvert.h"
+#include "Steel/Core/ApplicationConfig.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 #include "Steel/Resources/SceneData.h"
 #include "Steel/Scene/SceneBackup.h"
@@ -31,6 +32,9 @@ public:
 
     static void SerializeResource(Resource* resource, const std::string& filePath);
     static void DeserializeResource(Resource* resource, const std::string& filePath);
+
+    static void SerializeConfig(ApplicationConfig* config, const std::string& filePath);
+    static void DeserializeConfig(ApplicationConfig* config, const std::string& filePath);
 
     static void RegisterAttribute(TypeID typeID, const AttributeInfo& attributeInfo);
     static std::vector<AttributeInfo>& GetAttributes(TypeID typeID);

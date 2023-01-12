@@ -246,6 +246,27 @@ void SerializationManager::DeserializeResource(Resource* resource, const std::st
     Deserialize(typeInfo->ID, resource, dataNode, context);
 }
 
+void SerializationManager::SerializeConfig(ApplicationConfig* config, const std::string& filePath)
+{
+    YAML::Node node;
+
+    node["starting_scene"] = config->StartingScene;
+
+    std::ofstream fout(filePath);
+    fout << node;
+}
+
+void SerializationManager::DeserializeConfig(ApplicationConfig* config, const std::string& filePath)
+{
+    std::ifstream infile(filePath);
+    if (!infile.good())
+        return;
+
+    YAML::Node node = YAML::Load(infile);
+
+    config->StartingScene = node["starting_scene"].as<ResourceID>();
+}
+
 void SerializationManager::RegisterAttribute(TypeID typeID, const AttributeInfo& attributeInfo)
 {
     _attributesInfo[typeID].emplace_back(attributeInfo);

@@ -795,33 +795,6 @@ void ScriptingCore::CallCallbackMethod(EntityID ownerEntityID, CallbackTypes::Ca
     CallMethod(method, nullptr, params);
 }
 
-void ScriptingCore::FindAndCallEntryPoint()
-{
-    if (Domain->CustomAssemblyImage == nullptr)
-    {
-        Log::LogWarning("Custom assembly is null");
-        return;
-    }
-
-    Log::LogDebug("FindAndCallEntryPoint");
-
-    MonoClass* klass = mono_class_from_name(Domain->CustomAssemblyImage, "SteelCustom", "GameManager");
-    if (klass == nullptr)
-    {
-        Log::LogError("GameManager class for entry point not found");
-        return;
-    }
-
-    MonoMethod* entryPointMethod = mono_class_get_method_from_name(klass, "EntryPoint", 0);
-    if (entryPointMethod == nullptr)
-    {
-        Log::LogError("No entry point found");
-        return;
-    }
-
-    CallMethod(entryPointMethod, nullptr, nullptr);
-}
-
 const char* ScriptingCore::ToString(MonoString* monoString)
 {
     if (monoString == nullptr)

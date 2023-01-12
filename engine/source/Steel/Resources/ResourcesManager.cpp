@@ -284,6 +284,8 @@ void ResourcesManager::UnloadResource(const std::string& filePath)
     if (resource == nullptr)
         return;
 
+    Log::LogDebug("Unloaded {0}: {1} ({2})", ResourceTypeToString(resource->Type), resource->FullPath, resource->ID);
+
     resources[(int)resource->Type].erase(resource->ID);
 
     pathResourcesMap.erase(filePath);
