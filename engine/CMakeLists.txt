@@ -145,7 +145,8 @@ set(SOURCE_FILES
         source/Steel/Core/TimeProvider.h source/Steel/Platform/Time/DesktopTimeProvider.cpp source/Steel/Platform/Time/DesktopTimeProvider.h
         source/Steel/Platform/Time/AndroidTimeProvider.cpp source/Steel/Platform/Time/AndroidTimeProvider.h source/Steel/Input/InputHandler.h
         source/Steel/Platform/Input/AndroidInputHandler.cpp source/Steel/Platform/Input/AndroidInputHandler.h source/Steel/Platform/Input/DesktopInputHandler.cpp
-        source/Steel/Platform/Input/DesktopInputHandler.h source/Steel/Input/InputHandler.cpp)
+        source/Steel/Platform/Input/DesktopInputHandler.h source/Steel/Input/InputHandler.cpp source/Steel/Audio/AudioDevice.h source/Steel/Platform/Audio/DesktopAudioDevice.cpp
+        source/Steel/Platform/Audio/DesktopAudioDevice.h source/Steel/Platform/Audio/AndroidAudioDevice.cpp source/Steel/Platform/Audio/AndroidAudioDevice.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

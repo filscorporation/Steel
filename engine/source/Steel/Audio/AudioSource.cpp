@@ -14,7 +14,7 @@ void AudioSource::RegisterType()
 
 void AudioSource::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    if (AudioCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
+    if (AudioCore::IsInitialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
     {
         sourceID = AudioCore::CreateSource();
         sourceCreated = true;
@@ -34,7 +34,7 @@ void AudioSource::OnRemoved(EntitiesRegistry* entitiesRegistry)
 
 void AudioSource::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
-    if (AudioCore::Initialized())
+    if (AudioCore::IsInitialized())
     {
         sourceID = AudioCore::CreateSource();
         sourceCreated = true;
@@ -101,7 +101,7 @@ void AudioSource::SetIsLoop(bool isLoop)
 {
     sourceIsLoop = isLoop;
 
-    if (sourceCreated && AudioCore::Initialized())
+    if (sourceCreated && AudioCore::IsInitialized())
         AudioCore::SetSourceIsLoop(sourceID, isLoop);
 }
 
@@ -113,7 +113,7 @@ float AudioSource::GetVolume() const
 void AudioSource::SetVolume(float volume)
 {
     sourceVolume = volume;
-    if (sourceCreated && AudioCore::Initialized())
+    if (sourceCreated && AudioCore::IsInitialized())
         AudioCore::SetSourceVolume(sourceID, volume);
 }
 

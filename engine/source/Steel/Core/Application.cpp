@@ -277,10 +277,13 @@ std::string Application::GetRuntimePath()
     readlink(arg1, result, 1024);
     return std::string(result);
 #endif
-#if PLATFORM_WINDOWS
+#ifdef PLATFORM_WINDOWS
     char result[MAX_PATH];
     GetModuleFileName(nullptr, result, MAX_PATH);
     return std::string(result);
+#endif
+#ifdef PLATFORM_ANDROID
+    return ""; // TODO
 #endif
 }
 

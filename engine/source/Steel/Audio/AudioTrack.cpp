@@ -1,7 +1,6 @@
 #include "AudioTrack.h"
 #include "Steel/Serialization/AttributesRegistration.h"
-
-#include <AL/al.h>
+#include "AudioCore.h"
 
 void AudioTrack::RegisterType()
 {
@@ -15,5 +14,5 @@ AudioTrack::AudioTrack()
 
 AudioTrack::~AudioTrack()
 {
-    alDeleteBuffers(1, &BufferID);
+    AudioCore::DeleteAudioTrack(this);
 }

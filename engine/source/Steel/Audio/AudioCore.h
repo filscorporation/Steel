@@ -1,21 +1,21 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "Steel/EntityComponentSystem/Entity.h"
 #include "Steel/EntityComponentSystem/EntitiesRegistry.h"
 #include "AudioTrack.h"
+#include "AudioDevice.h"
+
+#include <glm/glm.hpp>
 
 class AudioCore
 {
 public:
-    static bool Initialized();
     static void Init();
     static void Terminate();
+    static bool IsInitialized();
     static void CreateAudioScene(EntitiesRegistry* entitiesRegistry);
     static void CreateAudioListener(EntityID listenerEntity);
     static void DeleteAudioScene();
-    static bool CheckForErrors();
 
     static void SetListenerPosition(glm::vec3 position);
     static void SetListenerOrientation(glm::vec3 at, glm::vec3 up);
@@ -30,7 +30,11 @@ public:
     static void StopSource(uint32_t sourceID);
 
     static bool InitAudioTrack(AudioTrack* audioTrack, char* trackData);
+    static void DeleteAudioTrack(AudioTrack* audioTrack);
 
 private:
     static bool AssertInitialized();
+    static AudioDevice* CreateAudioDevice();
+
+    static AudioDevice* audioDevice;
 };

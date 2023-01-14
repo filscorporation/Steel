@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstdint>
-
 #include "Steel/Resources/Resource.h"
+
+#include <cstdint>
 
 class AudioTrack : public Resource
 {

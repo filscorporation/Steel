@@ -12,7 +12,7 @@ void AudioListener::RegisterType()
 
 void AudioListener::OnCreated(EntitiesRegistry* entitiesRegistry)
 {
-    if (AudioCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
+    if (AudioCore::IsInitialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
     {
         ApplyAudioProperties();
     }
@@ -20,7 +20,7 @@ void AudioListener::OnCreated(EntitiesRegistry* entitiesRegistry)
 
 void AudioListener::OnEnabled(EntitiesRegistry* entitiesRegistry)
 {
-    if (AudioCore::Initialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
+    if (AudioCore::IsInitialized() && entitiesRegistry->EntityGetState(Owner) & EntityStates::IsActive)
     {
         ApplyAudioProperties();
     }
@@ -29,14 +29,14 @@ void AudioListener::OnEnabled(EntitiesRegistry* entitiesRegistry)
 void AudioListener::OnUpdate()
 {
     auto& transform = GetComponentS<Transformation>(Owner);
-    if (transform.DidTransformationChange() && AudioCore::Initialized())
+    if (transform.DidTransformationChange() && AudioCore::IsInitialized())
         AudioCore::SetListenerPosition(transform.GetPosition());
 }
 
 void AudioListener::SetVolume(float volume)
 {
     listenerVolume = volume;
-    if (AudioCore::Initialized())
+    if (AudioCore::IsInitialized())
         AudioCore::SetListenerVolume(volume);
 }
 
