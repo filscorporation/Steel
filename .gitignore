@@ -8,6 +8,11 @@ scripting/SteelCore/bin
 scripting/SteelCustom/obj
 scripting/SteelCustom/bin
 
+# Gradle
+platform/android/.gradle
+platform/android/app/.cxx
+platform/android/app/build
+
 # User files
 *.user
 

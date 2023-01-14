@@ -12,6 +12,20 @@ else()
     add_compile_definitions(RELEASE_BUILD)
 endif()
 
+# detect platform
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_compile_definitions(PLATFORM_LINUX)
+    set(TARGET_PLATFORM LINUX)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_compile_definitions(PLATFORM_WINDOWS)
+    set(TARGET_PLATFORM WINDOWS)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Android")
+    add_compile_definitions(PLATFORM_ANDROID)
+    set(TARGET_PLATFORM ANDROID)
+else()
+    message("Unknown platform: ${CMAKE_SYSTEM_NAME}")
+endif()
+
 # for distribute builds
 #add_compile_definitions(DISTRIBUTE_BUILD)
 
@@ -19,15 +33,22 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+# glfw
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+endif()
 
+# box2d
 set(BOX2D_BUILD_UNIT_TESTS OFF)
 set(BOX2D_BUILD_TESTBED OFF)
 set(BOX2D_BUILD_EXAMPLES OFF)
 
-set(GLAD_FILES includes/glad/src/glad.c)
+# glad
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    set(GLAD_FILES includes/glad/src/glad.c)
+endif()
 set(ZLIB_FILES includes/zlib/zlib.h includes/zlib/adler32.c includes/zlib/compress.c includes/zlib/crc32.c includes/zlib/deflate.c
         includes/zlib/gzclose.c includes/zlib/gzlib.c includes/zlib/gzread.c includes/zlib/gzwrite.c includes/zlib/inflate.c
         includes/zlib/infback.c includes/zlib/inftrees.c includes/zlib/inffast.c includes/zlib/trees.c includes/zlib/uncompr.c includes/zlib/zutil.c)
@@ -125,20 +146,25 @@ if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
 endif()
 
+cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0072 NEW)
+set(CMAKE_POLICY_DEFAULT_CMP0048 NEW)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # openal
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    find_package(ALSA REQUIRED)
-endif()
-add_subdirectory(includes/openal-soft)
-set_property(TARGET alrecord PROPERTY FOLDER ${INCLUDE_FOLDER})
-set_property(TARGET altonegen PROPERTY FOLDER ${INCLUDE_FOLDER})
-set_property(TARGET build_version PROPERTY FOLDER ${INCLUDE_FOLDER})
-set_property(TARGET common PROPERTY FOLDER ${INCLUDE_FOLDER})
-set_property(TARGET ex-common PROPERTY FOLDER ${INCLUDE_FOLDER})
-set_property(TARGET OpenAL PROPERTY FOLDER ${INCLUDE_FOLDER})
-set_property(TARGET openal-info PROPERTY FOLDER ${INCLUDE_FOLDER})
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        find_package(ALSA REQUIRED)
+    endif()
+    add_subdirectory(includes/openal-soft)
+    set_property(TARGET alrecord PROPERTY FOLDER ${INCLUDE_FOLDER})
+    set_property(TARGET altonegen PROPERTY FOLDER ${INCLUDE_FOLDER})
+    set_property(TARGET build_version PROPERTY FOLDER ${INCLUDE_FOLDER})
+    set_property(TARGET common PROPERTY FOLDER ${INCLUDE_FOLDER})
+    set_property(TARGET ex-common PROPERTY FOLDER ${INCLUDE_FOLDER})
+    set_property(TARGET OpenAL PROPERTY FOLDER ${INCLUDE_FOLDER})
+    set_property(TARGET openal-info PROPERTY FOLDER ${INCLUDE_FOLDER})
+endif ()
 
 # project target
 add_library(Steel ${SOURCE_FILES})
@@ -153,21 +179,27 @@ add_custom_command(TARGET Steel POST_BUILD
 include_directories(source)
 
 # opengl
-find_package(OpenGL REQUIRED)
-target_link_libraries(Steel PRIVATE ${OPENGL_LIBRARIES})
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    find_package(OpenGL REQUIRED)
+    target_link_libraries(Steel PRIVATE ${OPENGL_LIBRARIES})
+endif ()
 
 # stb
 include_directories(includes)
 
 # glad
-include_directories(includes/glad/include)
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    include_directories(includes/glad/include)
+endif ()
 
 # zlib
 include_directories(includes/zlib)
 
 # glfw
-add_subdirectory(includes/glfw EXCLUDE_FROM_ALL)
-target_link_libraries(Steel PRIVATE glfw)
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    add_subdirectory(includes/glfw EXCLUDE_FROM_ALL)
+    target_link_libraries(Steel PRIVATE glfw)
+endif ()
 
 # glm
 add_subdirectory(includes/glm EXCLUDE_FROM_ALL)
@@ -175,16 +207,9 @@ include_directories(includes/glm)
 target_link_libraries(Steel PRIVATE glm)
 
 # openal
-target_include_directories(Steel PRIVATE ${ALSOFT_HEADERS_DIR})
-target_link_libraries(Steel PRIVATE OpenAL)
-
-if (UNIX AND NOT APPLE)
-    set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
-    set(FREETYPE_NAME "freetype.a")
-endif ()
-if (WIN32)
-    set(MONO_NAME "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
-    set(FREETYPE_NAME "freetype.lib")
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    target_include_directories(Steel PRIVATE ${ALSOFT_HEADERS_DIR})
+    target_link_libraries(Steel PRIVATE OpenAL)
 endif ()
 
 # box2d
@@ -192,8 +217,17 @@ add_subdirectory(includes/box2d EXCLUDE_FROM_ALL)
 target_link_libraries(Steel PRIVATE box2d)
 
 # mono
-include_directories(includes/mono/include)
-target_link_libraries(Steel PRIVATE ${MONO_NAME})
+if (TARGET_PLATFORM MATCHES LINUX)
+    set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
+elseif (TARGET_PLATFORM MATCHES WINDOWS)
+    set(MONO_NAME "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
+endif ()
+
+# mono
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    include_directories(includes/mono/include)
+    target_link_libraries(Steel PRIVATE ${MONO_NAME})
+endif ()
 
 # freetype
 add_subdirectory(includes/freetype2 EXCLUDE_FROM_ALL)

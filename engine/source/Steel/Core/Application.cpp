@@ -1,8 +1,8 @@
 #include <iostream>
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 #include <windows.h>
 #endif
-#ifdef __unix__
+#ifdef PLATFORM_LINUX
 #include <climits>
 #include <unistd.h>
 #endif
@@ -265,7 +265,7 @@ Scene* Application::GetCurrentScene()
 
 std::string Application::GetRuntimePath()
 {
-#ifdef __unix__
+#ifdef PLATFORM_LINUX
     char arg1[20];
     char result[PATH_MAX + 1] = {0};
 
@@ -273,7 +273,7 @@ std::string Application::GetRuntimePath()
     readlink(arg1, result, 1024);
     return std::string(result);
 #endif
-#if defined(_WIN32) || defined(_WIN64)
+#if PLATFORM_WINDOWS
     char result[MAX_PATH];
     GetModuleFileName(nullptr, result, MAX_PATH);
     return std::string(result);
