@@ -1,143 +1,81 @@
-#include <GLFW/glfw3.h>
-
 #include "Input.h"
-#include "../Core/Log.h"
+#include "Steel/Core/Log.h"
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
+    #include "Steel/Platform/Input/DesktopInputHandler.h"
+#endif
+#if defined PLATFORM_ANDROID
+    #include "Steel/Platform/Input/AndroidInputHandler.h"
+#endif
 
-ButtonStates::ButtonState pressedKeys[MAX_KEY_CODE + 1];
-ButtonStates::ButtonState pressedMouse[MAX_MOUSE_CODE + 1];
-std::string textInput;
-glm::vec2 mousePosition;
-glm::vec2 lastMousePosition;
-glm::vec2 mouseScrollDelta;
-bool keyIsDirty = false;
-bool mouseIsDirty = false;
-bool scrollDeltaIsDirty = false;
+glm::vec2 Input::lastMousePosition = { };
 
 bool Input::IgnoreEvents = false;
 
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
+void Input::Init()
 {
-    int ikey = (KeyCodes::KeyCode)key;
-
-    if (action == GLFW_PRESS)
-    {
-        pressedKeys[ikey] = ButtonStates::JustPressed;
-        keyIsDirty = true;
-    }
-    if (action == GLFW_RELEASE)
-    {
-        pressedKeys[ikey] = ButtonStates::JustReleased;
-        keyIsDirty = true;
-    }
-}
-
-void TextInputCallback(GLFWwindow* window, uint32_t codepoint)
-{
-    textInput.push_back((char)codepoint);
-}
-
-void MouseCallback(GLFWwindow* window, int button, int action, int mods)
-{
-    int ibutton = (MouseCodes::MouseCode)button;
-
-    if (action == GLFW_PRESS)
-    {
-        pressedMouse[ibutton] = ButtonStates::JustPressed;
-        mouseIsDirty = true;
-    }
-    if (action == GLFW_RELEASE)
-    {
-        pressedMouse[ibutton] = ButtonStates::JustReleased;
-        mouseIsDirty = true;
-    }
-}
-
-void CursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
-{
-    mousePosition.x = (float)xPos;
-    // GLFW coordinate system is upside down by Y-axis
-    mousePosition.y = Screen::InvertY((float)yPos);
-}
-
-void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
-{
-    mouseScrollDelta.x = (float)xOffset;
-    mouseScrollDelta.y = (float)yOffset;
-
-    scrollDeltaIsDirty = true;
-}
-
-void Input::Init(GLFWwindow* window)
-{
-    glfwSetKeyCallback(window, KeyCallback);
-    glfwSetCharCallback(window, TextInputCallback);
-    glfwSetMouseButtonCallback(window, MouseCallback);
-    glfwSetCursorPosCallback(window, CursorPositionCallback);
-    glfwSetScrollCallback(window, ScrollCallback);
-
     for (int i = 0; i < MAX_KEY_CODE + 1; ++i)
     {
-        pressedKeys[i] = ButtonStates::NotPressed;
+        InputHandler::PressedKeys[i] = ButtonStates::NotPressed;
     }
     for (int i = 0; i < MAX_MOUSE_CODE + 1; ++i)
     {
-        pressedMouse[i] = ButtonStates::NotPressed;
+        InputHandler::PressedMouse[i] = ButtonStates::NotPressed;
     }
 }
 
 bool Input::IsKeyPressed(KeyCodes::KeyCode code)
 {
-    return !IgnoreEvents && pressedKeys[code] == ButtonStates::JustPressed || pressedKeys[code] == ButtonStates::IsHeld;
+    return !IgnoreEvents && InputHandler::PressedKeys[code] == ButtonStates::JustPressed || InputHandler::PressedKeys[code] == ButtonStates::IsHeld;
 }
 
 bool Input::IsKeyJustPressed(KeyCodes::KeyCode code)
 {
-    return !IgnoreEvents && pressedKeys[code] == ButtonStates::JustPressed;
+    return !IgnoreEvents && InputHandler::PressedKeys[code] == ButtonStates::JustPressed;
 }
 
 bool Input::IsKeyJustReleased(KeyCodes::KeyCode code)
 {
-    return !IgnoreEvents && pressedKeys[code] == ButtonStates::JustReleased;
+    return !IgnoreEvents && InputHandler::PressedKeys[code] == ButtonStates::JustReleased;
 }
 
 bool Input::IsMouseButtonPressed(MouseCodes::MouseCode button)
 {
-    return !IgnoreEvents && pressedMouse[button] == ButtonStates::JustPressed || pressedMouse[button] == ButtonStates::IsHeld;
+    return !IgnoreEvents && InputHandler::PressedMouse[button] == ButtonStates::JustPressed || InputHandler::PressedMouse[button] == ButtonStates::IsHeld;
 }
 
 bool Input::IsMouseButtonJustPressed(MouseCodes::MouseCode button)
 {
-    return !IgnoreEvents && pressedMouse[button] == ButtonStates::JustPressed;
+    return !IgnoreEvents && InputHandler::PressedMouse[button] == ButtonStates::JustPressed;
 }
 
 bool Input::IsMouseButtonJustReleased(MouseCodes::MouseCode button)
 {
-    return !IgnoreEvents && pressedMouse[button] == ButtonStates::JustReleased;
+    return !IgnoreEvents && InputHandler::PressedMouse[button] == ButtonStates::JustReleased;
 }
 
 glm::vec2 Input::GetMousePosition()
 {
-    return Screen::Transform(mousePosition);
+    return Screen::Transform(InputHandler::MousePosition);
 }
 
 glm::vec2 Input::GetMouseDelta()
 {
-    return Screen::Transform(mousePosition - lastMousePosition);
+    return Screen::Transform(InputHandler::MousePosition - lastMousePosition);
 }
 
 glm::vec2 Input::GetMouseScrollDelta()
 {
-    return IgnoreEvents ? glm::vec2(0.0f, 0.0f) : mouseScrollDelta;
+    return IgnoreEvents ? glm::vec2(0.0f, 0.0f) : InputHandler::MouseScrollDelta;
 }
 
 void CleanKeys()
 {
     for (int i = 0; i < MAX_KEY_CODE + 1; ++i)
     {
-        if (pressedKeys[i] == ButtonStates::JustPressed)
-            pressedKeys[i] = ButtonStates::IsHeld;
-        if (pressedKeys[i] == ButtonStates::JustReleased)
-            pressedKeys[i] = ButtonStates::NotPressed;
+        if (InputHandler::PressedKeys[i] == ButtonStates::JustPressed)
+            InputHandler::PressedKeys[i] = ButtonStates::IsHeld;
+        if (InputHandler::PressedKeys[i] == ButtonStates::JustReleased)
+            InputHandler::PressedKeys[i] = ButtonStates::NotPressed;
     }
 }
 
@@ -145,17 +83,17 @@ void CleanMouse()
 {
     for (int i = 0; i < MAX_MOUSE_CODE + 1; ++i)
     {
-        if (pressedMouse[i] == ButtonStates::JustPressed)
-            pressedMouse[i] = ButtonStates::IsHeld;
-        if (pressedMouse[i] == ButtonStates::JustReleased)
-            pressedMouse[i] = ButtonStates::NotPressed;
+        if (InputHandler::PressedMouse[i] == ButtonStates::JustPressed)
+            InputHandler::PressedMouse[i] = ButtonStates::IsHeld;
+        if (InputHandler::PressedMouse[i] == ButtonStates::JustReleased)
+            InputHandler::PressedMouse[i] = ButtonStates::NotPressed;
     }
 }
 
 void CleanScrollDelta()
 {
-    mouseScrollDelta.x = 0;
-    mouseScrollDelta.y = 0;
+    InputHandler::MouseScrollDelta.x = 0;
+    InputHandler::MouseScrollDelta.y = 0;
 }
 
 UIEvent Input::GetUIEvent()
@@ -165,57 +103,63 @@ UIEvent Input::GetUIEvent()
     uiEvent.Used = false;
     uiEvent.MousePosition = GetMousePosition();
     uiEvent.MouseDelta = GetMouseDelta();
-    uiEvent.ScrollDelta = mouseScrollDelta;
-    uiEvent.LeftMouseButtonState = pressedMouse[MouseCodes::ButtonLeft];
-    uiEvent.RightMouseButtonState = pressedMouse[MouseCodes::ButtonRight];
-    uiEvent.MiddleMouseButtonState = pressedMouse[MouseCodes::ButtonMiddle];
+    uiEvent.ScrollDelta = InputHandler::MouseScrollDelta;
+    uiEvent.LeftMouseButtonState = InputHandler::PressedMouse[MouseCodes::ButtonLeft];
+    uiEvent.RightMouseButtonState = InputHandler::PressedMouse[MouseCodes::ButtonRight];
+    uiEvent.MiddleMouseButtonState = InputHandler::PressedMouse[MouseCodes::ButtonMiddle];
     uiEvent.AnyKey = IsAnyKeyPressed();
-    uiEvent.InputString = textInput;
+    uiEvent.InputString = InputHandler::TextInput;
 
     return uiEvent;
 }
 
 void Input::PollEvents()
 {
-    if (keyIsDirty)
+    if (InputHandler::KeyIsDirty)
     {
-        keyIsDirty = false;
+        InputHandler::KeyIsDirty = false;
         CleanKeys();
     }
-    if (mouseIsDirty)
+    if (InputHandler::MouseIsDirty)
     {
-        mouseIsDirty = false;
+        InputHandler::MouseIsDirty = false;
         CleanMouse();
     }
-    if (scrollDeltaIsDirty)
+    if (InputHandler::ScrollDeltaIsDirty)
     {
-        scrollDeltaIsDirty = true;
+        InputHandler::ScrollDeltaIsDirty = true;
         CleanScrollDelta();
     }
-    textInput.clear();
+    InputHandler::TextInput.clear();
 
-    lastMousePosition = mousePosition;
-    glfwPollEvents();
+    lastMousePosition = InputHandler::MousePosition;
+
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
+    DesktopInputHandler::PollEvents();
+#endif
+#if defined PLATFORM_ANDROID
+    AndroidInputHandler::PollEvents();
+#endif
 }
 
 void Input::ReleaseAllEvents()
 {
-    // This fixes glfw bug, when there is no realse event if you move or resize window
-    for (auto& key : pressedKeys)
+    // This fixes glfw bug, when there is no release event if you move or resize window
+    for (auto& key : InputHandler::PressedKeys)
     {
         if (key == ButtonStates::JustPressed || key == ButtonStates::IsHeld)
         {
             key = ButtonStates::JustReleased;
-            keyIsDirty = true;
+            InputHandler::KeyIsDirty = true;
         }
     }
 
-    for (auto& mouse : pressedMouse)
+    for (auto& mouse : InputHandler::PressedMouse)
     {
         if (mouse == ButtonStates::JustPressed || mouse == ButtonStates::IsHeld)
         {
             mouse = ButtonStates::JustReleased;
-            mouseIsDirty = true;
+            InputHandler::MouseIsDirty = true;
         }
     }
 }

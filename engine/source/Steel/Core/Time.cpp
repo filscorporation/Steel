@@ -1,6 +1,12 @@
 #include "Time.h"
-#include <GLFW/glfw3.h>
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
+    #include "Steel/Platform/Time/DesktopTimeProvider.h"
+#endif
+#if defined PLATFORM_ANDROID
+    #include "Steel/Platform/Time/AndroidTimeProvider.h"
+#endif
 
+TimeProvider* Time::timeProvider = nullptr;
 float Time::lastFrameTime = 0;
 float Time::lastFixedFrameTime = 0;
 float Time::deltaTime = 0.0f;
@@ -8,6 +14,16 @@ uint64_t Time::frameCount = 0;
 
 float Time::FixedDeltaTime = 0.02f;
 float Time::TimeScale = 1.0f;
+
+void Time::Init()
+{
+    timeProvider = CreateTimeProvider();
+}
+
+void Time::Terminate()
+{
+    delete timeProvider;
+}
 
 float Time::DeltaTime()
 {
@@ -21,7 +37,7 @@ float Time::UnscaledDeltaTime()
 
 float Time::TimeSinceStartup()
 {
-    return (float)glfwGetTime();
+    return timeProvider->GetTime();
 }
 
 uint64_t Time::FrameCount()
@@ -36,7 +52,7 @@ float Time::GetFixedDeltaTime()
 
 void Time::Update()
 {
-    auto currentTime = (float)glfwGetTime();
+    auto currentTime = timeProvider->GetTime();
     deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
     frameCount++;
@@ -44,7 +60,7 @@ void Time::Update()
 
 bool Time::TryFixedUpdate()
 {
-    auto currentTime = (float)glfwGetTime();
+    auto currentTime = timeProvider->GetTime();
     if (currentTime - lastFixedFrameTime >= FixedDeltaTime)
     {
         lastFixedFrameTime += FixedDeltaTime;
@@ -56,5 +72,15 @@ bool Time::TryFixedUpdate()
 
 void Time::ResetFixedDeltaTime()
 {
-    lastFixedFrameTime = (float)glfwGetTime() - FixedDeltaTime;
+    lastFixedFrameTime = timeProvider->GetTime() - FixedDeltaTime;
+}
+
+TimeProvider* Time::CreateTimeProvider()
+{
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
+    return new DesktopTimeProvider();
+#endif
+#if defined PLATFORM_ANDROID
+    return new AndroidTimeProvider();
+#endif
 }

@@ -57,7 +57,10 @@ void Application::InitSystems(int width, int height, glm::vec3 color, bool fulls
     Log::Init();
 
     Random::Init();
+    Time::Init();
     Screen::Init(width, height, color, fullscreen, doubleBuffer, vSync);
+    Input::Init();
+    Screen::InitInputHandler();
 
     CoreTypeSystem::Init();
     SerializationManager::Init();
@@ -202,6 +205,7 @@ void Application::Terminate()
 
     AudioCore::Terminate();
     Renderer::Terminate();
+    Time::Terminate();
     Screen::Terminate();
     ScriptingSystem::Terminate();
     SerializationManager::Terminate();

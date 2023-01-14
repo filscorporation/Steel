@@ -1,18 +1,21 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "KeyCodes.h"
 #include "MouseCodes.h"
-#include "../Rendering/Screen.h"
-#include "../EntityComponentSystem/Entity.h"
-#include "../UI/UIEvent.h"
+#include "InputHandler.h"
+#include "Steel/Rendering/Screen.h"
+#include "Steel/EntityComponentSystem/Entity.h"
+#include "Steel/UI/UIEvent.h"
+
+#include <glm/glm.hpp>
 
 struct GLFWwindow;
 
 class Input
 {
 public:
+    static void Init();
+
     static bool IsKeyPressed(KeyCodes::KeyCode code);
     static bool IsKeyJustPressed(KeyCodes::KeyCode code);
     static bool IsKeyJustReleased(KeyCodes::KeyCode code);
@@ -35,7 +38,5 @@ public:
     static bool IgnoreEvents;
 
 private:
-    static void Init(GLFWwindow* window);
-
-    friend class Screen;
+    static glm::vec2 lastMousePosition;
 };

@@ -1,14 +1,17 @@
 #pragma once
 
-#include "glm/glm.hpp"
-
 #include "Framebuffer.h"
+#include "Window.h"
 
-#define UI_MAX_DISTANCE 1.0f
+#include "glm/glm.hpp"
 
 class Screen
 {
 public:
+    static void Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync);
+    static void InitInputHandler();
+    static void Apply();
+
     static Framebuffer* ScreenFramebuffer();
     static int GetWidth();
     static void SetWidth(int width);
@@ -37,14 +40,11 @@ public:
     static bool IsInCallback();
 
 private:
-    static void Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync);
-    static void Apply();
+    static Window* CreateWindow();
+
+    static Window* _window;
 
     static Framebuffer* _framebuffer;
-    static int _xPosition, _yPosition;
-    static bool _isMinimized;
     static bool _doubleBuffer;
     static bool isInResizeCallback;
-
-    friend class Application;
 };

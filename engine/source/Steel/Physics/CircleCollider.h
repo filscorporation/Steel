@@ -21,7 +21,7 @@ public:
     float GetRadius() const;
     void SetRadius(float radius);
 
-    bool IsSizeValid() const;
+    bool IsSizeValid() const override;
 
 private:
     void PrepareColliderInfo();

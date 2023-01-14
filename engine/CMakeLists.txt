@@ -140,7 +140,12 @@ set(SOURCE_FILES
         source/Steel/Scripting/ScriptSerializationHelper.h source/Steel/Scripting/Accessors/ScriptStringAttributeAccessor.h
         source/Steel/Resources/SceneData.cpp source/Steel/Resources/SceneData.h source/Steel/Scene/SceneBackup.h source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.cpp
         source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.h source/Steel/UI/UIElements/UIScrollableView.cpp source/Steel/UI/UIElements/UIScrollableView.h
-        source/Steel/Serialization/AttributesRegistration.h source/Steel/Core/Resources.h source/Steel/Core/ApplicationConfig.h)
+        source/Steel/Serialization/AttributesRegistration.h source/Steel/Core/Resources.h source/Steel/Core/ApplicationConfig.h source/Steel/Platform/Window/DesktopWindow.cpp
+        source/Steel/Platform/Window/DesktopWindow.h source/Steel/Rendering/Window.h source/Steel/Platform/Window/AndroidWindow.cpp source/Steel/Platform/Window/AndroidWindow.h
+        source/Steel/Core/TimeProvider.h source/Steel/Platform/Time/DesktopTimeProvider.cpp source/Steel/Platform/Time/DesktopTimeProvider.h
+        source/Steel/Platform/Time/AndroidTimeProvider.cpp source/Steel/Platform/Time/AndroidTimeProvider.h source/Steel/Input/InputHandler.h
+        source/Steel/Platform/Input/AndroidInputHandler.cpp source/Steel/Platform/Input/AndroidInputHandler.h source/Steel/Platform/Input/DesktopInputHandler.cpp
+        source/Steel/Platform/Input/DesktopInputHandler.h source/Steel/Input/InputHandler.cpp)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -221,13 +226,13 @@ if (TARGET_PLATFORM MATCHES LINUX)
     set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
 elseif (TARGET_PLATFORM MATCHES WINDOWS)
     set(MONO_NAME "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
+elseif (TARGET_PLATFORM MATCHES ANDROID)
+    set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
 endif ()
 
 # mono
-if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
-    include_directories(includes/mono/include)
-    target_link_libraries(Steel PRIVATE ${MONO_NAME})
-endif ()
+include_directories(includes/mono/include)
+target_link_libraries(Steel PRIVATE ${MONO_NAME})
 
 # freetype
 add_subdirectory(includes/freetype2 EXCLUDE_FROM_ALL)
