@@ -1,8 +1,12 @@
 #include "ScriptSerializationHelper.h"
+#include "ScriptingSystem.h"
 #include "ScriptingCore.h"
 
 bool ScriptSerializationHelper::RestoreScriptInstance(const std::string& classNamespace, const std::string& className, ScriptData& scriptData)
 {
+    if (!ScriptingSystem::IsInitialized())
+        return false;
+
     MonoClass* monoClass = ScriptingCore::GetMonoClassByFullName(classNamespace, className);
     if (monoClass == nullptr)
     {

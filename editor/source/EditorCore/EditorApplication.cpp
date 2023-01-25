@@ -30,13 +30,13 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->ScreenParams.Color = settings.ScreenColor;
     AppContext->ScreenParams.IsDirty = false;
 
-    AppContext->Config = new ApplicationConfig();
-    SerializationManager::DeserializeConfig(AppContext->Config, GetConfigPath());
-
     AppContext->Resources = new ResourcesManager();
     AppContext->Resources->LoadResources(ENGINE_RESOURCES_PATH);
     AppContext->Resources->LoadResources(RESOURCES_PATH);
     AppContext->Resources->LoadDefaultResources();
+
+    AppContext->Config = new ApplicationConfig();
+    SerializationManager::DeserializeConfig(AppContext->Config, GetConfigPath());
 
     AppContext->Scenes = new SceneManager();
 
@@ -62,11 +62,11 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext->ScreenParams.OffsetY = 0;
     EditorContext->ScreenParams.Color = glm::vec3(0.0f, 0.0f, 0.0f);
 
-    EditorContext->Config = new ApplicationConfig();
-
     EditorContext->Resources = new ResourcesManager();
     EditorContext->Resources->LoadResources(ENGINE_RESOURCES_PATH);
     EditorContext->Resources->LoadDefaultResources();
+
+    EditorContext->Config = new ApplicationConfig();
 
     EditorContext->Scenes = new SceneManager();
 

@@ -284,6 +284,9 @@ void ScriptComponent::TryCallEventMethod(ScriptEventTypes::ScriptEventType event
 
 void ScriptComponent::TryCallCollisionMethod(ScriptEventTypes::ScriptEventType eventType, Collision collision)
 {
+    if (!(ScriptsMask & eventType))
+        return;
+
     void* ctorParams[1];
     MonoObject* entityObject = ScriptingCore::CreateEntityObject(collision.OtherEntity);
     ctorParams[0] = entityObject;

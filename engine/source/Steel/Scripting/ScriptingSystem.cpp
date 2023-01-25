@@ -51,6 +51,9 @@ void ScriptingSystem::Terminate()
 
 void ScriptingSystem::CreateDomain()
 {
+    if (!isInitialized)
+        return;
+
 #ifdef DISTRIBUTE_BUILD
     ScriptingCore::CreateDomain(DISTRIBUTE_API_DLL_PATH, DISTRIBUTE_SCRIPTS_DLL_PATH);
 #else

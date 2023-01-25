@@ -505,14 +505,14 @@ Shader* ResourcesManager::GetShader(const std::string& fileVSPath, const std::st
 
 SceneData* ResourcesManager::LoadSceneData(const std::filesystem::path& filePath)
 {
-    if (!std::ifstream(filePath).good())
+    auto fileData = GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
     {
         Log::LogError("Error loading scene data: file {0} does not exist", PathToString(filePath));
         return nullptr;
     }
 
-    std::ifstream infile(filePath);
-    YAML::Node node = YAML::Load(infile);
+    YAML::Node node = YAML::Load(fileData.Data);
     auto sceneName = node["name"].as<std::string>();
 
     return new SceneData(sceneName);
@@ -571,4 +571,14 @@ Material* ResourcesManager::DefaultUIMaterial()
 Material* ResourcesManager::DefaultUIClippingMaterial()
 {
     return defaultUIClippingMaterial;
+}
+
+FilesManager* ResourcesManager::CreateFilesManager()
+{
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
+    return new DesktopFilesManager();
+#endif
+#if defined PLATFORM_ANDROID
+    return new AndroidFilesManager();
+#endif
 }

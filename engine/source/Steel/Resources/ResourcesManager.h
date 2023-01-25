@@ -9,6 +9,7 @@
 #include "Steel/Rendering/Sprite.h"
 #include "Steel/Rendering/MaterialSystem/Material.h"
 #include "Steel/UI/Font.h"
+#include "FilesManager.h"
 
 #include <vector>
 #include <filesystem>
@@ -29,6 +30,7 @@ public:
     ~ResourcesManager();
 
     const char* GetResourcesPath();
+    FilesManager* GetFilesManager() const;
 
     void SaveResources();
     void LoadResources(const std::string& folderPath);
@@ -90,18 +92,22 @@ private:
     static std::string DataFilePath(const std::string& fileFullPath);
     static std::string ResourceTypeToString(ResourceTypes::ResourceType type);
 
+    FilesManager* CreateFilesManager();
+
+    FilesManager* filesManager = nullptr;
+
     std::vector<std::unordered_map<ResourceID, Resource*>> resources;
     std::unordered_map<std::string, Resource*> pathResourcesMap;
 
     int defaultPixelsPerUnit = 32;
 
-    Font* defaultFont;
-    Shader* defaultSpriteShader;
-    Shader* defaultMeshShader;
-    Shader* defaultUIShader;
-    Shader* defaultUIClippingShader;
-    Material* defaultSpriteMaterial;
-    Material* defaultMeshMaterial;
-    Material* defaultUIMaterial;
-    Material* defaultUIClippingMaterial;
+    Font* defaultFont = nullptr;
+    Shader* defaultSpriteShader = nullptr;
+    Shader* defaultMeshShader = nullptr;
+    Shader* defaultUIShader = nullptr;
+    Shader* defaultUIClippingShader = nullptr;
+    Material* defaultSpriteMaterial = nullptr;
+    Material* defaultMeshMaterial = nullptr;
+    Material* defaultUIMaterial = nullptr;
+    Material* defaultUIClippingMaterial = nullptr;
 };

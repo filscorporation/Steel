@@ -29,27 +29,26 @@ void SerializationManager::SerializeScene(Scene* scene, const std::string& fileP
     YAML::Node node;
 
     SerializeScene(scene, node);
+    std::string nodeData = YAML::Dump(node);
 
-    std::ofstream fout(filePath);
-    fout << node;
-
-    Log::LogInfo("Saved scene " + filePath);
+    FileData fileData { nodeData.c_str(), (int)nodeData.size() };
+    if (Application::Instance->GetResourcesManager()->GetFilesManager()->WriteFile(filePath, fileData))
+        Log::LogDebug("Saved scene {0} size {1}", filePath, fileData.Size);
 }
 
 void SerializationManager::DeserializeScene(Scene* scene, const std::string& filePath)
 {
-    std::ifstream infile(filePath);
-    if (!infile.good())
+    auto fileData = Application::Instance->GetResourcesManager()->GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
     {
         Log::LogError("Error loading scene: file {0} does not exist", filePath);
         return;
     }
 
-    YAML::Node node = YAML::Load(infile);
-
+    YAML::Node node = YAML::Load(fileData.Data);
     DeserializeScene(scene, node);
 
-    Log::LogInfo("Loaded scene " + filePath);
+    Log::LogDebug("Loaded scene {0} size {1}", filePath, fileData.Size);
 }
 
 SceneBackup* SerializationManager::BackupScene(Scene* scene, SceneData* sceneData)
@@ -120,7 +119,7 @@ void SerializationManager::DeserializeScene(Scene* scene, YAML::Node& node)
     context.ResourcesSource = Application::Context()->Resources;
 
     auto entitiesNode = node["entities"];
-    Log::LogInfo("Entities count loaded: {0}", entitiesNode.size());
+    Log::LogDebug("Entities count loaded: {0}", entitiesNode.size());
     if (entitiesNode)
     {
         // Pre pass to fill UUID to EntityID map (for link attributes)
@@ -222,8 +221,8 @@ void SerializationManager::SerializeResource(Resource* resource, const std::stri
 
 void SerializationManager::DeserializeResource(Resource* resource, const std::string& filePath)
 {
-    std::ifstream infile(filePath);
-    if (!infile.good())
+    auto fileData = Application::Instance->GetResourcesManager()->GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
     {
         // No resource data, don't deserialize
         return;
@@ -233,7 +232,7 @@ void SerializationManager::DeserializeResource(Resource* resource, const std::st
     context.SerializedScene = nullptr;
     context.ResourcesSource = Application::Context()->Resources;
 
-    YAML::Node node = YAML::Load(infile);
+    YAML::Node node = YAML::Load(fileData.Data);
 
     auto resourceType = (ResourceTypes::ResourceType)node["type_id"].as<int>();
     if (resourceType != resource->Type)
@@ -258,11 +257,11 @@ void SerializationManager::SerializeConfig(ApplicationConfig* config, const std:
 
 void SerializationManager::DeserializeConfig(ApplicationConfig* config, const std::string& filePath)
 {
-    std::ifstream infile(filePath);
-    if (!infile.good())
+    auto fileData = Application::Instance->GetResourcesManager()->GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
         return;
 
-    YAML::Node node = YAML::Load(infile);
+    YAML::Node node = YAML::Load(fileData.Data);
 
     config->StartingScene = node["starting_scene"].as<ResourceID>();
 }

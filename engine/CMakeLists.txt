@@ -1,17 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(Steel VERSION 0.3)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -ldl -lpthread -lm")
-endif()
-set(CMAKE_CXX_STANDARD 17)
-
-if (${CMAKE_BUILD_TYPE} MATCHES Debug)
-    add_compile_definitions(DEBUG_BUILD)
-else()
-    add_compile_definitions(RELEASE_BUILD)
-endif()
-
 # detect platform
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_compile_definitions(PLATFORM_LINUX)
@@ -26,8 +15,31 @@ else()
     message("Unknown platform: ${CMAKE_SYSTEM_NAME}")
 endif()
 
+# set flags
+if (TARGET_PLATFORM MATCHES WINDOWS OR TARGET_PLATFORM MATCHES LINUX)
+    set(BUILD_FLAGS "-pthread -ldl -lpthread -lm")
+elseif (TARGET_PLATFORM MATCHES ANDROID)
+    set(BUILD_FLAGS "")
+else()
+    message("Unknown platform: ${CMAKE_SYSTEM_NAME}")
+endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BUILD_FLAGS}")
+set(CMAKE_CXX_STANDARD 17)
+
+if (${CMAKE_BUILD_TYPE} MATCHES Debug)
+    add_compile_definitions(DEBUG_BUILD)
+else()
+    add_compile_definitions(RELEASE_BUILD)
+endif()
+
 # for distribute builds
 #add_compile_definitions(DISTRIBUTE_BUILD)
+
+# android is always as distribute
+if (TARGET_PLATFORM MATCHES ANDROID)
+    add_compile_definitions(DISTRIBUTE_BUILD)
+endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -53,9 +65,29 @@ set(ZLIB_FILES includes/zlib/zlib.h includes/zlib/adler32.c includes/zlib/compre
         includes/zlib/gzclose.c includes/zlib/gzlib.c includes/zlib/gzread.c includes/zlib/gzwrite.c includes/zlib/inflate.c
         includes/zlib/infback.c includes/zlib/inftrees.c includes/zlib/inffast.c includes/zlib/trees.c includes/zlib/uncompr.c includes/zlib/zutil.c)
 
+# platform files
+if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
+    set(PLATFORM_SOURCE_FILES
+            source/Steel/Rendering/Core/OpenGLAPI.cpp source/Steel/Rendering/Core/OpenGLAPI.h
+            source/Steel/Platform/Window/DesktopWindow.cpp source/Steel/Platform/Window/DesktopWindow.h
+            source/Steel/Platform/Time/DesktopTimeProvider.cpp source/Steel/Platform/Time/DesktopTimeProvider.h
+            source/Steel/Platform/Input/DesktopInputHandler.cpp source/Steel/Platform/Input/DesktopInputHandler.h
+            source/Steel/Platform/Audio/DesktopAudioDevice.h source/Steel/Platform/Audio/DesktopAudioDevice.cpp
+            source/Steel/Platform/FilesManager/DesktopFilesManager.cpp source/Steel/Platform/FilesManager/DesktopFilesManager.h)
+endif()
+if (TARGET_PLATFORM MATCHES ANDROID)
+    set(PLATFORM_SOURCE_FILES
+            source/Steel/Rendering/Core/OpenGLAPI.cpp source/Steel/Rendering/Core/OpenGLAPI.h
+            source/Steel/Platform/Window/AndroidWindow.cpp source/Steel/Platform/Window/AndroidWindow.h
+            source/Steel/Platform/Time/AndroidTimeProvider.cpp source/Steel/Platform/Time/AndroidTimeProvider.h
+            source/Steel/Platform/Input/AndroidInputHandler.cpp source/Steel/Platform/Input/AndroidInputHandler.h
+            source/Steel/Platform/Audio/AndroidAudioDevice.cpp source/Steel/Platform/Audio/AndroidAudioDevice.h
+            source/Steel/Platform/FilesManager/AndroidFilesManager.cpp source/Steel/Platform/FilesManager/AndroidFilesManager.h)
+endif()
+
 set(INCLUDE_FOLDER "includes")
 set(SOURCE_FILES
-        ${GLAD_FILES} ${ZLIB_FILES}
+        ${GLAD_FILES} ${ZLIB_FILES} ${PLATFORM_SOURCE_FILES}
         source/Steel/Rendering/MaterialSystem/Shader.h source/Steel/Rendering/MaterialSystem/Shader.cpp source/Steel/Core/Application.cpp
         source/Steel/Core/Application.h source/Steel/Input/Input.cpp source/Steel/Input/Input.h source/Steel/Input/KeyCodes.h
         source/Steel/Input/MouseCodes.h source/Steel.h source/Steel/EntityComponentSystem/Component.cpp
@@ -100,7 +132,7 @@ set(SOURCE_FILES
         source/Steel/UI/FontManager.cpp source/Steel/UI/FontManager.h
         source/Steel/EntityComponentSystem/SparseSet.h source/Steel/Math/Math.h
         source/Steel/Math/PerlinNoise.cpp source/Steel/Math/PerlinNoise.h
-        source/Steel/Resources/PngLoader.cpp source/Steel/Resources/PngLoader.h source/Steel/Rendering/Core/OpenGLAPI.cpp source/Steel/Rendering/Core/OpenGLAPI.h
+        source/Steel/Resources/PngLoader.cpp source/Steel/Resources/PngLoader.h
         source/Steel/Resources/AsepriteLoader.cpp source/Steel/Resources/AsepriteLoader.h source/Steel/Resources/AsepriteData.h
         source/Steel/Resources/FileLoader.cpp source/Steel/Resources/FileLoader.h
         source/Steel/Scripting/ScriptingCommon.h source/Steel/UI/UIElements/UIInputField.cpp
@@ -140,13 +172,9 @@ set(SOURCE_FILES
         source/Steel/Scripting/ScriptSerializationHelper.h source/Steel/Scripting/Accessors/ScriptStringAttributeAccessor.h
         source/Steel/Resources/SceneData.cpp source/Steel/Resources/SceneData.h source/Steel/Scene/SceneBackup.h source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.cpp
         source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.h source/Steel/UI/UIElements/UIScrollableView.cpp source/Steel/UI/UIElements/UIScrollableView.h
-        source/Steel/Serialization/AttributesRegistration.h source/Steel/Core/Resources.h source/Steel/Core/ApplicationConfig.h source/Steel/Platform/Window/DesktopWindow.cpp
-        source/Steel/Platform/Window/DesktopWindow.h source/Steel/Rendering/Window.h source/Steel/Platform/Window/AndroidWindow.cpp source/Steel/Platform/Window/AndroidWindow.h
-        source/Steel/Core/TimeProvider.h source/Steel/Platform/Time/DesktopTimeProvider.cpp source/Steel/Platform/Time/DesktopTimeProvider.h
-        source/Steel/Platform/Time/AndroidTimeProvider.cpp source/Steel/Platform/Time/AndroidTimeProvider.h source/Steel/Input/InputHandler.h
-        source/Steel/Platform/Input/AndroidInputHandler.cpp source/Steel/Platform/Input/AndroidInputHandler.h source/Steel/Platform/Input/DesktopInputHandler.cpp
-        source/Steel/Platform/Input/DesktopInputHandler.h source/Steel/Input/InputHandler.cpp source/Steel/Audio/AudioDevice.h source/Steel/Platform/Audio/DesktopAudioDevice.cpp
-        source/Steel/Platform/Audio/DesktopAudioDevice.h source/Steel/Platform/Audio/AndroidAudioDevice.cpp source/Steel/Platform/Audio/AndroidAudioDevice.h)
+        source/Steel/Serialization/AttributesRegistration.h source/Steel/Core/Resources.h source/Steel/Core/ApplicationConfig.h source/Steel/Rendering/Window.h
+        source/Steel/Core/TimeProvider.h source/Steel/Input/InputHandler.h source/Steel/Input/InputHandler.cpp source/Steel/Audio/AudioDevice.h
+        source/Steel/Resources/FilesManager.h source/Steel/Resources/FileData.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")
@@ -189,6 +217,9 @@ if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
     find_package(OpenGL REQUIRED)
     target_link_libraries(Steel PRIVATE ${OPENGL_LIBRARIES})
 endif ()
+if (TARGET_PLATFORM MATCHES ANDROID)
+    target_link_libraries(Steel PRIVATE android EGL GLESv3)
+endif ()
 
 # stb
 include_directories(includes)
@@ -228,7 +259,7 @@ if (TARGET_PLATFORM MATCHES LINUX)
 elseif (TARGET_PLATFORM MATCHES WINDOWS)
     set(MONO_NAME "${PROJECT_SOURCE_DIR}/includes/mono/lib/mono-2.0-sgen.lib")
 elseif (TARGET_PLATFORM MATCHES ANDROID)
-    set(MONO_NAME "/usr/lib/libmonosgen-2.0.so")
+    set(MONO_NAME "${PROJECT_SOURCE_DIR}/includes/mono/lib/libmonobdwgc-2.0.so")
 endif ()
 
 # mono

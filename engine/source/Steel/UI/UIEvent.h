@@ -1,10 +1,10 @@
 #pragma once
 
-#include "glm/vec2.hpp"
-#include <string>
-
 #include "Steel/Input/ButtonStates.h"
 #include "Steel/Common/FlagType.h"
+
+#include <glm/vec2.hpp>
+#include <string>
 
 namespace UIEventTypes
 {

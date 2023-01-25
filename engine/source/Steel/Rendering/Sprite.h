@@ -1,12 +1,12 @@
 #pragma once
 
+#include "Steel/Rendering/MaterialSystem/Texture.h"
+
 #include <array>
 #include <cstdint>
 #include <string>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-
-#include "Steel/Rendering/MaterialSystem/Texture.h"
 
 class Sprite : public Resource
 {

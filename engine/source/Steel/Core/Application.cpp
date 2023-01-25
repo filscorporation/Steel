@@ -21,7 +21,11 @@
 #include "Steel/Serialization/SerializationManager.h"
 
 #ifdef DISTRIBUTE_BUILD
+#ifdef PLATFORM_ANDROID
+#define CONFIG_PATH "/application.config"
+#else
 #define CONFIG_PATH "application.config"
+#endif
 #else
 #define CONFIG_PATH "../../application.config"
 #endif
@@ -35,7 +39,7 @@ ApplicationContext* Application::Context()
 
 Application::Application()
 {
-#ifdef DISTRIBUTE_BUILD
+#if defined DISTRIBUTE_BUILD && defined PLATFORM_WINDOWS
     FreeConsole();
 #endif
 
@@ -64,7 +68,9 @@ void Application::InitSystems(int width, int height, glm::vec3 color, bool fulls
 
     CoreTypeSystem::Init();
     SerializationManager::Init();
+#if defined PLATFORM_WINDOWS || defined PLATFORM_LINUX
     ScriptingSystem::Init();
+#endif
     Renderer::Init();
     AudioCore::Init();
 }
@@ -88,19 +94,24 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     context->ScreenParams.Color = settings.ScreenColor;
     context->ScreenParams.IsDirty = false;
 
-    context->Config = new ApplicationConfig();
-    SerializationManager::DeserializeConfig(context->Config, GetConfigPath());
-
     context->Resources = new ResourcesManager();
     context->Resources->SetDefaultPixelsPerUnit(settings.DefaultPixelsPerUnit);
-    context->Resources->LoadResources(ENGINE_RESOURCES_PATH);
+#if defined PLATFORM_WINDOWS || defined PLATFORM_LINUX
+    context->Resources->LoadResources(ENGINE_RESOURCES_PATH); // TODO: remove when resource packing ready
+#endif
     context->Resources->LoadResources(RESOURCES_PATH);
     context->Resources->LoadDefaultResources();
+
+    context->Config = new ApplicationConfig();
+    SerializationManager::DeserializeConfig(context->Config, GetConfigPath());
 
     context->Scenes = new SceneManager();
 
     ScriptingSystem::CreateDomain();
+    context->Scripting = false;
+#if defined PLATFORM_WINDOWS || defined PLATFORM_LINUX
     context->Scripting = true;
+#endif
 
     return context;
 }
@@ -283,7 +294,7 @@ std::string Application::GetRuntimePath()
     return std::string(result);
 #endif
 #ifdef PLATFORM_ANDROID
-    return ""; // TODO
+    return ""; // not supported
 #endif
 }
 

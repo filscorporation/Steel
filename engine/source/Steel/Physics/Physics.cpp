@@ -14,7 +14,7 @@ void Physics::CreatePhysicsScene(EntitiesRegistry* entitiesRegistry)
 {
     PhysicsCore::CreateWorld();
 
-    Log::LogDebug("Physics initialized");
+    Log::LogDebug("Physics scene created");
 }
 
 void Physics::DeletePhysicsScene()
