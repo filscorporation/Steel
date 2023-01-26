@@ -18,6 +18,7 @@ float Time::TimeScale = 1.0f;
 void Time::Init()
 {
     timeProvider = CreateTimeProvider();
+    timeProvider->Init();
 }
 
 void Time::Terminate()

@@ -8,5 +8,9 @@ public:
     AndroidTimeProvider() = default;
     ~AndroidTimeProvider() override = default;
 
+    void Init() override;
     float GetTime() override;
+
+private:
+    double startTime;
 };

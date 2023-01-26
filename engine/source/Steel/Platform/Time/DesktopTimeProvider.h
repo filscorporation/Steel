@@ -8,5 +8,6 @@ public:
     DesktopTimeProvider() = default;
     ~DesktopTimeProvider() override = default;
 
+    void Init() override;
     float GetTime() override;
 };
