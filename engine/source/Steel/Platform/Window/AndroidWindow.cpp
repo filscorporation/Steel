@@ -1,10 +1,13 @@
 #include "AndroidWindow.h"
+#include "Steel/Core/Application.h"
 
-// TODO: implement
+int _width, _height;
+bool screenSizeDirty;
 
 void AndroidWindow::Init(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync)
 {
-
+    _width = width;
+    _height = height;
 }
 
 void AndroidWindow::InitInputHandler()
@@ -14,37 +17,20 @@ void AndroidWindow::InitInputHandler()
 
 void AndroidWindow::Apply()
 {
-
+    _width = Application::Context()->ScreenParams.Width;
+    _height = Application::Context()->ScreenParams.Height;
+    Application::Context()->ScreenParams.ResolutionX = _width;
+    Application::Context()->ScreenParams.ResolutionY = _height;
 }
 
 int AndroidWindow::GetWidth()
 {
-    return 0;
-}
-
-void AndroidWindow::SetWidth(int width)
-{
-
+    return _width;
 }
 
 int AndroidWindow::GetHeight()
 {
-    return 0;
-}
-
-void AndroidWindow::SetHeight(int width)
-{
-
-}
-
-bool AndroidWindow::GetFullscreen()
-{
-    return false;
-}
-
-void AndroidWindow::SetFullscreen(bool fullscreen)
-{
-
+    return _height;
 }
 
 bool AndroidWindow::GetIsMinimized()
@@ -54,12 +40,12 @@ bool AndroidWindow::GetIsMinimized()
 
 bool AndroidWindow::IsScreenSizeDirty()
 {
-    return false;
+    return screenSizeDirty;
 }
 
 void AndroidWindow::SetScreenSizeDirty()
 {
-
+    screenSizeDirty = true;
 }
 
 void AndroidWindow::UpdateSize()
@@ -74,7 +60,7 @@ void AndroidWindow::SwapBuffers()
 
 void AndroidWindow::ClearDirty()
 {
-
+    screenSizeDirty = false;
 }
 
 bool AndroidWindow::WindowShouldClose()
@@ -89,5 +75,5 @@ void AndroidWindow::Terminate()
 
 float AndroidWindow::InvertY(float y)
 {
-    return 0;
+    return (float)_height - y;
 }

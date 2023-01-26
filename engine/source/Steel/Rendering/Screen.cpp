@@ -44,6 +44,24 @@ Framebuffer* Screen::ScreenFramebuffer()
     return _framebuffer;
 }
 
+void Screen::Resize(int width, int height)
+{
+    if (!Application::Context()->ScreenParams.CanResize
+        || Application::Context()->ScreenParams.Width == width && Application::Context()->ScreenParams.Height == height)
+        return;
+
+    _window->SetScreenSizeDirty();
+    Application::Context()->ScreenParams.Width = width;
+    Application::Context()->ScreenParams.Height = height;
+    Application::Context()->ScreenParams.WidthBackup = width;
+    Application::Context()->ScreenParams.HeightBackup = height;
+    Application::Context()->ScreenParams.ResolutionX = width;
+    Application::Context()->ScreenParams.ResolutionY = height;
+    EnterCallback();
+    Apply();
+    ExitCallback();
+}
+
 int Screen::GetWidth()
 {
     return _window->GetWidth();

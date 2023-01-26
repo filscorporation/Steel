@@ -66,7 +66,6 @@ void DesktopWindow::Apply()
         Application::Context()->ScreenParams.WidthBackup = Application::Context()->ScreenParams.Width;
         Application::Context()->ScreenParams.HeightBackup = Application::Context()->ScreenParams.Height;
         Application::Context()->ScreenParams.Width = mode->width;
-        Application::Context()->ScreenParams.Width = mode->width;
         Application::Context()->ScreenParams.Height = mode->height;
         if (Application::Context()->ScreenParams.AutoResolution)
         {
@@ -107,20 +106,6 @@ int DesktopWindow::GetWidth()
     return Application::Context()->ScreenParams.ResolutionX;
 }
 
-void DesktopWindow::SetWidth(int width)
-{
-    if (!Application::Context()->ScreenParams.CanResize || Application::Context()->ScreenParams.Width == width)
-        return;
-
-    screenSizeDirty = true;
-    Application::Context()->ScreenParams.Width = width;
-    Application::Context()->ScreenParams.WidthBackup = width;
-    Application::Context()->ScreenParams.ResolutionX = width;
-    Screen::EnterCallback();
-    Apply();
-    Screen::ExitCallback();
-}
-
 int DesktopWindow::GetHeight()
 {
     if (Application::Context()->ScreenParams.Fullscreen)
@@ -132,37 +117,6 @@ int DesktopWindow::GetHeight()
     }
 
     return Application::Context()->ScreenParams.ResolutionY;
-}
-
-void DesktopWindow::SetHeight(int height)
-{
-    if (!Application::Context()->ScreenParams.CanResize || Application::Context()->ScreenParams.Height == height)
-        return;
-
-    screenSizeDirty = true;
-    Application::Context()->ScreenParams.Height = height;
-    Application::Context()->ScreenParams.HeightBackup = height;
-    Application::Context()->ScreenParams.ResolutionY = height;
-    Screen::EnterCallback();
-    Apply();
-    Screen::ExitCallback();
-}
-
-bool DesktopWindow::GetFullscreen()
-{
-    return Application::Context()->ScreenParams.Fullscreen;
-}
-
-void DesktopWindow::SetFullscreen(bool fullscreen)
-{
-    if (!Application::Context()->ScreenParams.CanResize || Application::Context()->ScreenParams.Fullscreen == fullscreen)
-        return;
-
-    screenSizeDirty = true;
-    Application::Context()->ScreenParams.Fullscreen = fullscreen;
-    Screen::EnterCallback();
-    Apply();
-    Screen::ExitCallback();
 }
 
 bool DesktopWindow::GetIsMinimized()

@@ -13,10 +13,11 @@ public:
     static void Apply();
 
     static Framebuffer* ScreenFramebuffer();
+    static void Resize(int width, int height);
     static int GetWidth();
     static void SetWidth(int width);
     static int GetHeight();
-    static void SetHeight(int width);
+    static void SetHeight(int height);
     static bool GetFullscreen();
     static void SetFullscreen(bool fullscreen);
     static bool GetIsMinimized();

@@ -13,11 +13,7 @@ public:
     virtual void Apply() = 0;
 
     virtual int GetWidth() = 0;
-    virtual void SetWidth(int width) = 0;
     virtual int GetHeight() = 0;
-    virtual void SetHeight(int width) = 0;
-    virtual bool GetFullscreen() = 0;
-    virtual void SetFullscreen(bool fullscreen) = 0;
     virtual bool GetIsMinimized() = 0;
 
     virtual bool IsScreenSizeDirty() = 0;

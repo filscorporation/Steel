@@ -13,11 +13,7 @@ public:
     void Apply() override;
 
     int GetWidth() override;
-    void SetWidth(int width) override;
     int GetHeight() override;
-    void SetHeight(int width) override;
-    bool GetFullscreen() override;
-    void SetFullscreen(bool fullscreen) override;
     bool GetIsMinimized() override;
 
     bool IsScreenSizeDirty() override;
