@@ -1,9 +1,15 @@
-#include <GLAD/glad.h>
-
 #include "Shader.h"
 #include "Steel/Rendering/Core/OpenGLAPI.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Serialization/AttributesRegistration.h"
+
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
+#include <GLAD/glad.h>
+#endif
+#if defined PLATFORM_ANDROID
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
+#endif
 
 #define MAX_TEXTURES 16
 

@@ -1,10 +1,24 @@
 #include "OpenGLAPI.h"
 
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
 #include <GLAD/glad.h>
+#endif
+#if defined PLATFORM_ANDROID
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
+#endif
+
+#undef Always
 
 int OpenGLAPI::Init()
 {
+
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
     return gladLoadGL();
+#endif
+#if defined PLATFORM_ANDROID
+    return 1; // Android OpenGL ES setup is in native code
+#endif
 }
 
 void OpenGLAPI::EnableDepthTest()
@@ -72,6 +86,7 @@ void OpenGLAPI::ClearStencil()
 
 int GLPolygonMode(OpenGLAPI::PolygonMode mode)
 {
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
     switch (mode)
     {
         case OpenGLAPI::Fill:
@@ -81,11 +96,20 @@ int GLPolygonMode(OpenGLAPI::PolygonMode mode)
     }
 
     return -1;
+#endif
+#if defined PLATFORM_ANDROID
+    return 0; // Not supported
+#endif
 }
 
 void OpenGLAPI::SetPolygonMode(PolygonMode mode)
 {
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
     glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(mode));
+#endif
+#if defined PLATFORM_ANDROID
+    // Not supported
+#endif
 }
 
 void OpenGLAPI::SetViewport(int x, int y, int width, int height)

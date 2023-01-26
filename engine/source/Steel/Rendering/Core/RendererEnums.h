@@ -2,6 +2,8 @@
 
 #include "Steel/Common/FlagType.h"
 
+#include <stdint.h>
+
 namespace ClearFlags
 {
     enum ClearFlag

@@ -1,12 +1,18 @@
 #pragma once
 
+#include "Steel/Resources/Resource.h"
+
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <unordered_map>
 
-#include "Steel/Resources/Resource.h"
+#ifdef PLATFORM_ANDROID
+#define SHADER_VERSION "300 es"
+#else
+#define SHADER_VERSION "330 core"
+#endif
 
 class Shader : public Resource
 {

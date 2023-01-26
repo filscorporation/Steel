@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstdint>
-
 #include "Steel/Rendering/Core/RendererEnums.h"
+
+#include <cstdint>
 
 namespace OpenGLAPI
 {

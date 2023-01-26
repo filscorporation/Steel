@@ -5,7 +5,7 @@
 namespace BuiltInShaders
 {
     const char* DefaultSpriteVS =
-"#version 330 core\n"
+"#version " SHADER_VERSION "\n"
 "\n"
 "layout (location = 0) in vec3 position;\n"
 "layout (location = 1) in vec4 color;\n"
@@ -24,7 +24,7 @@ namespace BuiltInShaders
 "}";
 
     const char* DefaultSpriteFS =
-"#version 330 core\n"
+"#version " SHADER_VERSION "\n"
 "\n"
 "in vec4 vertexColor;\n"
 "in vec2 texCoord;\n"
@@ -41,7 +41,7 @@ namespace BuiltInShaders
 "}";
 
     const char* DefaultMeshVS =
-"#version 330 core\n"
+"#version " SHADER_VERSION "\n"
 "\n"
 "layout (location = 0) in vec3 position;\n"
 "layout (location = 1) in vec4 color;\n"
@@ -57,7 +57,7 @@ namespace BuiltInShaders
 "}";
 
     const char* DefaultMeshFS =
-"#version 330 core\n"
+"#version " SHADER_VERSION "\n"
 "\n"
 "in vec4 vertexColor;\n"
 "\n"
@@ -70,7 +70,7 @@ namespace BuiltInShaders
 "}";
 
     const char* DefaultUIVS =
-"#version 330 core\n"
+"#version " SHADER_VERSION "\n"
 "\n"
 "layout (location = 0) in vec3 position;\n"
 "layout (location = 1) in vec4 color;\n"
@@ -89,7 +89,7 @@ namespace BuiltInShaders
 "}";
 
     const char* DefaultUIFS =
-"#version 330 core\n"
+"#version " SHADER_VERSION "\n"
 "\n"
 "in vec4 vertexColor;\n"
 "in vec2 texCoord;\n"
@@ -106,7 +106,7 @@ namespace BuiltInShaders
 "}";
 
     const char* DefaultUIClippingVS =
-"#version 330 core\n"
+"#version " SHADER_VERSION "\n"
 "\n"
 "layout (location = 0) in vec3 position;\n"
 "\n"
@@ -118,7 +118,7 @@ namespace BuiltInShaders
 "}";
 
     const char* DefaultUIClippingFS =
-"#version 330 core\n"
+"#version " SHADER_VERSION "\n"
 "\n"
 "out vec4 color;\n"
 "\n"

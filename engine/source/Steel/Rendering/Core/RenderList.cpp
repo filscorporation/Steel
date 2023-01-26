@@ -219,7 +219,7 @@ void RenderList::ClearBuffers()
 void RenderList::PrepareResources(RenderContext* renderContext)
 {
     const char* WireframeVS =
-            "#version 330 core\n"
+            "#version " SHADER_VERSION "\n"
             "layout (location = 0) in vec3 position;\n"
             "uniform mat4 view_projection;\n"
             "void main()\n"
@@ -228,20 +228,24 @@ void RenderList::PrepareResources(RenderContext* renderContext)
             "}";
 
     const char* WireframeFS =
-            "#version 330 core\n"
+            "#version " SHADER_VERSION "\n"
             "out vec4 color;\n"
             "void main()\n"
             "{\n"
             "    color = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
             "}";
 
-    wireframeShader = new Shader(WireframeVS, WireframeFS);
-    wireframeMaterial = new Material();
-    wireframeMaterial->MainShader = wireframeShader;
+    if (renderContext->Task->RenderMode == RenderTaskModes::Wireframe
+        || renderContext->Task->RenderMode == RenderTaskModes::Mixed)
+    {
+        wireframeShader = new Shader(WireframeVS, WireframeFS);
+        wireframeMaterial = new Material();
+        wireframeMaterial->MainShader = wireframeShader;
 
-    wireframeShader->Use();
-    wireframeMaterial->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(renderContext->Task->ViewProjection));
-    wireframeMaterial->Properties.Apply(wireframeShader);
+        wireframeShader->Use();
+        wireframeMaterial->Properties.SetMat4(VIEW_PROJECTION, glm::value_ptr(renderContext->Task->ViewProjection));
+        wireframeMaterial->Properties.Apply(wireframeShader);
+    }
 }
 
 void RenderList::ClearResources()

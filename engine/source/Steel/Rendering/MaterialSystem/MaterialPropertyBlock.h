@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Shader.h"
+#include "Steel/Rendering/Core/RendererEnums.h"
+
 #include <glm/glm.hpp>
 #include <string>
 #include <map>
-
-#include "Shader.h"
-#include "Steel/Rendering/Core/RendererEnums.h"
 
 #define MAIN_TEX "main_tex"
 

@@ -32,6 +32,6 @@ private:
     uint32_t* indexBufferData;
     uint32_t indexBufferID, vertexBufferID;
 
-    Shader* wireframeShader;
-    Material* wireframeMaterial;
+    Shader* wireframeShader = nullptr;
+    Material* wireframeMaterial = nullptr;
 };
