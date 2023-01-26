@@ -2,7 +2,6 @@
 #include "AsepriteLoader.h"
 #include "PngLoader.h"
 #include "Steel/Core/Log.h"
-#include "Steel/Math/Math.h"
 #include "Steel/Math/Random.h"
 #include "Steel/Audio/AudioCore.h"
 #include "Steel/Audio/WavLoader.h"
@@ -10,11 +9,15 @@
 #include "Steel/Serialization/SerializationManager.h"
 #include "Steel/UI/FontManager.h"
 
+#include "Steel/Platform/FilesManager/AndroidFilesManager.h"
+#include "Steel/Platform/FilesManager/DesktopFilesManager.h"
+
 #include <yaml-cpp/yaml.h>
 
 ResourcesManager::ResourcesManager()
 {
     resources.resize(RESOURCE_TYPES_COUNT);
+    filesManager = CreateFilesManager();
 
     FontManager::Init();
 }
@@ -29,6 +32,7 @@ ResourcesManager::~ResourcesManager()
         }
     }
     resources.clear();
+    delete filesManager;
 
     FontManager::Terminate();
 }
@@ -84,15 +88,15 @@ std::string ResourcesManager::ResourceTypeToString(ResourceTypes::ResourceType t
 
 void ResourcesManager::LoadResources(const std::string& folderPath)
 {
-    if (!std::filesystem::exists(folderPath))
+    std::vector<std::filesystem::path> files;
+    if (!GetFilesManager()->GetFilesInDirRecursive(folderPath, files))
     {
         Log::LogWarning("Resources not found in path: \"{0}\"", folderPath);
         return;
     }
 
-    for (std::filesystem::recursive_directory_iterator i(folderPath), end; i != end; ++i)
-        if (!is_directory(i->path()) && is_regular_file(i->path()))
-            TryLoadResource(GetAbsolutePath(i->path()));
+    for (auto& path : files)
+        TryLoadResource(GetAbsolutePath(path));
 }
 
 Resource* ResourcesManager::TryLoadResource(const std::filesystem::path& filePath)
@@ -185,6 +189,11 @@ void ResourcesManager::LoadDefaultResources()
 const char* ResourcesManager::GetResourcesPath()
 {
     return RESOURCES_PATH;
+}
+
+FilesManager* ResourcesManager::GetFilesManager() const
+{
+    return filesManager;
 }
 
 bool ResourcesManager::ResourceExists(ResourceTypes::ResourceType type, ResourceID resourceID)
