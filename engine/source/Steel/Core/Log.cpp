@@ -10,7 +10,7 @@ std::shared_ptr<spdlog::logger> Log::_logger = nullptr;
 
 void Log::Init()
 {
-#ifdef DISTRIBUTE_BUILD
+#if defined DISTRIBUTE_BUILD && !defined PLATFORM_ANDROID
     spdlog::set_level(spdlog::level::info);
 #else
     spdlog::set_level(spdlog::level::trace);

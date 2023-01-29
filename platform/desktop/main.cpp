@@ -8,7 +8,11 @@ int main()
     app.Init(settings);
 
     // Run application main loop
-    app.Run();
+    app.PrepareRun();
+    app.RunMainLoop();
+
+    // Terminate app
+    app.Terminate();
 
     return 0;
 }

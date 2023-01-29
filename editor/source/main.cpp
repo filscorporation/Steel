@@ -10,7 +10,11 @@ int main()
     app.Init(settings);
 
     // Run application main loop
-    app.Run();
+    app.PrepareRun();
+    app.RunMainLoop();
+
+    // Terminate application
+    app.Terminate();
 
     return 0;
 }

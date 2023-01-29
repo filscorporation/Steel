@@ -8,9 +8,22 @@
 #include "Steel/Rendering/MaterialSystem/BuiltInShaders.h"
 #include "Steel/Serialization/SerializationManager.h"
 #include "Steel/UI/FontManager.h"
+#include "Steel/Core/Application.h"
 
-#include "Steel/Platform/FilesManager/AndroidFilesManager.h"
+#ifdef DISTRIBUTE_BUILD
+#define ENGINE_RESOURCES_PATH "Resources/"
+#define RESOURCES_PATH "Resources/"
+#else
+#define ENGINE_RESOURCES_PATH "/engine/resources/"
+#define RESOURCES_PATH "../../resources/"
+#endif
+
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
 #include "Steel/Platform/FilesManager/DesktopFilesManager.h"
+#endif
+#if defined PLATFORM_ANDROID
+#include "Steel/Platform/FilesManager/AndroidFilesManager.h"
+#endif
 
 #include <yaml-cpp/yaml.h>
 
@@ -186,11 +199,6 @@ void ResourcesManager::LoadDefaultResources()
     AddResource(defaultUIClippingMaterial);
 }
 
-const char* ResourcesManager::GetResourcesPath()
-{
-    return RESOURCES_PATH;
-}
-
 FilesManager* ResourcesManager::GetFilesManager() const
 {
     return filesManager;
@@ -243,6 +251,16 @@ std::string ResourcesManager::GetAbsolutePath(const std::filesystem::path& path)
     return weakly_canonical(path).string();
 }
 
+std::string ResourcesManager::GetResourcesPath()
+{
+    return RESOURCES_PATH;
+}
+
+std::string ResourcesManager::GetEngineResourcesPath()
+{
+    return Application::Instance->GetRelativeRootPath() + ENGINE_RESOURCES_PATH;
+}
+
 std::filesystem::path ResourcesManager::GetResourceFilePath(const std::string& filePath)
 {
     return GetAbsolutePath(RESOURCES_PATH + filePath);
@@ -250,7 +268,7 @@ std::filesystem::path ResourcesManager::GetResourceFilePath(const std::string& f
 
 std::filesystem::path ResourcesManager::GetEngineResourceFilePath(const std::string& filePath)
 {
-    return GetAbsolutePath(ENGINE_RESOURCES_PATH + filePath);
+    return GetAbsolutePath(GetEngineResourcesPath() + filePath);
 }
 
 Resource* ResourcesManager::GetResource(const std::string& filePath)

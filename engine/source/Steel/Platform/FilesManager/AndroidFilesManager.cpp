@@ -47,8 +47,12 @@ bool AndroidFilesManager::WriteFile(const std::string& filePath, FileData fileDa
 
 bool AndroidFilesManager::GetFilesInDirRecursive(const std::string& dirPath, std::vector<std::filesystem::path>& outFilesPath)
 {
+    // TODO: for now returns all resources
     for (auto& pair : filesPath)
-        outFilesPath.push_back(pair.first);
+    {
+        if (pair.first.rfind(dirPath, 0))
+            outFilesPath.push_back(pair.first);
+    }
 
     return true;
 }

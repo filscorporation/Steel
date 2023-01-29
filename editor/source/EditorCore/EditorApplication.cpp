@@ -10,6 +10,7 @@
 
 void EditorApplication::Init(ApplicationSettings settings)
 {
+    RootPath = "../../..";
     InitSystems(1400, 800, glm::vec3(0.0f, 0.0f, 0.0f), settings.Fullscreen, settings.DoubleBuffer, settings.VSync);
     EditorTypeSystem::Init();
 
@@ -31,8 +32,8 @@ void EditorApplication::Init(ApplicationSettings settings)
     AppContext->ScreenParams.IsDirty = false;
 
     AppContext->Resources = new ResourcesManager();
-    AppContext->Resources->LoadResources(ENGINE_RESOURCES_PATH);
-    AppContext->Resources->LoadResources(RESOURCES_PATH);
+    AppContext->Resources->LoadResources(ResourcesManager::GetEngineResourcesPath());
+    AppContext->Resources->LoadResources(ResourcesManager::GetResourcesPath());
     AppContext->Resources->LoadDefaultResources();
 
     AppContext->Config = new ApplicationConfig();
@@ -63,7 +64,7 @@ void EditorApplication::Init(ApplicationSettings settings)
     EditorContext->ScreenParams.Color = glm::vec3(0.0f, 0.0f, 0.0f);
 
     EditorContext->Resources = new ResourcesManager();
-    EditorContext->Resources->LoadResources(ENGINE_RESOURCES_PATH);
+    EditorContext->Resources->LoadResources(ResourcesManager::GetEngineResourcesPath());
     EditorContext->Resources->LoadDefaultResources();
 
     EditorContext->Config = new ApplicationConfig();
@@ -288,4 +289,9 @@ bool EditorApplication::IsRunning()
 SelectionController* EditorApplication::GetSelectionController() const
 {
     return _selectionController;
+}
+
+std::string EditorApplication::GetRelativeRootPath()
+{
+    return RootPath;
 }

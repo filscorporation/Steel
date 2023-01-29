@@ -22,6 +22,7 @@ public:
     EditorApplication() : Application() {}
 
     void Init(ApplicationSettings settings) override;
+    void Terminate() override;
     void BeforeStartRunLoop() override;
     void RunUpdate() override;
     bool IsRunning() override;
@@ -41,8 +42,8 @@ public:
     SelectionController* GetSelectionController() const;
 
 private:
-    void Terminate() override;
     void CreateEditorViewCamera();
+    std::string GetRelativeRootPath();
 
     EditorStates::EditorState state = EditorStates::Stopped;
     SceneBackup* sceneBackup = nullptr;

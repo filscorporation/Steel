@@ -1,13 +1,15 @@
 #include "ScriptingSystem.h"
 #include "ScriptingCore.h"
 #include "Steel/Core/Log.h"
+#include "Steel/Core/Application.h"
 
 // TODO: temp solution for development, later should link to Steel bins folder
 #if PLATFORM_WINDOWS
 #define DEBUG_MONO_LIB_PATH "C:\\Program Files (x86)\\Mono\\lib"
 #define DEBUG_MONO_ETC_PATH "C:\\Program Files (x86)\\Mono\\etc"
-#define DEBUG_API_DLL_PATH "..\\..\\..\\scripting\\SteelCustom\\bin\\Debug\\SteelCore.dll"
-#define DEBUG_SCRIPTS_DLL_PATH "..\\..\\..\\scripting\\SteelCustom\\bin\\Debug\\SteelCustom.dll"
+#define DEBUG_API_DLL_PATH "/scripting/SteelCustom/bin/Debug/SteelCore.dll"
+#define DEBUG_SCRIPTS_DLL_PATH "/scripting/SteelCustom/bin/Debug/SteelCustom.dll"
+
 #define DISTRIBUTE_MONO_LIB_PATH "Mono\\lib"
 #define DISTRIBUTE_MONO_ETC_PATH "Mono\\etc"
 #define DISTRIBUTE_API_DLL_PATH "Bin\\SteelCore.dll"
@@ -16,8 +18,19 @@
 #ifdef PLATFORM_LINUX
 #define DEBUG_MONO_LIB_PATH "/usr/lib/"
 #define DEBUG_MONO_ETC_PATH "/usr/lib/mono"
+#define DEBUG_API_DLL_PATH "/scripting/SteelCustom/bin/Debug/SteelCore.dll"
+#define DEBUG_SCRIPTS_DLL_PATH "/scripting/SteelCustom/bin/Debug/SteelCustom.dll"
+#endif
+#ifdef PLATFORM_ANDROID // TODO: ?
+#define DEBUG_MONO_LIB_PATH "/usr/lib/"
+#define DEBUG_MONO_ETC_PATH "/usr/lib/mono"
 #define DEBUG_API_DLL_PATH "../../../scripting/SteelCustom/bin/Debug/SteelCore.dll"
 #define DEBUG_SCRIPTS_DLL_PATH "../../../scripting/SteelCustom/bin/Debug/SteelCustom.dll"
+
+#define DISTRIBUTE_MONO_LIB_PATH "Mono\\lib"
+#define DISTRIBUTE_MONO_ETC_PATH "Mono\\etc"
+#define DISTRIBUTE_API_DLL_PATH "Bin\\SteelCore.dll"
+#define DISTRIBUTE_SCRIPTS_DLL_PATH "Bin\\SteelCustom.dll"
 #endif
 
 bool ScriptingSystem::isInitialized = false;
@@ -57,7 +70,8 @@ void ScriptingSystem::CreateDomain()
 #ifdef DISTRIBUTE_BUILD
     ScriptingCore::CreateDomain(DISTRIBUTE_API_DLL_PATH, DISTRIBUTE_SCRIPTS_DLL_PATH);
 #else
-    ScriptingCore::CreateDomain(DEBUG_API_DLL_PATH, DEBUG_SCRIPTS_DLL_PATH);
+    ScriptingCore::CreateDomain((Application::Instance->GetRelativeRootPath() + DEBUG_API_DLL_PATH).c_str(),
+                                (Application::Instance->GetRelativeRootPath() + DEBUG_SCRIPTS_DLL_PATH).c_str());
 #endif
 }
 

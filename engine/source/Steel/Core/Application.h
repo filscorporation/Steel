@@ -54,7 +54,9 @@ public:
 
     Application();
     virtual void Init(ApplicationSettings settings);
-    void Run();
+    void PrepareRun();
+    void RunMainLoop();
+    virtual void Terminate();
     virtual void BeforeStartRunLoop();
     virtual void RunUpdate();
     void Quit();
@@ -69,6 +71,7 @@ public:
     Scene* GetCurrentScene();
 
     std::string GetRuntimePath();
+    virtual std::string GetRelativeRootPath();
     std::string GetDataPath();
 
 protected:
@@ -77,8 +80,8 @@ protected:
     ApplicationContext* CurrentContext = nullptr;
     ApplicationContext* AppContext = nullptr;
     Scene* SceneToSwitch = nullptr;
+    std::string RootPath;
 
-    virtual void Terminate();
     void InitSystems(int width, int height, glm::vec3 color, bool fullscreen, bool doubleBuffer, bool vSync);
     ApplicationContext* CreateContext(ApplicationSettings settings);
     void TryLoadSceneOrCreateDefault(ApplicationContext* context);

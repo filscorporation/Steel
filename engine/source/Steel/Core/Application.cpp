@@ -48,6 +48,8 @@ Application::Application()
 
 void Application::Init(ApplicationSettings settings)
 {
+    RootPath = "../../../..";
+
     InitSystems(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer, settings.VSync);
     AppContext = CreateContext(settings);
     TryLoadSceneOrCreateDefault(AppContext);
@@ -96,10 +98,8 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
 
     context->Resources = new ResourcesManager();
     context->Resources->SetDefaultPixelsPerUnit(settings.DefaultPixelsPerUnit);
-#if defined PLATFORM_WINDOWS || defined PLATFORM_LINUX
-    context->Resources->LoadResources(ENGINE_RESOURCES_PATH); // TODO: remove when resource packing ready
-#endif
-    context->Resources->LoadResources(RESOURCES_PATH);
+    context->Resources->LoadResources(ResourcesManager::GetEngineResourcesPath());
+    context->Resources->LoadResources(ResourcesManager::GetResourcesPath());
     context->Resources->LoadDefaultResources();
 
     context->Config = new ApplicationConfig();
@@ -147,26 +147,23 @@ void Application::TryLoadSceneOrCreateDefault(ApplicationContext* context)
     context->Scenes->SetActiveScene(scene);
 }
 
-void Application::Run()
+void Application::PrepareRun()
 {
-    if (!IsInitialized)
-    {
-        std::cout << "ERROR: APPLICATION IS NOT INITIALIZED" << std::endl;
-        return;
-    }
-
-    Log::LogDebug("Running application");
+    assert(IsInitialized);
 
     IsRunningInternal = true;
 
     BeforeStartRunLoop();
+}
+
+void Application::RunMainLoop()
+{
+    assert(IsInitialized);
 
     while (IsRunningInternal)
     {
         RunUpdate();
     }
-
-    Terminate();
 }
 
 void Application::BeforeStartRunLoop()
@@ -177,6 +174,8 @@ void Application::BeforeStartRunLoop()
 
 void Application::RunUpdate()
 {
+    assert(IsInitialized);
+
     if (!IsRunningInternal)
         return; // When updated not from Run()
 
@@ -208,6 +207,8 @@ void Application::RunUpdate()
 
 void Application::Terminate()
 {
+    assert(IsInitialized);
+
     SwitchContext(AppContext);
     delete AppContext->Scenes;
     delete AppContext->Resources;
@@ -221,6 +222,8 @@ void Application::Terminate()
     ScriptingSystem::Terminate();
     SerializationManager::Terminate();
     CoreTypeSystem::Terminate();
+
+    Log::LogDebug("Application terminated");
 }
 
 void Application::Quit()
@@ -296,6 +299,11 @@ std::string Application::GetRuntimePath()
 #ifdef PLATFORM_ANDROID
     return ""; // not supported
 #endif
+}
+
+std::string Application::GetRelativeRootPath()
+{
+    return RootPath;
 }
 
 std::string Application::GetDataPath()

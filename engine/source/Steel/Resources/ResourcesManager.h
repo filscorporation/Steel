@@ -14,13 +14,6 @@
 #include <vector>
 #include <filesystem>
 
-#ifdef DISTRIBUTE_BUILD
-#define ENGINE_RESOURCES_PATH "Resources/"
-#define RESOURCES_PATH "Resources/"
-#else
-#define ENGINE_RESOURCES_PATH "../../../engine/resources/"
-#define RESOURCES_PATH "../../resources/"
-#endif
 #define RESOURCE_DATA_EXTENSION ".data"
 
 class ResourcesManager
@@ -29,7 +22,6 @@ public:
     ResourcesManager();
     ~ResourcesManager();
 
-    const char* GetResourcesPath();
     FilesManager* GetFilesManager() const;
 
     void SaveResources();
@@ -39,6 +31,8 @@ public:
     static std::string PathToString(const std::filesystem::path& path);
     static std::string GetAbsolutePath(const std::string& path);
     static std::string GetAbsolutePath(const std::filesystem::path& path);
+    static std::string GetResourcesPath();
+    static std::string GetEngineResourcesPath();
     static std::filesystem::path GetResourceFilePath(const std::string& filePath);
     static std::filesystem::path GetEngineResourceFilePath(const std::string& filePath);
     Resource* TryLoadResource(const std::filesystem::path& filePath);
