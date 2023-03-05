@@ -25,6 +25,6 @@ public:
     void PlaySource(uint32_t sourceID) override;
     void StopSource(uint32_t sourceID) override;
 
-    bool InitAudioTrack(AudioTrack* audioTrack, char* trackData) override;
+    bool InitAudioTrack(AudioTrack* audioTrack, const char* trackData) override;
     void DeleteAudioTrack(AudioTrack* audioTrack) override;
 };

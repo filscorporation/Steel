@@ -1,10 +1,11 @@
 #pragma once
 
-#include "../Rendering/Sprite.h"
-#include "../Resources/FileLoader.h"
+#include "FileData.h"
+#include "Steel/Rendering/Sprite.h"
+#include "Steel/Resources/FileLoader.h"
 
 class PngLoader : public FileLoader
 {
 public:
-    static Sprite* LoadImage(const char* fullPath);
+    static Sprite* LoadImage(const FileData& fileData);
 };

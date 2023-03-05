@@ -174,7 +174,7 @@ set(SOURCE_FILES
         source/Steel/Scripting/InternalCalls/ResourcesInternalCalls.h source/Steel/UI/UIElements/UIScrollableView.cpp source/Steel/UI/UIElements/UIScrollableView.h
         source/Steel/Serialization/AttributesRegistration.h source/Steel/Core/Resources.h source/Steel/Core/ApplicationConfig.h source/Steel/Rendering/Window.h
         source/Steel/Core/TimeProvider.h source/Steel/Input/InputHandler.h source/Steel/Input/InputHandler.cpp source/Steel/Audio/AudioDevice.h
-        source/Steel/Resources/FilesManager.h source/Steel/Resources/FileData.h)
+        source/Steel/Resources/FilesManager.h source/Steel/Resources/FileData.h source/Steel/Resources/FileDataReader.cpp source/Steel/Resources/FileDataReader.h)
 
 if(MSVC_VERSION GREATER_EQUAL "1700")
     add_compile_options("/MP")

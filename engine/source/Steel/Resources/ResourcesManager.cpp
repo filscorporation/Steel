@@ -329,7 +329,8 @@ inline std::string GetNameFromPath(const std::string& path)
 
 Sprite* ResourcesManager::LoadSprite(const std::filesystem::path& filePath)
 {
-    if (!std::ifstream(filePath).good())
+    auto fileData = GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
     {
         Log::LogError("Error loading image: file {0} does not exist", PathToString(filePath));
         return nullptr;
@@ -339,11 +340,11 @@ Sprite* ResourcesManager::LoadSprite(const std::filesystem::path& filePath)
     std::string extension = PathToString(filePath.extension());
     if (extension == ".png")
     {
-        image = PngLoader::LoadImage(PathToString(filePath).c_str());
+        image = PngLoader::LoadImage(fileData);
     }
     else if (extension == ".aseprite")
     {
-        auto data = AsepriteLoader::LoadAsepriteData(PathToString(filePath).c_str());
+        auto data = AsepriteLoader::LoadAsepriteData(fileData);
         if (data == nullptr)
             return nullptr;
 
@@ -393,7 +394,8 @@ Texture* ResourcesManager::GetTexture(const std::string& filePath)
 
 AsepriteData* ResourcesManager::LoadAsepriteData(const std::filesystem::path& filePath)
 {
-    if (!std::ifstream(filePath).good())
+    auto fileData = GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
     {
         Log::LogError("Error loading aseprite data: file {0} does not exist", PathToString(filePath));
         return nullptr;
@@ -406,7 +408,7 @@ AsepriteData* ResourcesManager::LoadAsepriteData(const std::filesystem::path& fi
         return nullptr;
     }
 
-    auto data = AsepriteLoader::LoadAsepriteData(PathToString(filePath).c_str());
+    auto data = AsepriteLoader::LoadAsepriteData(fileData);
     if (data == nullptr)
         return nullptr;
 
@@ -434,24 +436,23 @@ AsepriteData* ResourcesManager::GetAsepriteData(const std::string& filePath, boo
 
 AudioTrack* ResourcesManager::LoadAudioTrack(const std::filesystem::path& filePath)
 {
-    if (!std::ifstream(filePath).good())
+    auto fileData = GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
     {
         Log::LogError("Error loading audio track: file {0} does not exist", PathToString(filePath));
         return nullptr;
     }
 
-    char* data;
-    AudioTrack* audioTrack = WavLoader::LoadWav(PathToString(filePath).c_str(), &data);
+    FileDataReader reader(fileData);
+    AudioTrack* audioTrack = WavLoader::LoadWav(reader);
     if (audioTrack == nullptr)
         return nullptr;
 
-    if (!AudioCore::InitAudioTrack(audioTrack, data))
+    if (!AudioCore::InitAudioTrack(audioTrack, reader.Buffer()))
     {
-        delete[] data;
         delete audioTrack;
         return nullptr;
     }
-    delete[] data;
 
     return audioTrack;
 }
@@ -478,7 +479,8 @@ Animation* ResourcesManager::GetAnimation(const std::string& filePath)
 
 Font* ResourcesManager::LoadFont(const std::filesystem::path& filePath)
 {
-    if (!std::ifstream(filePath).good())
+    auto fileData = GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
     {
         Log::LogError("Error loading font: file {0} does not exist", PathToString(filePath));
         return nullptr;
@@ -490,7 +492,7 @@ Font* ResourcesManager::LoadFont(const std::filesystem::path& filePath)
         return nullptr;
     }
 
-    return FontManager::FontFromPath(PathToString(filePath).c_str());
+    return FontManager::FontFromPath(fileData);
 }
 
 Font* ResourcesManager::GetFont(ResourceID fontID)

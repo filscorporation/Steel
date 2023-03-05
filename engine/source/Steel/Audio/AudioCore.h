@@ -29,7 +29,7 @@ public:
     static void PlaySource(uint32_t sourceID);
     static void StopSource(uint32_t sourceID);
 
-    static bool InitAudioTrack(AudioTrack* audioTrack, char* trackData);
+    static bool InitAudioTrack(AudioTrack* audioTrack, const char* trackData);
     static void DeleteAudioTrack(AudioTrack* audioTrack);
 
 private:

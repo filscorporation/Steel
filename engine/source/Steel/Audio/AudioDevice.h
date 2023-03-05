@@ -27,6 +27,6 @@ public:
     virtual void PlaySource(uint32_t sourceID) = 0;
     virtual void StopSource(uint32_t sourceID) = 0;
 
-    virtual bool InitAudioTrack(AudioTrack* audioTrack, char* trackData) = 0;
+    virtual bool InitAudioTrack(AudioTrack* audioTrack, const char* trackData) = 0;
     virtual void DeleteAudioTrack(AudioTrack* audioTrack) = 0;
 };

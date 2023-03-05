@@ -150,7 +150,7 @@ void AudioCore::StopSource(uint32_t sourceID)
     audioDevice->StopSource(sourceID);
 }
 
-bool AudioCore::InitAudioTrack(AudioTrack* audioTrack, char* trackData)
+bool AudioCore::InitAudioTrack(AudioTrack* audioTrack, const char* trackData)
 {
     if (AssertInitialized())
         return false;

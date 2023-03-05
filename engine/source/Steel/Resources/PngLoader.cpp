@@ -5,14 +5,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-Sprite* PngLoader::LoadImage(const char* fullPath)
+Sprite* PngLoader::LoadImage(const FileData& fileData)
 {
     int width, height, channels;
-
-    auto fileData = Application::Instance->GetResourcesManager()->GetFilesManager()->ReadFile(fullPath);
-    if (fileData.IsEmpty())
-        return nullptr;
-
+    
     unsigned char* imageData = stbi_load_from_memory(reinterpret_cast<const unsigned char*>(fileData.Data), (int)fileData.Size, &width, &height, &channels, 4);
     Texture* texture = Texture::CreateImageTexture(imageData, (uint32_t)width, (uint32_t)height);
     Application::Context()->Resources->AddResource(texture);

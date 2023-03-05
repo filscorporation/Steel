@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Font.h"
+#include "Steel/Resources/FileData.h"
 
 struct FontData;
 
@@ -11,7 +12,7 @@ public:
     static void Terminate();
     static bool IsInitialized();
 
-    static Font* FontFromPath(const char* fontPath);
+    static Font* FontFromPath(const FileData& fileData);
 private:
     static int _isInitialized;
 };

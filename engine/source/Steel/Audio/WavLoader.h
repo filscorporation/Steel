@@ -1,13 +1,14 @@
 #pragma once
 
 #include "AudioTrack.h"
-#include "../Resources/FileLoader.h"
+#include "Steel/Resources/FileLoader.h"
+#include "Steel/Resources/FileDataReader.h"
 
 class WavLoader : public FileLoader
 {
 public:
-    static AudioTrack* LoadWav(const char* filePath, char** data);
+    static AudioTrack* LoadWav(FileDataReader& reader);
 
 private:
-    static AudioTrack* LoadWavFileHeader(std::ifstream& file);
+    static AudioTrack* LoadWavFileHeader(FileDataReader& reader);
 };

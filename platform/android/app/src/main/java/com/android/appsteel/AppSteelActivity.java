@@ -7,7 +7,6 @@ import android.view.WindowManager;
 
 import java.io.File;
 
-
 public class AppSteelActivity extends Activity
 {
     AppSteelView mView;
@@ -16,7 +15,7 @@ public class AppSteelActivity extends Activity
     {
         super.onCreate(icicle);
         mView = new AppSteelView(getApplication());
-	    setContentView(mView);
+        setContentView(mView);
     }
 
     @Override protected void onDestroy()

@@ -1,6 +1,6 @@
 #include "FileLoader.h"
 
-std::int32_t FileLoader::ConvertToInt(char* buffer, std::size_t len)
+std::int32_t FileLoader::ConvertToInt(const char* buffer, std::size_t len)
 {
     std::int32_t a = 0;
     int x = 1;

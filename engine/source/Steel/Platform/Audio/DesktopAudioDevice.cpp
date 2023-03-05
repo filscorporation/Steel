@@ -215,7 +215,7 @@ static inline ALenum ToALFormat(int channels, int samples)
     }
 }
 
-bool DesktopAudioDevice::InitAudioTrack(AudioTrack* audioTrack, char* trackData)
+bool DesktopAudioDevice::InitAudioTrack(AudioTrack* audioTrack, const char* trackData)
 {
     ALuint audioBuffer;
     alGenBuffers((ALuint)1, &audioBuffer);

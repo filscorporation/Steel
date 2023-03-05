@@ -63,31 +63,29 @@ void Fill(unsigned char* target, uint32_t targetWidth, uint32_t targetHeight,
     }
 }
 
-void GetCelData(std::ifstream& file, uint32_t celType, char* imageData, uint32_t celWidth, uint32_t celHeight, uint32_t dataSize)
+void GetCelData(FileDataReader& reader, uint32_t celType, char* imageData, uint32_t celWidth, uint32_t celHeight, uint32_t dataSize)
 {
     switch (celType)
     {
         case 0: // Raw Cell
         {
-            if (!file.read(imageData, celWidth * celHeight * 4))
+            if (!reader.Read(celWidth * celHeight * 4))
             {
                 Log::LogError("Could not read raw image data");
                 return;
             }
+            std::copy(reader.Buffer(), reader.Buffer() + celWidth * celHeight * 4, imageData);
             break;
         }
         case 2: // Compressed Image
         {
-            auto compressedData = new char[dataSize];
-            if (!file.read(compressedData, dataSize))
+            if (!reader.Read(dataSize))
             {
                 Log::LogError("Could not read compressed image data");
-                delete[] compressedData;
                 return;
             }
 
-            int err = Decompress(compressedData, dataSize, imageData, celWidth * celHeight * 4);
-            delete[] compressedData;
+            int err = Decompress(reader.Buffer(), dataSize, imageData, celWidth * celHeight * 4);
             if (err < 0)
             {
                 Log::LogError("Error decompressing cel data: {0}", err);
@@ -102,38 +100,36 @@ void GetCelData(std::ifstream& file, uint32_t celType, char* imageData, uint32_t
     }
 }
 
-Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLeft, uint32_t width, uint32_t height)
+Sprite* AsepriteLoader::ReadCelChunk(FileDataReader& reader, uint32_t& chunkSizeLeft, uint32_t width, uint32_t height)
 {
-    char buffer[4];
-
-    file.ignore(2); // Ignore layer index
+    reader.Read(2); // Ignore layer index
     chunkSizeLeft -= 2;
 
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read cel x position");
         return nullptr;
     }
-    int16_t celX = (int16_t)ConvertToInt(buffer, 2);
+    int16_t celX = (int16_t)ConvertToInt(reader.Buffer(), 2);
     chunkSizeLeft -= 2;
 
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read cel y position");
         return nullptr;
     }
-    int16_t celY = (int16_t)ConvertToInt(buffer, 2);
+    int16_t celY = (int16_t)ConvertToInt(reader.Buffer(), 2);
     chunkSizeLeft -= 2;
 
-    file.ignore(1); // Ignore opacity level
+    reader.Read(1); // Ignore opacity level
     chunkSizeLeft -= 1;
 
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read cel type");
         return nullptr;
     }
-    uint32_t celType = ConvertToInt(buffer, 2);
+    uint32_t celType = ConvertToInt(reader.Buffer(), 2);
     chunkSizeLeft -= 2;
 
     if (celType == 1)
@@ -142,28 +138,28 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
         return nullptr;
     }
 
-    file.ignore(7); // Ignore empty data
+    reader.Read(7); // Ignore empty data
     chunkSizeLeft -= 7;
 
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read cel width");
         return nullptr;
     }
     chunkSizeLeft -= 2;
-    uint32_t celWidth = ConvertToInt(buffer, 2);
-    if (!file.read(buffer, 2))
+    uint32_t celWidth = ConvertToInt(reader.Buffer(), 2);
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read cel height");
         return nullptr;
     }
     chunkSizeLeft -= 2;
-    uint32_t celHeight = ConvertToInt(buffer, 2);
+    uint32_t celHeight = ConvertToInt(reader.Buffer(), 2);
 
     auto fullImageData = new unsigned char[width * height * 4]();
     auto imageData = new char[celWidth * celHeight * 4];
 
-    GetCelData(file, celType, imageData, celWidth, celHeight, chunkSizeLeft);
+    GetCelData(reader, celType, imageData, celWidth, celHeight, chunkSizeLeft);
     chunkSizeLeft = 0;
 
     Fill(fullImageData, width, height, (unsigned char*)imageData, celWidth, celHeight, celX, celY);
@@ -181,40 +177,38 @@ Sprite* AsepriteLoader::ReadCelChunk(std::ifstream& file, uint32_t& chunkSizeLef
     return image;
 }
 
-bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& inSprites, std::vector<uint32_t>& inDurations,
+bool AsepriteLoader::ReadTagsChunk(FileDataReader& reader, std::vector<Sprite*>& inSprites, std::vector<uint32_t>& inDurations,
                                    std::vector<Animation*>& outAnimations)
 {
-    char buffer[4];
-
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read tags count");
         return false;
     }
-    uint32_t tagsCount = ConvertToInt(buffer, 2);
+    uint32_t tagsCount = ConvertToInt(reader.Buffer(), 2);
     if (tagsCount == 0)
     {
         Log::LogError("Tags count is 0");
         return false;
     }
 
-    file.ignore(8); // Ignore unused bytes
+    reader.Read(8); // Ignore unused bytes
 
     for (uint32_t i = 0; i < tagsCount; ++i)
     {
-        if (!file.read(buffer, 2))
+        if (!reader.Read(2))
         {
             Log::LogError("Could not read tag from frame index");
             return false;
         }
-        uint32_t from = ConvertToInt(buffer, 2);
+        uint32_t from = ConvertToInt(reader.Buffer(), 2);
 
-        if (!file.read(buffer, 2))
+        if (!reader.Read(2))
         {
             Log::LogError("Could not read tag to frame index");
             return false;
         }
-        uint32_t to = ConvertToInt(buffer, 2);
+        uint32_t to = ConvertToInt(reader.Buffer(), 2);
 
         std::vector<Sprite*> sprites;
         sprites.reserve(to - from + 1);
@@ -226,29 +220,25 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
         }
         auto animation = new Animation(sprites, durations);
 
-        file.ignore(13); // Ignore unimportant tag data
+        reader.Read(13); // Ignore unimportant tag data
 
-        if (!file.read(buffer, 2))
+        if (!reader.Read(2))
         {
             Log::LogError("Could not read tag name length");
             return false;
         }
-        uint32_t nameLength = ConvertToInt(buffer, 2);
+        uint32_t nameLength = ConvertToInt(reader.Buffer(), 2);
 
         if (nameLength == 0)
             animation->Name = "Animation" + std::to_string(i + 1);
         else
         {
-            auto name = new char[nameLength + 1];
-            if (!file.read(name, nameLength))
+            if (!reader.Read(nameLength))
             {
                 Log::LogError("Could not read tag name");
-                delete[] name;
                 return false;
             }
-            name[nameLength] = '\0';
-            animation->Name = std::string(name);
-            delete[] name;
+            animation->Name = std::string(reader.Buffer(), nameLength);
         }
 
         animation->Loop = false;
@@ -259,60 +249,53 @@ bool AsepriteLoader::ReadTagsChunk(std::ifstream& file, std::vector<Sprite*>& in
     return true;
 }
 
-AsepriteData* AsepriteLoader::LoadAsepriteData(const char* filePath)
+AsepriteData* AsepriteLoader::LoadAsepriteData(const FileData& fileData)
 {
-    char buffer[4];
+    FileDataReader reader(fileData);
     uint32_t bytesBeforeTags = 0;
     bool tagsChunkFound = false;
 
-    std::ifstream file(filePath, std::ios::binary);
-    if (!file.is_open())
-    {
-        Log::LogError("Could not open {0}", filePath);
-        return nullptr;
-    }
+    reader.Read(6); // Ignore file size and magic number
 
-    file.ignore(6); // Ignore file size and magic number
-
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read frames count");
         return nullptr;
     }
-    uint32_t framesCount = ConvertToInt(buffer, 2);
+    uint32_t framesCount = ConvertToInt(reader.Buffer(), 2);
     if (framesCount == 0)
     {
         Log::LogError("Aseprite file contains zero frames");
         return nullptr;
     }
 
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read image width");
         return nullptr;
     }
-    uint32_t width = ConvertToInt(buffer, 2);
+    uint32_t width = ConvertToInt(reader.Buffer(), 2);
 
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read image height");
         return nullptr;
     }
-    uint32_t height = ConvertToInt(buffer, 2);
+    uint32_t height = ConvertToInt(reader.Buffer(), 2);
 
-    if (!file.read(buffer, 2))
+    if (!reader.Read(2))
     {
         Log::LogError("Could not read color depth");
         return nullptr;
     }
-    uint32_t colorDepth = ConvertToInt(buffer, 2);
+    uint32_t colorDepth = ConvertToInt(reader.Buffer(), 2);
     if (colorDepth != 32)
     {
         Log::LogError("Unexpected color depth: " + std::to_string(colorDepth));
         return nullptr;
     }
 
-    file.ignore(128 - 14); // Ignore 128 bit header
+    reader.Read(128 - 14); // Ignore 128 bit header
     bytesBeforeTags += 128;
     std::vector<uint32_t> framesDurations;
     framesDurations.reserve(framesCount);
@@ -322,30 +305,30 @@ AsepriteData* AsepriteLoader::LoadAsepriteData(const char* filePath)
     int imagesCount = 0;
     for (uint32_t i = 0; i < framesCount; ++i)
     {
-        file.ignore(6); // Ignore frame size and magic number
+        reader.Read(6); // Ignore frame size and magic number
 
-        if (!file.read(buffer, 2))
+        if (!reader.Read(2))
         {
             Log::LogError("Could not read old frame number of chunks");
             return nullptr;
         }
-        uint32_t oldChunksCount = ConvertToInt(buffer, 2);
+        uint32_t oldChunksCount = ConvertToInt(reader.Buffer(), 2);
 
-        if (!file.read(buffer, 2))
+        if (!reader.Read(2))
         {
             Log::LogError("Could not read frame duration");
             return nullptr;
         }
-        framesDurations.push_back(ConvertToInt(buffer, 2));
+        framesDurations.push_back(ConvertToInt(reader.Buffer(), 2));
 
-        file.ignore(2); // Ignore two bytes
+        reader.Read(2); // Ignore two bytes
 
-        if (!file.read(buffer, 4))
+        if (!reader.Read(4))
         {
             Log::LogError("Could not read new frame number of chunks");
             return nullptr;
         }
-        uint32_t chunksCount = ConvertToInt(buffer, 4);
+        uint32_t chunksCount = ConvertToInt(reader.Buffer(), 4);
 
         if (chunksCount == 0)
             chunksCount = oldChunksCount;
@@ -354,20 +337,20 @@ AsepriteData* AsepriteLoader::LoadAsepriteData(const char* filePath)
 
         for (uint32_t j = 0; j < chunksCount; ++j)
         {
-            if (!file.read(buffer, 4))
+            if (!reader.Read(4))
             {
                 Log::LogError("Could not read chunk size");
                 return nullptr;
             }
-            uint32_t chunkSize = ConvertToInt(buffer, 4);
+            uint32_t chunkSize = ConvertToInt(reader.Buffer(), 4);
             uint32_t chunkSizeLeft = chunkSize - 4;
 
-            if (!file.read(buffer, 2))
+            if (!reader.Read(2))
             {
                 Log::LogError("Could not read chunk type");
                 return nullptr;
             }
-            uint32_t chunkType = ConvertToInt(buffer, 2);
+            uint32_t chunkType = ConvertToInt(reader.Buffer(), 2);
             chunkSizeLeft -= 2;
 
             if (chunkSizeLeft == 0)
@@ -380,7 +363,7 @@ AsepriteData* AsepriteLoader::LoadAsepriteData(const char* filePath)
             {
                 case 0x2005: // Cel Chunk
                 {
-                    auto image = ReadCelChunk(file, chunkSizeLeft, width, height);
+                    auto image = ReadCelChunk(reader, chunkSizeLeft, width, height);
                     if (image == nullptr)
                         return nullptr;
 
@@ -403,7 +386,7 @@ AsepriteData* AsepriteLoader::LoadAsepriteData(const char* filePath)
             }
 
             if (chunkSizeLeft != 0)
-                file.ignore(chunkSizeLeft); // Ignore unread data from chunk
+                reader.Read(chunkSizeLeft); // Ignore unread data from chunk
             if (!tagsChunkFound)
                 bytesBeforeTags += chunkSize;
         }
@@ -412,10 +395,10 @@ AsepriteData* AsepriteLoader::LoadAsepriteData(const char* filePath)
     if (tagsChunkFound)
     {
         // Restart reading file to position where tags were found
-        file.clear();
-        file.seekg(bytesBeforeTags);
+        reader.Reset();
+        reader.Read(bytesBeforeTags);
 
-        if (!ReadTagsChunk(file, outData->Sprites, framesDurations, outData->Animations))
+        if (!ReadTagsChunk(reader, outData->Sprites, framesDurations, outData->Animations))
         {
             return nullptr;
         }

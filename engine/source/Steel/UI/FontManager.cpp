@@ -1,8 +1,8 @@
+#include "FontManager.h"
+#include "Steel/Core/Log.h"
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-#include "FontManager.h"
-#include "../Core/Log.h"
 
 int FontManager::_isInitialized = 0;
 
@@ -40,10 +40,10 @@ bool FontManager::IsInitialized()
     return _isInitialized > 0;
 }
 
-Font* FontManager::FontFromPath(const char* fontPath)
+Font* FontManager::FontFromPath(const FileData& fileData)
 {
     auto face = new FT_Face();
-    if (FT_New_Face(FreeTypeLibrary, fontPath, 0, face))
+    if (FT_New_Memory_Face(FreeTypeLibrary, (const FT_Byte*)fileData.Data, fileData.Size, 0, face))
     {
         Log::LogError("Failed to load font");
         return nullptr;

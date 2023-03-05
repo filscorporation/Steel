@@ -77,7 +77,7 @@ void AndroidAudioDevice::StopSource(uint32_t sourceID)
 
 }
 
-bool AndroidAudioDevice::InitAudioTrack(AudioTrack* audioTrack, char* trackData)
+bool AndroidAudioDevice::InitAudioTrack(AudioTrack* audioTrack, const char* trackData)
 {
     return false;
 }
