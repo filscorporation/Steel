@@ -44,12 +44,11 @@ namespace Steel
         /// <summary>
         /// Get shader from loaded resources (supported language: GLSL)
         /// </summary>
-        /// <param name="vsPath">Path to vertex shader file relative to resources folder</param>
-        /// <param name="fsPath">Path to fragment shader file relative to resources folder</param>
+        /// <param name="path">Path to shader file relative to resources folder</param>
         /// <returns>Resource or null if not found</returns>
-        public static Shader GetShader(string vsPath, string fsPath)
+        public static Shader GetShader(string path)
         {
-            ulong shaderID = GetShader_Internal(vsPath, fsPath);
+            ulong shaderID = GetShader_Internal(path);
             return shaderID == Resource.NULL_RESOURCE_ID ? null : new Shader(shaderID);
         }
         
@@ -74,7 +73,7 @@ namespace Steel
         private static extern ulong GetAudioTrack_Internal(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern ulong GetShader_Internal(string vsPath, string fsPath);
+        private static extern ulong GetShader_Internal(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ulong CreateMaterial_Internal(ulong shaderID);

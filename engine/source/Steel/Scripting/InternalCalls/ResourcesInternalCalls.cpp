@@ -21,9 +21,9 @@ ResourceID ResourcesInternalCalls::ResourcesManager_GetAudioTrack(MonoString* pa
     return track == nullptr ? NULL_RESOURCE : track->ID;
 }
 
-ResourceID ResourcesInternalCalls::ResourcesManager_GetShader(MonoString* vsPath, MonoString* fsPath)
+ResourceID ResourcesInternalCalls::ResourcesManager_GetShader(MonoString* path)
 {
-    auto shader = Application::Instance->GetResourcesManager()->GetShader(ScriptingCore::ToString(vsPath), ScriptingCore::ToString(fsPath));
+    auto shader = Application::Instance->GetResourcesManager()->GetShader(ScriptingCore::ToString(path));
     return shader == nullptr ? NULL_RESOURCE : shader->ID;
 }
 

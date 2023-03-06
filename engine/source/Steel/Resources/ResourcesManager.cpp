@@ -1,6 +1,7 @@
 #include "ResourcesManager.h"
 #include "AsepriteLoader.h"
 #include "PngLoader.h"
+#include "ShaderLoader.h"
 #include "Steel/Core/Log.h"
 #include "Steel/Math/Random.h"
 #include "Steel/Audio/AudioCore.h"
@@ -130,16 +131,8 @@ Resource* ResourcesManager::TryLoadResource(const std::filesystem::path& filePat
         resource = LoadFont(filePath);
     else if (extension == ".aseprite")
         resource = LoadAsepriteData(filePath);
-    else if (extension == ".vs")
-    {
-        // TODO: combine shaders into one file
-        std::string fsPath = PathToString(filePath);
-        fsPath.replace(fsPath.length() - 2, 2, "fs");
-        std::ifstream infile(fsPath);
-        if (infile.good())
-            // Load only if there is fragment shader file with the same name
-            resource = LoadShader(filePath, fsPath);
-    }
+    else if (extension == ".glsl")
+        resource = LoadShader(filePath);
     else if (extension == ".scene")
         resource = LoadSceneData(filePath);
 
@@ -510,15 +503,16 @@ Font* ResourcesManager::DefaultFont()
     return defaultFont;
 }
 
-Shader* ResourcesManager::LoadShader(const std::filesystem::path& fileVSPath, const std::filesystem::path& fileFSPath)
+Shader* ResourcesManager::LoadShader(const std::filesystem::path& filePath)
 {
-    if (!std::ifstream(fileVSPath).good() || !std::ifstream(fileFSPath).good())
+    auto fileData = GetFilesManager()->ReadFile(filePath);
+    if (fileData.IsEmpty())
     {
-        Log::LogError("Error loading shader: file {0} or {1} does not exist", PathToString(fileVSPath), PathToString(fileFSPath));
+        Log::LogError("Error loading shader: file {0} does not exist", PathToString(filePath));
         return nullptr;
     }
 
-    return Shader::FromFilePaths(PathToString(fileVSPath).c_str(), PathToString(fileFSPath).c_str());
+    return ShaderLoader::LoadShader(fileData);
 }
 
 Shader* ResourcesManager::GetShader(ResourceID shaderID)
@@ -526,10 +520,9 @@ Shader* ResourcesManager::GetShader(ResourceID shaderID)
     return (Shader*)(GetResource(ResourceTypes::Shader, shaderID));
 }
 
-Shader* ResourcesManager::GetShader(const std::string& fileVSPath, const std::string& fileFSPath)
+Shader* ResourcesManager::GetShader(const std::string& filePath)
 {
-    // TODO: solve after combining shaders
-    return (Shader*)GetResource(GetResourceFilePath(fileVSPath));
+    return (Shader*)GetResource(GetResourceFilePath(filePath));
 }
 
 SceneData* ResourcesManager::LoadSceneData(const std::filesystem::path& filePath)

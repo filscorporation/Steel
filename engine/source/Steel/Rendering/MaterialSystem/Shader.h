@@ -20,9 +20,8 @@ class Shader : public Resource
 
 public:
     Shader(const char* vertexCode, const char* fragmentCode);
-    virtual ~Shader();
+    ~Shader() override;
 
-    static Shader* FromFilePaths(const char* vertexPath, const char* fragmentPath);
     void Use() const;
 
     int GetUniformLocation(const std::string& name);

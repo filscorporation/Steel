@@ -69,44 +69,6 @@ Shader::~Shader()
     glDeleteProgram(this->Program);
 }
 
-Shader* Shader::FromFilePaths(const char* vertexPath, const char* fragmentPath)
-{
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::ifstream vShaderFile;
-    std::ifstream fShaderFile;
-    vShaderFile.exceptions(std::ifstream::badbit);
-    fShaderFile.exceptions(std::ifstream::badbit);
-    try
-    {
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
-        if (!vShaderFile.good() || !fShaderFile.good())
-        {
-            Log::LogError("Shader error: file does not exist");
-            return nullptr;
-        }
-        else
-        {
-            std::stringstream vShaderStream, fShaderStream;
-            vShaderStream << vShaderFile.rdbuf();
-            fShaderStream << fShaderFile.rdbuf();
-            vShaderFile.close();
-            fShaderFile.close();
-            vertexCode = vShaderStream.str();
-            fragmentCode = fShaderStream.str();
-        }
-    }
-    catch(std::ifstream::failure)
-    {
-        Log::LogError("Shader error: file not successfully read");
-    }
-    const GLchar* vShaderCode = vertexCode.c_str();
-    const GLchar* fShaderCode = fragmentCode.c_str();
-
-    return new Shader(vShaderCode, fShaderCode);
-}
-
 void Shader::Use() const
 {
     glUseProgram(this->Program);

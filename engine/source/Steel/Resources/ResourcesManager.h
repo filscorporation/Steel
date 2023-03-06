@@ -57,7 +57,7 @@ public:
     Font* GetFont(ResourceID fontID);
     Font* GetFont(const std::string& filePath);
     Shader* GetShader(ResourceID shaderID);
-    Shader* GetShader(const std::string& fileVSPath, const std::string& fileFSPath);
+    Shader* GetShader(const std::string& filePath);
     SceneData* GetSceneData(ResourceID resourceID);
     SceneData* GetSceneData(const std::string& filePath);
 
@@ -80,7 +80,7 @@ private:
     AsepriteData* LoadAsepriteData(const std::filesystem::path& filePath);
     AudioTrack* LoadAudioTrack(const std::filesystem::path& filePath);
     Font* LoadFont(const std::filesystem::path& filePath);
-    Shader* LoadShader(const std::filesystem::path& fileVSPath, const std::filesystem::path& fileFSPath);
+    Shader* LoadShader(const std::filesystem::path& filePath);
     SceneData* LoadSceneData(const std::filesystem::path& filePath);
 
     static std::string DataFilePath(const std::string& fileFullPath);
