@@ -19,6 +19,9 @@ include_directories(${ENGINE_PATH}/source)
 # project target
 add_library(${CMAKE_PROJECT_NAME} SHARED ${SOURCE_FILES})
 
+# native_app_glue
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${ANDROID_NDK}/sources/android/native_app_glue)
+
 # glm
 include_directories(${ENGINE_PATH}/includes/glm)
 

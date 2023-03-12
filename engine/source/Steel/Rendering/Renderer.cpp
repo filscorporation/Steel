@@ -6,11 +6,27 @@
 #include "Steel/Rendering/Core/OpenGLAPI.h"
 #include "Steel/Rendering/Core/DrawCallsSource.h"
 
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
+#include "Steel/Platform/Rendering/GLADAPI.h"
+#endif
+#if defined PLATFORM_ANDROID
+#include "Steel/Platform/Rendering/EGLAPI.h"
+#endif
+
 void Renderer::Init()
 {
     Log::LogDebug("Begin renderer init");
 
-    if (!OpenGLAPI::Init())
+    int initAPI = -1;
+
+#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
+    initAPI = GLADAPI::Init();
+#endif
+#if defined PLATFORM_ANDROID
+    initAPI = EGLAPI::Init();
+#endif
+
+    if (!initAPI)
     {
         Log::LogError("Error loading OpenGL");
         return;

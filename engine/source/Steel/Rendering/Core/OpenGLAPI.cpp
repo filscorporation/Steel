@@ -10,17 +10,6 @@
 
 #undef Always
 
-int OpenGLAPI::Init()
-{
-
-#if defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
-    return gladLoadGL();
-#endif
-#if defined PLATFORM_ANDROID
-    return 1; // Android OpenGL ES setup is in native code
-#endif
-}
-
 void OpenGLAPI::EnableDepthTest()
 {
     glEnable(GL_DEPTH_TEST);

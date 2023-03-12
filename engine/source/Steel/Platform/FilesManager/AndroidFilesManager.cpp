@@ -3,12 +3,8 @@
 
 #include <iostream>
 
-#include <jni.h>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
-
-std::unordered_map<std::string, int> filesPath;
-std::vector<FileData> filesData;
+std::unordered_map<std::string, int> AndroidFilesManager::filesPath;
+std::vector<FileData> AndroidFilesManager::filesData;
 
 void AndroidFilesManager::Init()
 {
@@ -57,7 +53,7 @@ bool AndroidFilesManager::GetFilesInDirRecursive(const std::string& dirPath, std
     return true;
 }
 
-void CacheAllFilesRecursive(AAssetManager* assetManager, AAssetDir* assetDir, const std::string& dirPath)
+void AndroidFilesManager::CacheAllFilesRecursive(AAssetManager* assetManager, AAssetDir* assetDir, const std::string& dirPath)
 {
     const char* filename = (const char*)NULL;
     while ((filename = AAssetDir_getNextFileName(assetDir)) != nullptr)
@@ -83,11 +79,10 @@ void CacheAllFilesRecursive(AAssetManager* assetManager, AAssetDir* assetDir, co
     }
 }
 
-void CacheAllFiles(JNIEnv* env, jobject obj, jobject java_asset_manager)
+void AndroidFilesManager::CacheAllFiles(AAssetManager* assetManager)
 {
     // Load all assets in memory
 
-    AAssetManager* assetManager = AAssetManager_fromJava(env, java_asset_manager);
     AAssetDir* assetDir = AAssetManager_openDir(assetManager, "");
     if (assetDir == nullptr)
         return;
@@ -102,14 +97,4 @@ void CacheAllFiles(JNIEnv* env, jobject obj, jobject java_asset_manager)
     }
     CacheAllFilesRecursive(assetManager, assetDir, "Resources/");
     AAssetDir_close(assetDir);
-}
-
-extern "C"
-{
-    JNIEXPORT void JNICALL Java_com_android_appsteel_AppSteelLib_initManager(JNIEnv* env, jobject obj, jobject java_asset_manager);
-}
-
-JNIEXPORT void Java_com_android_appsteel_AppSteelLib_initManager(JNIEnv* env, jobject obj, jobject java_asset_manager)
-{
-    CacheAllFiles(env, obj, java_asset_manager);
 }

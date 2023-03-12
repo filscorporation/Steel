@@ -1,5 +1,6 @@
 #include "AndroidWindow.h"
 #include "Steel/Core/Application.h"
+#include "Steel/Platform/Rendering/EGLAPI.h"
 
 int _width, _height;
 bool screenSizeDirty;
@@ -55,7 +56,7 @@ void AndroidWindow::UpdateSize()
 
 void AndroidWindow::SwapBuffers()
 {
-
+    EGLAPI::SwapBuffers();
 }
 
 void AndroidWindow::ClearDirty()

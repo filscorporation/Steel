@@ -1,12 +1,3 @@
-#include <iostream>
-#ifdef PLATFORM_WINDOWS
-#include <windows.h>
-#endif
-#ifdef PLATFORM_LINUX
-#include <climits>
-#include <unistd.h>
-#endif
-
 #include "Application.h"
 #include "Log.h"
 #include "Time.h"
@@ -19,6 +10,15 @@
 #include "Steel/Rendering/SceneRenderer.h"
 #include "Steel/Scripting/ScriptingSystem.h"
 #include "Steel/Serialization/SerializationManager.h"
+
+#include <iostream>
+#ifdef PLATFORM_WINDOWS
+#include <windows.h>
+#endif
+#ifdef PLATFORM_LINUX
+#include <climits>
+#include <unistd.h>
+#endif
 
 #ifdef DISTRIBUTE_BUILD
 #ifdef PLATFORM_ANDROID

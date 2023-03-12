@@ -65,9 +65,15 @@ set(ZLIB_FILES includes/zlib/zlib.h includes/zlib/adler32.c includes/zlib/compre
         includes/zlib/gzclose.c includes/zlib/gzlib.c includes/zlib/gzread.c includes/zlib/gzwrite.c includes/zlib/inflate.c
         includes/zlib/infback.c includes/zlib/inftrees.c includes/zlib/inffast.c includes/zlib/trees.c includes/zlib/uncompr.c includes/zlib/zutil.c)
 
+# android native_app_glue
+if (TARGET_PLATFORM MATCHES ANDROID)
+    add_library(native_app_glue STATIC ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+endif ()
+
 # platform files
 if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
     set(PLATFORM_SOURCE_FILES
+            source/Steel/Platform/Rendering/GLADAPI.cpp source/Steel/Platform/Rendering/GLADAPI.h
             source/Steel/Rendering/Core/OpenGLAPI.cpp source/Steel/Rendering/Core/OpenGLAPI.h
             source/Steel/Platform/Window/DesktopWindow.cpp source/Steel/Platform/Window/DesktopWindow.h
             source/Steel/Platform/Time/DesktopTimeProvider.cpp source/Steel/Platform/Time/DesktopTimeProvider.h
@@ -77,6 +83,8 @@ if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
 endif()
 if (TARGET_PLATFORM MATCHES ANDROID)
     set(PLATFORM_SOURCE_FILES
+            source/Steel/Platform/Application/AndroidApplication.cpp source/Steel/Platform/Application/AndroidApplication.h
+            source/Steel/Platform/Rendering/EGLAPI.cpp source/Steel/Platform/Rendering/EGLAPI.h
             source/Steel/Rendering/Core/OpenGLAPI.cpp source/Steel/Rendering/Core/OpenGLAPI.h
             source/Steel/Platform/Window/AndroidWindow.cpp source/Steel/Platform/Window/AndroidWindow.h
             source/Steel/Platform/Time/AndroidTimeProvider.cpp source/Steel/Platform/Time/AndroidTimeProvider.h
@@ -228,6 +236,12 @@ include_directories(includes)
 # glad
 if (TARGET_PLATFORM MATCHES LINUX OR TARGET_PLATFORM MATCHES WINDOWS)
     include_directories(includes/glad/include)
+endif ()
+
+# android native_app_glue
+if (TARGET_PLATFORM MATCHES ANDROID)
+    target_include_directories(Steel PRIVATE ${ANDROID_NDK}/sources/android/native_app_glue)
+    target_link_libraries(Steel PRIVATE android native_app_glue EGL GLESv1_CM log)
 endif ()
 
 # zlib
