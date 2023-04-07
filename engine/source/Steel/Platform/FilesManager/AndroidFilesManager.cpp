@@ -19,6 +19,11 @@ void AndroidFilesManager::Terminate()
     filesPath.clear();
 }
 
+bool AndroidFilesManager::FileExists(const std::string& filePath)
+{
+    return filesPath.find(filePath) != filesPath.end();
+}
+
 FileData AndroidFilesManager::ReadFile(const std::string& filePath)
 {
     if (filesPath.find(filePath) == filesPath.end())

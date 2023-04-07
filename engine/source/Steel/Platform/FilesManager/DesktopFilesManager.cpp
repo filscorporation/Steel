@@ -12,6 +12,15 @@ void DesktopFilesManager::Terminate()
 
 }
 
+bool DesktopFilesManager::FileExists(const std::string& filePath)
+{
+    std::ifstream infile(filePath, std::ifstream::binary);
+    bool exists = infile.good();
+    if (exists)
+        infile.close();
+    return exists;
+}
+
 FileData DesktopFilesManager::ReadFile(const std::string& filePath)
 {
     std::ifstream infile(filePath, std::ifstream::binary);

@@ -19,6 +19,7 @@ public:
 
     static void CacheAllFiles(AAssetManager* assetManager);
 
+    bool FileExists(const std::string& filePath) override;
     FileData ReadFile(const std::string& filePath) override;
     bool WriteFile(const std::string& filePath, FileData fileData) override;
     bool GetFilesInDirRecursive(const std::string& dirPath, std::vector<std::filesystem::path>& outFilesPath) override;

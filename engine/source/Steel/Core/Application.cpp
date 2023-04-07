@@ -70,9 +70,7 @@ void Application::InitSystems(int width, int height, glm::vec3 color, bool fulls
 
     CoreTypeSystem::Init();
     SerializationManager::Init();
-#if defined PLATFORM_WINDOWS || defined PLATFORM_LINUX
     ScriptingSystem::Init();
-#endif
     Renderer::Init();
     AudioCore::Init();
 }
@@ -108,10 +106,7 @@ ApplicationContext* Application::CreateContext(ApplicationSettings settings)
     context->Scenes = new SceneManager();
 
     ScriptingSystem::CreateDomain();
-    context->Scripting = false;
-#if defined PLATFORM_WINDOWS || defined PLATFORM_LINUX
     context->Scripting = true;
-#endif
 
     return context;
 }

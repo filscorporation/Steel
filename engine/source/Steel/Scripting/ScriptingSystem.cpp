@@ -21,16 +21,16 @@
 #define DEBUG_API_DLL_PATH "/scripting/SteelCustom/bin/Debug/SteelCore.dll"
 #define DEBUG_SCRIPTS_DLL_PATH "/scripting/SteelCustom/bin/Debug/SteelCustom.dll"
 #endif
-#ifdef PLATFORM_ANDROID // TODO: ?
-#define DEBUG_MONO_LIB_PATH "/usr/lib/"
-#define DEBUG_MONO_ETC_PATH "/usr/lib/mono"
-#define DEBUG_API_DLL_PATH "../../../scripting/SteelCustom/bin/Debug/SteelCore.dll"
-#define DEBUG_SCRIPTS_DLL_PATH "../../../scripting/SteelCustom/bin/Debug/SteelCustom.dll"
+#ifdef PLATFORM_ANDROID
+#define DEBUG_MONO_LIB_PATH ""
+#define DEBUG_MONO_ETC_PATH ""
+#define DEBUG_API_DLL_PATH ""
+#define DEBUG_SCRIPTS_DLL_PATH ""
 
-#define DISTRIBUTE_MONO_LIB_PATH "Mono\\lib"
-#define DISTRIBUTE_MONO_ETC_PATH "Mono\\etc"
-#define DISTRIBUTE_API_DLL_PATH "Bin\\SteelCore.dll"
-#define DISTRIBUTE_SCRIPTS_DLL_PATH "Bin\\SteelCustom.dll"
+#define DISTRIBUTE_MONO_LIB_PATH ""
+#define DISTRIBUTE_MONO_ETC_PATH ""
+#define DISTRIBUTE_API_DLL_PATH "SteelCore.dll"
+#define DISTRIBUTE_SCRIPTS_DLL_PATH "SteelCustom.dll"
 #endif
 
 bool ScriptingSystem::isInitialized = false;

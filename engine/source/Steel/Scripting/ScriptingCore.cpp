@@ -38,7 +38,11 @@ bool ScriptingCore::Init(const char* monoLibPath, const char* monoEtcPath)
     mono_set_dirs(monoLibPath, monoEtcPath);
     setenv("MONO_THREADS_SUSPEND", "preemptive", 1);
 
-    MonoDomain* domain = mono_jit_init(ROOT_DOMAIN_NAME);
+    MonoDomain* domain = nullptr;
+#if defined PLATFORM_WINDOWS || defined PLATFORM_LINUX
+    // TODO: solve android problem of mono unable to initialize as it can't find mscorlib.dll
+    domain = mono_jit_init(ROOT_DOMAIN_NAME);
+#endif
 
     return domain != nullptr;
 }
@@ -48,19 +52,6 @@ void ScriptingCore::Terminate()
     MonoDomain* domain = mono_get_root_domain();
     if (domain != nullptr)
         mono_jit_cleanup(domain);
-}
-
-inline bool FileExists(const char* fileName)
-{
-    if (FILE *file = fopen(fileName, "r"))
-    {
-        fclose(file);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 bool ScriptingCore::CreateDomain(const char* apiDllPath, const char* scriptsDllPath)
@@ -144,7 +135,7 @@ bool ScriptingCore::DomainLoaded()
 
 MonoImage* ScriptingCore::LoadAssemblyImage(const char* filePath)
 {
-    if (!FileExists(filePath))
+    if (!Application::Instance->GetResourcesManager()->GetFilesManager()->FileExists(filePath))
     {
         Log::LogError("Error loading assembly, file does not exist: {0}", filePath);
         return nullptr;
