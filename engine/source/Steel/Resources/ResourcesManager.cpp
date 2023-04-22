@@ -322,7 +322,7 @@ inline std::string GetNameFromPath(const std::string& path)
 
 Sprite* ResourcesManager::LoadSprite(const std::filesystem::path& filePath)
 {
-    auto fileData = GetFilesManager()->ReadFile(filePath);
+    auto fileData = GetFilesManager()->ReadFile(PathToString(filePath));
     if (fileData.IsEmpty())
     {
         Log::LogError("Error loading image: file {0} does not exist", PathToString(filePath));
@@ -387,7 +387,7 @@ Texture* ResourcesManager::GetTexture(const std::string& filePath)
 
 AsepriteData* ResourcesManager::LoadAsepriteData(const std::filesystem::path& filePath)
 {
-    auto fileData = GetFilesManager()->ReadFile(filePath);
+    auto fileData = GetFilesManager()->ReadFile(PathToString(filePath));
     if (fileData.IsEmpty())
     {
         Log::LogError("Error loading aseprite data: file {0} does not exist", PathToString(filePath));
@@ -429,7 +429,7 @@ AsepriteData* ResourcesManager::GetAsepriteData(const std::string& filePath, boo
 
 AudioTrack* ResourcesManager::LoadAudioTrack(const std::filesystem::path& filePath)
 {
-    auto fileData = GetFilesManager()->ReadFile(filePath);
+    auto fileData = GetFilesManager()->ReadFile(PathToString(filePath));
     if (fileData.IsEmpty())
     {
         Log::LogError("Error loading audio track: file {0} does not exist", PathToString(filePath));
@@ -472,7 +472,7 @@ Animation* ResourcesManager::GetAnimation(const std::string& filePath)
 
 Font* ResourcesManager::LoadFont(const std::filesystem::path& filePath)
 {
-    auto fileData = GetFilesManager()->ReadFile(filePath);
+    auto fileData = GetFilesManager()->ReadFile(PathToString(filePath));
     if (fileData.IsEmpty())
     {
         Log::LogError("Error loading font: file {0} does not exist", PathToString(filePath));
@@ -505,7 +505,7 @@ Font* ResourcesManager::DefaultFont()
 
 Shader* ResourcesManager::LoadShader(const std::filesystem::path& filePath)
 {
-    auto fileData = GetFilesManager()->ReadFile(filePath);
+    auto fileData = GetFilesManager()->ReadFile(PathToString(filePath));
     if (fileData.IsEmpty())
     {
         Log::LogError("Error loading shader: file {0} does not exist", PathToString(filePath));
@@ -527,7 +527,7 @@ Shader* ResourcesManager::GetShader(const std::string& filePath)
 
 SceneData* ResourcesManager::LoadSceneData(const std::filesystem::path& filePath)
 {
-    auto fileData = GetFilesManager()->ReadFile(filePath);
+    auto fileData = GetFilesManager()->ReadFile(PathToString(filePath));
     if (fileData.IsEmpty())
     {
         Log::LogError("Error loading scene data: file {0} does not exist", PathToString(filePath));

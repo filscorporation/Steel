@@ -5,6 +5,8 @@
 
 #include "glm/glm.hpp"
 
+#undef CreateWindow
+
 class Screen
 {
 public:
