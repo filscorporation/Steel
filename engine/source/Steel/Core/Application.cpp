@@ -48,7 +48,11 @@ Application::Application()
 
 void Application::Init(ApplicationSettings settings)
 {
+#ifdef DISTRIBUTE_BUILD
+    RootPath = "";
+#else
     RootPath = "../../../..";
+#endif
 
     InitSystems(settings.ScreenWidth, settings.ScreenHeight, settings.ScreenColor, settings.Fullscreen, settings.DoubleBuffer, settings.VSync);
     AppContext = CreateContext(settings);
