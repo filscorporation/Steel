@@ -403,7 +403,7 @@ AsepriteData* AsepriteLoader::LoadAsepriteData(const FileData& fileData)
             return nullptr;
         }
     }
-    else if (outData->Sprites.size() > 1)
+    else if (outData->Sprites.size() > 1 && outData->Sprites.size() == framesDurations.size())
     {
         // If there is no tags but multiple sprites - create animation from all of them
         auto animation = new Animation(outData->Sprites, framesDurations);
