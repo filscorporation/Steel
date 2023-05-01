@@ -16,8 +16,10 @@ else()
 endif()
 
 # set flags
-if (TARGET_PLATFORM MATCHES WINDOWS OR TARGET_PLATFORM MATCHES LINUX)
+if (TARGET_PLATFORM MATCHES LINUX)
     set(BUILD_FLAGS "-pthread -ldl -lpthread -lm")
+elseif (TARGET_PLATFORM MATCHES WINDOWS)
+    set(BUILD_FLAGS "")
 elseif (TARGET_PLATFORM MATCHES ANDROID)
     set(BUILD_FLAGS "")
 else()
